@@ -34,7 +34,7 @@ Call CSVmanager.ImportFromCSV
 MyArray  = CSVmanager .CSVdata
 Set CSVmanager = Nothing
 ```
-Import a range of records from CSV file into an VBA array
+Import a range of records from CSV file into a VBA array
 ```vbscript
 Dim CSVmanager As CSVfileManager
 Dim MyArray As variant
@@ -46,7 +46,7 @@ Call CSVmanager.ImportFromCSV
 MyArray  = CSVmanager .CSVdata
 Set CSVmanager = Nothing
 ```
-Set the char to encapsulate fields
+Set the char to encapsulate, coerce, fields
 ```vbscript
 CSVmanager.CoerceType = NotCoerce
 CSVmanager.CoerceType = Apostrophe
