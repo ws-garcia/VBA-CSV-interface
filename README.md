@@ -1,11 +1,11 @@
 # VBA-CSV file Manager
 ## Table of contents
-* [Intro](https://github.com/ws-garcia/VBA-CSV-fileManager/blob/master#Intro)
-* [Advantages](https://github.com/ws-garcia/VBA-CSV-fileManager/blob/master#Advantages)
-* [Philosophy](https://github.com/ws-garcia/VBA-CSV-fileManager/blob/master#Philosophy)
-* [Rules](https://github.com/ws-garcia/VBA-CSV-fileManager/blob/master#Rules)
-* [Usage](https://github.com/ws-garcia/VBA-CSV-fileManager/blob/master#Usage)
-* [Benchmark](https://github.com/ws-garcia/VBA-CSV-fileManager/blob/master#Benchmark)
+* [Intro](https://github.com/ws-garcia/VBA-CSV-fileManager/blob/master/README.md#intro)
+* [Advantages](https://github.com/ws-garcia/VBA-CSV-fileManager/blob/master/README.md#advantages)
+* [Philosophy](https://github.com/ws-garcia/VBA-CSV-fileManager/blob/master/README.md#philosophy)
+* [Rules](https://github.com/ws-garcia/VBA-CSV-fileManager/blob/master/README.md#rules)
+* [Usage](https://github.com/ws-garcia/VBA-CSV-fileManager/blob/master/README.md#usage)
+* [Benchmark](https://github.com/ws-garcia/VBA-CSV-fileManager/blob/master/README.md#benchmark)
 ## Intro
 The CSV, stands from Comma Separated Values, files are special kind of tabulated plain text data widely used in data exchange. There is no globally accepted standard format for that kind of files, however, out there are well formed standards such as [RFC4180](https://www.ietf.org/rfc/rfc4180.txt) proposed by The Internet Society.
 Although many solutions has been developed for work with CSV files into VBA, including projects from [@sdkn104](https://github.com/sdkn104/VBA-CSV) and [@Senipah](https://github.com/Senipah/VBA-Better-Array/tree/master/src) on Github, the vast majority of these have serious performance lacks. This argumentations conduce to the development of a VBA class module that allows users exchange data between VBA arrays and CSV files at relatively high speed.
@@ -20,8 +20,8 @@ Under this idealization it's easy to develop a solution that implicity complies 
 1. Each record is located on a separate line, delimited by a line break (CRLF, CR, LF).
 2. The last record in the file may or may not have an ending line break.
 3. There maybe an optional header line appearing as the first line of the file with the same format as normal record lines.  This header will contain names corresponding to the fields in the file and should contain the same number of fields as the records in the rest of the file.
-4. Within the header and each record, there may be one or more fields, separated by the fields separator (Comma, Semicolon, Space, Tab).  Each line should contain the same number of fields throughout the file.  *Avoid let spaces betwen fields and records separators*.  The last field in the record must not be followed by a fields separator.
-5. Each field may or may not be enclosed in the selected Coerce char. The user can choose between enclose every fields or neither one.
+4. Within the header and each record, there may be one or more fields, separated by the fields separator (Comma, Semicolon, Space, Tab).  Each line should contain the same number of fields throughout the file.  **_Avoid let spaces betwen fields and records separators_**.  The last field in the record must not be followed by a fields separator.
+5. Each field may or may not be enclosed in the selected Coerce char. **_The user can choose between enclose, coerce, every fields or neither one_**.
 6. Fields containing special chars (line breaks, double quotes, apostrophe, and commas) should be enclosed with selected Coerce char.
 ## Usage
 Import whole CSV file into an VBA array
