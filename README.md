@@ -1,4 +1,6 @@
 # VBA-CSV file Manager
+[![version](https://img.shields.io/static/v1?label=version&message=v1.0.0&color=brightgreen&style=plastic)](https://github.com/ws-garcia/VBA-CSV-fileManager/releases/tag/v1.0.0)
+[![version](https://img.shields.io/static/v1?label=licence&message=GPL&color=informational&style=plastic)](https://www.gnu.org/licenses/)
 ## Table of contents
 * [Intro](https://github.com/ws-garcia/VBA-CSV-fileManager/blob/master/README.md#intro)
 * [Advantages](https://github.com/ws-garcia/VBA-CSV-fileManager/blob/master/README.md#advantages)
@@ -70,3 +72,11 @@ The times showed, seconds, in the bellow table are the average of ten (10) calls
 |*FromCSV(@Senipah)*|0.3594|3.8333|16.6172|>1,000|
 
 Considering the system specification for the test machine (4 MB/sec. when it writes files to an USB), the above times was stunning!: up to 2.15 MB/sec. for reading operations.
+## Licence
+Copyright (C) 2020  [W. García](https://github.com/ws-garcia/VBA-CSV-fileManager/).
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program.  If not, see <https://www.gnu.org/licenses/>.
