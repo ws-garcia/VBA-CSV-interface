@@ -66,13 +66,13 @@ The times showed, seconds, in the bellow table are the average of ten (10) calls
 
 |*Procedure (Author)*|*1K rec (102 KB)*|*5K rec (511 KB)*|*10K rec (0.99 MB)*|*100K rec (9.95 MB)*|
 |:--------------------------|-----------------:|----------------:|----------------:|-----------------:|
-|*ImportFromCSV (W. García)*|_0.0781_|_0.3021_|_0.4792_|_4.9141_|
+|*ImportFromCSV (W. García)*|_0.0375_|_0.1945_|_0.3805_|_3.7344_|
 |*ParseCSVToArray/ADO (@sdkn104)*|1.4349|47.3177|202.82|>1,000|
 |*ImportCSVinArray (Wester)*|0.1042|0.6484|1.0182|10.250|
 |*ArrayFromCSV (Heffernan)*|0.2396|1.7839|2.2057|22.385|
 |*FromCSV(@Senipah)*|0.3594|3.8333|16.6172|>1,000|
 
-Considering the system specification for the test machine (4 MB/sec. when it writes files to an USB), the above times was stunning!: up to 2.15 MB/sec. for reading operations.
+Considering the system specification for the test machine (4 MB/sec. when it writes files to an USB), the above times was stunning!: up to 2.69 MB/sec. for reading operations.
 ## Licence
 Copyright (C) 2020  [W. García](https://github.com/ws-garcia/VBA-CSV-fileManager/).
 
