@@ -15,7 +15,7 @@ Although many solutions has been developed for work with CSV files into VBA, inc
 ### Advantages
 * CSVfileManager can work with like RFC4180 CSV standard (there are few differences).
 * User have the option to import only certain range of records from given CSV file.
-* Writes and reads files at relatively high speed (tested against the available solutions).  
+* Writes and reads files at high speed.
 ## Philosophy
 The VBA CSVfileManager class module is designed for gain advantage from the well structured CSV files, this means, there isn't automatic syntax check, given the user decide how the class will works. This can be seen as a weakness, but the class get a speed-up on writing and reading procedures at time the user controls how the file is interpreted, keeping in mind that, in fact, VBA is a language with slow code execution speed. 
 Under this idealization it's easy to develop a solution that implicity complies with the RFC4180 standart for user specified CSV document format. In order to achieve this, the user must to follow the rules specified below.
@@ -51,9 +51,9 @@ Set CSVmanager = Nothing
 ```
 Set the char to encapsulate, coerce, fields
 ```vbscript
-CSVmanager.CoerceType = NotCoerce
-CSVmanager.CoerceType = Apostrophe
-CSVmanager.CoerceType = DoubleQuotes
+CSVmanager.EscapeChar = NotEscape
+CSVmanager.EscapeChar = Apostrophe
+CSVmanager.EscapeChar = DoubleQuotes
 ```
 Set fields and records delimiters
 ```vbscript
