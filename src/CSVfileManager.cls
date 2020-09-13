@@ -84,13 +84,13 @@ Private Const CHR_SPACE As String = " "
 '#
 '////////////////////////////////////////////////////////////////////////////////////////////
 ' PROPERTIES VARIABLES:
-Private P_COERCE_TYPE As CoerceTypes '-----------Holds the char used for coerce the fields
 Private P_CONNECTED As Boolean '-----------------Holds the connection state
 Private P_CSV_DATA() As String '-----------------Holds the CSV data for current instance
 Private P_ENDING_RECORD As Long '----------------Pointer to the last record to be imported
 Private P_ERROR_DESC As String '-----------------Holds the Error Description
 Private P_ERROR_NUMBER As Long '-----------------Holds the Error number
 Private P_ERROR_SOURCE As String '---------------Holds the Error source
+Private P_ESCAPE_CHAR As EscapeType '------------Holds the char used for escape fields
 Private P_FIELDS_DELIMITER As String '-----------Holds the current delimiter for CSV fields
 Private P_FILENAME As String '-------------------Holds the actual file name
 Private P_RECORDS_DELIMITER As String '----------Holds the records delimiter (CR, LF or CRLF)
@@ -101,9 +101,9 @@ Private P_SUCCESSFUL_IMPORT As Boolean
 '#
 '////////////////////////////////////////////////////////////////////////////////////////////
 ' ENUMERATIONS:
-Public Enum CoerceTypes
+Public Enum EscapeType
     DoubleQuotes = 2
-    NotCoerce = 0
+    NotEscape = 0
     Apostrophe = 1
 End Enum
 '////////////////////////////////////////////////////////////////////////////////////////////
@@ -121,11 +121,11 @@ Private FileHandled As Integer '-------Pointer to the actual CSV file
 '////////////////////////////////////////////////////////////////////////////////////////////
 ' PROPERTIES:
 '#
-Public Property Get CoerceType() As CoerceTypes
-    CoerceType = P_COERCE_TYPE
+Public Property Get EscapeChar() As EscapeType
+    EscapeChar = P_ESCAPE_CHAR
 End Property
-Public Property Let CoerceType(ByVal Coerce As CoerceTypes)
-    P_COERCE_TYPE = Coerce
+Public Property Let EscapeChar(ByVal EscapeChr As EscapeType)
+    P_ESCAPE_CHAR = EscapeChr
 End Property
 Public Property Get Connected() As Boolean
     Connected = P_CONNECTED
@@ -150,7 +150,7 @@ Public Property Let EndingRecord(ByVal RecNumber As Long)
         Case Is >= 1&
             P_ENDING_RECORD = RecNumber - 1
         Case Else
-        P_ENDING_RECORD = 0& 'Set the pointer to the last available record in the CSV file
+        P_ENDING_RECORD = 0&
     End Select
 End Property
 Public Property Get ErrDescription() As String
@@ -224,7 +224,7 @@ Public Property Let StartingRecord(ByVal RecNumber As Long)
         Case Is >= 1&
             P_STARTING_RECORD = RecNumber - 1
         Case Else
-            P_STARTING_RECORD = 0& 'Set the pointer to the first available record in the CSV file
+            P_STARTING_RECORD = 0&
     End Select
 End Property
 '////////////////////////////////////////////////////////////////////////////////////////////
@@ -257,7 +257,6 @@ Private Function CSVcolumns(csvArray() As String, _
 ' CSVArray. The function requires an one dimentional array with all the CSV records on it.
 ' Its returns -1 when an error occurs.
 '////////////////////////////////////////////////////////////////////////////////////////////
-    ' @Compute columns procedure
     Dim iCounter As Long
     Dim LB As Long, UB As Long
     Dim lngPos As Long
@@ -286,7 +285,7 @@ Public Sub ExportToCSV(csvArray As Variant)
 ' DESCRIPTION:
 ' This method export a given VBA array to the location and with the name used in the
 ' OpenConnection method call. In addition, it uses the CHR_COMMA, and the
-' P_COERCE_TYPE that the user's previously defined.
+' P_ESCAPE_CHAR that the user's previously defined.
 '////////////////////////////////////////////////////////////////////////////////////////////
     On Error GoTo ErrHandler_ExportToCSV
     DoEvents
@@ -333,11 +332,9 @@ Public Function ImportFromCSV(Optional HeadersOmission As Boolean = False) As CS
 ' DESCRIPTION:
 ' This method import CSV content to a VBA array. The file to be imported has the name used
 ' in the OpenConnection method call. In addition, it uses the CHR_COMMA, and the
-' P_COERCE_TYPE that the user's previously defined. The optional parameter HeadersOmission
+' P_ESCAPE_CHAR that the user's previously defined. The optional parameter HeadersOmission
 ' allows user avoid importation of fields titles (1st line).
 '////////////////////////////////////////////////////////////////////////////////////////////
-    ' @Import procedure
-    
     On Error GoTo ErrHandler_ImportFromCSV
     DoEvents
     If P_CONNECTED Then
@@ -377,20 +374,19 @@ Private Function JoinRecordsFields(RecordsArray As Variant) As String
 ' DESCRIPTION:
 ' This method returns a string that contains the concatenation of each records on the
 ' RecordsArray variable. All the fields are joined using the especified CHR_COMMA
-' and P_COERCE_TYPE variables.
+' and P_ESCAPE_CHAR variables.
 '#
 ' INPUT:
 '           RecordsArray {A = [|a| |b| |c| : |d| |e| |f|]}
 '#
 ' OUTPUTS:
 ' @comma as Deimiter:
-'       [a[P_COERCE_TYPE],[P_COERCE_TYPE]b[P_COERCE_TYPE],[P_COERCE_TYPE]c [P_RECORDS_DELIMITER]
-'       d[P_COERCE_TYPE],[P_COERCE_TYPE]e[P_COERCE_TYPE],[P_COERCE_TYPE]f]
+'       [a[P_ESCAPE_CHAR],[P_ESCAPE_CHAR]b[P_ESCAPE_CHAR],[P_ESCAPE_CHAR]c [P_RECORDS_DELIMITER]
+'       d[P_ESCAPE_CHAR],[P_ESCAPE_CHAR]e[P_ESCAPE_CHAR],[P_ESCAPE_CHAR]f]
 ' @SemiColom as Deimiter:
-'       [a[P_COERCE_TYPE];[P_COERCE_TYPE]b[P_COERCE_TYPE];[P_COERCE_TYPE]c [P_RECORDS_DELIMITER]
-'       d[P_COERCE_TYPE];[P_COERCE_TYPE]e[P_COERCE_TYPE];[P_COERCE_TYPE]f]
+'       [a[P_ESCAPE_CHAR];[P_ESCAPE_CHAR]b[P_ESCAPE_CHAR];[P_ESCAPE_CHAR]c [P_RECORDS_DELIMITER]
+'       d[P_ESCAPE_CHAR];[P_ESCAPE_CHAR]e[P_ESCAPE_CHAR];[P_ESCAPE_CHAR]f]
 '////////////////////////////////////////////////////////////////////////////////////////////
-    ' @Join records fields proceure
     Dim Buffer() As String
     Dim CoerceChr As String
     Dim ConcatenatedArray() As String
@@ -407,30 +403,30 @@ Private Function JoinRecordsFields(RecordsArray As Variant) As String
         ub2 = UBound(RecordsArray, 2)
         '@----------------------------------------------------------------------------
         'Set Data and coerce Delimiter
-        Select Case P_COERCE_TYPE
-            Case 0 'Fields delimited with P_FIELDS_DELIMITER
+        Select Case P_ESCAPE_CHAR
+            Case 0
                 DataDelimiter = P_FIELDS_DELIMITER
                 CoerceChr = vbNullString
-            Case 1 'Fields delimited with Apostrophe
+            Case 1
                 DataDelimiter = CHR_APOSTROPHE & P_FIELDS_DELIMITER & CHR_APOSTROPHE
                 CoerceChr = CHR_APOSTROPHE
-            Case Else  'Fields delimited with Double Quotes
+            Case Else
                 DataDelimiter = CHR_DOUBLE_QUOTES & P_FIELDS_DELIMITER & CHR_DOUBLE_QUOTES
                 CoerceChr = CHR_DOUBLE_QUOTES
         End Select
         '@----------------------------------------------------------------------------
         'Set the char buffer
         JoinBuffer(0) = CoerceChr
-        JoinBuffer(1) = vbNullString 'Store the value to be coerced here
+        JoinBuffer(1) = vbNullString
         JoinBuffer(2) = CoerceChr
         '@----------------------------------------------------------------------------
         'Set array sizes
-        ReDim ConcatenatedArray(LB1 To UB1) 'Resize the output array
+        ReDim ConcatenatedArray(LB1 To UB1)
         ReDim Buffer(LB2 To ub2)
         '@----------------------------------------------------------------------------
         'Concatenate fields
-        For iLCounter = LB1 To UB1 'Loop trhrought all rows
-            For jLCounter = LB2 To ub2 'Loop trhrought all columns
+        For iLCounter = LB1 To UB1
+            For jLCounter = LB2 To ub2
                 Buffer(jLCounter) = RecordsArray(iLCounter, jLCounter)
             Next jLCounter
             JoinBuffer(1) = Join$(Buffer, DataDelimiter)
@@ -459,7 +455,7 @@ Private Function MultiDimensional(CheckArray As Variant) As Boolean
     On Error GoTo ErrHandler_MultiDimensional
 
     If UBound(CheckArray, 2) > 0 Then
-        MultiDimensional = True 'more than 1 dimension
+        MultiDimensional = True
     End If
     Exit Function
 ErrHandler_MultiDimensional:
@@ -529,7 +525,7 @@ Public Sub ParseCSV(ByRef csvText As String, _
     Dim lRows As Long
     Dim mCounter As Long
     Dim NextPos As Long
-    Dim ParseOption As CoerceTypes
+    Dim ParseOption As EscapeType
     Dim PrevPos As Long
     Dim Pointer As Long
     Dim sSplit() As String
@@ -540,16 +536,16 @@ Public Sub ParseCSV(ByRef csvText As String, _
         Erase P_CSV_DATA
         '@----------------------------------------------------------------------------
         'Set Coerce Type to records and fields
-        Select Case P_COERCE_TYPE
-            Case 0 'Not corce
+        Select Case P_ESCAPE_CHAR
+            Case 0
                 DataDelimiter = P_FIELDS_DELIMITER
                 LinesDelimiter = P_RECORDS_DELIMITER
                 ParseOption = 0
-            Case 1 'Fields delimited with Apostrophe
+            Case 1
                 DataDelimiter = CHR_APOSTROPHE & P_FIELDS_DELIMITER & CHR_APOSTROPHE
                 LinesDelimiter = CHR_APOSTROPHE & P_RECORDS_DELIMITER & CHR_APOSTROPHE
                 ParseOption = 1
-            Case Else  'Fields delimited with Double Quotes
+            Case Else
                 DataDelimiter = CHR_DOUBLE_QUOTES & P_FIELDS_DELIMITER & CHR_DOUBLE_QUOTES
                 LinesDelimiter = CHR_DOUBLE_QUOTES & P_RECORDS_DELIMITER & CHR_DOUBLE_QUOTES
                 ParseOption = 2
@@ -569,9 +565,7 @@ Public Sub ParseCSV(ByRef csvText As String, _
         '@----------------------------------------------------------------------------
         'Ommit the coerce char from the upper and lower elements
         If ParseOption <> 0 Then
-            'First char omission
             csvArray(ArrayLB) = MidB$(csvArray(ArrayLB), 3)
-            'Omit the last last char and VbCrLf if needed
             If RightB$(csvArray(ArrayUB), 4) = vbCrLf Then
                 csvArray(ArrayUB) = MidB$(csvArray(ArrayUB), 1, LenB(csvArray(ArrayUB)) - 6)
             Else
@@ -583,7 +577,7 @@ Public Sub ParseCSV(ByRef csvText As String, _
         Select Case P_STARTING_RECORD
             Case 0&
                 lngLB = ArrayLB
-            Case Is > ArrayUB 'Out of bound
+            Case Is > ArrayUB
                 lngLB = ArrayUB
             Case Else
                 lngLB = P_STARTING_RECORD
@@ -619,9 +613,8 @@ Public Sub ParseCSV(ByRef csvText As String, _
         'Process the data
         Pointer = hPos
         Do While lCounter <= lngUB
-            mCounter = 0 'Column counter
+            mCounter = 0
             PrevPos = 1
-            'Next position of the pointer over the record
             NextPos = CLng(InStrB(PrevPos, csvArray(lCounter), _
                             DataDelimiter))
             Do While NextPos
@@ -645,8 +638,7 @@ ErrHandler_ParseCS:
     Erase P_CSV_DATA
 End Sub
 Public Sub ResetToDefault()
-    'Reset the defaults values
-    P_COERCE_TYPE = 0
+    P_ESCAPE_CHAR = 0
     P_CONNECTED = False
     P_ENDING_RECORD = 0&
     P_ERROR_DESC = vbNullString
