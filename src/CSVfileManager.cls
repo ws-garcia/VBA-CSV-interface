@@ -9,7 +9,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '#
 '////////////////////////////////////////////////////////////////////////////////////////////
-' Copyright © 2020 W. García
+' Copyright Â© 2020 W. GarcÃ­a
 ' GPL-3.0 license | https://github.com/ws-garcia/VBA-CSV-fileManager
 ' https://ingwilfredogarcia.wordpress.com
 '#
@@ -29,8 +29,8 @@ Attribute VB_Exposed = False
 ' This class is inspired in a work available in
 ' https://www.freevbcode.com/ShowCode.asp?ID=3110
 ' The class module was designed and tested using
-' Windows 7® and is supose to work as well over
-' more recent Microsoft™ operative system.
+' Windows 7Â® and is supose to work as well over
+' more recent Microsoftâ„¢ operative system.
 '#
 ' Use CSVfileManager class to simplify the work
 ' with comma separated value (CSV) files. It allow
@@ -259,9 +259,9 @@ Private Function CSVcolumns(csvArray() As String, _
 '////////////////////////////////////////////////////////////////////////////////////////////
     ' @Compute columns procedure
     Dim iCounter As Long
-    Dim LB As Long, UB As Long '-------Arraybounds
+    Dim LB As Long, UB As Long
     Dim lngPos As Long
-    Dim MDCounter As Long '------------Store csvDelimiter matches
+    Dim MDCounter As Long
     Dim NumOfDelimiter As Long
     
     On Error GoTo ErrHandler_CSVcolumns
@@ -269,11 +269,9 @@ Private Function CSVcolumns(csvArray() As String, _
     UB = UBound(csvArray)
     NumOfDelimiter = 0
     MDCounter = 0
-    'lngPos = CLng(InStr(1, csvArray(LB), FieldsDelimiter))
     lngPos = CLng(InStrB(csvArray(LB), FieldsDelimiter))
     Do While lngPos
         MDCounter = MDCounter + 1
-        'lngPos = CLng(InStr(lngPos + 1, csvArray(LB), FieldsDelimiter))
         lngPos = CLng(InStrB(lngPos + 2, csvArray(LB), FieldsDelimiter))
     Loop
     NumOfDelimiter = MDCounter
@@ -294,12 +292,8 @@ Public Sub ExportToCSV(csvArray As Variant)
     DoEvents
     If P_CONNECTED Then
         '@----------------------------------------------------------------------------
-        'Join all the records
-        FileContent = JoinRecordsFields(csvArray)
-        '@----------------------------------------------------------------------------
-        'open the file for binary access
-        'Write the data on the current opened file
-        Put #FileHandled, , FileContent
+        'Join all the records and write the data on the current opened file
+        Put #FileHandled, , JoinRecordsFields(csvArray)
         Call CloseConnection
         '@----------------------------------------------------------------------------
         P_SUCCESSFUL_EXPORT = True
@@ -341,7 +335,6 @@ Public Function ImportFromCSV(Optional HeadersOmission As Boolean = False) As CS
 ' in the OpenConnection method call. In addition, it uses the CHR_COMMA, and the
 ' P_COERCE_TYPE that the user's previously defined. The optional parameter HeadersOmission
 ' allows user avoid importation of fields titles (1st line).
-' The method returns Null when an error occurs.
 '////////////////////////////////////////////////////////////////////////////////////////////
     ' @Import procedure
     
@@ -486,11 +479,8 @@ Public Sub OpenConnection(csvPathAndFilename As String)
         If CLng(InStrB(csvPathAndFilename, ".csv")) = 0 Then
             csvPathAndFilename = csvPathAndFilename & ".csv"
         Else
-            'While (Len(csvPathAndFilename) - _
-                    CLng(InStr(csvPathAndFilename, ".csv"))) > 3
             While (LenB(csvPathAndFilename) - _
                     CLng(InStrB(csvPathAndFilename, ".csv"))) > 7
-                'csvPathAndFilename = Left$(csvPathAndFilename, Len(csvPathAndFilename) - 1)
                 csvPathAndFilename = LeftB$(csvPathAndFilename, LenB(csvPathAndFilename) - 2)
             Wend
         End If
@@ -530,7 +520,7 @@ Public Sub ParseCSV(ByRef csvText As String, _
     Dim ArrayLB As Long
     Dim ArrayUB As Long
     Dim csvArray() As String
-    Dim hPos As Long '-----------------Make the function able to skip the header
+    Dim hPos As Long
     Dim brCounter As Long
     Dim lColumns As Long
     Dim lCounter As Long
@@ -539,9 +529,9 @@ Public Sub ParseCSV(ByRef csvText As String, _
     Dim lRows As Long
     Dim mCounter As Long
     Dim NextPos As Long
-    Dim ParseOption As CoerceTypes '---For distinguish between quotes used on records fields
+    Dim ParseOption As CoerceTypes
     Dim PrevPos As Long
-    Dim Pointer As Long '--------------Point to the current P_CSV_DATA() element
+    Dim Pointer As Long
     Dim sSplit() As String
     Dim tmpDelimiter As String
     
@@ -591,29 +581,29 @@ Public Sub ParseCSV(ByRef csvText As String, _
         '@----------------------------------------------------------------------------
         'Check if user want Import all records
         Select Case P_STARTING_RECORD
-            Case 0& 'The import will starts in the first record
+            Case 0&
                 lngLB = ArrayLB
             Case Is > ArrayUB 'Out of bound
                 lngLB = ArrayUB
-            Case Else 'Start imports on user's defined record
+            Case Else
                 lngLB = P_STARTING_RECORD
         End Select
         Select Case P_ENDING_RECORD
-            Case 0& 'Fit Upper bound
+            Case 0& '
                 lngUB = ArrayUB
-            Case Is < lngLB 'Fit Upper bound
+            Case Is < lngLB
                 lngUB = ArrayUB
-            Case Is = lngLB 'lngUB nedd to be at least lngLB
+            Case Is = lngLB
                 lngUB = lngLB
-            Case Is > ArrayUB 'Fit Upper bound
+            Case Is > ArrayUB
                 lngUB = ArrayUB
             Case Else
                 lngUB = P_ENDING_RECORD
         End Select
         '@----------------------------------------------------------------------------
         'Take care of headers
-        If lngLB = ArrayLB Then  'Only the first record can be omitted
-            If lngUB - lngLB > 0 Then 'Two or more records required
+        If lngLB = ArrayLB Then
+            If lngUB - lngLB > 0 Then
                 If Not HeadersOmission Then
                     hPos = 0
                 Else
@@ -621,13 +611,13 @@ Public Sub ParseCSV(ByRef csvText As String, _
                 End If
             End If
         End If
-        lRows = lngUB - lngLB 'Rows required BASE 0
-        lColumns = CSVcolumns(csvArray, DataDelimiter) - 1 'Columns required BASE 0
+        lRows = lngUB - lngLB
+        lColumns = CSVcolumns(csvArray, DataDelimiter) - 1
         lCounter = lngLB + hPos
-        ReDim P_CSV_DATA(0 To lRows - hPos, 0 To lColumns) 'Resize the output
+        ReDim P_CSV_DATA(0 To lRows - hPos, 0 To lColumns)
         '@----------------------------------------------------------------------------
         'Process the data
-        Pointer = hPos 'Point to the position for save the first record
+        Pointer = hPos
         Do While lCounter <= lngUB
             mCounter = 0 'Column counter
             PrevPos = 1
@@ -641,7 +631,6 @@ Public Sub ParseCSV(ByRef csvText As String, _
                 mCounter = mCounter + 1
                 NextPos = CLng(InStrB(PrevPos, csvArray(lCounter), DataDelimiter))
             Loop
-            'Handle the last field for the record
             P_CSV_DATA(Pointer - hPos, mCounter) = MidB$(csvArray(lCounter), PrevPos)
             lCounter = lCounter + 1
             Pointer = Pointer + 1
