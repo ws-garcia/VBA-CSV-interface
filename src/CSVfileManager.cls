@@ -27,23 +27,17 @@ Attribute VB_Exposed = False
 '////////////////////////////////////////////////////////////////////////////////////////////
 ' GENERAL INFO:
 ' This class is inspired in a work available in
-' https://www.freevbcode.com/ShowCode.asp?ID=3110
-' The class module was designed and tested using
-' Windows 7® and is supose to work as well over
-' more recent Microsoft™ operative system.
+' https://www.freevbcode.com/ShowCode.asp?ID=3110. The class module was designed and tested
+' using Windows 7® and is supose to work as well over more recent Microsoft™ operative
+' system.
 '#
-' Use CSVfileManager class to simplify the work
-' with comma separated value (CSV) files. It allow
-' you to exchange information betwen an VBA array and
-' an external CSV file without using Excel WorkSheets,
-' neigter any external reference such as [MS Scripting
-' Runtime]. The class develop is focusing in the code
-' execution performance. Keep in mind that the arrays
-' returned are zero(0) based.
+' Use CSVfileManager class to simplify the work with comma separated value (CSV) files.
+' It allow you to exchange information betwen an VBA array and an external CSV file without
+' using Excel WorkSheets, neigter any external reference such as [MS Scripting Runtime].
+' The class develop is focusing in the code execution performance.
 '#
-' You are free to visit the cited web pages to explore
-' some of the available solutions for work with CSV file and
-' an VBA Array.
+' Feel free to visit the cited websites to explore some of the available solutions for
+' work with CSV file and an VBA Array.
 '////////////////////////////////////////////////////////////////////////////////////////////
 '#
 '////////////////////////////////////////////////////////////////////////////////////////////
