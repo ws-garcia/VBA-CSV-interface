@@ -1,4 +1,4 @@
-# VBA-CSV file Manager
+# VBA-CSV interface
 [![version](https://img.shields.io/static/v1?label=version&message=v1.0.1&color=brightgreen&style=plastic)](https://github.com/ws-garcia/VBA-CSV-interface/releases/tag/v1.0.1)
 [![version](https://img.shields.io/static/v1?label=licence&message=GPL&color=informational&style=plastic)](https://www.gnu.org/licenses/)
 ## Table of contents
@@ -13,11 +13,11 @@
 The CSV, stands from Comma Separated Values, files are special kind of tabulated plain text data widely used in data exchange. There is no globally accepted standard format for that kind of files, however, out there are well formed standards such as [RFC4180](https://www.ietf.org/rfc/rfc4180.txt) proposed by The Internet Society.
 Although many solutions has been developed for work with CSV files into VBA, including projects from [@sdkn104](https://github.com/sdkn104/VBA-CSV) and [@Senipah](https://github.com/Senipah/VBA-Better-Array) on Github, the vast majority of these have serious performance lacks. This argumentations conduce to the development of a VBA class module that allows users exchange data between VBA arrays and CSV files at relatively high speed.
 ### Advantages
-* CSVfileManager can work with like RFC4180 CSV standard (there are few differences).
+* CSVinterface can work with like RFC4180 CSV standard (there are few differences).
 * User have the option to import only certain range of records from given CSV file.
 * Writes and reads files at high speed.
 ## Philosophy
-The VBA CSVfileManager class module is designed for gain advantage from the well structured CSV files, this means, there isn't automatic syntax check, given the user decide how the class will works. This can be seen as a weakness, but the class get a speed-up on writing and reading procedures at time the user controls how the file is interpreted, keeping in mind that, in fact, VBA is a language with slow code execution speed. 
+The VBA CSVinterface class module is designed for gain advantage from the well structured CSV files, this means, there isn't automatic syntax check, given the user decide how the class will works. This can be seen as a weakness, but the class get a speed-up on writing and reading procedures at time the user controls how the file is interpreted, keeping in mind that, in fact, VBA is a language with slow code execution speed. 
 Under this idealization it's easy to develop a solution that implicity complies with the RFC4180 standart for user specified CSV document format. In order to achieve this, the user must to follow the rules specified below.
 ## Rules
 1. Each record is located on a separate line, delimited by a line break (CRLF, CR, LF).
@@ -29,36 +29,36 @@ Under this idealization it's easy to develop a solution that implicity complies 
 ## Usage
 Import whole CSV file into an VBA array
 ```vbscript
-Dim CSVmanager As CSVfileManager
+Dim CSVix As CSVinterface
 Dim MyArray As variant
-Set CSVmanager = New CSVfileManager
-Call CSVmanager.OpenConnection(fileName)
-Call CSVmanager.ImportFromCSV
-MyArray  = CSVmanager .CSVdata
-Set CSVmanager = Nothing
+Set CSVix = New CSVinterface
+Call CSVix.OpenConnection(fileName)
+Call CSVix.ImportFromCSV
+MyArray  = CSVix .CSVdata
+Set CSVix = Nothing
 ```
 Import a range of records from CSV file into a VBA array
 ```vbscript
-Dim CSVmanager As CSVfileManager
+Dim CSVix As CSVinterface
 Dim MyArray As variant
-Set CSVmanager = New CSVfileManager
-CSVmanager.StartingRecord = 10
-CSVmanager.EndingRecord = 20
-Call CSVmanager.OpenConnection(fileName)
-Call CSVmanager.ImportFromCSV
-MyArray  = CSVmanager .CSVdata
-Set CSVmanager = Nothing
+Set CSVix = New CSVinterface
+CSVix.StartingRecord = 10
+CSVix.EndingRecord = 20
+Call CSVix.OpenConnection(fileName)
+Call CSVix.ImportFromCSV
+MyArray  = CSVix .CSVdata
+Set CSVix = Nothing
 ```
 Set the char to encapsulate, coerce, fields
 ```vbscript
-CSVmanager.EscapeChar = NotEscape
-CSVmanager.EscapeChar = Apostrophe
-CSVmanager.EscapeChar = DoubleQuotes
+CSVix.EscapeChar = NullChar
+CSVix.EscapeChar = Apostrophe
+CSVix.EscapeChar = DoubleQuotes
 ```
 Set fields and records delimiters
 ```vbscript
-CSVmanager.FieldsDelimiter = ";"
-CSVmanager.RecordsDelimiter = vbCrLf
+CSVix.FieldsDelimiter = ";"
+CSVix.RecordsDelimiter = vbCrLf
 ```
 ## Benchmark
 The class was tested against many solutions using the oldest, lowest-processing capacity laptop I could find: Win 7 Starter 32-bit, Intel® Atom™ CPU N2600 @1.60 GHz, 1 GB RAM. 
@@ -72,7 +72,7 @@ The times showed, seconds, in the bellow table are the average of ten (10) calls
 |*ArrayFromCSV (Heffernan)*|0.2396|1.7839|2.2057|22.385|
 |*FromCSV(@Senipah)*|0.3594|3.8333|16.6172|>1,000|
 
-Considering the system specification for the test machine (4 MB/sec. when it writes files to an USB), the above times was stunning!: up to 2.69 MB/sec. for reading operations.
+Considering the system specification for the test machine (4 MB/sec. when it writes files to an USB), the above times was stunning!: up to 2.75 MB/sec. for reading operations.
 ## Licence
 Copyright (C) 2020  [W. García](https://github.com/ws-garcia/VBA-CSV-interface/).
 
