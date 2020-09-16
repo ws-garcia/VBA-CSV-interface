@@ -1,14 +1,14 @@
 # VBA-CSV file Manager
-[![version](https://img.shields.io/static/v1?label=version&message=v1.0.0&color=brightgreen&style=plastic)](https://github.com/ws-garcia/VBA-CSV-fileManager/releases/tag/v1.0.0)
+[![version](https://img.shields.io/static/v1?label=version&message=v1.0.1&color=brightgreen&style=plastic)](https://github.com/ws-garcia/VBA-CSV-interface/releases/tag/v1.0.1)
 [![version](https://img.shields.io/static/v1?label=licence&message=GPL&color=informational&style=plastic)](https://www.gnu.org/licenses/)
 ## Table of contents
-* [Intro](https://github.com/ws-garcia/VBA-CSV-fileManager/blob/master/README.md#intro)
-* [Advantages](https://github.com/ws-garcia/VBA-CSV-fileManager/blob/master/README.md#advantages)
-* [Philosophy](https://github.com/ws-garcia/VBA-CSV-fileManager/blob/master/README.md#philosophy)
-* [Rules](https://github.com/ws-garcia/VBA-CSV-fileManager/blob/master/README.md#rules)
-* [Usage](https://github.com/ws-garcia/VBA-CSV-fileManager/blob/master/README.md#usage)
-* [Benchmark](https://github.com/ws-garcia/VBA-CSV-fileManager/blob/master/README.md#benchmark)
-* [Licence](https://github.com/ws-garcia/VBA-CSV-fileManager/blob/master/README.md#licence) 
+* [Intro](https://github.com/ws-garcia/VBA-CSV-interface/blob/master/README.md#intro)
+* [Advantages](https://github.com/ws-garcia/VBA-CSV-interface/blob/master/README.md#advantages)
+* [Philosophy](https://github.com/ws-garcia/VBA-CSV-interface/blob/master/README.md#philosophy)
+* [Rules](https://github.com/ws-garcia/VBA-CSV-interface/blob/master/README.md#rules)
+* [Usage](https://github.com/ws-garcia/VBA-CSV-interface/blob/master/README.md#usage)
+* [Benchmark](https://github.com/ws-garcia/VBA-CSV-interface/blob/master/README.md#benchmark)
+* [Licence](https://github.com/ws-garcia/VBA-CSV-interface/blob/master/README.md#licence) 
 ## Intro
 The CSV, stands from Comma Separated Values, files are special kind of tabulated plain text data widely used in data exchange. There is no globally accepted standard format for that kind of files, however, out there are well formed standards such as [RFC4180](https://www.ietf.org/rfc/rfc4180.txt) proposed by The Internet Society.
 Although many solutions has been developed for work with CSV files into VBA, including projects from [@sdkn104](https://github.com/sdkn104/VBA-CSV) and [@Senipah](https://github.com/Senipah/VBA-Better-Array) on Github, the vast majority of these have serious performance lacks. This argumentations conduce to the development of a VBA class module that allows users exchange data between VBA arrays and CSV files at relatively high speed.
@@ -66,7 +66,7 @@ The times showed, seconds, in the bellow table are the average of ten (10) calls
 
 |*Procedure (Author)*|*1K rec (102 KB)*|*5K rec (511 KB)*|*10K rec (0.99 MB)*|*100K rec (9.95 MB)*|
 |:--------------------------|-----------------:|----------------:|----------------:|-----------------:|
-|*ImportFromCSV (W. García)*|_0.0375_|_0.1945_|_0.3805_|_3.7344_|
+|*ImportFromCSV (W. García)*|_0.0352_|_0.1930_|_0.3688_|_3.6172_|
 |*ParseCSVToArray/ADO (@sdkn104)*|1.4349|47.3177|202.82|>1,000|
 |*ImportCSVinArray (Wester)*|0.1042|0.6484|1.0182|10.250|
 |*ArrayFromCSV (Heffernan)*|0.2396|1.7839|2.2057|22.385|
@@ -74,7 +74,7 @@ The times showed, seconds, in the bellow table are the average of ten (10) calls
 
 Considering the system specification for the test machine (4 MB/sec. when it writes files to an USB), the above times was stunning!: up to 2.69 MB/sec. for reading operations.
 ## Licence
-Copyright (C) 2020  [W. García](https://github.com/ws-garcia/VBA-CSV-fileManager/).
+Copyright (C) 2020  [W. García](https://github.com/ws-garcia/VBA-CSV-interface/).
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
