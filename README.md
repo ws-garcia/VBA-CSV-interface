@@ -23,7 +23,7 @@ Under this idealization it's easy to develop a solution that implicity complies 
 1. Each record is located on a separate line, delimited by a line break (CRLF, CR, LF).
 2. The last record in the file may or may not have an ending line break.
 3. There maybe an optional header line appearing as the first line of the file with the same format as normal record lines.  This header will contain names corresponding to the fields in the file and should contain the same number of fields as the records in the rest of the file.
-4. Within the header and each record, there may be one or more fields, separated by the fields separator (Comma, Semicolon, Space, Tab).  Each line should contain the same number of fields throughout the file.  **_Avoid let spaces betwen fields and records separators_**.  The last field in the record must not be followed by a fields separator.
+4. Within the header and each record, there may be one or more fields, separated by the fields separator (Comma, Semicolon, Space, Tab).  Each line should contain the same number of fields throughout the file.  **_Use the RemoveSpaces method to avoid let spaces betwen fields and records separators_**.  The last field in the record must not be followed by a fields separator.
 5. Each field may or may not be enclosed in the selected Coerce char. **_The user can choose between enclose, coerce, every fields or neither one_**.
 6. Fields containing special chars (line breaks, double quotes, apostrophe, and commas) should be enclosed with selected Coerce char.
 ## Usage
