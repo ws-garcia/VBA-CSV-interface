@@ -78,7 +78,9 @@ The times showed, seconds, in the bellow table are the average of ten (10) calls
 
 Considering the system specification for the test machine (4 MB/sec. when it writes files to an USB), the above times was stunning!: up to 2.75 MB/sec. for reading operations.
 The image below show the performance of the VBA CSV interface class on a mid updated laptop.
+
 ![BenchMark](Benchmark.png)
+
 ## Licence
 Copyright (C) 2020  [W. García](https://github.com/ws-garcia/VBA-CSV-interface/).
 
