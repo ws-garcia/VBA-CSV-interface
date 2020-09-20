@@ -326,14 +326,14 @@ End Sub
 Public Function GetDataFromCSV(csvPathAndFilename As String) As String
 '////////////////////////////////////////////////////////////////////////////////////////////
 ' DESCRIPTION:
-' This method read CSV content and pass it to OutPutVar variable. This is not elegant but,
-' the purpose is the avoid execution speed losses. To use this method, first, you need to
-' open a connection ussing the OpenConnection method, to point to the CSV file.
+' This method read CSV content and returns a string variable.  To use this method, you need
+' to specify a path to point to the CSV file.
 '////////////////////////////////////////////////////////////////////////////////////////////
     Dim tmpStr As String
     
     On Error Resume Next
-    tmpStr = Space$(LOF(FileHandled))
+    Call OpenConnection(csvPathAndFilename)
+    tmpStr = Space$(FileLen(csvPathAndFilename))
     Get #FileHandled, , tmpStr
     GetDataFromCSV = tmpStr
     Call CloseConnection
@@ -672,15 +672,21 @@ Public Function RemoveSpaces(ByRef CSVrecords As String) As String
     With RegEx
         '@----------------------------------------------------------------------------
         'Remove spaces from fields
-        strPattern = EscapeChar & "\s*" & P_FIELDS_DELIMITER & "\s*" & EscapeChar
+        strPattern = EscapeChar & "\s*" & P_FIELDS_DELIMITER
         .Pattern = strPattern
         .Global = True
-        tmpStr = .Replace(CSVrecords, EscapeChar & P_FIELDS_DELIMITER & EscapeChar)
+        tmpStr = .Replace(CSVrecords, EscapeChar & P_FIELDS_DELIMITER)
+        strPattern = P_FIELDS_DELIMITER & "\s*" & EscapeChar
+        .Pattern = strPattern
+        tmpStr = .Replace(tmpStr, P_FIELDS_DELIMITER & EscapeChar)
         '@----------------------------------------------------------------------------
         'Remove spaces from records
-        strPattern = EscapeChar & "\s*" & P_RECORDS_DELIMITER & "\s*" & EscapeChar
+        strPattern = EscapeChar & "\s*" & P_RECORDS_DELIMITER
         .Pattern = strPattern
-        RemoveSpaces = .Replace(tmpStr, EscapeChar & P_RECORDS_DELIMITER & EscapeChar)
+        tmpStr = .Replace(tmpStr, EscapeChar & P_RECORDS_DELIMITER)
+        strPattern = P_RECORDS_DELIMITER & "\s*" & EscapeChar
+        .Pattern = strPattern
+        RemoveSpaces = .Replace(tmpStr, P_RECORDS_DELIMITER & EscapeChar)
     End With
 End Function
 Public Sub ResetToDefault()
