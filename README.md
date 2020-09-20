@@ -7,6 +7,7 @@
 * [Philosophy](https://github.com/ws-garcia/VBA-CSV-interface/blob/master/README.md#philosophy)
 * [Rules](https://github.com/ws-garcia/VBA-CSV-interface/blob/master/README.md#rules)
 * [Usage](https://github.com/ws-garcia/VBA-CSV-interface/blob/master/README.md#usage)
+* [Limitations](https://github.com/ws-garcia/VBA-CSV-interface/blob/master/README.md#Limitations)
 * [Benchmark](https://github.com/ws-garcia/VBA-CSV-interface/blob/master/README.md#benchmark)
 * [Licence](https://github.com/ws-garcia/VBA-CSV-interface/blob/master/README.md#licence) 
 ## Intro
@@ -64,6 +65,8 @@ Set fields and records delimiters
 CSVix.FieldsDelimiter = ";"
 CSVix.RecordsDelimiter = vbCrLf
 ```
+### Limitations
+* __Line breaks support__: the class only allow line breaks adding the escape char to all the records's fields over the whole file lengt. This is a intentionally limitation to ensure the speed over processing the data. Keep in mind that the class doesn't distinguist between number, dates and strings, all data is readed as text and you can put in an excel sheet to let Microsoft software format it.
 ## Benchmark
 The class was tested against many solutions using the oldest, lowest-processing capacity laptop I could find: Win 7 Starter 32-bit, Intel® Atom™ CPU N2600 @1.60 GHz, 1 GB RAM. 
 The times showed, seconds, in the bellow table are the average of ten (10) calls to the import procedure (supposed most costly to the CPU). The files used in the test haven twelve fields with variable number of records. 
