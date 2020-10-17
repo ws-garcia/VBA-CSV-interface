@@ -1,4 +1,5 @@
 ---
+layout: default
 title: Installation
 parent: Home
 nav_order: 2

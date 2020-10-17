@@ -1,4 +1,5 @@
 ---
+layout: default
 title: Getting Started
 parent: Home
 nav_order: 1
@@ -11,7 +12,7 @@ description: "Introduction to the VBA CSV interface class."
 In order to be able to use `CSVinterface.cls` within your project, please review the installation instructions.
 {: .fs-6 .fw-300 }
 
-[Install it](https://ws-garcia.github.io/VBA-CSV-interface/home/installation.html){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+[Install it](https://ws-garcia.github.io/VBA-CSV-interface/home/installation.html) {: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 
 ---
 
