@@ -13,7 +13,6 @@ In order to be able to use `CSVinterface.cls` within your project, please review
 {: .fs-6 .fw-300 }
 
 [Install it](https://ws-garcia.github.io/VBA-CSV-interface/home/installation.html){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
-
 ---
 
 ## Usage
