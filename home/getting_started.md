@@ -12,7 +12,7 @@ description: "Introduction to the VBA CSV interface class."
 In order to be able to use `CSVinterface.cls` within your project, please review the installation instructions.
 {: .fs-6 .fw-300 }
 
-[Install it](https://ws-garcia.github.io/VBA-CSV-interface/home/installation.html) {: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+[Install it](https://ws-garcia.github.io/VBA-CSV-interface/home/installation.html){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 
 ---
 
@@ -70,7 +70,7 @@ The test consists on a fixed number of calls to the import method over three (3)
 * RFC-4180_HalfQ.csv: Quote Half of the fields (6 fields)
 * RFC-4180_AllQ.csv: Quote All twelve (12) fields 
 
-__NOTE: Some projects was excluded from the benchmark due they does not complies with the RFC4180 standard__. {: .fs-3 .fw-300 }
+__NOTE: Some projects was excluded from the benchmark due they does not complies with the RFC4180 standard__.{: .fs-3 .fw-300 }
 
 |*Procedure (Author)*|*RFC-4180_QHO.csv*|*RFC-4180_HalfQ.csv*|*RFC-4180_AllQ.csv*|
 |:--------------------------|-----------------:|----------------:|----------------:|
