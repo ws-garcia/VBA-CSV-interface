@@ -79,6 +79,8 @@ __NOTE: Some projects was excluded from the benchmark due they does not complies
 
 However, when setting `QuotingMode = QuotationMode.All` the class performance gets a little improve. The image below shows the performance of the VBA CSVinterface class after change the `QuotingMode` property. Take over your considerations that no all CSV files can be successful imported using the previous tweaking.
 
+![](https://github.com/ws-garcia/VBA-CSV-interface/blob/master/Benchmark.png)
+
 ## Licence
 Copyright (C) 2020  [W. García](https://github.com/ws-garcia/VBA-CSV-interface/).
 
