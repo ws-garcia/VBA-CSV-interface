@@ -3,7 +3,6 @@ layout: default
 title: Home
 nav_order: 1
 description: "VBA CSV interface is a class module that allows users exchange data between VBA arrays and CSV files at high speed. ."
-permalink: /
 ---
 
 # Introductory things
