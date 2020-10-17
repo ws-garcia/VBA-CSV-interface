@@ -1,37 +1,32 @@
-## Welcome to GitHub Pages
+---
+layout: default
+title: Home
+nav_order: 1
+description: "VBA CSV interface is a class module that allows users exchange data between VBA arrays and CSV files at high speed. ."
+permalink: /
+---
 
-You can use the [editor on GitHub](https://github.com/ws-garcia/VBA-CSV-fileManager/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+# Introductory things
+{: .fs-9 }
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+VBA CSV interface simplify the work with Comma Separated Value (CSV) files, allowing you to exchange information betwen an VBA array and an external CSV file without using Excel WorkSheets, neigter any external reference such as `MS Scripting Runtime`.
+{: .fs-6 .fw-300 }
 
-### Markdown
+The CSV files are special kind of tabulated plain text data widely used in data exchange. There is no globally accepted standard format for that kind of files, however, out there are well formed standards such as [RFC4180](https://www.ietf.org/rfc/rfc4180.txt) proposed by The Internet Society.
+Although many solutions has been developed for work with CSV files into VBA, including projects from [@sdkn104](https://github.com/sdkn104/VBA-CSV) and [@Senipah](https://github.com/Senipah/VBA-Better-Array) on Github, the performance philosophy conduce me to the development of a VBA class module that allows users exchange data between VBA arrays and CSV files at superior speed for the VBA programing language.
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+[Download now](https://github.com/ws-garcia/VBA-CSV-interface/releases/tag/v1.0.1){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 } [View it on GitHub](https://github.com/ws-garcia/VBA-CSV-interface){: .btn .fs-5 .mb-4 .mb-md-0 }
 
-```markdown
-Syntax highlighted code block
+---
 
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/ws-garcia/VBA-CSV-fileManager/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+### Advantages
+* Fully compliant with RFC4180 CSV standard.
+* Exported data is 100% Excel spreadsheet compatible.
+* Writes and reads files at high speed.
+* Minimal Memory overload.
+* User have the option to import only certain range of records from given CSV file.
+* Auto exclude any quote mark when data is imported.
+* Simple code logic that allows you easy modify and enhance it!
+## Philosophy
+The VBA CSVinterface class module is designed for gain advantage from the well structured CSV files, this means, there isn't automatic syntax check, given the user decide how the class will works. This can be seen as a weakness, but the class get a speed-up on writing and reading procedures at time the user controls how the file is interpreted, keeping in mind that, in fact, VBA is a language with slow code execution speed. 
+Under this idealization it's easy to develop a solution that implicity complies with the RFC4180 standart for user specified CSV document format. In order to achieve this, the user must to follow the rules specified below.
