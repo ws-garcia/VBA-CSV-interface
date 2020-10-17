@@ -27,6 +27,7 @@ Although many solutions has been developed for work with CSV files into VBA, inc
 * User have the option to import only certain range of records from given CSV file.
 * Auto exclude any quote mark when data is imported.
 * Simple code logic that allows you easy modify and enhance it!
+
 ## Philosophy
 The VBA CSVinterface class module is designed for gain advantage from the well structured CSV files, this means, there isn't automatic syntax check, given the user decide how the class will works. This can be seen as a weakness, but the class get a speed-up on writing and reading procedures at time the user controls how the file is interpreted, keeping in mind that, in fact, VBA is a language with slow code execution speed. 
 Under this idealization it's easy to develop a solution that implicity complies with the RFC4180 standart for user specified CSV document format. In order to achieve this, the user must to follow the rules specified below.
