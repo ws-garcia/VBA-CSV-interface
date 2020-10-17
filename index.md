@@ -9,7 +9,7 @@ permalink: /
 # Introductory things
 {: .fs-9 }
 
-VBA CSV interface simplify the work with Comma Separated Value (CSV) files, allowing you to exchange information betwen an VBA array and an external CSV file without using Excel WorkSheets, neigter any external reference such as `MS Scripting Runtime`.
+VBA CSV interface simplify the work with Comma Separated Value (CSV) files, allowing you to exchange information betwen an VBA array and an external CSV file without using Excel WorkSheets, neigter any external reference such as MS Scripting Runtime.
 {: .fs-6 .fw-300 }
 
 [Download now](https://github.com/ws-garcia/VBA-CSV-interface/releases/tag/v1.0.1){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 } [View it on GitHub](https://github.com/ws-garcia/VBA-CSV-interface){: .btn .fs-5 .mb-4 .mb-md-0 }
