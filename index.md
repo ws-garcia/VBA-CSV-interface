@@ -19,7 +19,7 @@ VBA CSV interface simplify the work with Comma Separated Value (CSV) files, allo
 The CSV files are special kind of tabulated plain text data widely used in data exchange. There is no globally accepted standard format for that kind of files, however, out there are well formed standards such as [RFC4180](https://www.ietf.org/rfc/rfc4180.txt) proposed by The Internet Society.
 Although many solutions has been developed for work with CSV files into VBA, including projects from [@sdkn104](https://github.com/sdkn104/VBA-CSV) and [@Senipah](https://github.com/Senipah/VBA-Better-Array) on Github, the performance philosophy conduce me to the development of a VBA class module that allows users exchange data between VBA arrays and CSV files at superior speed for the VBA programing language.
 
-### Advantages
+## Advantages
 * Fully compliant with RFC4180 CSV standard.
 * Exported data is 100% Excel spreadsheet compatible.
 * Writes and reads files at high speed.
@@ -29,5 +29,7 @@ Although many solutions has been developed for work with CSV files into VBA, inc
 * Simple code logic that allows you easy modify and enhance it!
 
 ## Philosophy
-The VBA CSVinterface class module is designed for gain advantage from the well structured CSV files, this means, there isn't automatic syntax check, given the user decide how the class will works. This can be seen as a weakness, but the class get a speed-up on writing and reading procedures at time the user controls how the file is interpreted, keeping in mind that, in fact, VBA is a language with slow code execution speed. 
-Under this idealization it's easy to develop a solution that implicity complies with the RFC4180 standart for user specified CSV document format. In order to achieve this, the user must to follow the rules specified below.
+The VBA CSVinterface class module is designed for gain advantage from the well structured CSV files, this means, there isn't automatic syntax check, given the user decide how the class will works. This can be seen as a weakness, but the class get a speed-up on writing and reading procedures at time the user controls how the file is interpreted, keeping in mind that, in fact, VBA is a language with slow code execution speed. Under this idealization the developed solution complies with the RFC4180 standard for user specified CSV document format.
+
+Keep in mind that class intentionally ignores the rule #7 of the RFC4180 standard [If double-quotes are used to enclose fields, then a double-quote appearing inside a field must be escaped by preceding it with another double quote], letting the users the chance to define the apostrophe as escape char.
+{: .fs-3 .fw-300 }
