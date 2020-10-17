@@ -32,4 +32,4 @@ Although many solutions has been developed for work with CSV files into VBA, inc
 The VBA CSVinterface class module is designed for gain advantage from the well structured CSV files, this means, there isn't automatic syntax check, given the user decide how the class will works. This can be seen as a weakness, but the class get a speed-up on writing and reading procedures at time the user controls how the file is interpreted, keeping in mind that, in fact, VBA is a language with slow code execution speed. Under this idealization the developed solution complies with the RFC4180 standard for user specified CSV document format.
 
 Keep in mind that class intentionally ignores the rule #7 of the RFC4180 standard [If double-quotes are used to enclose fields, then a double-quote appearing inside a field must be escaped by preceding it with another double quote], letting the users the chance to define the apostrophe as escape char.
-{: .fs-3 .fw-300 }
+{: .fs-4 .fw-300 }
