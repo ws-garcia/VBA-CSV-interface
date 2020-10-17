@@ -64,7 +64,7 @@ ENC = CSVix.FileEncoding
 * __Data Format__: Keep in mind that the class doesn't distinguish between number, dates and strings, all data is read as text and you can put in an Excel sheet to let Microsoft software format it.
 
 ## Benchmark
-The class was tested against two solutions (the one from [@Senipah](https://github.com/Senipah/VBA-Better-Array) and the other from [@sdkn104](https://github.com/sdkn104/VBA-CSV)) using a laptop running Win 10 Pro 64-bit, Intel® Core™ i7-4500U CPU @1.80-2.40 GHz, 8 GB RAM. 
+The class was tested against two solutions (the one from [@Senipah](https://github.com/Senipah/VBA-Better-Array) and the other from [@sdkn104](https://github.com/sdkn104/VBA-CSV)) using a laptop running Win 10 Pro 64-bit, IntelÂ® Coreâ„¢ i7-4500U CPU @1.80-2.40 GHz, 8 GB RAM. 
 The test consists on a fixed number of calls to the import method over three (3) different files, each of this with three records (3) and four fields (4), for an overall work load of twelve (12) fields per call:
 * RFC-4180_QHO.csv: Quote Headers Only (4 fields)
 * RFC-4180_HalfQ.csv: Quote Half of the fields (6 fields)
@@ -74,16 +74,16 @@ __NOTE: Some projects was excluded from the benchmark due they does not complies
 
 |*Procedure (Author)*|*RFC-4180_QHO.csv*|*RFC-4180_HalfQ.csv*|*RFC-4180_AllQ.csv*|
 |:--------------------------|-----------------:|----------------:|----------------:|
-|*ImportFromCSV (W. García)*|_N/A_|_N/A_|_N/A_|
+|*ImportFromCSV (W. GarcÃ­a)*|_N/A_|_N/A_|_N/A_|
 |*FromCSV(@Senipah)*|N/A|N/A|N/A|
 |*ParseCSVToArray/ADO (@sdkn104)*|N/A|N/A|N/A|
 
 However, when setting `QuotingMode = QuotationMode.All` the class performance gets a little improve. The image below shows the performance of the VBA CSVinterface class after change the `QuotingMode` property. Take over your considerations that no all CSV files can be successful imported using the previous tweaking.
 
-![](https://github.com/ws-garcia/VBA-CSV-interface/blob/master/Benchmark.png)
+![](https://github.com/ws-garcia/VBA-CSV-interface/master/Benchmark.png)
 
 ## Licence
-Copyright (C) 2020  [W. García](https://github.com/ws-garcia/VBA-CSV-interface/).
+Copyright (C) 2020  [W. GarcÃ­a](https://github.com/ws-garcia/VBA-CSV-interface/).
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
