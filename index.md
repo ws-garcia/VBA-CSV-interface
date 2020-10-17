@@ -12,12 +12,12 @@ permalink: /
 VBA CSV interface simplify the work with Comma Separated Value (CSV) files, allowing you to exchange information betwen an VBA array and an external CSV file without using Excel WorkSheets, neigter any external reference such as `MS Scripting Runtime`.
 {: .fs-6 .fw-300 }
 
-The CSV files are special kind of tabulated plain text data widely used in data exchange. There is no globally accepted standard format for that kind of files, however, out there are well formed standards such as [RFC4180](https://www.ietf.org/rfc/rfc4180.txt) proposed by The Internet Society.
-Although many solutions has been developed for work with CSV files into VBA, including projects from [@sdkn104](https://github.com/sdkn104/VBA-CSV) and [@Senipah](https://github.com/Senipah/VBA-Better-Array) on Github, the performance philosophy conduce me to the development of a VBA class module that allows users exchange data between VBA arrays and CSV files at superior speed for the VBA programing language.
-
 [Download now](https://github.com/ws-garcia/VBA-CSV-interface/releases/tag/v1.0.1){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 } [View it on GitHub](https://github.com/ws-garcia/VBA-CSV-interface){: .btn .fs-5 .mb-4 .mb-md-0 }
 
 ---
+
+The CSV files are special kind of tabulated plain text data widely used in data exchange. There is no globally accepted standard format for that kind of files, however, out there are well formed standards such as [RFC4180](https://www.ietf.org/rfc/rfc4180.txt) proposed by The Internet Society.
+Although many solutions has been developed for work with CSV files into VBA, including projects from [@sdkn104](https://github.com/sdkn104/VBA-CSV) and [@Senipah](https://github.com/Senipah/VBA-Better-Array) on Github, the performance philosophy conduce me to the development of a VBA class module that allows users exchange data between VBA arrays and CSV files at superior speed for the VBA programing language.
 
 ### Advantages
 * Fully compliant with RFC4180 CSV standard.
