@@ -25,7 +25,7 @@ Type: `Long`{: .fs-4 .fw-300 }
 
 ## Remarks
 Use the `EndingRecord` property in combination with the `StartingRecord` property for import a certain range of records from a desired CSV file.
-[StartingRecord property overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/StartingRecord.html)
+[StartingRecord property overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/startingrecord.html)
 
 ## Behavior
 * The default value for the `EndingRecord` property is one(1) and force the class to import all the records from de CSV file starting at `StartingRecord` property.
