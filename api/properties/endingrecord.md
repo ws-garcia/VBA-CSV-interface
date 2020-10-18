@@ -10,6 +10,8 @@ grand_parent: API
 Determines the record over which the import process will ends.
 {: .fs-4 .fw-300 }
 
+---
+
 ## Parts
 ReadWrite: **Yes**{: .fs-4 .fw-300 }
 
@@ -27,7 +29,7 @@ ReadWrite: **Yes**{: .fs-4 .fw-300 }
 |Accesor|Parameters|
 |:----------|:----------|
 |Get|**None**|
-|Let|<table><thead></thead><tbody><tr><td>**Name**</td><td>**Type**</td><td>**Modifiers**</td></tr><tr><td>*RecNumber*</td><td>*	Long*</td><td>*ByVal*</td></tr></tbody></table>|
+|Let|<table><thead></thead><tbody><tr><td>Name</td><td>Type</td><td>Modifiers</td></tr><tr><td>RecNumber</td><td>`Long`</td><td>ByVal</td></tr></tbody></table>|
 
 {: .fs-4 .fw-300 }
 
