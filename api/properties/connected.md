@@ -24,6 +24,6 @@ ReadWrite: **ReadOnly**{: .fs-4 .fw-300 }
 Type: `Boolean`{: .fs-4 .fw-300 }
 
 ## Remarks
-A `False` value from `Connected` property indicates the CSV file is not open in memory.
+A `False` value from `Connected` property indicates the CSV file is not open in memory.{: .fs-4 .fw-300 }
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)
