@@ -14,15 +14,25 @@ Determines the record over which the import process will starts.
 ReadWrite: **Yes**{: .fs-4 .fw-300 }
 
 ## Syntax
-*expression*.**StartingRecord**{: .fs-4 .fw-300 }
+|Accesor|Syntax|
+|:----------|:----------|
+|Get|*expression*.**StartingRecord**|
+|Let|*expression*.**StartingRecord** = value|
+{: .fs-4 .fw-300 }
 
 ### Parameters
-
-**None**{: .fs-4 .fw-300 }
+|Accesor|Parameters|
+|:----------|:----------|
+|Get|**None**|
+|Let|<table border="1" style="text-align: left"><thead></thead><tbody><tr><td>**Name**</td><td>**Type**</td><td>**Modifiers**</td></tr><tr><td>*RecNumber*</td><td>*	Long*</td><td>*ByVal*</td></tr></tbody></table>|
+{: .fs-4 .fw-300 }
 
 ### Returns
-
-Type: `Long`{: .fs-4 .fw-300 }
+|Accesor|Returns Type|
+|:----------|:----------|
+|Get|`Long`|
+|Let|**None**|
+{: .fs-4 .fw-300 }
 
 ## Remarks
 Use the `StartingRecord` property in combination with the `EndingRecord` property for import a certain range of records from a desired CSV file.
