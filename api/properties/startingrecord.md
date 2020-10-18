@@ -7,7 +7,7 @@ grand_parent: API
 # Importation starting record
 
 ## Description
-Determines  the record over which the import process will starts.
+Determines the record over which the import process will starts.
 {: .fs-4 .fw-300 }
 
 ## Parts
