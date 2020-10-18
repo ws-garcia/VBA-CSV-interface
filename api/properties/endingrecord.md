@@ -23,10 +23,12 @@ ReadWrite: **Yes**{: .fs-4 .fw-300 }
 {: .fs-4 .fw-300 }
 
 ### Parameters
+
 |Accesor|Parameters|
 |:----------|:----------|
 |Get|**None**|
 |Let|<table border="1" style="text-align: left"><thead></thead><tbody><tr><td>**Name**</td><td>**Type**</td><td>**Modifiers**</td></tr><tr><td>*RecNumber*</td><td>*	Long*</td><td>*ByVal*</td></tr></tbody></table>|
+
 {: .fs-4 .fw-300 }
 
 ### Returns

@@ -103,6 +103,8 @@ However, when setting `QuotingMode = QuotationMode.All` the class performance ge
 
 ![BenchMark](Benchmark.png)
 
+{: .fs-4 .fw-300 }
+
 ## Licence
 Copyright (C) 2020  [W. García](https://github.com/ws-garcia/VBA-CSV-interface/).
 
