@@ -37,8 +37,7 @@ Although many solutions has been developed for work with CSV files into VBA, inc
 ## Philosophy
 The VBA CSVinterface class module is designed for gain advantage from the well-structured CSV files, this means, there isn't automatic syntax check, given the user decide how the class will works. This can be seen as a weakness, but the class get a speed-up on writing and reading procedures at time the user controls how the file is interpreted, keeping in mind that, in fact, VBA is a language with slow code execution speed. Under this idealization the developed solution complies with the RFC4180 standard for user specified CSV document format.
 
-Keep in mind that class intentionally ignores the rule #7 of the RFC4180 standard [If double-quotes are used to enclose fields, then a double-quote appearing inside a field must be escaped by preceding it with another double quote], letting the users the chance to define the apostrophe as escape char.
-{: .fs-4 .fw-300 }
+_Keep in mind that class intentionally ignores the rule #7 of the RFC4180 standard: (If double-quotes are used to enclose fields, then a double-quote appearing inside a field must be escaped by preceding it with another double quote), letting the users the chance to define the apostrophe as escape char._
 
 ## Usage
 Import whole CSV file into an VBA array
@@ -104,7 +103,7 @@ __NOTE: Some projects was excluded from the benchmark due they does not complies
 
 However, when setting `QuotingMode = QuotationMode.All` the class performance gets a little improve. The image below shows the performance of the VBA CSVinterface class after change the `QuotingMode` property. Take over your considerations that no all CSV files can be successful imported using the previous tweaking.
 
-![](https://github.com/ws-garcia/VBA-CSV-interface/master/Benchmark.png)
+![](/assets/img/Benchmark.png)
 
 ## Licence
 Copyright (C) 2020  [W. García](https://github.com/ws-garcia/VBA-CSV-interface/).
