@@ -9,8 +9,6 @@ description: "Introduction to the VBA CSV interface class."
 # Getting Started
 ---
 
-In order to be able to use `CSVinterface.cls` within your project, please review the [installation instructions](https://ws-garcia.github.io/VBA-CSV-interface/home/installation.html).
-
 {: .no_toc }
 
 <details open markdown="block">
@@ -21,6 +19,8 @@ In order to be able to use `CSVinterface.cls` within your project, please review
 1. TOC
 {:toc}
 </details>
+
+In order to be able to use `CSVinterface.cls` within your project, please review the [installation instructions](https://ws-garcia.github.io/VBA-CSV-interface/home/installation.html).
 
 The CSV files are special kind of tabulated plain text data widely used in data exchange. There is no globally accepted standard format for that kind of files, however, out there are well formed standards such as [RFC4180](https://www.ietf.org/rfc/rfc4180.txt) proposed by The Internet Society.
 Although many solutions has been developed for work with CSV files into VBA, including projects from [@sdkn104](https://github.com/sdkn104/VBA-CSV) and [@Senipah](https://github.com/Senipah/VBA-Better-Array) on GitHub, the performance philosophy conduce me to the development of a VBA class module that allows users exchange data between VBA arrays and CSV files at superior speed for the VBA programing language.
