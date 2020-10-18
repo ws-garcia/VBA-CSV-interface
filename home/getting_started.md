@@ -7,9 +7,9 @@ description: "Introduction to the VBA CSV interface class."
 ---
 
 # Getting Started
+---
 
 In order to be able to use `CSVinterface.cls` within your project, please review the [installation instructions](https://ws-garcia.github.io/VBA-CSV-interface/home/installation.html).
----
 
 {: .no_toc }
 

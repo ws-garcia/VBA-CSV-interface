@@ -7,6 +7,7 @@ description: "Install instructions for the VBA CSV interface class."
 ---
 
 # Installation
+---
 
 For use the lasted release into your VBA code you must to download the provides `.zip` archive. Once downloaded, import the `CSVinterface.cls` file from the VBA IDE. 
  
