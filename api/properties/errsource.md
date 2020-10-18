@@ -29,6 +29,4 @@ Use the `ErrSource` property to check if the last requested operation succeed.
 See also [ErrDescription](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/errors/errdescription.html) and [ErrNumber](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/errors/errnumber.html) properties reference.
 {: .fs-4 .fw-300 }
 
-[Errors overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/errors/)
-
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)
