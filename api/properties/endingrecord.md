@@ -12,6 +12,7 @@ Determines the record over which the import process will ends.
 
 ## Parts
 ReadWrite: **Yes**{: .fs-4 .fw-300 }
+
 ---
 
 ## Syntax
@@ -36,6 +37,7 @@ ReadWrite: **Yes**{: .fs-4 .fw-300 }
 |Let|**None**|
 
 {: .fs-4 .fw-300 }
+
 ---
 
 ## Remarks
