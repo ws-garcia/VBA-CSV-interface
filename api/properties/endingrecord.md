@@ -17,7 +17,9 @@ ReadWrite: **Yes**{: .fs-4 .fw-300 }
 |Accesor|Syntax|
 |:----------|:----------|
 |Get|*expression*.**EndingRecord**|
-|Let|*expression*.**EndingRecord** = value|{: .fs-4 .fw-300 }
+|Let|*expression*.**EndingRecord** = value|
+
+{: .fs-4 .fw-300 }
 
 ### Parameters
 |Accesor|Parameters|
