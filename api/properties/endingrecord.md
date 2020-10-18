@@ -24,18 +24,15 @@ ReadWrite: **Yes**{: .fs-4 .fw-300 }
 |Get|*expression*.**EndingRecord**|
 |Let|*expression*.**EndingRecord** = value|
 
-
 |_Accesor_|_Parameters_|
 |:----------|:----------|
 |Get|**_None_**|
-|Let|*Name*:**RecNumber**:<br>*Type*: `Long`<br>*Modifiers*:`ByVal`|
-
+|Let|*Name*: **RecNumber**:<br>*Type*: `Long`<br>*Modifiers*: `ByVal`|
 
 |_Accesor_|_Returns Type_|
 |:----------|:----------|
 |Get|`Long`|
 |Let|**None**|
-
 
 ---
 
