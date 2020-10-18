@@ -26,14 +26,14 @@ ReadWrite: **Yes**{: .fs-4 .fw-300 }
 
 {: .fs-4 .fw-300 }
 
-|Accesor|Parameters|
+|_Accesor_|_Parameters_|
 |:----------|:----------|
-|Get|**None**|
-|Let|<table><thead></thead><tbody><tr><td>Name</td><td>Type</td><td>Modifiers</td></tr><tr><td>RecNumber</td><td>`Long`</td><td>ByVal</td></tr></tbody></table>|
+|Get|**_None_**|
+|Let|<p>**RecNumber**:<br>*Type*:`Long`<br>*Modifiers*:`ByVal`</p>|
 
 {: .fs-4 .fw-300 }
 
-|Accesor|Returns Type|
+|_Accesor_|_Returns Type_|
 |:----------|:----------|
 |Get|`Long`|
 |Let|**None**|
@@ -49,6 +49,7 @@ Use the `EndingRecord` property in combination with the `StartingRecord` propert
 [StartingRecord property overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/startingrecord.html)
 
 ---
+
 ## Behavior
 * The default value for the `EndingRecord` property is one(1) and force the class to import all the records from de CSV file starting at `StartingRecord` property.
 * If the `EndingRecord` property is set to a value less than given on the `StartingRecord` property, only one record will be imported.

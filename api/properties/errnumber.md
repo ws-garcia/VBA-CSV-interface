@@ -1,7 +1,7 @@
 ---
 title: ErrNumber
-parent: Errors
-grand_parent: Properties
+parent: Properties
+grand_parent: API
 ---
 
 # Error Number

@@ -10,35 +10,45 @@ grand_parent: API
 Determines the record over which the import process will starts.
 {: .fs-4 .fw-300 }
 
+---
+
 ## Parts
 ReadWrite: **Yes**{: .fs-4 .fw-300 }
 
+---
+
 ## Syntax
+
 |Accesor|Syntax|
 |:----------|:----------|
-|Get|*expression*.**StartingRecord**|
-|Let|*expression*.**StartingRecord** = value|
+|Get|*expression*.**EndingRecord**|
+|Let|*expression*.**EndingRecord** = value|
+
 {: .fs-4 .fw-300 }
 
-### Parameters
-|Accesor|Parameters|
+|_Accesor_|_Parameters_|
 |:----------|:----------|
-|Get|**None**|
-|Let|<table border="1" style="text-align: left"><thead></thead><tbody><tr><td>**Name**</td><td>**Type**</td><td>**Modifiers**</td></tr><tr><td>*RecNumber*</td><td>*	Long*</td><td>*ByVal*</td></tr></tbody></table>|
+|Get|**_None_**|
+|Let|<p>**RecNumber**:<br>*Type*:`Long`<br>*Modifiers*:`ByVal`</p>|
+
 {: .fs-4 .fw-300 }
 
-### Returns
-|Accesor|Returns Type|
+|_Accesor_|_Returns Type_|
 |:----------|:----------|
 |Get|`Long`|
 |Let|**None**|
+
 {: .fs-4 .fw-300 }
+
+---
 
 ## Remarks
 Use the `StartingRecord` property in combination with the `EndingRecord` property for import a certain range of records from a desired CSV file.
 {: .fs-4 .fw-300 }
 
 [EndingRecord property overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/endingrecord.html)
+
+---
 
 ## Behavior
 * The default value for the `StartingRecord` property is one(1) and force the class to start the importation over the first available record in the CSV file.
