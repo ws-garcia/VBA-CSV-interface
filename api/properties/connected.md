@@ -11,14 +11,14 @@ nav_order: 1
 Gets the CSV connection status for the current instance. When False, the CSV file is not open in memory.
 
 ## Syntax
-*expression*.**Connected**{: .fs-3 .fw-300 }
+*expression*.**Connected**{: .fs-4 .fw-300 }
 
 ### Parameters
 
-**None**
+**None**{: .fs-4 .fw-300 }
 
 ### Returns
 
-Type: `Boolean`
+Type: `Boolean`{: .fs-4 .fw-300 }
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)
