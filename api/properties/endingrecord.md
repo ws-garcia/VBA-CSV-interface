@@ -36,7 +36,6 @@ ReadWrite: **Yes**{: .fs-4 .fw-300 }
 |Get|`Long`|
 |Let|**None**|
 
-{: .fs-4 .fw-300 }
 
 ---
 
