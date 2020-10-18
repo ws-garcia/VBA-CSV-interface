@@ -1,7 +1,8 @@
 ---
 layout: default
 title: Rules
-nav_order: 2
+parent: Home
+nav_order: 3
 ---
 
 # RFC-4180 rules
