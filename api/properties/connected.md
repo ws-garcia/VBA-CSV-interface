@@ -2,13 +2,15 @@
 title: Connected
 parent: Properties
 grand_parent: API
-nav_order: 1
 ---
 
 # CSV connection status
 
 ## Description
-Gets the CSV connection status for the current instance. When False, the CSV file is not open in memory.
+Gets the CSV connection status for the current instance.
+
+## Parts
+ReadWrite: **ReadOnly**{: .fs-4 .fw-300 }
 
 ## Syntax
 *expression*.**Connected**{: .fs-4 .fw-300 }
@@ -20,5 +22,8 @@ Gets the CSV connection status for the current instance. When False, the CSV fil
 ### Returns
 
 Type: `Boolean`{: .fs-4 .fw-300 }
+
+## Remarks
+A `False` value from `Connected` property indicates the CSV file is not open in memory.
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)
