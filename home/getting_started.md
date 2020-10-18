@@ -84,7 +84,7 @@ Dim ENC as String
 ENC = CSVix.FileEncoding
 ```
 ### Limitations
-* __Data Format__: Keep in mind that the class doesn't distinguish between number, dates and strings, all data is read as text and you can put in an Excel sheet to let Microsoft software format it.
+* __Data Format__: _Keep in mind that the class doesn't distinguish between number, dates and strings, all data is read as text and you can put in an Excel sheet to let Microsoft software format it._
 
 ## Benchmark
 The class was tested against two solutions (the one from [@Senipah](https://github.com/Senipah/VBA-Better-Array) and the other from [@sdkn104](https://github.com/sdkn104/VBA-CSV)) using a laptop running Win 10 Pro 64-bit, Intel® Core™ i7-4500U CPU @1.80-2.40 GHz, 8 GB RAM. 
@@ -97,7 +97,7 @@ __NOTE: Some projects was excluded from the benchmark due they does not complies
 
 |*Procedure (Author)*|*RFC-4180_QHO.csv*|*RFC-4180_HalfQ.csv*|*RFC-4180_AllQ.csv*|
 |:--------------------------|-----------------:|----------------:|----------------:|
-|*ImportFromCSV (W. García)*|_N/A_|_N/A_|_N/A_|
+|*ImportFromCSV(W. García)*|**N/A**|**N/A**|**N/A**|
 |*FromCSV(@Senipah)*|N/A|N/A|N/A|
 |*ParseCSVToArray/ADO (@sdkn104)*|N/A|N/A|N/A|
 
