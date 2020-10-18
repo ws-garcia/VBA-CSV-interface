@@ -14,6 +14,7 @@ Determines the record over which the import process will ends.
 ReadWrite: **Yes**{: .fs-4 .fw-300 }
 
 ## Syntax
+
 |Accesor|Syntax|
 |:----------|:----------|
 |Get|*expression*.**EndingRecord**|
