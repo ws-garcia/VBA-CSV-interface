@@ -22,8 +22,6 @@ ReadWrite: **Yes**{: .fs-4 .fw-300 }
 
 {: .fs-4 .fw-300 }
 
-### Parameters
-
 |Accesor|Parameters|
 |:----------|:----------|
 |Get|**None**|
@@ -31,11 +29,11 @@ ReadWrite: **Yes**{: .fs-4 .fw-300 }
 
 {: .fs-4 .fw-300 }
 
-### Returns
 |Accesor|Returns Type|
 |:----------|:----------|
 |Get|`Long`|
 |Let|**None**|
+
 {: .fs-4 .fw-300 }
 
 ## Remarks
