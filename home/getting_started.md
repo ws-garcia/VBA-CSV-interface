@@ -87,13 +87,13 @@ ENC = CSVix.FileEncoding
 ## Benchmark
 The class was tested against two solutions (the one from [@Senipah](https://github.com/Senipah/VBA-Better-Array) and the other from [@sdkn104](https://github.com/sdkn104/VBA-CSV)) using a laptop running `Win 10 Pro 64-bit, Intel® Core™ i7-4500U CPU @1.80-2.40 GHz, 8 GB RAM`. 
 The test consists on a fixed number of calls to the import method over three (3) different files, each of this with three records (3) and four fields (4), for an overall work load of twelve (12) fields per call:
-* _RFC-4180_QHO.csv_: Quote Headers Only (4 fields)
-* _RFC-4180_HalfQ.csv_: Quote Half of the fields (6 fields)
-* _RFC-4180_AllQ.csv_: Quote All twelve (12) fields 
+* _RFC-4180_OH.csv_: **OH**- Only Quote Headers (4 fields)
+* _RFC-4180_HF.csv_: **HF**- Quote Half of fields (6 fields)
+* _RFC-4180_AF.csv_: **AF**- Quote All fields (12 fields) 
 
 __NOTE: Some projects was excluded from the benchmark due they does not complies with the RFC4180 standard__.
 
-|*Procedure (Author)*|*RFC-4180_QHO.csv*|*RFC-4180_HalfQ.csv*|*RFC-4180_AllQ.csv*|
+|*Procedure (Author)*|*OH|*HF*|*AF*|
 |:--------------------------|-----------------:|----------------:|----------------:|
 |*ImportFromCSV(W. García)*|**N/A**|**N/A**|**N/A**|
 |*FromCSV(@Senipah)*|N/A|N/A|N/A|
