@@ -91,7 +91,7 @@ The test consists on a fixed number of calls to the import method over three (3)
 * _RFC-4180_HF.csv_: **HF**- Quote Half of fields (6 fields)
 * _RFC-4180_AF.csv_: **AF**- Quote All fields (12 fields) 
 
-__NOTE: Some projects was excluded from the benchmark due they does not complies with the RFC4180 standard__.
+_NOTE: Some projects was excluded from the benchmark due they does not complies with the RFC4180 standard_.
 
 |*Procedure (Author)*|*OH|*HF*|*AF*|
 |:--------------------------|-----------------:|----------------:|----------------:|
