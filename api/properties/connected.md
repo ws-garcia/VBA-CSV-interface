@@ -7,7 +7,8 @@ grand_parent: API
 # CSV connection status
 
 ## Description
-Gets the CSV connection status for the current instance.{: .fs-4 .fw-300 }
+Gets the CSV connection status for the current instance.
+{: .fs-4 .fw-300 }
 
 ## Parts
 ReadWrite: **ReadOnly**{: .fs-4 .fw-300 }

@@ -7,7 +7,8 @@ grand_parent: API
 # Importation ending record
 
 ## Description
-Determines the record over which the import process will ends.{: .fs-4 .fw-300 }
+Determines the record over which the import process will ends.
+{: .fs-4 .fw-300 }
 
 ## Parts
 ReadWrite: **Yes**{: .fs-4 .fw-300 }
