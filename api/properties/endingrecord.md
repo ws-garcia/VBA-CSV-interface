@@ -12,6 +12,7 @@ Determines the record over which the import process will ends.
 
 ## Parts
 ReadWrite: **Yes**{: .fs-4 .fw-300 }
+---
 
 ## Syntax
 
@@ -25,7 +26,7 @@ ReadWrite: **Yes**{: .fs-4 .fw-300 }
 |Accesor|Parameters|
 |:----------|:----------|
 |Get|**None**|
-|Let|<table border="1" style="text-align: left"><thead></thead><tbody><tr><td>**Name**</td><td>**Type**</td><td>**Modifiers**</td></tr><tr><td>*RecNumber*</td><td>*	Long*</td><td>*ByVal*</td></tr></tbody></table>|
+|Let|<table><thead></thead><tbody><tr><td>**Name**</td><td>**Type**</td><td>**Modifiers**</td></tr><tr><td>*RecNumber*</td><td>*	Long*</td><td>*ByVal*</td></tr></tbody></table>|
 
 {: .fs-4 .fw-300 }
 
@@ -35,6 +36,7 @@ ReadWrite: **Yes**{: .fs-4 .fw-300 }
 |Let|**None**|
 
 {: .fs-4 .fw-300 }
+---
 
 ## Remarks
 Use the `EndingRecord` property in combination with the `StartingRecord` property for import a certain range of records from a desired CSV file.
@@ -42,6 +44,7 @@ Use the `EndingRecord` property in combination with the `StartingRecord` propert
 
 [StartingRecord property overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/startingrecord.html)
 
+---
 ## Behavior
 * The default value for the `EndingRecord` property is one(1) and force the class to import all the records from de CSV file starting at `StartingRecord` property.
 * If the `EndingRecord` property is set to a value less than given on the `StartingRecord` property, only one record will be imported.
