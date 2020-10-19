@@ -12,9 +12,9 @@ Gets the CSV connection status for the current instance.
 
 ---
 
-## Parts
-
-ReadWrite: _ReadOnly_
+## ReadWrite
+ 
+_ReadOnly_
 
 ---
 
