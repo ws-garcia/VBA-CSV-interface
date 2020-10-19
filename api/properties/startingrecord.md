@@ -13,26 +13,26 @@ Determines the record over which the import process will starts.
 ---
 
 ## Parts
-ReadWrite: **Yes**{: .fs-4 .fw-300 }
+ReadWrite: **_Yes_**{: .fs-4 .fw-300 }
 
 ---
 
 ## Syntax
 
-|Accesor|Syntax|
+|**_Accesor_**|**_Syntax_**|
 |:----------|:----------|
 |Get|*expression*.**EndingRecord**|
 |Let|*expression*.**EndingRecord** = value|
 
-|_Accesor_|_Parameters_|
+|**_Accesor_**|**_Parameters_**|
 |:----------|:----------|
 |Get|**_None_**|
-|Let|*Name*: **RecNumber**:<br>*Type*: `Long`<br>*Modifiers*: `ByVal`|
+|Let|*Name*: **_RecNumber_**:<br>*Type*: `Long`<br>*Modifiers*: `ByVal`|
 
-|_Accesor_|_Returns Type_|
+|**_Accesor_**|**_Returns Type_**|
 |:----------|:----------|
 |Get|`Long`|
-|Let|**None**|
+|Let|**_None_**|
 
 ---
 

@@ -1,20 +1,20 @@
 ---
-title: Connected
+title: fileName
 parent: Properties
 grand_parent: API
 ---
 
-# CSV connection status
+# File name
 
 ## Description
-Gets the CSV connection status for the current instance.
+Gets the file name that corresponds to the last opened CSV file.
 {: .fs-4 .fw-300 }
 
 ## Parts
 ReadWrite: **_ReadOnly_**{: .fs-4 .fw-300 }
 
 ## Syntax
-*expression*.**Connected**{: .fs-4 .fw-300 }
+*expression*.**fileName**{: .fs-4 .fw-300 }
 
 ### Parameters
 
@@ -22,10 +22,11 @@ ReadWrite: **_ReadOnly_**{: .fs-4 .fw-300 }
 
 ### Returns
 
-**_Type_**: `Boolean`{: .fs-4 .fw-300 }
+**_Type_**: `String`{: .fs-4 .fw-300 }
 
 ## Remarks
-A `False` value from `Connected` property indicates the CSV file is not load in memory.
+The `fileName` property is set when CSV file is load to memory.
+
 {: .fs-4 .fw-300 }
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)
