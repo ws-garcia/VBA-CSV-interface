@@ -34,9 +34,7 @@ _None_
 
 ## Remarks
 
-The `FileEncoding` property is set when CSV file is load on memory. 
-
-The property can return the following values
+The `FileEncoding` property is set when CSV file is load on memory and can return the following values:
 
 <table>
 <thead>
