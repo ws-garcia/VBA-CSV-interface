@@ -14,17 +14,17 @@ Gets the CSV connection status for the current instance.
 
 ## Parts
 
-ReadWrite: **_ReadOnly_**
+ReadWrite: _ReadOnly_
 
 ---
 
 ## Syntax
 
-*expression*.**Connected**
+*expression*.`Connected`
 
 ### Parameters
 
-**_None_**
+_None_
 
 ### Returns
 
