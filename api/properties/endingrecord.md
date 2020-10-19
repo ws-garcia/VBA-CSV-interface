@@ -4,7 +4,7 @@ parent: Properties
 grand_parent: API
 ---
 
-# EndingRecord
+# EndingRecord{: .fs-4 .fw-300 }
 
 ## Description
 
