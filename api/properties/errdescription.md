@@ -6,23 +6,37 @@ grand_parent: API
 
 # ErrDescription
 
+---
+
 ## Description
+
 Gets the description for the last occurred error over the current instance.
+
 {: .fs-4 .fw-300 }
 
+---
+
 ## Parts
-ReadWrite: **_ReadOnly_**{: .fs-4 .fw-300 }
+
+ReadWrite: **_ReadOnly_**
+
+{: .fs-4 .fw-300 }
+
+---
 
 ## Syntax
-*expression*.**ErrDescription**{: .fs-4 .fw-300 }
+*expression*.**ErrDescription**
 
 ### Parameters
 
-**_None_**{: .fs-4 .fw-300 }
+**_None_**
 
 ### Returns
 
-*Type*: `String`{: .fs-4 .fw-300 }
+*Type*: `String`
+
+{: .fs-4 .fw-300 }
+---
 
 ## Remarks
 Use the `ErrDescription` property to check if the last requested operation succeed.
