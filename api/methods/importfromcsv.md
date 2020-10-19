@@ -29,9 +29,12 @@ _None_
 
 ## Remarks
 
+**Note: Before invoke the `ImportFromCSV` method, the user must to open a connection to the CSV file.**
+
 If the *HeadersOmission* parameter is set to `True`, the CSV file headers, first line, will be ignored by the parser only when the `StartingRecord` property is set to 1. 
 
 See also:
+ [OpenConnection method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/openconnection.html),
  [FieldsDelimiter property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/fieldsdelimiter.html),
  [RecordsDelimiter property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/recordsdelimiter.html),
  [EscapeChar property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/escapechar.html),
@@ -42,6 +45,6 @@ See also:
 
 ## Behavior
 
-The `FieldsDelimiter`, `RecordsDelimiter`, `EscapeChar`, `StartingRecord` and `EndingRecord` properties sets the The `ImportFromCSV` method behavior. If the CSV file already exist on path, the `ImportFromCSV` method will overwrites all its content. If that is not the case, a new file will be created.
+The `FieldsDelimiter`, `RecordsDelimiter`, `EscapeChar`, `StartingRecord` and `EndingRecord` properties sets the method's behavior to the needs.
 
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)
