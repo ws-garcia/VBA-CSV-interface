@@ -6,3 +6,4 @@ nav_order: 2
 ---
 
 # CSV interface API reference
+{: .fs-9 }
