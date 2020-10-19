@@ -4,7 +4,7 @@ parent: Properties
 grand_parent: API
 ---
 
-# Encoding charset
+# FileEncoding
 
 ## Description
 Returns the charset used to encode the last opened CSV file.

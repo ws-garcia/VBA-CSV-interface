@@ -4,7 +4,7 @@ parent: Properties
 grand_parent: API
 ---
 
-# Expected quoting behavior
+# QuotingMode
 
 ## Description
 Configures the CSV parsing/writing operation behavior.

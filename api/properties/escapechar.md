@@ -4,7 +4,7 @@ parent: Properties
 grand_parent: API
 ---
 
-# Expected CSV Escape char
+# EscapeChar
 
 ## Description
 Dictates the char that will be used for escape those fields containing some of the CSV syntax special char.

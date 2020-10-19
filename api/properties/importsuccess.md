@@ -4,7 +4,7 @@ parent: Properties
 grand_parent: API
 ---
 
-# Importation status
+# ImportSuccess
 
 ## Description
 Gets the import operation status for the current instance.

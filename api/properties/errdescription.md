@@ -4,7 +4,7 @@ parent: Properties
 grand_parent: API
 ---
 
-# Error Description
+# ErrDescription
 
 ## Description
 Gets the description for the last occurred error over the current instance.

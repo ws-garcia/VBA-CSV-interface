@@ -4,7 +4,7 @@ parent: Properties
 grand_parent: API
 ---
 
-# Error Source
+# ErrSource
 
 ## Description
 Gets the source for the last occurred error over the current instance.

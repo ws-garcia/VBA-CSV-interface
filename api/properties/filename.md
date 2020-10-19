@@ -4,7 +4,7 @@ parent: Properties
 grand_parent: API
 ---
 
-# File name
+# fileName
 
 ## Description
 Gets the file name that corresponds to the last opened CSV file.

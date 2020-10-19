@@ -4,7 +4,7 @@ parent: Properties
 grand_parent: API
 ---
 
-# Expected CSV records delimiter char
+# RecordsDelimiter
 
 ## Description
 Indicates the char that will be used for delimit records in the target CSV file.

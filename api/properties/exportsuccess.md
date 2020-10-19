@@ -4,7 +4,7 @@ parent: Properties
 grand_parent: API
 ---
 
-# Exportation status
+# ExportSuccess
 
 ## Description
 Gets the export operation status for the current instance.

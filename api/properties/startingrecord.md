@@ -4,7 +4,7 @@ parent: Properties
 grand_parent: API
 ---
 
-# Importation starting record
+# StartingRecord
 
 ## Description
 Determines the record over which the import process will starts.

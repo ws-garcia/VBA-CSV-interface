@@ -4,7 +4,7 @@ parent: Properties
 grand_parent: API
 ---
 
-# CSV connection status
+# Connected
 
 ## Description
 Gets the CSV connection status for the current instance.

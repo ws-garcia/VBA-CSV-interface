@@ -4,7 +4,7 @@ parent: Properties
 grand_parent: API
 ---
 
-# Importation ending record
+# EndingRecord
 
 ## Description
 Determines the record over which the import process will ends.
