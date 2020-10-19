@@ -12,9 +12,9 @@ Determines the record over which the import process will ends.
 
 ---
 
-## Parts
+## ReadWrite
 
-ReadWrite: _Yes_
+_Yes_
 
 ---
 
