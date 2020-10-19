@@ -5,7 +5,7 @@ grand_parent: API
 nav_order: 1
 ---
 
-# EscapeType Enumeration
+# EscapeType Enum
 {: .fs-9 }
 
 Provides a list of constants for use to configure the char used as escape one.
