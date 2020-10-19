@@ -31,7 +31,7 @@ _None_
 
 The *csvArray* parameter must be declared as `Variant` array. Passing a variable that isn't an array will cause an error and the operation aborts. 
 
-Before invoke the method, the user must to set the the `FieldsDelimiter`, `RecordsDelimiter` and the `EscapeChar` properties in order to fit the class behavior to the needs.
+Before invoke the `ExportToCSV` method, the user must to set the the `FieldsDelimiter`, `RecordsDelimiter` and the `EscapeChar` properties in order to fit the class behavior to the needs.
 
 See also:
  [FieldsDelimiter property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/fieldsdelimiter.html),
