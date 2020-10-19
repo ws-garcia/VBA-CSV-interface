@@ -15,7 +15,7 @@ Determines the record over which the import process will starts.
 
 ## ReadWrite
 
-<p style="text-align:right">_Yes_</p>
+<p style="text-align:center"><em>Yes</em></p>
 
 ---
 
