@@ -40,7 +40,7 @@ The VBA CSVinterface class module is designed for gain advantage from the well-s
 ## Usage
 Import whole CSV file into an VBA array
 
-```vbscript
+```vb
 Dim CSVix As CSVinterface
 Dim MyArray() As String
 Set CSVix = New CSVinterface
@@ -52,7 +52,7 @@ Set CSVix = Nothing
 
 Import a range of records from a CSV file into a VBA array
 
-```vbscript
+```vb
 Dim CSVix As CSVinterface
 Dim MyArray As variant
 Set CSVix = New CSVinterface
@@ -66,7 +66,7 @@ Set CSVix = Nothing
 
 Set the char to escape special fields
 
-```vbscript
+```vb
 CSVix.EscapeChar = EscapeType.NullChar
 CSVix.EscapeChar = EscapeType.Apostrophe
 CSVix.EscapeChar = EscapeType.DoubleQuotes
@@ -74,21 +74,21 @@ CSVix.EscapeChar = EscapeType.DoubleQuotes
 
 Set fields and records delimiters
 
-```vbscript
+```vb
 CSVix.FieldsDelimiter = ";"
 CSVix.RecordsDelimiter = vbCrLf
 ```
 
 Define the data processing behavior
 
-```vbscript
+```vb
 CSVix.QuotingMode = QuotationMode.Critical 'default
 CSVix.QuotingMode = QuotationMode.All
 ```
 
 Get the encoding of the last opened CSV file
 
-```vbscript
+```vb
 Dim ENC as String
 ENC = CSVix.FileEncoding
 ```
