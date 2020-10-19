@@ -5,27 +5,34 @@ grand_parent: API
 ---
 
 # ImportSuccess
+{: .fs-9 .fw-300 }
 
-## Description
 Gets the import operation status for the current instance.
-{: .fs-4 .fw-300 }
+{: .fs-6 .fw-300 }
 
-## Parts
-ReadWrite: **_ReadOnly_**{: .fs-4 .fw-300 }
+---
+
+## ReadWrite
+
+_ReadOnly_
+
+---
 
 ## Syntax
-*expression*.**ImportSuccess**{: .fs-4 .fw-300 }
+*expression*.`ImportSuccess`
 
 ### Parameters
 
-**_None_**{: .fs-4 .fw-300 }
+_None_
 
 ### Returns
 
-*Type*: `Boolean`{: .fs-4 .fw-300 }
+*Type*: `Boolean`
+
+---
 
 ## Remarks
+
 A `False` value from `ImportSuccess` property indicates the last import operation wouldn't succeeded.
-{: .fs-4 .fw-300 }
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)
