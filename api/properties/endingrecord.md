@@ -14,7 +14,7 @@ Determines the record over which the import process will ends.
 
 ## Parts
 
-ReadWrite: **_Yes_**
+ReadWrite: _Yes_
 
 ---
 
@@ -22,18 +22,18 @@ ReadWrite: **_Yes_**
 
 |**_Accesor_**|**_Syntax_**|
 |:----------|:----------|
-|Get|*expression*.**EndingRecord**|
-|Let|*expression*.**EndingRecord** = value|
+|Get|*expression*.`EndingRecord`|
+|Let|*expression*.`EndingRecord` = value|
 
 |**_Accesor_**|**_Parameters_**|
 |:----------|:----------|
 |Get|**_None_**|
-|Let|*Name*: **_RecNumber_**:<br>*Type*: `Long`<br>*Modifiers*: `ByVal`|
+|Let|*Name*: RecNumber:<br>*Type*: `Long`<br>*Modifiers*: `ByVal`|
 
 |**_Accesor_**|**_Returns Type_**|
 |:----------|:----------|
 |Get|`Long`|
-|Let|**_None_**|
+|Let|_None_|
 
 ---
 
