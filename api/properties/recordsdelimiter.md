@@ -5,15 +5,16 @@ grand_parent: API
 ---
 
 # RecordsDelimiter
+{: .fs-9 }
 
-## Description
 Indicates the char that will be used for delimit records in the target CSV file.
-{: .fs-4 .fw-300 }
+{: .fs-6 .fw-300 }
 
 ---
 
-## Parts
-ReadWrite: **_Yes_**{: .fs-4 .fw-300 }
+## ReadWrite
+
+_Yes_
 
 ---
 
@@ -21,24 +22,23 @@ ReadWrite: **_Yes_**{: .fs-4 .fw-300 }
 
 |**_Accesor_**|**_Syntax_**|
 |:----------|:----------|
-|Get|*expression*.**RecordsDelimiter**|
-|Let|*expression*.**RecordsDelimiter** = value|
+|Get|*expression*.`RecordsDelimiter`|
+|Let|*expression*.`RecordsDelimiter` = value|
 
 |**_Accesor_**|**_Parameters_**|
 |:----------|:----------|
-|Get|**_None_**|
-|Let|*Name*: **_Delimiter_**:<br>*Type*: `String`<br>*Modifiers*: `ByVal`|
+|Get|_None_|
+|Let|*Name*: Delimiter:<br>*Type*: `String`<br>*Modifiers*: `ByVal`|
 
 |**_Accesor_**|**_Returns Type_**|
 |:----------|:----------|
 |Get|`String`|
-|Let|**_None_**|
+|Let|_None_|
 
 ---
 
 ## Remarks
-The `RecordsDelimiter` property can be set to`vbCr`, `vbCrLf` or `vbLf`. This options unlocks a limitation from RFC-4180 CSV standard .
 
-{: .fs-4 .fw-300 }
+The `RecordsDelimiter` property can be set to`vbCr`, `vbCrLf` or `vbLf`. This options unlocks a limitation from RFC-4180 CSV standard .
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)
