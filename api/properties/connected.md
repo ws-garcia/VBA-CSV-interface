@@ -2,6 +2,7 @@
 title: Connected
 parent: Properties
 grand_parent: API
+nav_order: 1
 ---
 
 # Connected

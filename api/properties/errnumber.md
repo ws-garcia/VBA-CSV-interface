@@ -2,6 +2,7 @@
 title: ErrNumber
 parent: Properties
 grand_parent: API
+nav_order: 4
 ---
 
 # ErrNumber

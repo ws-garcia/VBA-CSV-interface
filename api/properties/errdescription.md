@@ -2,6 +2,7 @@
 title: ErrDescription
 parent: Properties
 grand_parent: API
+nav_order: 3
 ---
 
 # ErrDescription
