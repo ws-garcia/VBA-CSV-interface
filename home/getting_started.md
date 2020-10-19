@@ -7,6 +7,8 @@ description: "Introduction to the VBA CSV interface class."
 ---
 
 # Getting Started
+{: .fs-9 }
+
 ---
 
 {: .no_toc }
