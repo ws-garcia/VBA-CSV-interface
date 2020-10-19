@@ -31,7 +31,7 @@ _None_
 
 ## Remarks
 
-The *OutPutArray* parameter must be declared as dynamic string array. If user forget to do this, an error will occur.
+The *OutPutArray* parameter must be declared as dynamic `String` array. If user forget to do this, an error will occur.
 
 ---
 
