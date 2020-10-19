@@ -41,6 +41,7 @@ ReadWrite: **_Yes_**{: .fs-4 .fw-300 }
 See also:
 
 [QuotationMode Enumeration](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html)
+
 {: .fs-4 .fw-300 }
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)
