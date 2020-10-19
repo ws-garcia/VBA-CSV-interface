@@ -14,20 +14,22 @@ Gets the description for the last occurred error over the current instance.
 ---
 
 ## ReadWrite
-:_ReadOnly_
+
+_ReadOnly_
 
 ---
 
 ## Syntax
-:*expression*.`ErrDescription`
+
+*expression*.`ErrDescription`
 
 ### Parameters
-:_None_
+
+_None_
 
 ### Returns
 
-*Type*
-: `String`
+*Type*: `String`
 
 ---
 

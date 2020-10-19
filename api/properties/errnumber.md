@@ -14,22 +14,24 @@ Gets the number for the last occurred error over the current instance.
 ---
 
 ## ReadWrite
-:_ReadOnly_
+
+_ReadOnly_
 
 ---
 
 ## Syntax
-:*expression*.`ErrNumber`
+
+*expression*.`ErrNumber`
 
 ---
 
 ### Parameters
-:_None_
+
+_None_
 
 ### Returns
 
-*Type*
-: `Long`
+*Type*: `Long`
 
 ---
 

@@ -14,20 +14,22 @@ Gets the file name that corresponds to the last opened CSV file.
 ---
 
 ## ReadWrite
-:_ReadOnly_
+
+_ReadOnly_
 
 ---
 
 ## Syntax
-:*expression*.`fileName`
+
+*expression*.`fileName`
 
 ### Parameters
-:_None_
+
+_None_
 
 ### Returns
 
-*Type*
-: `String`
+*Type*: `String`
 
 ---
 

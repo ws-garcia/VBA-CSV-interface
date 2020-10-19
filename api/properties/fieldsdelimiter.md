@@ -14,7 +14,8 @@ Indicates the char that will be used for delimit fields in the target CSV file.
 ---
 
 ## ReadWrite
-:_Yes_
+
+_Yes_
 
 ---
 
