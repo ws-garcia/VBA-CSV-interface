@@ -6,6 +6,7 @@ nav_order: 3
 ---
 
 # RFC-4180 rules
+{: .fs-9 }
 
 The CSVinterface class is intended to be fully RFC-4180 CSV standard compliant, despite this some tweaks are added to make the interface more robust and purposes useful.
 
