@@ -14,22 +14,20 @@ Gets the export operation status for the current instance.
 ---
 
 ## ReadWrite
-
-_ReadOnly_
+:_ReadOnly_
 
 ---
 
 ## Syntax
-
-*expression*.`ExportSuccess`
+:*expression*.`ExportSuccess`
 
 ### Parameters
-
-_None_
+:_None_
 
 ### Returns
 
-*Type*: `Boolean`
+*Type*
+: `Boolean`
 
 ---
 

@@ -14,8 +14,7 @@ Determines the record over which the import process will starts.
 ---
 
 ## ReadWrite
-
-_Yes_
+:_Yes_
 
 ---
 
@@ -42,8 +41,8 @@ _Yes_
 
 Use the `StartingRecord` property in combination with the `EndingRecord` property for import a certain range of records from a desired CSV file.
 
-See also:
- [EndingRecord property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/endingrecord.html).
+See also
+: [EndingRecord property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/endingrecord.html).
 
 ---
 

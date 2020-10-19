@@ -14,22 +14,20 @@ Gets the CSV connection status for the current instance.
 ---
 
 ## ReadWrite
- 
-_ReadOnly_
+ :_ReadOnly_
 
 ---
 
 ## Syntax
-
-*expression*.`Connected`
+:*expression*.`Connected`
 
 ### Parameters
-
-_None_
+:_None_
 
 ### Returns
 
-*Type*: `Boolean`
+*Type*
+: `Boolean`
 
 ---
 

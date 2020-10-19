@@ -14,8 +14,7 @@ Configures the CSV parsing/writing operation behavior.
 ---
 
 ## ReadWrite
-
-_Yes_
+:_Yes_
 
 ---
 
@@ -40,7 +39,7 @@ _Yes_
 
 ## Remarks
 
-See also:
- [QuotationMode Enumeration](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html).
+See also
+: [QuotationMode Enumeration](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html).
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)

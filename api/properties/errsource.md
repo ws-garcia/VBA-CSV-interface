@@ -14,22 +14,20 @@ Gets the source for the last occurred error over the current instance.
 ---
 
 ## ReadWrite
-
-_ReadOnly_
+:_ReadOnly_
 
 ---
 
 ## Syntax
-
-*expression*.`ErrSource`
+:*expression*.`ErrSource`
 
 ### Parameters
-
-_None_
+:_None_
 
 ### Returns
 
-*Type*: `String`
+*Type*
+: `String`
 
 ---
 
@@ -37,7 +35,7 @@ _None_
 
 Use the `ErrSource` property to check if the last requested operation succeed.
 
-See also: 
- [ErrDescription property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/errors/errdescription.html), [ErrNumber property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/errors/errnumber.html).
+See also
+:  [ErrDescription property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/errors/errdescription.html), [ErrNumber property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/errors/errnumber.html).
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)
