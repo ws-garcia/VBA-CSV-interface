@@ -7,12 +7,8 @@ grand_parent: API
 # EndingRecord
 {: .fs-9 }
 
----
-
-## Description
-
 Determines the record over which the import process will ends.
-{: .fs-4 .fw-300 }
+{: .fs-6 .fw-300 }
 
 ---
 
