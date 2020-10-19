@@ -5,49 +5,39 @@ grand_parent: API
 ---
 
 # ErrDescription
-
----
-
-## Description
+{: .fs-9 }
 
 Gets the description for the last occurred error over the current instance.
-
-{: .fs-4 .fw-300 }
+{: .fs-6 .fw-300 }
 
 ---
 
-## Parts
+## ReadWrite
 
-ReadWrite: **_ReadOnly_**
-
-{: .fs-4 .fw-300 }
+_ReadOnly_
 
 ---
 
 ## Syntax
-*expression*.**ErrDescription**
+*expression*.`ErrDescription`
 
 ### Parameters
 
-**_None_**
+_None_
 
 ### Returns
 
 *Type*: `String`
-
-{: .fs-4 .fw-300 }
 
 ---
 
 ## Remarks
 Use the `ErrDescription` property to check if the last requested operation succeed.
 
-See also: 
-
-[ErrNumber property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/errors/errnumber.html).
-
+See also
+:
+[ErrNumber property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/errors/errnumber.html)<br>
 [ErrSource property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/errors/errsource.html).
 
-{: .fs-4 .fw-300 }
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)
