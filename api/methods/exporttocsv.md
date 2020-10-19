@@ -15,7 +15,7 @@ Exports an array's content to a CSV file.
 
 ## Syntax
 
-*expression*.`ExportToCSV` *(csvArray)*
+*expression*.`ExportToCSV`*(csvArray)*
 
 ### Parameters
 
@@ -31,8 +31,6 @@ _None_
 
 The *csvArray* parameter must be declared as `Variant` array. Passing a variable that isn't an array will cause an error and the operation aborts. 
 
-Before invoke the `ExportToCSV` method, the user must to set the the `FieldsDelimiter`, `RecordsDelimiter` and the `EscapeChar` properties in order to fit the class behavior to the needs.
-
 See also:
  [FieldsDelimiter property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/fieldsdelimiter.html),
  [RecordsDelimiter property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/recordsdelimiter.html),
@@ -42,6 +40,6 @@ See also:
 
 ## Behavior
 
-If the CSV file already exist on path, the `ExportToCSV` method will overwrites all its content. If that is not the case, a new file will be created.
+Before invoke the `ExportToCSV` method, the user must to set the `FieldsDelimiter`, `RecordsDelimiter` and `EscapeChar` properties in order to fit the method's behavior to the needs. If the CSV file already exist on path, the `ExportToCSV` method will overwrites all its content. If that is not the case, a new file will be created.
 
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)
