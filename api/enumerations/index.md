@@ -6,3 +6,4 @@ nav_order: 2
 ---
 
 # Enumerations
+{: .fs-9 }
