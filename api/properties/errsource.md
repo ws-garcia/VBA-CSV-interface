@@ -28,8 +28,10 @@ ReadWrite: **_ReadOnly_**{: .fs-4 .fw-300 }
 Use the `ErrSource` property to check if the last requested operation succeed.
 
 See also: 
-[ErrDescription](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/errors/errdescription.html)
-[ErrNumber](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/errors/errnumber.html) properties reference.
+
+[ErrDescription property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/errors/errdescription.html).
+
+[ErrNumber property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/errors/errnumber.html).
 {: .fs-4 .fw-300 }
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)

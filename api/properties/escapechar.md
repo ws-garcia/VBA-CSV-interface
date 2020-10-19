@@ -42,8 +42,10 @@ Setting the `EscapeChar` property to `EscapeType.NullChar` is only recommended w
 The above means if the target CSV have an unknown structure, the best alternative is set the `EscapeChar` property to `EscapeType.DoubleQuotes` and the `QuotingMode` property to `QuotationMode.Critical`. These are the defaults settings.
 
 See also:
-[EscapeType Enumeration](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/escapetype.html)
-[QuotationMode Enumeration](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html)
+
+[EscapeType Enumeration](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/escapetype.html).
+
+[QuotationMode Enumeration](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html).
 {: .fs-4 .fw-300 }
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)
