@@ -5,28 +5,35 @@ grand_parent: API
 ---
 
 # fileName
+{: .fs-9 }
 
-## Description
 Gets the file name that corresponds to the last opened CSV file.
-{: .fs-4 .fw-300 }
+{: .fs-6 .fw-300 }
 
-## Parts
-ReadWrite: **_ReadOnly_**{: .fs-4 .fw-300 }
+---
+
+## ReadWrite
+
+_ReadOnly_
+
+---
 
 ## Syntax
-*expression*.**fileName**{: .fs-4 .fw-300 }
+
+*expression*.`fileName`
 
 ### Parameters
 
-**_None_**{: .fs-4 .fw-300 }
+_None_
 
 ### Returns
 
-*Type*: `String`{: .fs-4 .fw-300 }
+*Type*: `String`
+
+---
 
 ## Remarks
-The `fileName` property is set when CSV file is load to memory.
 
-{: .fs-4 .fw-300 }
+The `fileName` property is set when CSV file is load to memory.
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)
