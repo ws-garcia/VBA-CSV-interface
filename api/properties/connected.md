@@ -22,7 +22,7 @@ ReadWrite: **_ReadOnly_**{: .fs-4 .fw-300 }
 
 ### Returns
 
-**_Type_**: `Boolean`{: .fs-4 .fw-300 }
+*Type*: `Boolean`{: .fs-4 .fw-300 }
 
 ## Remarks
 A `False` value from `Connected` property indicates the CSV file is not load in memory.

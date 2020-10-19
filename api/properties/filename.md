@@ -22,7 +22,7 @@ ReadWrite: **_ReadOnly_**{: .fs-4 .fw-300 }
 
 ### Returns
 
-**_Type_**: `String`{: .fs-4 .fw-300 }
+*Type*: `String`{: .fs-4 .fw-300 }
 
 ## Remarks
 The `fileName` property is set when CSV file is load to memory.

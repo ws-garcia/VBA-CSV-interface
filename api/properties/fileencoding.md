@@ -22,7 +22,7 @@ ReadWrite: **_ReadOnly_**{: .fs-4 .fw-300 }
 
 ### Returns
 
-**_Type_**: `String`{: .fs-4 .fw-300 }
+*Type*: `String`{: .fs-4 .fw-300 }
 
 ## Remarks
 The `FileEncoding` property is set when CSV file is load on memory. The property value could be one of this: ANSI, UTF-8, Unicode, BigEndian and Unknown.

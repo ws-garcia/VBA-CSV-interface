@@ -22,7 +22,7 @@ ReadWrite: **_ReadOnly_**{: .fs-4 .fw-300 }
 
 ### Returns
 
-**_Type_**: `Long`{: .fs-4 .fw-300 }
+*Type*: `Long`{: .fs-4 .fw-300 }
 
 ## Remarks
 Use the `ErrNumber` property to check if the last requested operation succeed.
