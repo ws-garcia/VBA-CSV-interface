@@ -42,6 +42,6 @@ See also:
 
 ## Behavior
 
-If the CSV file already exist on path, the `ExportToCSV` method will overwrites all its content. If that is not the case, a new file will created.
+If the CSV file already exist on path, the `ExportToCSV` method will overwrites all its content. If that is not the case, a new file will be created.
 
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)
