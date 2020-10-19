@@ -54,7 +54,7 @@ Import a range of records from a CSV file into a VBA array
 
 ```vb
 Dim CSVix As CSVinterface
-Dim MyArray As variant
+Dim MyArray() As String
 Set CSVix = New CSVinterface
 CSVix.StartingRecord = 10
 CSVix.EndingRecord = 20
