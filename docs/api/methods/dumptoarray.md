@@ -34,7 +34,7 @@ _None_
 The *OutPutArray* parameter must be declared as dynamic `String` array. If user forget to do this, an error will occur.
 
 See also
-: [ImportFromCSV method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/importfromcsv.html).
+: [ImportFromCSV method](https://ws-garcia.github.io/VBA-CSV-interface/docs/api/methods/importfromcsv.html).
 
 ---
 
@@ -44,4 +44,4 @@ The `DumpToArray` method make a copy of all the data stored in the current insta
 
 The dumped data will be erased from memory, in other words, the current instance doesn't hold the CSV read data any more. In the same way, the `DumpToArray` method returns an empty `String` array for subsequent calls not preceded by `ImportFromCSV` method call.
 
-[Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)
+[Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/docs/api/methods/)

@@ -42,7 +42,7 @@ _Yes_
 The `EndingRecord` property must be used in combination with the `StartingRecord` property for import a certain range of records from a desired CSV file.
 
 See also
-: [StartingRecord property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/startingrecord.html).
+: [StartingRecord property](https://ws-garcia.github.io/VBA-CSV-interface/docs/api/properties/startingrecord.html).
 
 ---
 
@@ -54,4 +54,4 @@ The default value for the `EndingRecord` property is one(1) and force the class 
 
 Setting the `EndingRecord` property to a value greater than the available records in the CSV file has the same effect than setting it to one(1).
 
-[Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)
+[Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/docs/api/properties/)

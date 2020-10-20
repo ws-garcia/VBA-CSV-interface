@@ -42,4 +42,4 @@ _Yes_
 
 The `RecordsDelimiter` property can be set to`vbCr`, `vbCrLf` or `vbLf`. This options unlocks a limitation from RFC-4180 CSV standard .
 
-[Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)
+[Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/docs/api/properties/)

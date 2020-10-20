@@ -36,6 +36,6 @@ The `EscapeType.NullChar` value is used with the`QuotationMode.All` setting to i
 In the case the `FieldsDelimiter` property is not enough for successfully done the import/export operations, the `QuotationMode.DoubleQuotes` value would be used for parse/write an CSV having fields to be escaped with double quote and the `QuotationMode.Apostrophe` values for parse/write an CSV having fields to be escaped with the apostrophe. 
 
 See also
-: [EscapeChar Property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/escapechar.html), [QuotationMode Enumeration](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html), [FieldsDelimiter Property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/fieldsdelimiter.html).
+: [EscapeChar Property](https://ws-garcia.github.io/VBA-CSV-interface/docs/api/properties/escapechar.html), [QuotationMode Enumeration](https://ws-garcia.github.io/VBA-CSV-interface/docs/api/enumerations/quotationmode.html), [FieldsDelimiter Property](https://ws-garcia.github.io/VBA-CSV-interface/docs/api/properties/fieldsdelimiter.html).
 
-[Back to Enumerations overview](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/)
+[Back to Enumerations overview](https://ws-garcia.github.io/VBA-CSV-interface/docs/api/enumerations/)

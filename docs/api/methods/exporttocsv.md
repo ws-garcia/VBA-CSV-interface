@@ -34,7 +34,7 @@ _None_
 The *csvArray* parameter must be declared as `Variant` array. Passing a variable that isn't an array will cause an error and the operation aborts. 
 
 See also
-: [OpenConnection method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/openconnection.html), [FieldsDelimiter property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/fieldsdelimiter.html), [RecordsDelimiter property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/recordsdelimiter.html), [EscapeChar property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/escapechar.html).
+: [OpenConnection method](https://ws-garcia.github.io/VBA-CSV-interface/docs/api/methods/openconnection.html), [FieldsDelimiter property](https://ws-garcia.github.io/VBA-CSV-interface/docs/api/properties/fieldsdelimiter.html), [RecordsDelimiter property](https://ws-garcia.github.io/VBA-CSV-interface/docs/api/properties/recordsdelimiter.html), [EscapeChar property](https://ws-garcia.github.io/VBA-CSV-interface/docs/api/properties/escapechar.html).
 
 ---
 
@@ -42,4 +42,4 @@ See also
 
 The `FieldsDelimiter`, `RecordsDelimiter` and `EscapeChar` properties sets the method's behavior to the needs.
 
-[Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)
+[Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/docs/api/methods/)

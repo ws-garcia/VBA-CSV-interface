@@ -38,6 +38,6 @@ _None_
 Use the `ErrSource` property to check if the last requested operation succeed.
 
 See also
-:  [ErrDescription property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/errors/errdescription.html), [ErrNumber property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/errors/errnumber.html).
+:  [ErrDescription property](https://ws-garcia.github.io/VBA-CSV-interface/docs/api/properties/errors/errdescription.html), [ErrNumber property](https://ws-garcia.github.io/VBA-CSV-interface/docs/api/properties/errors/errnumber.html).
 
-[Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)
+[Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/docs/api/properties/)

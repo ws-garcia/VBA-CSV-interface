@@ -70,4 +70,4 @@ The `FileEncoding` property is set when CSV file is load on memory and can retur
 
 Since VBA works with Unicode charset, a check to the `FileEncoding` property can help user overcome some codification issues. For this purposes, out there are free tools like [Notepad++](https://npp-user-manual.org/docs/preferences/) with options to change a file codification with just a left mouse click.
 
-[Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)
+[Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/docs/api/properties/)

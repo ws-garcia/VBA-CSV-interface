@@ -37,4 +37,4 @@ The *csvPathAndFilename* parameter must be the full path to the target CSV file,
 
 The `GetDataFromCSV` method returns an empty `String` when errors occurs.
 
-[Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)
+[Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/docs/api/methods/)

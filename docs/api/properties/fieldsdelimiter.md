@@ -41,4 +41,4 @@ _Yes_
 ## Remarks
 The current behavior for the CSV interface forces `FieldsDelimiter` property to be distinct than a `Space` or`vbTab` char, set the property to comma or semicolon are the most logical options.
 
-[Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)
+[Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/docs/api/properties/)
