@@ -53,11 +53,11 @@ The `ResetToDefault` method restart this config options:
 </tr>
 <tr>
 <td style="text-align: left;"><em>EscapeChar</em></td>
-<td style="text-align: left;"><p style="color:navy;">EscapeType.DoubleQuotes</p></td>
+<td style="text-align: left;"><p style="color:navy;"><code>EscapeType</code>.DoubleQuotes</p></td>
 </tr>
 <tr>
 <td style="text-align: left;"><em>QuotingMode</em></td>
-<td style="text-align: left;"><p style="color:navy;">QuotationMode.Critical</p></td>
+<td style="text-align: left;"><p style="color:navy;"><code>QuotationMode</code>.Critical</p></td>
 </tr>
 <tr>
 <td style="text-align: left;"><em>StartingRecord</em></td>
