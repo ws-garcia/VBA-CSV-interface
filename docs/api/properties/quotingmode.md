@@ -41,6 +41,6 @@ _Yes_
 ## Remarks
 
 See also
-: [QuotationMode Enumeration](https://ws-garcia.github.io/VBA-CSV-interface/docs/api/enumerations/quotationmode.html).
+: [QuotationMode Enumeration](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html).
 
-[Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/docs/api/properties/)
+[Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)

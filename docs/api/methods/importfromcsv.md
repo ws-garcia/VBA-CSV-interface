@@ -34,7 +34,7 @@ _None_
 If the *HeadersOmission* parameter is set to `True`, the CSV file headers, first line, will be ignored by the parser only when the `StartingRecord` property is set to 1. 
 
 See also
-: [OpenConnection method](https://ws-garcia.github.io/VBA-CSV-interface/docs/api/methods/openconnection.html), [FieldsDelimiter property](https://ws-garcia.github.io/VBA-CSV-interface/docs/api/properties/fieldsdelimiter.html), [RecordsDelimiter property](https://ws-garcia.github.io/VBA-CSV-interface/docs/api/properties/recordsdelimiter.html), [EscapeChar property](https://ws-garcia.github.io/VBA-CSV-interface/docs/api/properties/escapechar.html), [StartingRecord property](https://ws-garcia.github.io/VBA-CSV-interface/docs/api/properties/startingrecord.html), [EndingRecord property](https://ws-garcia.github.io/VBA-CSV-interface/docs/api/properties/endingrecord.html).
+: [OpenConnection method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/openconnection.html), [FieldsDelimiter property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/fieldsdelimiter.html), [RecordsDelimiter property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/recordsdelimiter.html), [EscapeChar property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/escapechar.html), [StartingRecord property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/startingrecord.html), [EndingRecord property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/endingrecord.html).
 
 ---
 
@@ -42,4 +42,4 @@ See also
 
 The `FieldsDelimiter`, `RecordsDelimiter`, `EscapeChar`, `StartingRecord` and `EndingRecord` properties sets the method's behavior to the needs.
 
-[Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/docs/api/methods/)
+[Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)

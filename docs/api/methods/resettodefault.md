@@ -94,4 +94,4 @@ The `ResetToDefault` method restart this config options:
 </tbody>
 </table>
 
-[Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/docs/api/methods/)
+[Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)

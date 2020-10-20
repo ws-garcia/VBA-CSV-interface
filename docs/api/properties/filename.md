@@ -37,4 +37,4 @@ _None_
 
 The `fileName` property is set when CSV file is load to memory.
 
-[Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/docs/api/properties/)
+[Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)

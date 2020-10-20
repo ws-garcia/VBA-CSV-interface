@@ -37,4 +37,4 @@ _None_
 
 A `False` value from `ExportSuccess` property indicates the last export operation wouldn't succeeded.
 
-[Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/docs/api/properties/)
+[Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)
