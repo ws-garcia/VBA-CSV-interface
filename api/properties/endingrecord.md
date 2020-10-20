@@ -47,7 +47,10 @@ See also
 ---
 
 ## Behavior
-The default value for the `EndingRecord` property is one(1) and force the class to import all the records from de CSV file starting at `StartingRecord` property. If the `EndingRecord` property is set to a value less than given on the `StartingRecord` property, only one record will be imported.
+
+The default value for the `EndingRecord` property is one(1) and force the class to import all the records from de CSV file starting at `StartingRecord` property. Setting the `EndingRecord` property to zero (0) and the `StartingRecord` property to one (1) , will import the first record from the CSV file only.
+
+Whatever other `EndingRecord` property value less than the given in the `StartingRecord` property forces import one record.
 
 Setting the `EndingRecord` property to a value greater than the available records in the CSV file has the same effect than setting it to one(1).
 
