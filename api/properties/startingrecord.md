@@ -49,6 +49,8 @@ See also
 
 ## Behavior
 
+The `StartingRecord` property can be set to an value greater or equal than one (1), trying to set it to a value less than the cited one will setting the property to its default value. 
+ 
 The default value for the `StartingRecord` property is one(1) and force the class to start the importation over the first available record in the CSV file. If the `StartingRecord` property is set to a value greater than the available records in the CSV file, neither record will be imported.
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)
