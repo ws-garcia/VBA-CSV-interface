@@ -1,11 +1,11 @@
 ---
-title: ImportFromString
+title: ImportFromCSVstring
 parent: Methods
 grand_parent: API
 nav_order: 5
 ---
 
-# ImportFromString
+# ImportFromCSVstring
 {: .fs-9 }
 
 Parses a string and save its CSV data to an array.
@@ -15,7 +15,7 @@ Parses a string and save its CSV data to an array.
 
 ## Syntax
 
-*expression*.`ImportFromString`*(CSVstring, {HeadersOmission})*
+*expression*.`ImportFromCSVstring`*(CSVstring, {HeadersOmission})*
 
 ### Parameters
 
