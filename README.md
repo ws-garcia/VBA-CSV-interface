@@ -2,13 +2,6 @@
 [![version](https://img.shields.io/static/v1?label=version&message=v1.1.0&color=brightgreen&style=plastic)](https://github.com/ws-garcia/VBA-CSV-interface/releases/tag/v1.1.0)
 [![version](https://img.shields.io/static/v1?label=licence&message=GPL&color=informational&style=plastic)](https://www.gnu.org/licenses/)
 
-## Table of contents
-
-* [Introductory words](https://github.com/ws-garcia/VBA-CSV-interface/tree/gh-pages/README.md#introductory-words)
-* [Getting started](https://github.com/ws-garcia/VBA-CSV-interface/tree/gh-pages/README.md#getting-started)
-* [Benchmark](https://github.com/ws-garcia/VBA-CSV-interface/tree/gh-pages/README.md#benchmark)
-* [Licence](https://github.com/ws-garcia/VBA-CSV-interface/tree/gh-pages/README.md#licence) 
-
 ## Introductory words
 
 VBA CSV interface is a class module developed to accomplish the data exchange task between VBA arrays and CSV files at high speed. Projects from [@sdkn104](https://github.com/sdkn104/VBA-CSV) and [@Senipah](https://github.com/Senipah/VBA-Better-Array), both on Github, were used for comparative performance purposes.
