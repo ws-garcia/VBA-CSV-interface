@@ -1,8 +1,9 @@
 # ![VBA-CSV interface](https://raw.githubusercontent.com/ws-garcia/VBA-CSV-interface/master/docs/assets/img/CSVinterface.png)
-[![version](https://img.shields.io/static/v1?label=version&message=v1.1.0&color=brightgreen&style=plastic)](https://github.com/ws-garcia/VBA-CSV-interface/releases/tag/v1.1.0)
-[![version](https://img.shields.io/static/v1?label=licence&message=GPL&color=informational&style=plastic)](https://www.gnu.org/licenses/)
 
 ---
+
+[![version](https://img.shields.io/static/v1?label=version&message=v1.1.0&color=brightgreen&style=plastic)](https://github.com/ws-garcia/VBA-CSV-interface/releases/tag/v1.1.0)
+[![version](https://img.shields.io/static/v1?label=licence&message=GPL&color=informational&style=plastic)](https://www.gnu.org/licenses/)
 
 ## Table of contents
 
