@@ -6,8 +6,8 @@
 #getting-started
 ## Table of contents
 
-* [Intro](https://github.com/ws-garcia/VBA-CSV-interface/tree/gh-pages/README.md#introductory-words)
-* [Advantages](https://github.com/ws-garcia/VBA-CSV-interface/tree/gh-pages/README.md#getting-started)
+* [Introductory words](https://github.com/ws-garcia/VBA-CSV-interface/tree/gh-pages/README.md#introductory-words)
+* [Getting started](https://github.com/ws-garcia/VBA-CSV-interface/tree/gh-pages/README.md#getting-started)
 * [Benchmark](https://github.com/ws-garcia/VBA-CSV-interface/tree/gh-pages/README.md#benchmark)
 * [Licence](https://github.com/ws-garcia/VBA-CSV-interface/tree/gh-pages/README.md#licence) 
 
