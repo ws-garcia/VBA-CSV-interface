@@ -3,7 +3,7 @@
 [![version](https://img.shields.io/static/v1?label=licence&message=GPL&color=informational&style=plastic)](https://www.gnu.org/licenses/)
 
 ---
-#getting-started
+
 ## Table of contents
 
 * [Introductory words](https://github.com/ws-garcia/VBA-CSV-interface/tree/gh-pages/README.md#introductory-words)
