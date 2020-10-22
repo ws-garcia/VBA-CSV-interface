@@ -112,11 +112,44 @@ The main objective of this test is to measure the performance of the different p
 
 _NOTE: The table below shows the benchmark results, in seconds, for the currently tested procedures. Some projects was excluded from the benchmark due they does not complies with the RFC4180 standard_.
 
-|*Procedure (Author)*|*OH|*HF*|*AF*|*LargeF*|*LargeFQ*|
-|:--------------------------|-----------------:|----------------:|----------------:|----------------:|----------------:|
-|*ImportFromCSV(W. García)*|**2.7031**|**2.7500**|**2.6719 (0.9531)**|**2.9844**|**4.5469 (2.4844)**|
-|*FromCSV(@Senipah)*|N/A|N/A|N/A||N/A||N/A|
-|*ParseCSVToArray/ADO (@sdkn104)*|3.5000|3.7969|4.5156|7.2812|11.7422|
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><strong>Procedure (Author)</strong></th>
+<th style="text-align: left;"><strong>OH</strong></th>
+<th style="text-align: left;"><strong>HF</strong></th>
+<th style="text-align: left;"><strong>AF</strong></th>
+<th style="text-align: left;"><strong>LargeF</strong></th>
+<th style="text-align: left;"><strong>LargeFQ</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><em>ImportFromCSVString(W. García)</em></td>
+<td style="text-align: left;"><p style="color:blue;">2.7031</p></td>
+<td style="text-align: left;"><p style="color:blue;">2.7500</p></td>
+<td style="text-align: left;"><p style="color:blue;">2.6719 / 0.9531</p></td>
+<td style="text-align: left;"><p style="color:blue;">2.9844</p></td>
+<td style="text-align: left;"><p style="color:blue;">4.5469 / 2.4844</p></td>
+</tr>
+<tr>
+<td style="text-align: left;"><em>FromCSV(@Senipah)</em></td>
+<td style="text-align: left;">N/A</td>
+<td style="text-align: left;">N/A</td>
+<td style="text-align: left;">N/A</td>
+<td style="text-align: left;">N/A</td>
+<td style="text-align: left;">N/A</td>
+</tr>
+<tr>
+<td style="text-align: left;"><em>ParseCSVToArray/ADO (@sdkn104)</em></td>
+<td style="text-align: left;">3.5000</td>
+<td style="text-align: left;">3.7969</td>
+<td style="text-align: left;">4.5156</td>
+<td style="text-align: left;">7.2812</td>
+<td style="text-align: left;">11.7422</td>
+</tr>
+</tbody>
+</table>
 
 In the above results, the 2nd value, for cells with two values, is obtained when setting `QuotingMode = QuotationMode.All`. As we can see, the class performance gets a little improve using this configuration. Keep in mind that not all CSV files can be successful imported using the previous tweaking.
 
