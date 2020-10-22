@@ -114,7 +114,7 @@ _NOTE: The table below shows the benchmark results, in seconds, for the currentl
 
 |*Procedure (Author)*|*OH|*HF*|*AF*|*LargeF*|*LargeFQ*|
 |:--------------------------|-----------------:|----------------:|----------------:|----------------:|----------------:|
-|*ImportFromCSV(W. García)*|**2.7031**|**2.7500**|**2.6719/0.9531**|**2.9844**|**4.5469/2.4844**|
+|*ImportFromCSV(W. García)*|**2.7031**|**2.7500**|**2.6719 (0.9531)**|**2.9844**|**4.5469 (2.4844)**|
 |*FromCSV(@Senipah)*|N/A|N/A|N/A||N/A||N/A|
 |*ParseCSVToArray/ADO (@sdkn104)*|3.5000|3.7969|4.5156|7.2812|11.7422|
 
