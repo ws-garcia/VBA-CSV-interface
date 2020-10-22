@@ -116,37 +116,37 @@ _NOTE: The table below shows the benchmark results, in seconds, for the currentl
 <thead>
 <tr>
 <th style="text-align: left;"><strong>Procedure (Author)</strong></th>
-<th style="text-align: left;"><strong>OH</strong></th>
-<th style="text-align: left;"><strong>HF</strong></th>
-<th style="text-align: left;"><strong>AF</strong></th>
-<th style="text-align: left;"><strong>LargeF</strong></th>
-<th style="text-align: left;"><strong>LargeFQ</strong></th>
+<th style="text-align: right;"><strong>OH</strong></th>
+<th style="text-align: right;"><strong>HF</strong></th>
+<th style="text-align: right;"><strong>AF</strong></th>
+<th style="text-align: right;"><strong>LargeF</strong></th>
+<th style="text-align: right;"><strong>LargeFQ</strong></th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: left;"><em>ImportFromCSVString(W. García)</em></td>
-<td style="text-align: left;"><p style="color:blue;">2.7031</p></td>
-<td style="text-align: left;"><p style="color:blue;">2.7500</p></td>
-<td style="text-align: left;"><p style="color:blue;">2.6719 / 0.9531</p></td>
-<td style="text-align: left;"><p style="color:blue;">2.9844</p></td>
-<td style="text-align: left;"><p style="color:blue;">4.5469 / 2.4844</p></td>
+<td style="text-align: right;"><p style="color:blue;">2.7031</p></td>
+<td style="text-align: right;"><p style="color:blue;">2.7500</p></td>
+<td style="text-align: right;"><p style="color:blue;">2.6719 / 0.9531</p></td>
+<td style="text-align: right;"><p style="color:blue;">2.9844</p></td>
+<td style="text-align: right;"><p style="color:blue;">4.5469 / 2.4844</p></td>
 </tr>
 <tr>
 <td style="text-align: left;"><em>FromCSV(@Senipah)</em></td>
-<td style="text-align: left;">N/A</td>
-<td style="text-align: left;">N/A</td>
-<td style="text-align: left;">N/A</td>
-<td style="text-align: left;">N/A</td>
-<td style="text-align: left;">N/A</td>
+<td style="text-align: right;">N/A</td>
+<td style="text-align: right;">N/A</td>
+<td style="text-align: right;">N/A</td>
+<td style="text-align: right;">N/A</td>
+<td style="text-align: right;">N/A</td>
 </tr>
 <tr>
 <td style="text-align: left;"><em>ParseCSVToArray/ADO (@sdkn104)</em></td>
-<td style="text-align: left;">3.5000</td>
-<td style="text-align: left;">3.7969</td>
-<td style="text-align: left;">4.5156</td>
-<td style="text-align: left;">7.2812</td>
-<td style="text-align: left;">11.7422</td>
+<td style="text-align: right;">3.5000</td>
+<td style="text-align: right;">3.7969</td>
+<td style="text-align: right;">4.5156</td>
+<td style="text-align: right;">7.2812</td>
+<td style="text-align: right;">11.7422</td>
 </tr>
 </tbody>
 </table>
