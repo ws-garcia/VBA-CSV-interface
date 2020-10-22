@@ -133,12 +133,12 @@ _NOTE: The table below shows the benchmark results, in seconds, for the currentl
 <td style="text-align: right;"><p style="color:blue;">4.5469<br>2.4844</p></td>
 </tr>
 <tr>
-<td style="text-align: left;"><em>FromCSV<br>(@Senipah)</em></td>
-<td style="text-align: right;">N/A</td>
-<td style="text-align: right;">N/A</td>
-<td style="text-align: right;">N/A</td>
-<td style="text-align: right;">N/A</td>
-<td style="text-align: right;">N/A</td>
+<td style="text-align: left;"><em>FromCSVString<br>(@Senipah)</em></td>
+<td style="text-align: right;">13.5312</td>
+<td style="text-align: right;">13.4922</td>
+<td style="text-align: right;">14.4453</td>
+<td style="text-align: right;">16.0234</td>
+<td style="text-align: right;">22.3047</td>
 </tr>
 <tr>
 <td style="text-align: left;"><em>ParseCSVToArray/ADO<br>(@sdkn104)</em></td>
@@ -150,6 +150,11 @@ _NOTE: The table below shows the benchmark results, in seconds, for the currentl
 </tr>
 </tbody>
 </table>
+
+### Conclusions
+
+- `ImportFromCSVString` is the tested faster one method, outperforming its nearer counterpart by a factor of 2.5x in performance.
+- The CSV syntax impacts the performance in this way: as the number of escaped fields is increased, the performance is decreased.
 
 In the above results, the 2nd value, for cells with two values, is obtained when setting `QuotingMode = QuotationMode.All`. As we can see, the class performance gets a little improve using this configuration. Keep in mind that not all CSV files can be successful imported using the previous tweaking.
 
