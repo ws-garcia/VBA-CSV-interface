@@ -125,15 +125,15 @@ _NOTE: The table below shows the benchmark results, in seconds, for the currentl
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><em>ImportFromCSVString(W. García)</em></td>
+<td style="text-align: left;"><em>ImportFromCSVString<br>(W. García)</em></td>
 <td style="text-align: right;"><p style="color:blue;">2.7031</p></td>
 <td style="text-align: right;"><p style="color:blue;">2.7500</p></td>
-<td style="text-align: right;"><p style="color:blue;">2.6719 / 0.9531</p></td>
+<td style="text-align: right;"><p style="color:blue;">2.6719<br>0.9531</p></td>
 <td style="text-align: right;"><p style="color:blue;">2.9844</p></td>
-<td style="text-align: right;"><p style="color:blue;">4.5469 / 2.4844</p></td>
+<td style="text-align: right;"><p style="color:blue;">4.5469<br>2.4844</p></td>
 </tr>
 <tr>
-<td style="text-align: left;"><em>FromCSV(@Senipah)</em></td>
+<td style="text-align: left;"><em>FromCSV<br>(@Senipah)</em></td>
 <td style="text-align: right;">N/A</td>
 <td style="text-align: right;">N/A</td>
 <td style="text-align: right;">N/A</td>
@@ -141,7 +141,7 @@ _NOTE: The table below shows the benchmark results, in seconds, for the currentl
 <td style="text-align: right;">N/A</td>
 </tr>
 <tr>
-<td style="text-align: left;"><em>ParseCSVToArray/ADO (@sdkn104)</em></td>
+<td style="text-align: left;"><em>ParseCSVToArray/ADO<br>(@sdkn104)</em></td>
 <td style="text-align: right;">3.5000</td>
 <td style="text-align: right;">3.7969</td>
 <td style="text-align: right;">4.5156</td>
