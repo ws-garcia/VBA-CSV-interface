@@ -99,27 +99,30 @@ ENC = CSVix.FileEncoding
 * __Data Format__: _Keep in mind that the class doesn't distinguish between number, dates and strings, all data is read as text and you can put in an Excel sheet to let Microsoft software format it._
 
 ## Benchmark
-The class was tested against two solutions (the one from [@Senipah](https://github.com/Senipah/VBA-Better-Array) and the other from [@sdkn104](https://github.com/sdkn104/VBA-CSV)) using a laptop running `Win 10 Pro 64-bit, Intel® Core™ i7-4500U CPU @1.80-2.40 GHz, 8 GB RAM`. 
-The test consists on a fixed number of calls to the import method over three (3) different files, each of this with three records (3) and four fields (4), for an overall work load of twelve (12) fields per call:
-* _RFC-4180_OH.csv_: **OH**- Only Quote Headers (4 fields)
-* _RFC-4180_HF.csv_: **HF**- Quote Half of fields (6 fields)
-* _RFC-4180_AF.csv_: **AF**- Quote All fields (12 fields) 
+The benchmark provided here is focused on the supposed most critical operation, this is the parse one when working with CSV files. Although, benchmark for the exportation procedure is given on. 
 
-The main objective of this test is to measure the performance of the different procedures against the possible configurations of a potential CSV file. The test results can help answer the following questions: does the number of fields to be escaped affect the performance of the procedure? If yes, in what magnitude?
+The class was tested against two solutions (the one from [@Senipah](https://github.com/Senipah/VBA-Better-Array) and the other from [@sdkn104](https://github.com/sdkn104/VBA-CSV)) using a laptop running `Win 10 Pro x64, Intel® Core™ i7-4500U CPU @1.80-2.40 GHz, 8 GB RAM, Excel 2019 x86`. The test consists on a 100k calls to the import procedure over three (3) different files, each of this with three records (3) and four fields (4), for an overall work load of 1.2MM fields. The CSV files are:
+* _RFC-4180_OH.csv_: **OH**- Only the teaders are quoted (4 fields)
+* _RFC-4180_HF.csv_: **HF**- Half of fields are quoted (6 fields)
+* _RFC-4180_AF.csv_: **AF**- All fields are quoted (12 fields) 
+* *Demo_400000records.csv*: **LargeF**- 1.2MM fields.
+* *Demo_Headed_400000records.csv*: **LargeFQ**- 1.2MM fields sorrounded by double quotes.
 
-_NOTE: Some projects was excluded from the benchmark due they does not complies with the RFC4180 standard_.
+The main objective of this test is to measure the performance of the different procedures against the possible configurations of a potential CSV file. The test results can help answer the following questions: does the number of fields to be escaped affect the performance of the procedure? If yes, in what magnitude? The test also includes benchmark for parse to a CSV file of considerable size.
 
-|*Procedure (Author)*|*OH|*HF*|*AF*|
-|:--------------------------|-----------------:|----------------:|----------------:|
-|*ImportFromCSV(W. García)*|**N/A**|**N/A**|**N/A**|
-|*FromCSV(@Senipah)*|N/A|N/A|N/A|
-|*ParseCSVToArray/ADO (@sdkn104)*|N/A|N/A|N/A|
+_NOTE: The table below shows the benchmark results, in seconds, for the currently tested procedures. Some projects was excluded from the benchmark due they does not complies with the RFC4180 standard_.
 
-However, when setting `QuotingMode = QuotationMode.All` the class performance gets a little improve. The image below shows the performance of the VBA CSVinterface class after change the `QuotingMode` property. Take over your considerations that no all CSV files can be successful imported using the previous tweaking.
+|*Procedure (Author)*|*OH|*HF*|*AF*|*LargeF*|*LargeFQ*|
+|:--------------------------|-----------------:|----------------:|----------------:|----------------:|----------------:|
+|*ImportFromCSV(W. García)*|**2.7031**|**2.7500**|**2.6719/0.9531**|**2.9844**|**4.5469/2.4844**|
+|*FromCSV(@Senipah)*|N/A|N/A|N/A||N/A||N/A|
+|*ParseCSVToArray/ADO (@sdkn104)*|3.5000|3.7969|4.5156|7.2812|11.7422|
+
+In the above results, the 2nd value, for cells with two values, is obtained when setting `QuotingMode = QuotationMode.All`. As we can see, the class performance gets a little improve using this configuration. Keep in mind that not all CSV files can be successful imported using the previous tweaking.
+
+The image bellow shows the overall performance for the CSV interface class.
 
 ![BenchMark](Benchmark.png)
-
-{: .fs-4 .fw-300 }
 
 ## Licence
 Copyright (C) 2020  [W. García](https://github.com/ws-garcia/VBA-CSV-interface/).
