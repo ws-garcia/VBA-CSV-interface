@@ -105,6 +105,8 @@ The test consists on a fixed number of calls to the import method over three (3)
 * _RFC-4180_HF.csv_: **HF**- Quote Half of fields (6 fields)
 * _RFC-4180_AF.csv_: **AF**- Quote All fields (12 fields) 
 
+The main objective of this test is to measure the performance of the different procedures against the possible configurations of a potential CSV file. The test results can help answer the following questions: does the number of fields to be escaped affect the performance of the procedure? If yes, in what magnitude?
+
 _NOTE: Some projects was excluded from the benchmark due they does not complies with the RFC4180 standard_.
 
 |*Procedure (Author)*|*OH|*HF*|*AF*|
