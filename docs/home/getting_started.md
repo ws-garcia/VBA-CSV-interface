@@ -105,8 +105,8 @@ The class was tested against two solutions (the one from [@Senipah](https://gith
 * _RFC-4180_OH.csv_: **OH**- Only the teaders are quoted (4 fields)
 * _RFC-4180_HF.csv_: **HF**- Half of fields are quoted (6 fields)
 * _RFC-4180_AF.csv_: **AF**- All fields are quoted (12 fields) 
-* *Demo_400000records.csv*: **LargeF**- 1.2MM fields.
-* *Demo_Headed_400000records.csv*: **LargeFQ**- 1.2MM fields sorrounded by double quotes.
+* *Demo_400k_records.csv*: **LargeF**- 1.2MM fields.
+* *Demo_Headed_400k_records.csv*: **LargeFQ**- 1.2MM fields sorrounded by double quotes.
 
 First three of files have special chars (line breaks, commas, double quotes) into fields, also have trailing spaces at the field’s boundaries. The main objective of this test is to measure the performance of the different procedures against the possible configurations of a potential CSV file. The test results can help answer the following questions: does the number of fields to be escaped affect the performance of the procedure? If yes, in what magnitude? The test also includes benchmark for parse to a CSV file of considerable size.
 
