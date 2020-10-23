@@ -130,7 +130,7 @@ _NOTE: The table below shows the benchmark results, in seconds, for the currentl
 <td style="text-align: right;"><p style="color:blue;">2.6797</p></td>
 <td style="text-align: right;"><p style="color:blue;">2.5625<br>0.9531</p></td>
 <td style="text-align: right;"><p style="color:blue;">2.9844</p></td>
-<td style="text-align: right;"><p style="color:blue;">4.5469<br>2.4844</p></td>
+<td style="text-align: right;"><p style="color:blue;">4.3906<br>2.4844</p></td>
 </tr>
 <tr>
 <td style="text-align: left;"><em>FromCSVString<br>(@Senipah)</em></td>
@@ -159,7 +159,7 @@ _NOTE: The table below shows the benchmark results, in seconds, for the currentl
 
 In the above results, the 2nd value, for cells with two values, is obtained when setting `QuotingMode = QuotationMode.All`. As we can see, the class performance gets a little improve using this configuration. Keep in mind that not all CSV files can be successful imported using the previous tweaking.
 
-The image bellow shows the overall performance for the CSV interface class.
+The image bellow shows the overall performance for the imports and exports operations from the CSV interface class. Notice, specials syntax CSV’s will take about 1.8x more time to be parsed due the parser expands its syntax analysis range. In the same way, the exportation procedure will have an overheat when the instance is setting up to be RCF-4180 standard compliant.
 
 ![BenchMark](Benchmark.png)
 
