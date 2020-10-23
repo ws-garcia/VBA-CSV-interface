@@ -1,4 +1,4 @@
-VERSION 1.0 CLASS
+ï»¿VERSION 1.0 CLASS
 BEGIN
   MultiUse = -1  'True
 END
@@ -9,7 +9,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '#
 '////////////////////////////////////////////////////////////////////////////////////////////
-' Copyright © 2020 W. García
+' Copyright Â© 2020 W. GarcÃ­a
 ' GPL-3.0 license | https://github.com/ws-garcia/
 ' https://ingwilfredogarcia.wordpress.com
 '#
@@ -28,7 +28,7 @@ Attribute VB_Exposed = False
 ' GENERAL INFO:
 ' This class is inspired in a work available in
 ' https://www.freevbcode.com/ShowCode.asp?ID=3110. The class module was designed and tested
-' using Windows 7® and is supose to work as well over more recent Microsoft™ operative
+' using Windows 7Â® and is supose to work as well over more recent Microsoftâ„¢ operative
 ' system.
 '#
 ' Use CSVinterface class to simplify the work with comma separated value (CSV) files.
