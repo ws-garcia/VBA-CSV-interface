@@ -108,7 +108,7 @@ The class was tested against two solutions (the one from [@Senipah](https://gith
 * *Demo_400000records.csv*: **LargeF**- 1.2MM fields.
 * *Demo_Headed_400000records.csv*: **LargeFQ**- 1.2MM fields sorrounded by double quotes.
 
-The main objective of this test is to measure the performance of the different procedures against the possible configurations of a potential CSV file. The test results can help answer the following questions: does the number of fields to be escaped affect the performance of the procedure? If yes, in what magnitude? The test also includes benchmark for parse to a CSV file of considerable size.
+First three of files have special chars (line breaks, commas, double quotes) into fields, also have trailing spaces at the field’s boundaries. The main objective of this test is to measure the performance of the different procedures against the possible configurations of a potential CSV file. The test results can help answer the following questions: does the number of fields to be escaped affect the performance of the procedure? If yes, in what magnitude? The test also includes benchmark for parse to a CSV file of considerable size.
 
 _NOTE: The table below shows the benchmark results, in seconds, for the currently tested procedures. Some projects was excluded from the benchmark due they does not complies with the RFC4180 standard_.
 
@@ -126,9 +126,9 @@ _NOTE: The table below shows the benchmark results, in seconds, for the currentl
 <tbody>
 <tr>
 <td style="text-align: left;"><em>ImportFromCSVString<br>(W. García)</em></td>
-<td style="text-align: right;"><p style="color:blue;">2.7031</p></td>
-<td style="text-align: right;"><p style="color:blue;">2.7500</p></td>
-<td style="text-align: right;"><p style="color:blue;">2.6719<br>0.9531</p></td>
+<td style="text-align: right;"><p style="color:blue;">2.4844</p></td>
+<td style="text-align: right;"><p style="color:blue;">2.6797</p></td>
+<td style="text-align: right;"><p style="color:blue;">2.5625<br>0.9531</p></td>
 <td style="text-align: right;"><p style="color:blue;">2.9844</p></td>
 <td style="text-align: right;"><p style="color:blue;">4.5469<br>2.4844</p></td>
 </tr>
@@ -155,6 +155,7 @@ _NOTE: The table below shows the benchmark results, in seconds, for the currentl
 
 - `ImportFromCSVString` is the tested faster one method, outperforming its nearer counterpart by a factor of 2.5x in performance.
 - The CSV syntax impacts the performance in this way: as the number of escaped fields is increased, the performance is decreased.
+- As larger fields a CSV file has, larger time to parse it. This affirmation binds the parse performance to the on-disk file size.
 
 In the above results, the 2nd value, for cells with two values, is obtained when setting `QuotingMode = QuotationMode.All`. As we can see, the class performance gets a little improve using this configuration. Keep in mind that not all CSV files can be successful imported using the previous tweaking.
 

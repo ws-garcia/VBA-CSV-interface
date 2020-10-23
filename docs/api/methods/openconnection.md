@@ -15,12 +15,28 @@ Loads a CSV file on memory for data Input/Output operations.
 
 ## Syntax
 
-*expression*.`OpenConnection`*(csvPathAndFilename)*
+*expression*.`OpenConnection`*(csvPathAndFilename, {DeleExistingFile})*
 
 ### Parameters
 
-The required *csvPathAndFilename* argument is an identifier specifying a `String` variable.
-
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Part</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><em>csvPathAndFilename</em></td>
+<td style="text-align: left;">Required. Identifier specifying a <code>String</code> variable holding the file's path.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><em>DeleExistingFile</em></td>
+<td style="text-align: left;">Optional. Identifier specifying a <code>Boolean</code> variable.</td>
+</tr>
+</tbody>
+</table>
 ### Return value
 
 _None_
@@ -40,6 +56,6 @@ See also
 
 ## Behavior
 
-When the given path exists the file will be created on that path, otherwise an error occur. For on path existing CSV file, the `OpenConnection` method will overwrites all its content. If that is not the case, a new file will be created.
+When the given path exists the file will be created on that path, otherwise an error occur. For on path existing CSV file, the `OpenConnection` method will delete the file when the *DeleExistingFile* parameter is set to `True`. If that is not the case, a new file will be created.
 
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)
