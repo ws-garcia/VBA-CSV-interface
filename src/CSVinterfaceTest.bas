@@ -7,7 +7,7 @@ Sub Test_Import()
 
     Set CSVix = New CSVinterface
     
-    fileName = ThisWorkbook.path & "\Demo_100000records.csv"
+    fileName = ThisWorkbook.path & "\Demo_400k_records.csv"
 
     H = 0#
     For i = 1 To 10

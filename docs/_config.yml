@@ -1,0 +1,23 @@
+#theme: jekyll-theme-architect
+remote_theme: ws-garcia/just-the-docs
+# Set a path/url to a logo that will be displayed instead of the title
+logo: "/assets/img/CSVinterface.png"
+# Back to top link
+back_to_top: true
+back_to_top_text: "Back to top"
+# Enable or disable the site search
+# Supports true (default) or false
+search_enabled: true
+# Enable support for hyphenated search words:
+search_tokenizer_separator: /[\s/]+/
+# Aux links for the upper right navigation
+aux_links:
+  "VBA CSV interface on GitHub":
+    - "//github.com/ws-garcia/VBA-CSV-interface"
+# Heading anchor links appear on hover over h1-h6 tags in page content
+# allowing users to deep link to a particular heading on a page.
+#
+# Supports true (default) or false/nil
+heading_anchors: true
+# Color scheme currently only supports "dark" or nil (default)
+color_scheme: nil
