@@ -18,9 +18,9 @@ nav_order: 2
 
 ## Export data to a CSV file
 
-The [example1] shows how you can export all the data in VBA array to a CSV file using the RFC-4180 standard as paramount. 
+The [EXAMPLE1] shows how you can export all the data in VBA array to a CSV file using the RFC-4180 standard as paramount. 
 
-#### [example1]
+#### [EXAMPLE1]
 *Note: the example uses the option `QuotationMode.Critical`, [learn more here](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html).*
 ```vb
 Sub ExportToCSV_RFC4180()
@@ -47,12 +47,12 @@ End Sub
 
 ## Export to a CSV file without special syntax
 
-The [example2] shows how you can export all the data in VBA array to a CSV file without check the RFC-4180 standard’s rules. Be careful, use this only if the array doesn't hold especial chars (vbCrLf [vbCr, vbLf], comma [semicolon], double quotes[apostrophe]) in neither of its fields. The output CSV file has neither field needing to be escaped.
+The [EXAMPLE2] shows how you can export all the data in VBA array to a CSV file without check the RFC-4180 standard’s rules. Be careful, use this only if the array doesn't hold especial chars (vbCrLf [vbCr, vbLf], comma [semicolon], double quotes[apostrophe]) in neither of its fields. The output CSV file has neither field needing to be escaped.
 
 See also
 :[QuotationMode](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html), [EscapeType](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/escapetype.html).
 
-#### [example2]
+#### [EXAMPLE2]
 *Note: the example uses the option `QuotationMode.All`, and `EscapeType.NullChar`*
 ```vb
 Sub ExportToCSV()
@@ -78,12 +78,12 @@ Sub ExportToCSV()
 	Set CSVix = Nothing 'Terminate the current instance
 End Sub
 ```
-The [example3] shows how you can export all the data in VBA array to a CSV file without check the RFC-4180 standard’s rules. Each field CSV of the output file need to be escaped by desired char. The procedure presented in the [example3] can be used in whatever circumstance.
+The [EXAMPLE3] shows how you can export all the data in VBA array to a CSV file without check the RFC-4180 standard’s rules. Each field CSV of the output file need to be escaped by desired char. The procedure presented in the [EXAMPLE3] can be used in whatever circumstance.
 
 See also
 :[QuotationMode](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html), [EscapeType](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/escapetype.html).
 
-#### [example3]
+#### [EXAMPLE3]
 *Note: the example uses the option `QuotationMode.All`, and `EscapeType.NullChar`*
 ```vb
 Sub ExportToCSV()
