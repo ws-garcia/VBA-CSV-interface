@@ -18,9 +18,9 @@ nav_order: 1
 
 ## Import CSV file data
 
-The [example1] shows how you can import all the data from a CSV file using the RFC-4180 standard as paramount. 
+The [EXAMPLE1] shows how you can import all the data from a CSV file using the RFC-4180 standard as paramount. 
 
-#### [example1]
+#### [EXAMPLE1]
 *Note: the example uses the option `QuotationMode.Critical`, [learn more here](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html).*
 ```vb
 Sub ImportRecords_RFC4180()
@@ -39,9 +39,9 @@ End Sub
 
 ## Import top 10 records from a CSV file into a VBA array 
 
-The [example2] shows how you can import the Top 10 records from a CSV file using the RFC-4180 standard as paramount.
+The [EXAMPLE2] shows how you can import the Top 10 records from a CSV file using the RFC-4180 standard as paramount.
 
-#### [example2]
+#### [EXAMPLE2]
 *Note: the example uses the option `QuotationMode.Critical`, [learn more here](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html).*
 ```vb
 Sub ImportTopTenRecords_RFC4180()
@@ -58,9 +58,9 @@ Sub ImportTopTenRecords_RFC4180()
 	Set CSVix = Nothing 'Terminate the current instance
 End Sub
 ```
-The [example3] accomplishes the same task of the *example1*, the difference is that a temporary variable is used to store the CSV file's content instead of use the `OpenConnection` method. Also, the *example3* shows how to omit the CSV's headers.
+The [EXAMPLE3] accomplishes the same task of the [EXAMPLE1], the difference is that a temporary variable is used to store the CSV file's content instead of use the `OpenConnection` method. Also, the [EXAMPLE3] shows how to omit the CSV's headers.
 
-#### [example3]
+#### [EXAMPLE3]
 *Note: the example uses the option `QuotationMode.Critical`, [learn more here](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html).*
 ```vb
 Sub ImportTopTenRecords_RFC4180()
@@ -79,9 +79,9 @@ End Sub
 ```
 
 ## Import ten middle records from a CSV file into a VBA array 
-The [example4] shows how you can import 10 middle records from a CSV file using the RFC-4180 standard as paramount.
+The [EXAMPLE4] shows how you can import 10 middle records from a CSV file using the RFC-4180 standard as paramount.
 
-#### [example4]
+#### [EXAMPLE4]
 *Note: the example uses the option `QuotationMode.Critical`, [learn more here](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html).*
 ```vb
 Sub ImportTenMiddleRecords_RFC4180()
@@ -104,11 +104,11 @@ End Sub
 
 This is the fastest way to work with CSV files because the CSV interface class don't check the syntax given at the RFC-4180 standard. If your CSV files has trailing spaces, or you don't know if it holds a field needing to be escaped, please [reset the config options](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/resettodefault.html) for the current instance to avoid incorrect results.
 
-The [example5] shows how you can import all the data from a CSV file without checking the syntax given at the RFC-4180 standard. The file to be parsed has neither field needing to be escaped.
+The [EXAMPLE5] shows how you can import all the data from a CSV file without checking the syntax given at the RFC-4180 standard. The file to be parsed has neither field needing to be escaped.
 
 See also
 :[QuotationMode](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html), [EscapeType](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/escapetype.html).
-#### [example5]
+#### [EXAMPLE5]
 *Note: the example uses the option `QuotationMode.All`, and `EscapeType.NullChar`*
 ```vb
 Sub ImportRecords()
@@ -126,11 +126,11 @@ Sub ImportRecords()
 	Set CSVix = Nothing 'Terminate the current instance
 End Sub
 ```
-The [example6] shows how you can import all the data from a CSV file without checking the syntax given at the RFC-4180 standard. In the file to be parsed, all fields need to be escaped.
+The [EXAMPLE6] shows how you can import all the data from a CSV file without checking the syntax given at the RFC-4180 standard. In the file to be parsed, all fields need to be escaped.
 
 See also
 :[QuotationMode](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html), [EscapeType](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/escapetype.html).
-#### [example6]
+#### [EXAMPLE6]
 *Note: the example uses the option `QuotationMode.All`, and `EscapeType.DoubleQuotes`*
 ```vb
 Sub ImportRecords()
