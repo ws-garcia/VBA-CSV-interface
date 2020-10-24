@@ -1,4 +1,4 @@
-ï»¿VERSION 1.0 CLASS
+VERSION 1.0 CLASS
 BEGIN
   MultiUse = -1  'True
 END
@@ -9,7 +9,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '#
 '////////////////////////////////////////////////////////////////////////////////////////////
-' Copyright Â© 2020 W. GarcÃ­a
+' Copyright © 2020 W. García
 ' GPL-3.0 license | https://github.com/ws-garcia/
 ' https://ingwilfredogarcia.wordpress.com
 '#
@@ -28,7 +28,7 @@ Attribute VB_Exposed = False
 ' GENERAL INFO:
 ' This class is inspired in a work available in
 ' https://www.freevbcode.com/ShowCode.asp?ID=3110. The class module was designed and tested
-' using Windows 7Â® and is supose to work as well over more recent Microsoftâ„¢ operative
+' using Windows 7® and is supose to work as well over more recent Microsoft™ operative
 ' system.
 '#
 ' Use CSVinterface class to simplify the work with comma separated value (CSV) files.
@@ -109,6 +109,14 @@ End Enum
 Public Enum QuotationMode
     Critical = 0 '--------------Only fields that includes special chars.
     All = 1
+End Enum
+Public Enum abCharsets
+    abError = 0
+    abANSI = 1
+    abUnicode = 2
+    abUnicodeBigEndian = 3
+    abUTF8 = 4
+    ebUnknown = 5
 End Enum
 '////////////////////////////////////////////////////////////////////////////////////////////
 '#
