@@ -1,5 +1,5 @@
 # ![VBA-CSV interface](/docs/assets/img/CSVinterface.png)
-[![version](https://img.shields.io/static/v1?label=version&message=latest&color=brightgreen&style=plastic)](https://github.com/ws-garcia/VBA-CSV-interface/releases/latest/)
+[![version](https://img.shields.io/static/v1?label=version&message=latest&color=brightgreen&style=plastic)](https://github.com/ws-garcia/VBA-CSV-interface/releases/latest/download/latest.zip)
 [![version](https://img.shields.io/static/v1?label=licence&message=GPL&color=informational&style=plastic)](https://www.gnu.org/licenses/)
 
 ## Introductory words
