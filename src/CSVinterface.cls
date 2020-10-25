@@ -33,7 +33,7 @@ Attribute VB_Exposed = False
 '#
 ' Use CSVinterface class to simplify the work with comma separated value (CSV) files.
 ' It allow you to exchange information betwen an VBA array and an external CSV file without
-' using Excel WorkSheets, neigter any external reference such as [MS Scripting Runtime].
+' using Excel Worksheets, neigter any external reference such as [MS Scripting Runtime].
 ' The class develop is focusing in the code execution performance.
 '#
 ' Feel free to visit the cited websites to explore some of the available solutions for
@@ -60,13 +60,14 @@ Attribute VB_Exposed = False
 ' @1 https://senipah.github.io/VBA-Better-Array
 ' @2 https://github.com/sdkn104/VBA-CSV
 ' @3 http://www.vbaexpress.com/forum/showthread.php?25095-Solved-Check-the-file-encode-type
-' @4 https://www.codegrepper.com/code-examples/vb/excel+vba+Load+csv+file+into+an+array+rather+than+the+worksheet
+' @4 https://www.codegrepper.com/code-examples/vb/excel+vba+Load+csv+file+into+an+array+rather+than+the+Worksheet
 ' @5 http://excellerando.blogspot.com/2014/12/writing-excel-range-to-csv-file.html
 ' @6 https://stackoverflow.com/questions/4191560/create-csv-from-array-in-vba
 ' @7 https://www.freevbcode.com/ShowCode.asp?ID=3110
 ' @8 https://stackoverflow.com/questions/1376756/what-is-a-superfast-way-to-read-large-files-line-by-line-in-vba
 ' @9 https://www.freevbcode.com/ShowCode.asp?ID=7655
-
+' @10 http://www.cpearson.com/excel/mainpage.aspx
+' @11 https://www.exceltip.com/excel-macros-and-vba
 '////////////////////////////////////////////////////////////////////////////////////////////
 '#
 Option Explicit
@@ -292,6 +293,63 @@ Attribute DumpToArray.VB_Description = "Dumps the CSV data from the current inst
 Attribute DumpToArray.VB_UserMemId = 0
     OutPutArray() = P_CSV_DATA
     Erase P_CSV_DATA
+End Sub
+Public Sub DumpToSheet(Optional WBookName As String, _
+                        Optional SheetName As String, _
+                        Optional RngName As String = "A1")
+Attribute DumpToSheet.VB_Description = "Dumps the CSV data from the current instance to an Excel Worksheet."
+    Dim WBook As Workbook
+    Dim OutputSheet As Worksheet
+    Dim OutputRange As Range
+    
+    On Error Resume Next
+    If IsArrayAllocated(P_CSV_DATA) Then
+        EnableOptimization
+        '@------------------------------------------------------
+        'Set the target Workbook
+        If WBookName = vbNullString Then
+            Set WBook = ThisWorkbook
+        ElseIf Not IsWorkbookOpen(WBookName) Then
+            Set WBook = Workbooks.Add
+        Else
+            Set WBook = Workbooks(WBookName)
+        End If
+        '@------------------------------------------------------
+        'Set the target Worksheet
+        If IsSheetInWorkbook(SheetName, WBook) Then
+            Set OutputSheet = WBook.Sheets(SheetName)
+        Else
+            Set OutputSheet = WBook.Sheets.Add
+        End If
+        '@------------------------------------------------------
+        'Set the target Range
+        Set OutputRange = OutputSheet.Range(RngName) _
+                            .Resize _
+                            ( _
+                            UBound(P_CSV_DATA, 1) - LBound(P_CSV_DATA, 1) + 1, _
+                            UBound(P_CSV_DATA, 2) - LBound(P_CSV_DATA, 2) + 1 _
+                            )
+        '@------------------------------------------------------
+        'Dump the data
+        OutputRange.Value2 = P_CSV_DATA
+        EnableOptimization False
+    End If
+End Sub
+Private Sub EnableOptimization(Optional Optimize As Boolean = True)
+Attribute EnableOptimization.VB_Description = "Turn On and Off the optimized data dumping to an Excel Worksheet."
+    If Optimize Then
+        '@------------------------------------------------------
+        'Optimize resource consumption
+        Application.ScreenUpdating = False
+        Application.Calculation = xlCalculationManual
+        Application.EnableEvents = False
+    Else
+        '@------------------------------------------------------
+        'Turn Off optimization
+        Application.ScreenUpdating = True
+        Application.Calculation = xlCalculationAutomatic
+        Application.EnableEvents = True
+    End If
 End Sub
 Public Sub ExportToCSV(csvArray As Variant)
 Attribute ExportToCSV.VB_Description = "Exports a 2D array to a CSV file located in the path specified in the OpenConnection method."
@@ -596,6 +654,36 @@ Attribute IsANSI.VB_Description = "Verifies the charset for ANSI encoding."
     Next
     Erase bytFile
     IsANSI = (lngIndx > lngUprBnd)
+End Function
+Private Function IsArrayAllocated(ByRef arr() As String) As Boolean
+Attribute IsArrayAllocated.VB_Description = "Verifies if the given array is allocated on memory."
+    Dim N As Long
+
+    On Error Resume Next
+    N = UBound(arr, 1)
+    If Err.number = 0 Then
+        IsArrayAllocated = True
+    Else
+        IsArrayAllocated = False
+    End If
+End Function
+Private Function IsSheetInWorkbook(SheetName As String, WBook As Workbook) As Boolean
+Attribute IsSheetInWorkbook.VB_Description = "Checks if the given sheet is part of the given or of the active one Workbook."
+    With WBook
+        On Error Resume Next
+        IsSheetInWorkbook = (.Sheets(SheetName).Name = SheetName)
+        On Error GoTo 0
+    End With
+End Function
+Private Function IsWorkbookOpen(WBookName As String) As Boolean
+Attribute IsWorkbookOpen.VB_Description = "Checks if the given Workbook is opened yet."
+    Dim WBook As Workbook, BookMatching As Boolean
+    
+    On Error Resume Next
+    For Each WBook In Workbooks
+        BookMatching = (WBook.Name = WBookName)
+    Next
+    IsWorkbookOpen = BookMatching
 End Function
 Private Function JoinRecordsFields(RecordsArray As Variant) As String
 Attribute JoinRecordsFields.VB_Description = "Joins all fields for each record in the specified array."
