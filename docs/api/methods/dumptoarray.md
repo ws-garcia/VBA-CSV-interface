@@ -29,12 +29,12 @@ _None_
 
 ## Remarks
 
-**Note**: *Before dump data, is recommended to make a `ImportFromCSV` method call.*
+**Note**: *Before dump data, is recommended to make a `ImportFromCSV` or `ImportFromCSVstring` method call.*
 
 The *OutPutArray* parameter must be declared as dynamic `String` array. If user forget to do this, an error will occur.
 
 See also
-: [ImportFromCSV method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/importfromcsv.html).
+: [ImportFromCSV method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/importfromcsv.html), [ImportFromCSVstring method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/importfromcsvstring.html).
 
 ---
 
@@ -42,6 +42,6 @@ See also
 
 The `DumpToArray` method make a copy of all the data stored in the current instance. The data is returned in the *OutPutArray* parameter for avoid additional data copies in the internals.
 
-The dumped data will be erased from memory, in other words, the current instance doesn't hold the CSV read data any more. In the same way, the `DumpToArray` method returns an empty `String` array for subsequent calls not preceded by `ImportFromCSV` method call.
+The dumped data will be erased from memory, in other words, the current instance doesn't hold the CSV read data any more. In the same way, the `DumpToArray` method returns an empty `String` array for subsequent calls not preceded by `ImportFromCSV` or or `ImportFromCSVstring` method call.
 
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)

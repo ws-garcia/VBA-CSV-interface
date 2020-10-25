@@ -2,7 +2,7 @@
 title: GetDataFromCSV
 parent: Methods
 grand_parent: API
-nav_order: 3
+nav_order: 4
 ---
 
 # GetDataFromCSV
