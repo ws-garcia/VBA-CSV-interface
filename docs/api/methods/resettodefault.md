@@ -27,9 +27,9 @@ _None_
 
 ---
 
-## Remarks
-
-The `ResetToDefault` method restart this config options:
+:::note
+The `ResetToDefault` method restart the config options shown in the table below.
+:::
 
 <table>
 <thead>
