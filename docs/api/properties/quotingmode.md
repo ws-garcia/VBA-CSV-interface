@@ -2,7 +2,7 @@
 title: QuotingMode
 parent: Properties
 grand_parent: API
-nav_order: 12
+nav_order: 13
 ---
 
 # QuotingMode

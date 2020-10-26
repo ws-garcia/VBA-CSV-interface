@@ -2,7 +2,7 @@
 title: EndingRecord
 parent: Properties
 grand_parent: API
-nav_order: 2
+nav_order: 3
 ---
 
 # EndingRecord
