@@ -27,15 +27,6 @@ In order to be able to use `CSVinterface.cls` within your project, please review
 The CSV files are special kind of tabulated plain text data container widely used in data exchange. There is no globally accepted standard format for that kind of files, however, out there are well formed standards such as [RFC-4180](https://www.ietf.org/rfc/rfc4180.txt) proposed by The Internet Society.
 Although many solutions has been developed for work with CSV files into VBA, including projects from [@sdkn104](https://github.com/sdkn104/VBA-CSV) and [@Senipah](https://github.com/Senipah/VBA-Better-Array) on GitHub, the performance philosophy conduce me to the development of a VBA class module that allows users exchange data between VBA arrays and CSV files at superior speed for the VBA programing language.
 
-## Advantages
-* Fully compliant with RFC4180 CSV standard.
-* Exported data is 100% Excel spreadsheet compatible.
-* Writes and reads files at high speed.
-* Minimal Memory overload.
-* User have the option to import only certain range of records from given CSV file.
-* Auto exclude any quote mark when data is imported.
-* Simple code logic that allows you easy modify and enhance it!
-
 ## Philosophy
 The VBA CSVinterface class module is designed for gain advantage from the well-structured CSV files, this means, there isn't automatic syntax check, given the user decide how the class will works. This can be seen as a weakness, but the class get a speed-up on writing and reading procedures at time the user controls how the file is interpreted, keeping in mind that, in fact, VBA is a language with slow code execution speed. Under this idealization the developed solution complies with the RFC4180 standard for user specified CSV document format.
 
