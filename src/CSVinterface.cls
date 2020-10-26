@@ -830,19 +830,9 @@ End Function
 Public Sub OpenConnection(csvPathAndFilename As String, Optional DeleExistingFile As Boolean = False)
 Attribute OpenConnection.VB_Description = "Opens a CSV file on memory for binary access."
     On Error GoTo ErrHandler_OpenConnection
-    '@----------------------------------------------------------------------------
-    'Validate file name and extension
     If csvPathAndFilename <> vbNullString Then
-        If CLng(InStrB(csvPathAndFilename, ".csv")) = 0 Then
-            csvPathAndFilename = csvPathAndFilename & ".csv"
-        Else
-            While (LenB(csvPathAndFilename) - _
-                    CLng(InStrB(csvPathAndFilename, ".csv"))) > 7
-                csvPathAndFilename = LeftB$(csvPathAndFilename, LenB(csvPathAndFilename) - 2)
-            Wend
-        End If
-        If FileExists(csvPathAndFilename) And DeleExistingFile Then
-            Call Kill(csvPathAndFilename)
+        If DeleExistingFile Then 'Delete existing file
+            If FileExists(csvPathAndFilename) Then Call Kill(csvPathAndFilename)
         End If
         '@----------------------------------------------------------------------------
         'open the file for binary access
