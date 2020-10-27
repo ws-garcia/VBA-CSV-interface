@@ -31,8 +31,6 @@ _None_
 
 *Type*: `String`
 
----
-
 >:pencil: **NOTE:**
 >
 >Use the `ErrSource` property to check if the last requested operation succeed.

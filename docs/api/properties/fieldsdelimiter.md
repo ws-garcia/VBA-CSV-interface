@@ -36,8 +36,6 @@ _Yes_
 |Get|`String`|
 |Let|_None_|
 
----
-
 >:warning: **CAUTION**
 >
 >The current behavior for the CSV interface forces `FieldsDelimiter` property to be distinct than a `Space` or`vbTab` char, set the property to comma or semicolon are the most logical options.

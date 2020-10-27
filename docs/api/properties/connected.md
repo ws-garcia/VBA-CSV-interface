@@ -31,8 +31,6 @@ _None_
 
 *Type*: `Boolean`
 
----
-
 >:pencil: **NOTE:**
 >
 >A `False` value from `Connected` property indicates the CSV file is not load in memory.

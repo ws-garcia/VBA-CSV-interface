@@ -25,13 +25,9 @@ The required *csvPathAndFilename* argument is an identifier specifying a `String
 
 *Type*: `String`
 
----
-
 >:pencil: **NOTE:**
 >
 >The *csvPathAndFilename* parameter must be the full path to the target CSV file, this means, the parameter holds the folder path, the file name and the ".csv" extension.
-
----
 
 ## Behavior
 

@@ -46,8 +46,6 @@ Dumps the data from the current instance to an Excel WorkSheet.
 
 _None_
 
----
-
 >:pencil: **NOTE:**
 >
 >Before dump data, is recommended to make a `ImportFromCSV` or `ImportFromCSVstring` method call.

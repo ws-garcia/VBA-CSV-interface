@@ -31,8 +31,6 @@ _None_
 
 *Type*: `Boolean`
 
----
-
 >:pencil: **NOTE:**
 >
 >A `False` value from `ImportSuccess` property indicates the last import operation wouldn't succeeded.

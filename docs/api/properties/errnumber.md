@@ -33,8 +33,6 @@ _None_
 
 *Type*: `Long`
 
----
-
 >:pencil: **NOTE:**
 >
 >Use the `ErrNumber` property to check if the last requested operation succeed.

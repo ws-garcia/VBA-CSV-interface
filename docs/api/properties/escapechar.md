@@ -36,8 +36,6 @@ _Yes_
 |Get|`EscapeType`/`Long`|
 |Let|_None_|
 
----
-
 >:pencil: **NOTE:**
 >
 >Setting the `EscapeChar` property to `EscapeType.NullChar` is only recommended when the `QuotingMode` property is set to `QuotationMode.All`. This scenario comes to reality when user have to work with CSV files over which neither fields need to be escaped.

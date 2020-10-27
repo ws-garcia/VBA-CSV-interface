@@ -25,8 +25,6 @@ The required *OutPutArray* argument is an identifier specifying a dynamic `Strin
 
 _None_
 
----
-
 >:pencil: **NOTE:**
 >
 >Before dump data, is recommended to make a `ImportFromCSV` or `ImportFromCSVstring` method call. The *OutPutArray* parameter must be declared as dynamic `String` array. If user forget to do this, an error will occur.

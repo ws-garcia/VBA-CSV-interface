@@ -31,8 +31,6 @@ _None_
 
 *Type*: `String`
 
----
-
 >:pencil: **NOTE:**
 >
 >The `FileEncoding` property is set when CSV file is load on memory. In other words, the property holds the encoding for the last opened file. All the possible values are shown in this section.

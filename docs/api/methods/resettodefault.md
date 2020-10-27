@@ -25,8 +25,6 @@ _None_
 
 _None_
 
----
-
 >:pencil: **NOTE:**
 >
 >Before call the `ResetToDefault` method, user must to check if the target CSV will be well parsed with the config options shown in the table below.

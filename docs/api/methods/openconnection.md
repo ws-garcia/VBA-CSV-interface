@@ -42,8 +42,6 @@ Loads a CSV file on memory for data Input/Output operations.
 
 _None_
 
----
-
 >:warning: **CAUTION**
 >
 >The `OpenConnection` method don't rejects any kind of file extension, user need to ensure the target file has a name ending in `.csv` or `.txt`.

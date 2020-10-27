@@ -36,8 +36,6 @@ _Yes_
 |Get|`QuotationMode`/`Long`|
 |Let|_None_|
 
----
-
 >:pencil: **NOTE:**
 >
 >Use the `QuotingMode` property to set the parser behavior. Some CSV files not require further processes after an easy to do string split.

@@ -36,8 +36,6 @@ _Yes_
 |Get|`Long`|
 |Let|_None_|
 
----
-
 >:pencil: **NOTE:**
 >
 >The `EndingRecord` property must be used in combination with the `StartingRecord` property for import a certain range of records from a CSV file.

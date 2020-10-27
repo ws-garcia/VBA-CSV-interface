@@ -36,16 +36,12 @@ _Yes_
 |Get|`Long`|
 |Let|_None_|
 
----
-
 >:pencil: **NOTE:**
 >
 >Use the `StartingRecord` property in combination with the `EndingRecord` property for import a certain range of records from CSV file.
 
 See also
 : [EndingRecord property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/endingrecord.html).
-
----
 
 ## Behavior
 

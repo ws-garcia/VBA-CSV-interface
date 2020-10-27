@@ -36,8 +36,6 @@ _Yes_
 |Get|`String`|
 |Let|_None_|
 
----
-
 >:pencil: **NOTE:**
 >
 >A line starting with the `CommentLineIndicator` char is expected to be automatic ignored by the parser. By default, the char "#" is used for indicate commented lines, but this property can be set to whatever character. If the `CommentLineIndicator` has a length greater than 1, only the first char of it is used.

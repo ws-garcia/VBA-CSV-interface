@@ -25,8 +25,6 @@ The required *csvArray* argument is an identifier specifying a `Variant` array v
 
 _None_
 
----
-
 >:pencil: **NOTE:**
 >
 >Before invoke the `ExportToCSV` method, the user must to open a connection to the CSV file. The *csvArray* parameter must be declared as `Variant` array. Passing a variable that isn't an array will cause an error and the operation aborts. 

@@ -31,8 +31,6 @@ _None_
 
 *Type*: `Boolean`
 
----
-
 >:pencil: **NOTE:**
 >
 >A `False` value from `ExportSuccess` property indicates the last export operation wouldn't succeeded.

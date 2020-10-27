@@ -42,8 +42,6 @@ Parses a string and save its CSV data to an array.
 
 _None_
 
----
-
 >:pencil: **NOTE:**
 >
 >Before invoke the `ImportFromCSV` method, the user must to open a connection to the CSV file. If the *HeadersOmission* parameter is set to `True`, the CSV file headers, first record, will be ignored by the parser only when the `StartingRecord` property is set to 1. 

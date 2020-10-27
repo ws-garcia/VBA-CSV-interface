@@ -36,8 +36,6 @@ _Yes_
 |Get|`String`|
 |Let|_None_|
 
----
-
 >:pencil: **NOTE:**
 >
 >The `RecordsDelimiter` property can be set to`vbCr`, `vbCrLf` or `vbLf`. This options unlocks a limitation from RFC-4180 CSV standard .
