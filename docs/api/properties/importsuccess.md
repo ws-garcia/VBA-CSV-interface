@@ -33,8 +33,8 @@ _None_
 
 ---
 
-## Remarks
-
-A `False` value from `ImportSuccess` property indicates the last import operation wouldn't succeeded.
+>:pencil: **NOTE:**
+>
+>A `False` value from `ImportSuccess` property indicates the last import operation wouldn't succeeded.
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)

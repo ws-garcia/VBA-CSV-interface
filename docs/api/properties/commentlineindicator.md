@@ -38,9 +38,13 @@ _Yes_
 
 ---
 
-## Remarks
+>:pencil: **NOTE:**
+>
+>A line starting with the `CommentLineIndicator` char is expected to be automatic ignored by the parser. By default, the char "#" is used for indicate commented lines, but this property can be set to whatever character. If the `CommentLineIndicator` has a length greater than 1, only the first char of it is used.
 
-A line starting with the `CommentLineIndicator` char will be automatic ignored by the parser when the it is working on `QuotationMode.Critical` mode. By default, the char "#" is used for indicate commented lines, but this property can be set to whatever character. If the `CommentLineIndicator` has a length greater than 1, only the first char of it is used.
+>:warning: **CAUTION**
+>
+>This option is only available when the `QuotingMode` property is set to `QuotationMode.Critical`.
 
 See also
 : [EscapeChar Property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/escapechar.html), [QuotationMode Enumeration](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html), [FieldsDelimiter Property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/fieldsdelimiter.html).

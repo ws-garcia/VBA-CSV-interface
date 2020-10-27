@@ -33,8 +33,8 @@ _None_
 
 ---
 
-## Remarks
-
-A `False` value from `Connected` property indicates the CSV file is not load in memory.
+>:pencil: **NOTE:**
+>
+>A `False` value from `Connected` property indicates the CSV file is not load in memory.
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)

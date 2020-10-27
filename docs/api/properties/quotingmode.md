@@ -38,7 +38,9 @@ _Yes_
 
 ---
 
-## Remarks
+>:pencil: **NOTE:**
+>
+>Use the `QuotingMode` property to set the parser behavior. Some CSV files not require further processes after an easy to do string split.
 
 See also
 : [QuotationMode Enumeration](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html).

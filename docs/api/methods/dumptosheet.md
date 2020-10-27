@@ -48,9 +48,9 @@ _None_
 
 ---
 
-## Remarks
-
-**Note**: *Before dump data, is recommended to make a `ImportFromCSV` or `ImportFromCSVstring` method call.*
+>:pencil: **NOTE:**
+>
+>Before dump data, is recommended to make a `ImportFromCSV` or `ImportFromCSVstring` method call.
 
 See also
 : [ImportFromCSV method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/importfromcsv.html), [ImportFromCSVstring method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/importfromcsvstring.html).

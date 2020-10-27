@@ -86,9 +86,10 @@ Dim ENC as String
 ENC = CSVix.FileEncoding
 ```
 
-:::caution
-Keep in mind that the class doesn't distinguish between number, dates and strings, all data is read as text and you can put in an Excel sheet to let Microsoft software format it.
-:::
+>:warning: **CAUTION**
+>
+>Keep in mind that the class doesn't distinguish between number, dates and strings, all data is read as text and you can put in an Excel sheet to let Microsoft software format it.
+
 
 ## Benchmark
 The benchmark provided here is focused on the supposed most critical operation, this is the parse one when working with CSV files. Although, benchmark for the exportation procedure is given on. 
@@ -102,9 +103,10 @@ The class was tested against two solutions (the one from [@Senipah](https://gith
 
 First three of files have special chars (line breaks, commas, double quotes) into fields, also have trailing spaces at the field’s boundaries. The main objective of this test is to measure the performance of the different procedures against the possible configurations of a potential CSV file. The test results can help answer the following questions: does the number of fields to be escaped affect the performance of the procedure? If yes, in what magnitude? The test also includes benchmark for parse to a CSV file of considerable size.
 
-:::note
-The table below shows the benchmark results, in seconds, for the currently tested procedures. Some projects were excluded from the benchmark due they do not handle those CSV's compliant with the RFC-4180 standard.
-:::
+>:pencil: **NOTE:**
+>
+>The table below shows the benchmark results, in seconds, for the currently tested procedures. Some projects were excluded from the benchmark due they do not handle those CSV's compliant with the RFC-4180 standard.
+
 
 <table>
 <thead>
@@ -153,9 +155,10 @@ The table below shows the benchmark results, in seconds, for the currently teste
 
 In the above results, the 2nd value, for cells with two values, is obtained when setting `QuotingMode = QuotationMode.All`. As we can see, the class performance gets a little improve using this configuration. 
 
-:::caution
-Keep in mind that not all CSV files can be successful imported using the previous tweaking.
-:::
+>:warning: **CAUTION**
+>
+>Keep in mind that not all CSV files can be successful imported using the previous tweaking.
+
 
 The image bellow shows the overall performance for the imports and exports operations from the CSV interface class. Notice, specials syntax CSV’s will take about 1.8x more time to be parsed due the parser expands its syntax analysis range. In the same way, but in less magnitude, the exportation procedure will have an overheat when the instance is setting up to be RCF-4180 standard compliant.
 

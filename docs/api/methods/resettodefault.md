@@ -27,9 +27,10 @@ _None_
 
 ---
 
-:::note
-The `ResetToDefault` method restart the config options shown in the table below.
-:::
+>:pencil: **NOTE:**
+>
+>Before call the `ResetToDefault` method, user must to check if the target CSV will be well parsed with the config options shown in the table below.
+
 
 <table>
 <thead>
