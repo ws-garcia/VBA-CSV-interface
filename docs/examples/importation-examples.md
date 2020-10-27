@@ -44,7 +44,7 @@ End Sub
 The [EXAMPLE2] shows how you can import the Top 10 records from a CSV file using the RFC-4180 standard as paramount.
 
 #### [EXAMPLE2]
-*>:pencil: **NOTE:**
+>:pencil: **NOTE:**
 >The example uses the option `QuotationMode.Critical`, [learn more here](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html).
 
 ```vb
