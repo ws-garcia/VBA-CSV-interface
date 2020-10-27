@@ -22,7 +22,7 @@ The [EXAMPLE1] shows how you can import all the data from a CSV file using the R
 
 #### [EXAMPLE1]
 >:pencil: **NOTE:**
->The example uses the option `QuotationMode.Critical`, [learn more here](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html).
+>the example uses the option `QuotationMode.Critical`, [learn more here](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html).
 
 ```vb
 Sub ImportRecords_RFC4180()
@@ -45,7 +45,7 @@ The [EXAMPLE2] shows how you can import the Top 10 records from a CSV file using
 
 #### [EXAMPLE2]
 >:pencil: **NOTE:**
->The example uses the option `QuotationMode.Critical`, [learn more here](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html).
+>the example uses the option `QuotationMode.Critical`, [learn more here](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html).
 
 ```vb
 Sub ImportTopTenRecords_RFC4180()
@@ -66,7 +66,7 @@ The [EXAMPLE3] accomplishes the same task of the [EXAMPLE1], the difference is t
 
 #### [EXAMPLE3]
 >:pencil: **NOTE:**
->The example uses the option `QuotationMode.Critical`, [learn more here](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html).
+>the example uses the option `QuotationMode.Critical`, [learn more here](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html).
 
 ```vb
 Sub ImportTopTenRecords_RFC4180()
@@ -89,7 +89,7 @@ The [EXAMPLE4] shows how you can import 10 middle records from a CSV file using 
 
 #### [EXAMPLE4]
 >:pencil: **NOTE:**
->The example uses the option `QuotationMode.Critical`, [learn more here](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html).
+>the example uses the option `QuotationMode.Critical`, [learn more here](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html).
 
 ```vb
 Sub ImportTenMiddleRecords_RFC4180()
@@ -118,7 +118,7 @@ See also
 :[QuotationMode](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html), [EscapeType](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/escapetype.html).
 #### [EXAMPLE5]
 >:pencil: **NOTE:**
->The example uses the option `QuotationMode.All`, and `EscapeType.NullChar`.
+>the example uses the option `QuotationMode.All`, and `EscapeType.NullChar`.
 ```vb
 Sub ImportRecords()
 	Dim CSVix As CSVinterface
@@ -156,7 +156,7 @@ See also
 :[QuotationMode](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html), [EscapeType](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/escapetype.html).
 #### [EXAMPLE7]
 >:pencil: **NOTE:**
->The example uses the option `QuotationMode.All`, and `EscapeType.DoubleQuotes`.
+>the example uses the option `QuotationMode.All`, and `EscapeType.DoubleQuotes`.
 
 ```vb
 Sub ImportRecords()
