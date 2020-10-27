@@ -22,7 +22,7 @@ The [EXAMPLE1] shows how you can export all the data in VBA array to a CSV file 
 
 #### [EXAMPLE1]
 >:pencil: **NOTE:**
->The example uses the option `QuotationMode.Critical`, [learn more here](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html).
+>the example uses the option `QuotationMode.Critical`, [learn more here](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html).
 
 ```vb
 Sub ExportToCSV_RFC4180()
@@ -56,7 +56,7 @@ See also
 
 #### [EXAMPLE2]
 >:pencil: **NOTE:**
->The example uses the option `QuotationMode.All`, and `EscapeType.NullChar`.
+>the example uses the option `QuotationMode.All`, and `EscapeType.NullChar`.
 
 ```vb
 Sub ExportToCSV()
@@ -89,7 +89,7 @@ See also
 
 #### [EXAMPLE3]
 >:pencil: **NOTE:**
->The example uses the option `QuotationMode.All`, and `EscapeType.NullChar`.
+>the example uses the option `QuotationMode.All`, and `EscapeType.NullChar`.
 
 ```vb
 Sub ExportToCSV()
