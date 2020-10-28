@@ -15,7 +15,7 @@ Dumps the data from the current instance to an Excel WorkSheet.
 
 ## Syntax
 
-*expression*.`DumpToSheet`*({WBookName}, {SheetName}, {RngName})*
+*expression*.`DumpToSheet`*({WBookName}, {SheetName}, {RngName:= "A1"})*
 
 ### Parameters
 
