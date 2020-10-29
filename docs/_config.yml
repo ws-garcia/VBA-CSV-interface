@@ -22,7 +22,7 @@ defaults:
   -
     scope:
       path: "docs" # an empty string here means all files in the project
-      type: "pages"
+      type: "master"
     values:
       layout: "default"
 # Aux links for the upper right navigation
