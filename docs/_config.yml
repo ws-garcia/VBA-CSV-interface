@@ -1,5 +1,13 @@
+title: VBA CSV interface
+# email: your-email@example.com
+description: >- # this means to ignore newlines until "baseurl:"
+  Class module to data exchange between VBA arrays and CSV files.
+baseurl: "/VBA-CSV-interface" # the subpath of your site, e.g. /blog
 #theme: jekyll-theme-architect
 remote_theme: ws-garcia/just-the-docs
+plugins:
+  - jekyll-feed
+  - jekyll-remote-theme
 # Set a path/url to a logo that will be displayed instead of the title
 logo: "/assets/img/CSVinterface.png"
 # Back to top link
@@ -10,6 +18,13 @@ back_to_top_text: "Back to top"
 search_enabled: true
 # Enable support for hyphenated search words:
 search_tokenizer_separator: /[\s/]+/
+defaults:
+  -
+    scope:
+      path: "docs" # an empty string here means all files in the project
+      type: "pages"
+    values:
+      layout: "default"
 # Aux links for the upper right navigation
 aux_links:
   "VBA CSV interface on GitHub":
