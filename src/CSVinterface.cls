@@ -66,8 +66,7 @@ Attribute VB_Exposed = False
 ' @7 https://www.freevbcode.com/ShowCode.asp?ID=3110
 ' @8 https://stackoverflow.com/questions/1376756/what-is-a-superfast-way-to-read-large-files-line-by-line-in-vba
 ' @9 https://www.freevbcode.com/ShowCode.asp?ID=7655
-' @10 http://www.cpearson.com/excel/mainpage.aspx
-' @11 https://www.exceltip.com/excel-macros-and-vba
+' @10 https://www.exceltip.com/excel-macros-and-vba
 '////////////////////////////////////////////////////////////////////////////////////////////
 '#
 Option Explicit
@@ -311,7 +310,7 @@ Attribute DumpToSheet.VB_Description = "Dumps the CSV data from the current inst
     Dim OutputRange As Range
     
     On Error Resume Next
-    If IsArrayAllocated(P_CSV_DATA) Then
+    If P_SUCCESSFUL_IMPORT Then
         EnableOptimization
         '@------------------------------------------------------
         'Set the target Workbook
@@ -368,12 +367,11 @@ Attribute ExportToCSV.VB_Description = "Exports a 2D array to a CSV file located
         'Join all the records and write the data on the current opened file
         Put #FileHandled, , JoinRecordsFields(csvArray)
         '@----------------------------------------------------------------------------
-        If Err.number = 0 Then
+        If P_ERROR_NUMBER = 0& Then
             Call CloseConnection
             P_SUCCESSFUL_EXPORT = True
             P_CSV_DATA = csvArray
             P_ERROR_DESC = vbNullString
-            P_ERROR_NUMBER = 0&
             P_ERROR_SOURCE = vbNullString
         Else
             GoTo ErrHandler_ExportToCSV
@@ -389,9 +387,7 @@ Attribute ExportToCSV.VB_Description = "Exports a 2D array to a CSV file located
 ErrHandler_ExportToCSV:
     Call CloseConnection
     P_SUCCESSFUL_EXPORT = False
-    P_ERROR_DESC = "[CSV file Export]: " & Err.description
-    P_ERROR_NUMBER = Err.number
-    P_ERROR_SOURCE = Err.source
+    P_ERROR_DESC = "[CSV file Export]: " & P_ERROR_DESC
 End Sub
 Private Function FileExists(ByVal filePath As String) As Boolean
 Attribute FileExists.VB_Description = "Determines if a file exist in the path specified."
@@ -406,13 +402,11 @@ Attribute GetCSVtext.VB_Description = "Gets the CSV content from a file located 
 End Sub
 Public Function GetDataFromCSV(csvPathAndFilename As String) As String
 Attribute GetDataFromCSV.VB_Description = "Gets the CSV content from a file located in the specified path."
-    Dim tmpStr As String
     
     On Error Resume Next
     Call OpenConnection(csvPathAndFilename)
-    tmpStr = SPACE$(FileLen(csvPathAndFilename))
-    Get #FileHandled, , tmpStr
-    GetDataFromCSV = tmpStr
+    GetDataFromCSV = SPACE$(LOF(FileHandled))
+    Get #FileHandled, , GetDataFromCSV
     Call CloseConnection
 End Function
 Private Function GetFileBytes(Optional ByVal truncateToByte As Long = -1) As Byte()
@@ -481,18 +475,27 @@ Attribute GetRecordIndex.VB_Description = "Returns the Index in wich the record 
     'Loop through CSVdataArray array
     If RecordIndex >= 1 Then
         RecordIndex = RecordIndex - 1&
+        LenCurrentIndex = LenB(CSVdataArray(index))
         Do While index <= MaxIndex And RecordsCount < RecordIndex
             RecordEndReached = False 'Restart Record status
             Do While (Not RecordEndReached And index <= MaxIndex)
                 '@----------------------------------------------------------------------------
                 'Process the current Token
                 TokenEndReached = False
-                ASCIIcharw = AscW(MidB$(CSVdataArray(index), OverStringPointer, 2))
-                Do While (ASCIIcharw = 32 Or ASCIIcharw = 9)
-                    OverStringPointer = OverStringPointer + 2&
-                    ASCIIcharw = AscW(MidB$(CSVdataArray(index), OverStringPointer, 2))
-                Loop
-                OpenedToken = (ASCIIcharw = EscapeAscW)
+                Select Case OverStringPointer
+                    Case Is < LenCurrentIndex
+                        ASCIIcharw = AscW(MidB$(CSVdataArray(index), OverStringPointer, 2))
+                        '@----------------------------------------------------------------------------
+                        'Ignore spaces and tabs
+                        Do While ASCIIcharw = 32 Or ASCIIcharw = 9
+                        OverStringPointer = OverStringPointer + 2&
+                            If OverStringPointer > LenCurrentIndex Then Exit Do
+                            ASCIIcharw = AscW(MidB$(CSVdataArray(index), OverStringPointer, 2))
+                        Loop
+                        OpenedToken = (ASCIIcharw = EscapeAscW)
+                    Case Else 'Avoid over runs
+                        OpenedToken = False
+                End Select
                 If OpenedToken Then
                     '@----------------------------------------------------------------------------
                     'Try to escape the Token
@@ -505,6 +508,7 @@ Attribute GetRecordIndex.VB_Description = "Returns the Index in wich the record 
                         Do While hpointer = 0& 'Escape char may be on subsequent Index
                             CSVdataArray(index) = vbNullString
                             index = index + 1&
+                            LenCurrentIndex = LenB(CSVdataArray(index))
                             SearchBeginningMark = 1
                             hpointer = InStrB(SearchBeginningMark, CSVdataArray(index), EscapeChar) 'Find escape char
                         Loop
@@ -539,6 +543,7 @@ Attribute GetRecordIndex.VB_Description = "Returns the Index in wich the record 
                                 SplittedToken = False 'Restart Token status
                                 CSVdataArray(index) = vbNullString
                                 index = index + 1&
+                                LenCurrentIndex = LenB(CSVdataArray(index))
                                 OverStringPointer = 1&
                             Else
                                 SearchBeginningMark = OverStringPointer
@@ -561,6 +566,7 @@ Attribute GetRecordIndex.VB_Description = "Returns the Index in wich the record 
                         RecordEndReached = True
                         CSVdataArray(index) = vbNullString
                         index = index + 1&
+                        LenCurrentIndex = LenB(CSVdataArray(index))
                         OverStringPointer = 1&
                     End If
                 End If
@@ -582,32 +588,34 @@ Attribute GetRecordIndex.VB_Description = "Returns the Index in wich the record 
 GetRecordIndex_Error_Handler:
     GetRecordIndex = -3& 'An error was occurs
 End Function
-Public Sub ImportFromCSV(Optional HeadersOmission As Boolean = False)
-Attribute ImportFromCSV.VB_Description = "Imports the data from a CSV file and save it to a 2D array in the current instance."
-    On Error GoTo ErrHandler_ImportFromCSV
-    DoEvents
+Public Sub ImportFromCSV(Optional HeadersOmission As Boolean = False, _
+                            Optional PassControlToOS As Boolean = True)
+    If PassControlToOS Then DoEvents 'Pass the control to the Operative System
     If P_CONNECTED Then
         '@--------------------------------------------------------------------------------
         'Read whole file content
         GetCSVtext FileContent
+        If LenB(FileContent) = 0 Then
+            P_CSV_DATA() = Split(FileContent, vbCrLf)
+            Exit Sub
+        End If
         '@--------------------------------------------------------------------------------
         'Try to load the data
         If Err.number = 0 Then
             Select Case P_QUOTING_MODE
                 Case QuotationMode.Critical
-                    Call ParseCriticalCSV(FileContent, HeadersOmission)
+                    ParseCriticalCSV FileContent, HeadersOmission
                 Case Else
-                    Call ParseCSV(FileContent, HeadersOmission)
+                    ParseCSV FileContent, HeadersOmission
             End Select
             '@----------------------------------------------------------------------------
             'Free the memory
             FileContent = vbNullString
             '@----------------------------------------------------------------------------
-            If Err.number = 0 Then
+            If P_ERROR_NUMBER = 0& Then
                 'Save pointers
                 P_SUCCESSFUL_IMPORT = True
                 P_ERROR_DESC = vbNullString
-                P_ERROR_NUMBER = 0&
                 P_ERROR_SOURCE = vbNullString
             Else
                 GoTo ErrHandler_ImportFromCSV
@@ -617,7 +625,7 @@ Attribute ImportFromCSV.VB_Description = "Imports the data from a CSV file and s
         End If
     Else
         P_SUCCESSFUL_IMPORT = False
-        P_ERROR_DESC = "[CSV file Export]: the object is not linked to a CSV file. " _
+        P_ERROR_DESC = "[CSV file Import]: the object is not linked to a CSV file. " _
                         & "Ensure use the OpenConnection method before import data."
         P_ERROR_NUMBER = vbObjectError + 9007
         P_ERROR_SOURCE = "CSVinterface"
@@ -625,35 +633,37 @@ Attribute ImportFromCSV.VB_Description = "Imports the data from a CSV file and s
     Exit Sub
 ErrHandler_ImportFromCSV:
     P_SUCCESSFUL_IMPORT = False
-    P_ERROR_DESC = "[CSV file Import]: " & Err.description
-    P_ERROR_NUMBER = Err.number
-    P_ERROR_SOURCE = Err.source
+    P_ERROR_DESC = "[CSV file Import]: " & P_ERROR_DESC
 End Sub
-Public Sub ImportFromCSVString(ByRef CSVString As String, Optional HeadersOmission As Boolean = False)
-Attribute ImportFromCSVString.VB_Description = "Imports the data from a string variable and save it to a 2D array in the current instance."
+Public Sub ImportFromCSVString(ByRef CSVString As String, _
+                                Optional HeadersOmission As Boolean = False, _
+                                Optional PassControlToOS As Boolean = False)
+    If PassControlToOS Then DoEvents 'Pass the control to the Operative System
+    If LenB(CSVString) = 0 Then
+        P_CSV_DATA() = Split(CSVString, vbCrLf)
+        Exit Sub
+    End If
     '@--------------------------------------------------------------------------------
     'Try to load the data
     Select Case P_QUOTING_MODE
         Case QuotationMode.Critical
-            Call ParseCriticalCSV(CSVString, HeadersOmission)
+            ParseCriticalCSV CSVString, HeadersOmission
         Case Else
-            Call ParseCSV(CSVString, HeadersOmission)
+            ParseCSV CSVString, HeadersOmission
     End Select
     '@----------------------------------------------------------------------------
-    If Err.number = 0 Then
+    If P_ERROR_NUMBER = 0& Then
         'Save pointers
         P_SUCCESSFUL_IMPORT = True
         P_ERROR_DESC = vbNullString
-        P_ERROR_NUMBER = 0&
         P_ERROR_SOURCE = vbNullString
     Else
         GoTo ErrHandler_ImportFromString
     End If
+    Exit Sub
 ErrHandler_ImportFromString:
     P_SUCCESSFUL_IMPORT = False
-    P_ERROR_DESC = "[CSV file Import]: " & Err.description
-    P_ERROR_NUMBER = Err.number
-    P_ERROR_SOURCE = Err.source
+    P_ERROR_DESC = "[CSV file Import]: " & P_ERROR_DESC
 End Sub
 Private Function IsANSI() As Boolean
 Attribute IsANSI.VB_Description = "Verifies the charset for ANSI encoding."
@@ -670,18 +680,6 @@ Attribute IsANSI.VB_Description = "Verifies the charset for ANSI encoding."
     Next
     Erase bytFile
     IsANSI = (lngIndx > lngUprBnd)
-End Function
-Private Function IsArrayAllocated(ByRef Arr() As String) As Boolean
-Attribute IsArrayAllocated.VB_Description = "Verifies if the given array is allocated on memory."
-    Dim N As Long
-
-    On Error Resume Next
-    N = UBound(Arr, 1)
-    If Err.number = 0 Then
-        IsArrayAllocated = True
-    Else
-        IsArrayAllocated = False
-    End If
 End Function
 Private Function IsSheetInWorkbook(SheetName As String, WBook As Workbook) As Boolean
 Attribute IsSheetInWorkbook.VB_Description = "Checks if the given sheet is part of the given or of the active one Workbook."
@@ -858,11 +856,11 @@ ErrHandler_OpenConnection:
 End Sub
 Private Sub ParseCriticalCSV(ByRef csvText As String, _
                                     Optional HeadersOmission As Boolean = False)
-Attribute ParseCriticalCSV.VB_Description = "Parses a CSV text string in concordance with RFC4180 Standard."
     Dim ASCIIcharw As Long
     Dim buffer() As String
     Dim Counter1 As Long, Counter2 As Long
     Dim CurrentBufferIndex As Long
+    Dim CurrentRecordSize As Long
     Dim CurrenttmpTokenIndex As Long
     Dim EndRecord As Long
     Dim EscapedWFS As Boolean
@@ -893,7 +891,6 @@ Attribute ParseCriticalCSV.VB_Description = "Parses a CSV text string in concord
     Dim TokenEndingPos As Long
     Dim TokenEndReached As Boolean
     
-    If LenB(csvText) = 0 Then Exit Sub
     On Error GoTo ParseCriticalCSV_Error_Handler
     '@----------------------------------------------------------------------------
     'Start variables
@@ -970,16 +967,23 @@ Attribute ParseCriticalCSV.VB_Description = "Parses a CSV text string in concord
     Do While (Not RecordEndReached And index <= MaxIndex)
         '@----------------------------------------------------------------------------
         'Process the current Token
+        LenCurrentIndex = LenB(tmpCSV(index))
         TokenEndReached = False
         TokenBeginningPos = OverStringPointer
-        ASCIIcharw = AscW(MidB$(tmpCSV(index), OverStringPointer, 2))
-        '@----------------------------------------------------------------------------
-        'Ignore spaces and tabs
-        Do While ASCIIcharw = 32 Or ASCIIcharw = 9
-            OverStringPointer = OverStringPointer + 2&
-            ASCIIcharw = AscW(MidB$(tmpCSV(index), OverStringPointer, 2))
-        Loop
-        OpenedToken = (ASCIIcharw = EscapeAscW)
+        Select Case OverStringPointer
+            Case Is < LenCurrentIndex
+                ASCIIcharw = AscW(MidB$(tmpCSV(index), OverStringPointer, 2))
+                '@----------------------------------------------------------------------------
+                'Ignore spaces and tabs
+                Do While ASCIIcharw = 32 Or ASCIIcharw = 9
+                    OverStringPointer = OverStringPointer + 2&
+                    If OverStringPointer > LenCurrentIndex Then Exit Do
+                    ASCIIcharw = AscW(MidB$(tmpCSV(index), OverStringPointer, 2))
+                Loop
+                OpenedToken = (ASCIIcharw = EscapeAscW)
+            Case Else 'Avoid over runs
+                OpenedToken = False
+        End Select
         If OpenedToken Then
             '@----------------------------------------------------------------------------
             'Try to escape the Token
@@ -991,7 +995,6 @@ Attribute ParseCriticalCSV.VB_Description = "Parses a CSV text string in concord
                 'Buffering if needed
                 If Not SplittedToken Then SplittedToken = (hpointer = 0)
                 Do While hpointer = 0& 'Escape char may be on subsequent Index
-                    LenCurrentIndex = LenB(tmpCSV(index))
                     If CurrenttmpTokenIndex + 2& > MaxtmpTokenIndex Then
                         MaxtmpTokenIndex = 2& * MaxtmpTokenIndex + 1&
                         ReDim Preserve tmpToken(0 To MaxtmpTokenIndex)
@@ -1007,12 +1010,12 @@ Attribute ParseCriticalCSV.VB_Description = "Parses a CSV text string in concord
                     End Select
                     tmpCSV(index) = vbNullString
                     index = index + 1&
+                    If index <= MaxIndex Then LenCurrentIndex = LenB(tmpCSV(index))
                     SearchBeginningMark = 1
                     hpointer = InStrB(SearchBeginningMark, tmpCSV(index), EscapeChar) 'Find escape char
                 Loop
                 If hpointer = 0& And index > MaxIndex Then GoTo ParseCriticalCSV_MissingEscapeChar 'Missing escape char
                 OverStringPointer = hpointer + 2&
-                LenCurrentIndex = LenB(tmpCSV(index))
                 If OverStringPointer < LenCurrentIndex Then
                     ASCIIcharw = AscW(MidB$(tmpCSV(index), OverStringPointer, 2))
                     '@----------------------------------------------------------------------------
@@ -1031,7 +1034,6 @@ Attribute ParseCriticalCSV.VB_Description = "Parses a CSV text string in concord
                 If EscapedWFS Then 'Escape char succeeded by fields separator char
                     TokenEndingPos = hpointer - 1&
                     TokenEndReached = True
-                    RecordEndReached = False
                     '@----------------------------------------------------------------------------
                     'Save the Token in Buffer
                     CurrentBufferIndex = CurrentBufferIndex + 1&
@@ -1056,6 +1058,7 @@ Attribute ParseCriticalCSV.VB_Description = "Parses a CSV text string in concord
                     End Select
                     SplittedToken = False 'Restart Token status
                     OverStringPointer = OverStringPointer + 2& 'Advance over the field separator char
+                    RecordEndReached = False
                 Else
                     If OverStringPointer >= LenCurrentIndex Then  'Escape char succeeded
                                                                     'by records separator char
@@ -1087,6 +1090,7 @@ Attribute ParseCriticalCSV.VB_Description = "Parses a CSV text string in concord
                         SplittedToken = False 'Restart Token status
                         tmpCSV(index) = vbNullString
                         index = index + 1&
+                        If index <= MaxIndex Then LenCurrentIndex = LenB(tmpCSV(index))
                         OverStringPointer = 1&
                     Else
                         If SplittedToken Then 'Store the Left most Token portion from the current Index
@@ -1114,9 +1118,9 @@ Attribute ParseCriticalCSV.VB_Description = "Parses a CSV text string in concord
             hpointer = InStrB(OverStringPointer, tmpCSV(index), P_FIELDS_DELIMITER)
             If hpointer Then 'Found fields delimiter char
                 TokenEndReached = True
-                RecordEndReached = False
                 TokenEndingPos = hpointer - 1&
                 OverStringPointer = hpointer + 2&
+                RecordEndReached = False
                 '@----------------------------------------------------------------------------
                 'Save the Token in Buffer
                 buffer(CurrentBufferIndex) = MidB$(tmpCSV(index), TokenBeginningPos, _
@@ -1124,13 +1128,13 @@ Attribute ParseCriticalCSV.VB_Description = "Parses a CSV text string in concord
             Else 'Missing fields delimiter char
                 TokenEndReached = True
                 RecordEndReached = True
-                LenCurrentIndex = LenB(tmpCSV(index))
                 '@----------------------------------------------------------------------------
                 'Save the Token in Buffer
                 buffer(CurrentBufferIndex) = RightB$(tmpCSV(index), LenCurrentIndex _
                                                 - TokenBeginningPos + 1)
                 tmpCSV(index) = vbNullString
                 index = index + 1&
+                If index <= MaxIndex Then LenCurrentIndex = LenB(tmpCSV(index))
                 OverStringPointer = 1&
             End If
         End If
@@ -1138,7 +1142,8 @@ Attribute ParseCriticalCSV.VB_Description = "Parses a CSV text string in concord
     Loop
     '@----------------------------------------------------------------------------
     'Save the the first record to output array
-    ReDim P_CSV_DATA(LBound(tmpCSV) To ImportDepth - 1&, 0 To CurrentBufferIndex)
+    CurrentRecordSize = CurrentBufferIndex
+    ReDim P_CSV_DATA(LBound(tmpCSV) To ImportDepth - 1&, 0 To CurrentRecordSize)
     For Counter1 = 0 To CurrentBufferIndex
         P_CSV_DATA(0, Counter1) = buffer(Counter1)
     Next Counter1
@@ -1158,12 +1163,20 @@ Attribute ParseCriticalCSV.VB_Description = "Parses a CSV text string in concord
             'Process the current Token
             TokenEndReached = False
             TokenBeginningPos = OverStringPointer
-            ASCIIcharw = AscW(MidB$(tmpCSV(index), OverStringPointer, 2))
-            Do While (ASCIIcharw = 32 Or ASCIIcharw = 9)
-                OverStringPointer = OverStringPointer + 2&
-                ASCIIcharw = AscW(MidB$(tmpCSV(index), OverStringPointer, 2))
-            Loop
-            OpenedToken = (ASCIIcharw = EscapeAscW)
+            Select Case OverStringPointer
+                Case Is < LenCurrentIndex
+                    ASCIIcharw = AscW(MidB$(tmpCSV(index), OverStringPointer, 2))
+                    '@----------------------------------------------------------------------------
+                    'Ignore spaces and tabs
+                    Do While ASCIIcharw = 32 Or ASCIIcharw = 9
+                        OverStringPointer = OverStringPointer + 2&
+                        If OverStringPointer > LenCurrentIndex Then Exit Do
+                        ASCIIcharw = AscW(MidB$(tmpCSV(index), OverStringPointer, 2))
+                    Loop
+                    OpenedToken = (ASCIIcharw = EscapeAscW)
+                Case Else 'Avoid over runs
+                    OpenedToken = False
+            End Select
             If OpenedToken Then
                 '@----------------------------------------------------------------------------
                 'Try to escape the Token
@@ -1175,7 +1188,6 @@ Attribute ParseCriticalCSV.VB_Description = "Parses a CSV text string in concord
                     'Buffering if needed
                     If Not SplittedToken Then SplittedToken = (hpointer = 0)
                     Do While hpointer = 0& 'Escape char may be on subsequent Index
-                        LenCurrentIndex = LenB(tmpCSV(index))
                         If CurrenttmpTokenIndex + 2& > MaxtmpTokenIndex Then
                             MaxtmpTokenIndex = 2& * MaxtmpTokenIndex + 1&
                             ReDim Preserve tmpToken(0 To MaxtmpTokenIndex)
@@ -1191,12 +1203,12 @@ Attribute ParseCriticalCSV.VB_Description = "Parses a CSV text string in concord
                         End Select
                         tmpCSV(index) = vbNullString
                         index = index + 1&
+                        If index <= MaxIndex Then LenCurrentIndex = LenB(tmpCSV(index))
                         SearchBeginningMark = 1
                         hpointer = InStrB(SearchBeginningMark, tmpCSV(index), EscapeChar) 'Find escape char
                     Loop
                     If hpointer = 0& And index > MaxIndex Then GoTo ParseCriticalCSV_MissingEscapeChar 'Missing escape char
                     OverStringPointer = hpointer + 2&
-                    LenCurrentIndex = LenB(tmpCSV(index))
                     If OverStringPointer < LenCurrentIndex Then
                         ASCIIcharw = AscW(MidB$(tmpCSV(index), OverStringPointer, 2))
                         '@----------------------------------------------------------------------------
@@ -1215,14 +1227,13 @@ Attribute ParseCriticalCSV.VB_Description = "Parses a CSV text string in concord
                     If EscapedWFS Then 'Escape char succeeded by fields separator char
                         TokenEndingPos = hpointer - 1&
                         TokenEndReached = True
-                        RecordEndReached = False
                         '@----------------------------------------------------------------------------
                         'Save the Token
                         Select Case SplittedToken
                             Case False 'Just save Token
                                 P_CSV_DATA(RecordsCount, OutputColumn) = MidB$(tmpCSV(index), _
-                                                                            TokenBeginningPos, _
-                                                                            TokenEndingPos - TokenBeginningPos + 1)
+                                                                                TokenBeginningPos, _
+                                                                                TokenEndingPos - TokenBeginningPos + 1)
                             Case Else 'The Token is stored on tmpToken array
                                 CurrenttmpTokenIndex = CurrenttmpTokenIndex + 1&
                                 If CurrenttmpTokenIndex > MaxtmpTokenIndex Then
@@ -1237,6 +1248,7 @@ Attribute ParseCriticalCSV.VB_Description = "Parses a CSV text string in concord
                         End Select
                         SplittedToken = False 'Restart Token status
                         OverStringPointer = OverStringPointer + 2& 'Advance over the field separator char
+                        RecordEndReached = False
                     Else
                         If OverStringPointer >= LenCurrentIndex Then  'Escape char succeeded
                                                                       'by records separator char
@@ -1265,6 +1277,7 @@ Attribute ParseCriticalCSV.VB_Description = "Parses a CSV text string in concord
                             SplittedToken = False 'Restart Token status
                             tmpCSV(index) = vbNullString
                             index = index + 1&
+                            If index <= MaxIndex Then LenCurrentIndex = LenB(tmpCSV(index))
                             OverStringPointer = 1&
                         Else
                             If SplittedToken Then 'Store the Left most Token portion from the current Index
@@ -1288,9 +1301,9 @@ Attribute ParseCriticalCSV.VB_Description = "Parses a CSV text string in concord
                 hpointer = InStrB(OverStringPointer, tmpCSV(index), P_FIELDS_DELIMITER)
                 If hpointer Then 'Found fields delimiter char
                     TokenEndReached = True
-                    RecordEndReached = False
                     TokenEndingPos = hpointer - 1&
                     OverStringPointer = hpointer + 2&
+                    RecordEndReached = False
                     '@----------------------------------------------------------------------------
                     'Save the Token
                     P_CSV_DATA(RecordsCount, OutputColumn) = MidB$(tmpCSV(index), TokenBeginningPos, _
@@ -1298,17 +1311,26 @@ Attribute ParseCriticalCSV.VB_Description = "Parses a CSV text string in concord
                 Else 'Missing fields delimiter char
                     TokenEndReached = True
                     RecordEndReached = True
-                    LenCurrentIndex = LenB(tmpCSV(index))
                     '@----------------------------------------------------------------------------
                     'Save the Token
                     P_CSV_DATA(RecordsCount, OutputColumn) = RightB$(tmpCSV(index), LenCurrentIndex _
                                                                 - TokenBeginningPos + 1)
                     tmpCSV(index) = vbNullString
                     index = index + 1&
+                    If index <= MaxIndex Then LenCurrentIndex = LenB(tmpCSV(index))
                     OverStringPointer = 1&
                 End If
             End If
             OutputColumn = OutputColumn + 1&
+            If OutputColumn > CurrentRecordSize Then
+                If Not RecordEndReached Then
+                    '@----------------------------------------------------------------------------
+                    'Reserve space for store at least another field
+                    CurrentRecordSize = CurrentRecordSize + 1&
+                    ReDim Preserve P_CSV_DATA(LBound(P_CSV_DATA) To UBound(P_CSV_DATA), _
+                                                0 To CurrentRecordSize)
+                End If
+            End If
         Loop
         RecordsCount = RecordsCount + 1&
         '@----------------------------------------------------------------------------
@@ -1324,7 +1346,7 @@ Attribute ParseCriticalCSV.VB_Description = "Parses a CSV text string in concord
             Next Counter2
         Next Counter1
         Erase P_CSV_DATA
-        P_CSV_DATA() = tmpOutputArray
+        P_CSV_DATA() = tmpOutputArray()
         Erase tmpOutputArray
     End If
     Erase tmpCSV
@@ -1373,98 +1395,96 @@ Attribute ParseCSV.VB_Description = "Parses a CSV text string assuming all field
     Dim tmpDelimiter As String
     
     On Error GoTo ErrHandler_ParseCS
-    If LenB(csvText$) Then
-        '@----------------------------------------------------------------------------
-        'Set Coerce Type to records and fields
-        Select Case P_ESCAPE_CHAR
-            Case 0
-                DataDelimiter = P_FIELDS_DELIMITER
-                LinesDelimiter = P_RECORDS_DELIMITER
-            Case 1
-                DataDelimiter = CHR_APOSTROPHE & P_FIELDS_DELIMITER & CHR_APOSTROPHE
-                LinesDelimiter = CHR_APOSTROPHE & P_RECORDS_DELIMITER & CHR_APOSTROPHE
-            Case Else
-                DataDelimiter = CHR_DOUBLE_QUOTES & P_FIELDS_DELIMITER & CHR_DOUBLE_QUOTES
-                LinesDelimiter = CHR_DOUBLE_QUOTES & P_RECORDS_DELIMITER & CHR_DOUBLE_QUOTES
-        End Select
-        '@----------------------------------------------------------------------------
-        'Split each line into an array entry
-        csvArray() = Split(csvText, LinesDelimiter)
-        '@----------------------------------------------------------------------------
-        'Avoid to read empty records
-        ArrayLB = CLng(LBound(csvArray))
-        ArrayUB = CLng(UBound(csvArray))
-        brCounter = 0
-        Do While LenB(csvArray(ArrayUB - brCounter)) = 0
-            brCounter = brCounter + 1
-        Loop
-        ArrayUB = ArrayUB - brCounter
-        '@----------------------------------------------------------------------------
-        'Ommit the coerce char from the upper and lower elements
-        If P_ESCAPE_CHAR <> 0 Then
-            csvArray(ArrayLB) = MidB$(csvArray(ArrayLB), 3)
-            If RightB$(csvArray(ArrayUB), 4) = vbCrLf Then
-                csvArray(ArrayUB) = LeftB$(csvArray(ArrayUB), _
-                                    LenB(csvArray(ArrayUB)) - 6)
-            Else
-                csvArray(ArrayUB) = LeftB$(csvArray(ArrayUB), _
-                                    LenB(csvArray(ArrayUB)) - 2)
-            End If
+    '@----------------------------------------------------------------------------
+    'Set Coerce Type to records and fields
+    Select Case P_ESCAPE_CHAR
+        Case 0
+            DataDelimiter = P_FIELDS_DELIMITER
+            LinesDelimiter = P_RECORDS_DELIMITER
+        Case 1
+            DataDelimiter = CHR_APOSTROPHE & P_FIELDS_DELIMITER & CHR_APOSTROPHE
+            LinesDelimiter = CHR_APOSTROPHE & P_RECORDS_DELIMITER & CHR_APOSTROPHE
+        Case Else
+            DataDelimiter = CHR_DOUBLE_QUOTES & P_FIELDS_DELIMITER & CHR_DOUBLE_QUOTES
+            LinesDelimiter = CHR_DOUBLE_QUOTES & P_RECORDS_DELIMITER & CHR_DOUBLE_QUOTES
+    End Select
+    '@----------------------------------------------------------------------------
+    'Split each line into an array entry
+    csvArray() = Split(csvText, LinesDelimiter)
+    '@----------------------------------------------------------------------------
+    'Avoid to read empty records
+    ArrayLB = CLng(LBound(csvArray))
+    ArrayUB = CLng(UBound(csvArray))
+    brCounter = 0
+    Do While LenB(csvArray(ArrayUB - brCounter)) = 0
+        brCounter = brCounter + 1
+    Loop
+    ArrayUB = ArrayUB - brCounter
+    '@----------------------------------------------------------------------------
+    'Ommit the coerce char from the upper and lower elements
+    If P_ESCAPE_CHAR <> 0 Then
+        csvArray(ArrayLB) = MidB$(csvArray(ArrayLB), 3)
+        If RightB$(csvArray(ArrayUB), 4) = vbCrLf Then
+            csvArray(ArrayUB) = LeftB$(csvArray(ArrayUB), _
+                                LenB(csvArray(ArrayUB)) - 6)
+        Else
+            csvArray(ArrayUB) = LeftB$(csvArray(ArrayUB), _
+                                LenB(csvArray(ArrayUB)) - 2)
         End If
-        '@----------------------------------------------------------------------------
-        'Check if user want Import all records
-        Select Case P_STARTING_RECORD - 1&
-            Case 0&
-                lngLB = ArrayLB
-            Case Else
-                lngLB = P_STARTING_RECORD - 1&
-        End Select
-        Select Case P_ENDING_RECORD - 1&
-            Case 0&
-                lngUB = ArrayUB
-            Case Is <= lngLB
-                lngUB = lngLB
-            Case Else
-                lngUB = P_ENDING_RECORD - 1&
-        End Select
-        '@----------------------------------------------------------------------------
-        'Take care of headers
-        If lngLB = ArrayLB Then
-            If lngUB - lngLB > 0 Then
-                If Not HeadersOmission Then
-                    hPos = 0
-                Else
-                    hPos = 1
-                End If
-            End If
-        End If
-        lRows = lngUB - lngLB
-        lColumns = CSVcolumns(csvArray, DataDelimiter) - 1
-        lCounter = lngLB + hPos
-        ReDim P_CSV_DATA(0 To lRows - hPos, 0 To lColumns)
-        '@----------------------------------------------------------------------------
-        'Process the data
-        Pointer = hPos
-        Do While lCounter <= lngUB
-            mCounter = 0
-            PrevPos = 1
-            NextPos = CLng(InStrB(PrevPos, csvArray(lCounter), _
-                                DataDelimiter))
-            Do While NextPos
-                P_CSV_DATA(Pointer - hPos, mCounter) = MidB$(csvArray(lCounter), _
-                                                            PrevPos, NextPos - PrevPos)
-                PrevPos = NextPos + CLng(LenB(DataDelimiter))
-                mCounter = mCounter + 1
-                NextPos = CLng(InStrB(PrevPos, csvArray(lCounter), DataDelimiter))
-            Loop
-            P_CSV_DATA(Pointer - hPos, mCounter) = MidB$(csvArray(lCounter), PrevPos)
-            lCounter = lCounter + 1
-            Pointer = Pointer + 1
-        Loop
-        '@----------------------------------------------------------------------------
-        'Free the memory
-        Erase csvArray
     End If
+    '@----------------------------------------------------------------------------
+    'Check if user want Import all records
+    Select Case P_STARTING_RECORD - 1&
+        Case 0&
+            lngLB = ArrayLB
+        Case Else
+            lngLB = P_STARTING_RECORD - 1&
+    End Select
+    Select Case P_ENDING_RECORD - 1&
+        Case 0&
+            lngUB = ArrayUB
+        Case Is <= lngLB
+            lngUB = lngLB
+        Case Else
+            lngUB = P_ENDING_RECORD - 1&
+    End Select
+    '@----------------------------------------------------------------------------
+    'Take care of headers
+    If lngLB = ArrayLB Then
+        If lngUB - lngLB > 0 Then
+            If Not HeadersOmission Then
+                hPos = 0
+            Else
+                hPos = 1
+            End If
+        End If
+    End If
+    lRows = lngUB - lngLB
+    lColumns = CSVcolumns(csvArray, DataDelimiter) - 1
+    lCounter = lngLB + hPos
+    ReDim P_CSV_DATA(0 To lRows - hPos, 0 To lColumns)
+    '@----------------------------------------------------------------------------
+    'Process the data
+    Pointer = hPos
+    Do While lCounter <= lngUB
+        mCounter = 0
+        PrevPos = 1
+        NextPos = CLng(InStrB(PrevPos, csvArray(lCounter), _
+                            DataDelimiter))
+        Do While NextPos
+            P_CSV_DATA(Pointer - hPos, mCounter) = MidB$(csvArray(lCounter), _
+                                                        PrevPos, NextPos - PrevPos)
+            PrevPos = NextPos + CLng(LenB(DataDelimiter))
+            mCounter = mCounter + 1
+            NextPos = CLng(InStrB(PrevPos, csvArray(lCounter), DataDelimiter))
+        Loop
+        P_CSV_DATA(Pointer - hPos, mCounter) = MidB$(csvArray(lCounter), PrevPos)
+        lCounter = lCounter + 1
+        Pointer = Pointer + 1
+    Loop
+    '@----------------------------------------------------------------------------
+    'Free the memory
+    Erase csvArray
     Exit Sub
 ErrHandler_ParseCS:
     Erase P_CSV_DATA
@@ -1543,7 +1563,7 @@ Attribute ResetToDefault.VB_Description = "Resets the all the options to its def
     P_SUCCESSFUL_IMPORT = False
 End Sub
 Private Sub SkipUnwantedLines(ByRef Idx As Long, ByRef MaxIdx As Long, _
-                                ByRef Arr() As String)
+                                ByRef arr() As String)
 Attribute SkipUnwantedLines.VB_Description = "Ignores empty, blanks and commented lines."
     Dim CurLength As Long
     Dim CharCode As Long
@@ -1554,13 +1574,13 @@ Attribute SkipUnwantedLines.VB_Description = "Ignores empty, blanks and commente
     'Skip commented and blank lines if needed
     If Idx <= MaxIdx Then
         Do
-            CurLength = LenB(Arr(Idx))
+            CurLength = LenB(arr(Idx))
             UnwantedLine = False
             StrPointer = 1&
             If CurLength = 0 Then 'Empty line found
                 UnwantedLine = True
             Else
-                CharCode = AscW(Arr(Idx))
+                CharCode = AscW(arr(Idx))
                 If CharCode = P_COMMENTLINEINDICATOR Then 'Commented line found
                     UnwantedLine = True
                 Else
@@ -1572,14 +1592,14 @@ Attribute SkipUnwantedLines.VB_Description = "Ignores empty, blanks and commente
                             UnwantedLine = True
                             Exit Do
                         End If
-                        CharCode = AscW(MidB$(Arr(Idx), StrPointer, 2))
+                        CharCode = AscW(MidB$(arr(Idx), StrPointer, 2))
                     Loop
                     If CharCode = P_COMMENTLINEINDICATOR Then UnwantedLine = True
                 End If
             End If
             If UnwantedLine Then
                 Idx = Idx + 1&
-                CurLength = LenB(Arr(Idx))
+                CurLength = LenB(arr(Idx))
             End If
         Loop While UnwantedLine And Idx <= MaxIdx
     End If
