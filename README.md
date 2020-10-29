@@ -12,7 +12,7 @@ The parser is compatible with those CSV files compliant with the RFC-4180 standa
 * User-defined escape character (option not available in _Power Query for Excel 2019_ and with some inconsistences when use the _From Text(Legacy)_ wizard)[[1]](#1).
 
 <a id="1">[1]</a> 
-Power Query and its legacy counterpart, was not able to handle fields’ embedded line breaks when the CSV's "Text qualifier" is a Single Quote or the Apostrophe char.
+Power Query, and its legacy counterpart, was not able to handle fields’ embedded line breaks when the CSV's "Text qualifier" is a Single Quote or the Apostrophe char.
 
 ## Getting started
 
