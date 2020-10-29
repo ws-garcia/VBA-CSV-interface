@@ -8,8 +8,6 @@ nav_order: 2
 # DumpToSheet
 {: .d-inline-block }
 
-{: .fs-9 }
-
 New
 {: .label .label-purple }
 
