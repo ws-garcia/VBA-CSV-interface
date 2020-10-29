@@ -86,7 +86,7 @@ Dim ENC as String
 ENC = CSVix.FileEncoding
 ```
 
->**CAUTION:**
+>⚠️**CAUTION:**
 >_Keep in mind that the class doesn't distinguish between number, dates and strings, all data is read as text and you can put in an Excel sheet to let Microsoft software format it._
 {: 	.text-purple-300 .bg-yellow-000 }
 
