@@ -8,6 +8,9 @@ nav_order: 2
 # DumpToSheet
 {: .fs-9 }
 
+New
+{: .label .label-purple }
+
 Dumps the data from the current instance to an Excel WorkSheet.
 {: .fs-6 .fw-300 }
 
