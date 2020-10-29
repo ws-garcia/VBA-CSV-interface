@@ -88,7 +88,7 @@ ENC = CSVix.FileEncoding
 
 >**CAUTION:**
 >_Keep in mind that the class doesn't distinguish between number, dates and strings, all data is read as text and you can put in an Excel sheet to let Microsoft software format it._
-
+{: 	.text-yellow-300 .bg-yellow-300 }
 
 ## Benchmark
 The benchmark provided here is focused on the supposed most critical operation, this is the parse one when working with CSV files. Although, benchmark for the exportation procedure is given on. 
