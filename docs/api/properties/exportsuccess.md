@@ -2,7 +2,7 @@
 title: ExportSuccess
 parent: Properties
 grand_parent: API
-nav_order: 7
+nav_order: 8
 ---
 
 # ExportSuccess
@@ -31,10 +31,8 @@ _None_
 
 *Type*: `Boolean`
 
----
-
-## Remarks
-
-A `False` value from `ExportSuccess` property indicates the last export operation wouldn't succeeded.
+>:pencil: **NOTE:**
+>
+>A `False` value from `ExportSuccess` property indicates the last export operation wouldn't succeeded.
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)

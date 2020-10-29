@@ -2,7 +2,7 @@
 title: QuotingMode
 parent: Properties
 grand_parent: API
-nav_order: 12
+nav_order: 13
 ---
 
 # QuotingMode
@@ -36,9 +36,9 @@ _Yes_
 |Get|`QuotationMode`/`Long`|
 |Let|_None_|
 
----
-
-## Remarks
+>:pencil: **NOTE:**
+>
+>Use the `QuotingMode` property to set the parser behavior. Some CSV files not require further processes after an easy to do string split.
 
 See also
 : [QuotationMode Enumeration](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html).

@@ -46,7 +46,7 @@ In the table bellow all the rules of [RFC-4180](https://www.ietf.org/rfc/rfc4180
 </tr>
 <tr>
 <td style="text-align: left;"><em>If double-quotes are used to enclose fields, then<br> a double-quote appearing inside a field must be<br> escaped by preceding it with another double quote.</em></td>
-<td style="text-align: left;">Ignored rule. The class accepts the apostrophe<br> as escape char, and follow the standard claims<br> may cause conflict with some abbreviate US<br> slangs (i.e.: "<strong>isn't</strong>").</td>
+<td style="text-align: left;">Ignored rule. The class accepts the apostrophe<br> as escape char, and follow the standard claims<br> may cause conflict with some abbreviate US<br> slangs (e.g.: "<strong>isn't</strong>").</td>
 </tr>
 </tbody>
 </table>

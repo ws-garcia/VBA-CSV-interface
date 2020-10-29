@@ -2,7 +2,7 @@
 title: FieldsDelimiter
 parent: Properties
 grand_parent: API
-nav_order: 8
+nav_order: 9
 ---
 
 # FieldsDelimiter
@@ -36,9 +36,8 @@ _Yes_
 |Get|`String`|
 |Let|_None_|
 
----
-
-## Remarks
-The current behavior for the CSV interface forces `FieldsDelimiter` property to be distinct than a `Space` or`vbTab` char, set the property to comma or semicolon are the most logical options.
+>:warning: **CAUTION**
+>
+>The current behavior for the CSV interface forces `FieldsDelimiter` property to be distinct than a `Space` or`vbTab` char, set the property to comma or semicolon are the most logical options.
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)

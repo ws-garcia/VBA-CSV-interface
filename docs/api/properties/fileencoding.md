@@ -2,7 +2,7 @@
 title: FileEncoding
 parent: Properties
 grand_parent: API
-nav_order: 9
+nav_order: 10
 ---
 
 # FileEncoding
@@ -31,11 +31,9 @@ _None_
 
 *Type*: `String`
 
----
-
-## Remarks
-
-The `FileEncoding` property is set when CSV file is load on memory and can return the following values:
+>:pencil: **NOTE:**
+>
+>The `FileEncoding` property is set when CSV file is load on memory. In other words, the property holds the encoding for the last opened file. All the possible values are shown in this section.
 
 <table>
 <thead>
@@ -68,6 +66,8 @@ The `FileEncoding` property is set when CSV file is load on memory and can retur
 </tbody>
 </table>
 
-Since VBA works with Unicode charset, a check to the `FileEncoding` property can help user overcome some codification issues. For this purposes, out there are free tools like [Notepad++](https://npp-user-manual.org/preferences/) with options to change a file codification with just a left mouse click.
+>:pencil: **NOTE:**
+>
+>Since VBA works with Unicode charset, a check to the `FileEncoding` property can help user overcome some codification issues. For this purposes, out there are free tools like [Notepad++](https://npp-user-manual.org/preferences/) with options to change a file codification with just a left mouse click.
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)

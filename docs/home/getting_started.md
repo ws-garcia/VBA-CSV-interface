@@ -27,15 +27,6 @@ In order to be able to use `CSVinterface.cls` within your project, please review
 The CSV files are special kind of tabulated plain text data container widely used in data exchange. There is no globally accepted standard format for that kind of files, however, out there are well formed standards such as [RFC-4180](https://www.ietf.org/rfc/rfc4180.txt) proposed by The Internet Society.
 Although many solutions has been developed for work with CSV files into VBA, including projects from [@sdkn104](https://github.com/sdkn104/VBA-CSV) and [@Senipah](https://github.com/Senipah/VBA-Better-Array) on GitHub, the performance philosophy conduce me to the development of a VBA class module that allows users exchange data between VBA arrays and CSV files at superior speed for the VBA programing language.
 
-## Advantages
-* Fully compliant with RFC4180 CSV standard.
-* Exported data is 100% Excel spreadsheet compatible.
-* Writes and reads files at high speed.
-* Minimal Memory overload.
-* User have the option to import only certain range of records from given CSV file.
-* Auto exclude any quote mark when data is imported.
-* Simple code logic that allows you easy modify and enhance it!
-
 ## Philosophy
 The VBA CSVinterface class module is designed for gain advantage from the well-structured CSV files, this means, there isn't automatic syntax check, given the user decide how the class will works. This can be seen as a weakness, but the class get a speed-up on writing and reading procedures at time the user controls how the file is interpreted, keeping in mind that, in fact, VBA is a language with slow code execution speed. Under this idealization the developed solution complies with the RFC4180 standard for user specified CSV document format.
 
@@ -95,8 +86,10 @@ Dim ENC as String
 ENC = CSVix.FileEncoding
 ```
 
-### Limitations
-* __Data Format__: _Keep in mind that the class doesn't distinguish between number, dates and strings, all data is read as text and you can put in an Excel sheet to let Microsoft software format it._
+>:warning: **CAUTION**
+>
+>Keep in mind that the class doesn't distinguish between number, dates and strings, all data is read as text and you can put in an Excel sheet to let Microsoft software format it.
+
 
 ## Benchmark
 The benchmark provided here is focused on the supposed most critical operation, this is the parse one when working with CSV files. Although, benchmark for the exportation procedure is given on. 
@@ -110,7 +103,10 @@ The class was tested against two solutions (the one from [@Senipah](https://gith
 
 First three of files have special chars (line breaks, commas, double quotes) into fields, also have trailing spaces at the field’s boundaries. The main objective of this test is to measure the performance of the different procedures against the possible configurations of a potential CSV file. The test results can help answer the following questions: does the number of fields to be escaped affect the performance of the procedure? If yes, in what magnitude? The test also includes benchmark for parse to a CSV file of considerable size.
 
-_NOTE: The table below shows the benchmark results, in seconds, for the currently tested procedures. Some projects was excluded from the benchmark due they does not complies with the RFC4180 standard_.
+>:pencil: **NOTE:**
+>
+>The table below shows the benchmark results, in seconds, for the currently tested procedures. Some projects were excluded from the benchmark due they do not handle those CSV's compliant with the RFC-4180 standard.
+
 
 <table>
 <thead>
@@ -141,7 +137,7 @@ _NOTE: The table below shows the benchmark results, in seconds, for the currentl
 <td style="text-align: right;">22.3047</td>
 </tr>
 <tr>
-<td style="text-align: left;"><em>ParseCSVToArray/ADO<br>(@sdkn104)</em></td>
+<td style="text-align: left;"><em>ParseCSVToArray<br>(@sdkn104)</em></td>
 <td style="text-align: right;">3.5000</td>
 <td style="text-align: right;">3.7969</td>
 <td style="text-align: right;">4.5156</td>
@@ -155,9 +151,14 @@ _NOTE: The table below shows the benchmark results, in seconds, for the currentl
 
 - `ImportFromCSVString` is the tested faster one method, outperforming its nearer counterpart by a factor of 2.5x in performance.
 - The CSV syntax impacts the performance in this way: as the number of escaped fields is increased, the performance is decreased.
-- As larger fields a CSV file has, larger time to parse it. This affirmation binds the parse performance to the on-disk file size.
+- As larger CSV file size, longer time to parse it.
 
-In the above results, the 2nd value, for cells with two values, is obtained when setting `QuotingMode = QuotationMode.All`. As we can see, the class performance gets a little improve using this configuration. Keep in mind that not all CSV files can be successful imported using the previous tweaking.
+In the above results, the 2nd value, for cells with two values, is obtained when setting `QuotingMode = QuotationMode.All`. As we can see, the class performance gets a little improve using this configuration. 
+
+>:warning: **CAUTION**
+>
+>Keep in mind that not all CSV files can be successful imported using the previous tweaking.
+
 
 The image bellow shows the overall performance for the imports and exports operations from the CSV interface class. Notice, specials syntax CSV’s will take about 1.8x more time to be parsed due the parser expands its syntax analysis range. In the same way, but in less magnitude, the exportation procedure will have an overheat when the instance is setting up to be RCF-4180 standard compliant.
 

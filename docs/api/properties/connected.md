@@ -2,7 +2,7 @@
 title: Connected
 parent: Properties
 grand_parent: API
-nav_order: 1
+nav_order: 2
 ---
 
 # Connected
@@ -31,10 +31,8 @@ _None_
 
 *Type*: `Boolean`
 
----
-
-## Remarks
-
-A `False` value from `Connected` property indicates the CSV file is not load in memory.
+>:pencil: **NOTE:**
+>
+>A `False` value from `Connected` property indicates the CSV file is not load in memory.
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)

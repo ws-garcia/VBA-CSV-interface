@@ -2,7 +2,7 @@
 title: ErrNumber
 parent: Properties
 grand_parent: API
-nav_order: 4
+nav_order: 5
 ---
 
 # ErrNumber
@@ -33,11 +33,9 @@ _None_
 
 *Type*: `Long`
 
----
-
-## Remarks
-
-Use the `ErrNumber` property to check if the last requested operation succeed.
+>:pencil: **NOTE:**
+>
+>Use the `ErrNumber` property to check if the last requested operation succeed.
 
 See also
 : [ErrDescription property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/errors/errdescription.html), [ErrSource property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/errors/errsource.html).

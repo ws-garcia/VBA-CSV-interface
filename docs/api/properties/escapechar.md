@@ -2,7 +2,7 @@
 title: EscapeChar
 parent: Properties
 grand_parent: API
-nav_order: 6
+nav_order: 7
 ---
 
 # EscapeChar
@@ -36,13 +36,11 @@ _Yes_
 |Get|`EscapeType`/`Long`|
 |Let|_None_|
 
----
-
-## Remarks
-
-Setting the `EscapeChar` property to `EscapeType.NullChar` is only recommended when the `QuotingMode` property is set to `QuotationMode.All`. This scenario comes to reality when user have to work with CSV files over which neither fields need to be escaped.
-
-The above means if the target CSV have an unknown structure, the best alternative is set the `EscapeChar` property to `EscapeType.DoubleQuotes` and the `QuotingMode` property to `QuotationMode.Critical`. These are the defaults settings.
+>:pencil: **NOTE:**
+>
+>Setting the `EscapeChar` property to `EscapeType.NullChar` is only recommended when the `QuotingMode` property is set to `QuotationMode.All`. This scenario comes to reality when user have to work with CSV files over which neither fields need to be escaped.
+>
+>The above means if the target CSV have an unknown structure, the best alternative is set the `EscapeChar` property to `EscapeType.DoubleQuotes` and the `QuotingMode` property to `QuotationMode.Critical`. These are the defaults settings.
 
 See also
 : [EscapeType Enumeration](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/escapetype.html), [QuotationMode Enumeration](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html).

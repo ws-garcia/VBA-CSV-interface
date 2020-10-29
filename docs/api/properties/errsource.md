@@ -2,7 +2,7 @@
 title: ErrSource
 parent: Properties
 grand_parent: API
-nav_order: 5
+nav_order: 6
 ---
 
 # ErrSource
@@ -31,11 +31,9 @@ _None_
 
 *Type*: `String`
 
----
-
-## Remarks
-
-Use the `ErrSource` property to check if the last requested operation succeed.
+>:pencil: **NOTE:**
+>
+>Use the `ErrSource` property to check if the last requested operation succeed.
 
 See also
 :  [ErrDescription property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/errors/errdescription.html), [ErrNumber property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/errors/errnumber.html).

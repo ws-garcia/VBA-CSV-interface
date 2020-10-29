@@ -2,7 +2,7 @@
 title: RecordsDelimiter
 parent: Properties
 grand_parent: API
-nav_order: 13
+nav_order: 14
 ---
 
 # RecordsDelimiter
@@ -36,10 +36,8 @@ _Yes_
 |Get|`String`|
 |Let|_None_|
 
----
-
-## Remarks
-
-The `RecordsDelimiter` property can be set to`vbCr`, `vbCrLf` or `vbLf`. This options unlocks a limitation from RFC-4180 CSV standard .
+>:pencil: **NOTE:**
+>
+>The `RecordsDelimiter` property can be set to`vbCr`, `vbCrLf` or `vbLf`. This options unlocks a limitation from RFC-4180 CSV standard .
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)

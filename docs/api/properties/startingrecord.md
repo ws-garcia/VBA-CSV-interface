@@ -2,7 +2,7 @@
 title: StartingRecord
 parent: Properties
 grand_parent: API
-nav_order: 14
+nav_order: 15
 ---
 
 # StartingRecord
@@ -36,16 +36,12 @@ _Yes_
 |Get|`Long`|
 |Let|_None_|
 
----
-
-## Remarks
-
-Use the `StartingRecord` property in combination with the `EndingRecord` property for import a certain range of records from a desired CSV file.
+>:pencil: **NOTE:**
+>
+>Use the `StartingRecord` property in combination with the `EndingRecord` property for import a certain range of records from CSV file.
 
 See also
 : [EndingRecord property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/endingrecord.html).
-
----
 
 ## Behavior
 
