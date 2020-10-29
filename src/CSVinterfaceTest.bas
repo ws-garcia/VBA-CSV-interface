@@ -18,10 +18,9 @@ Sub Test_Import()
         e = Timer
         H = H + (e - s)
     Next i
-    Debug.Print "CSVinterface [ImportFromCSV]:"; Round(H / 10, 4)
+    Debug.Print "CSVinterface [ImportFromCSVString]:"; Round(H / 10, 4)
     Debug.Print "*********************************************************"
     Debug.Print Err.Number
 
     Set CSVix = Nothing
 End Sub
-
