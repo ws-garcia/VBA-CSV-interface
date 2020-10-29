@@ -137,7 +137,7 @@ First three of files have special chars (line breaks, commas, double quotes) int
 <td style="text-align: right;">22.3047</td>
 </tr>
 <tr>
-<td style="text-align: left;"><em>ParseCSVToArray/ADO<br>(@sdkn104)</em></td>
+<td style="text-align: left;"><em>ParseCSVToArray<br>(@sdkn104)</em></td>
 <td style="text-align: right;">3.5000</td>
 <td style="text-align: right;">3.7969</td>
 <td style="text-align: right;">4.5156</td>
