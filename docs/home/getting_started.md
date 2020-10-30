@@ -86,8 +86,8 @@ Dim ENC as String
 ENC = CSVix.FileEncoding
 ```
 
->⚠️**Warning:**
->_Keep in mind that the class doesn't distinguish between number, dates and strings, all data is read as text and you can put in an Excel sheet to let Microsoft software format it._
+>⚠️**Caution:**
+>Keep in mind that the class doesn't distinguish between number, dates and strings, all data is read as text and you can put in an Excel sheet to let Microsoft software format it.
 {: .text-grey-dk-300 .bg-yellow-000 }
 
 ## Benchmark
@@ -153,7 +153,7 @@ First three of files have special chars (line breaks, commas, double quotes) int
 
 In the above results, the 2nd value, for cells with two values, is obtained when setting `QuotingMode = QuotationMode.All`. As we can see, the class performance gets a little improve using this configuration. 
 
->⚠️**Warning:**
+>⚠️**Caution:**
 >Keep in mind that not all CSV files can be successful imported using the previous tweaking.
 {: .text-grey-dk-300 .bg-yellow-000 }
 

@@ -21,8 +21,9 @@ nav_order: 1
 The [EXAMPLE1] shows how you can import all the data from a CSV file using the RFC-4180 standard as paramount. 
 
 #### [EXAMPLE1]
->:pencil: **NOTE:**
+>📝**Note:**
 >the example uses the option `QuotationMode.Critical`, [learn more here](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html).
+{: .text-grey-dk-300 .bg-grey-lt-000 }
 
 ```vb
 Sub ImportRecords_RFC4180()
@@ -44,8 +45,9 @@ End Sub
 The [EXAMPLE2] shows how you can import the Top 10 records from a CSV file using the RFC-4180 standard as paramount.
 
 #### [EXAMPLE2]
->:pencil: **NOTE:**
+>📝**Note:**
 >the example uses the option `QuotationMode.Critical`, [learn more here](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html).
+{: .text-grey-dk-300 .bg-grey-lt-000 }
 
 ```vb
 Sub ImportTopTenRecords_RFC4180()
@@ -65,8 +67,9 @@ End Sub
 The [EXAMPLE3] accomplishes the same task of the [EXAMPLE1], the difference is that a temporary variable is used to store the CSV file's content instead of use the `OpenConnection` method. Also, the [EXAMPLE3] shows how to omit the CSV's headers.
 
 #### [EXAMPLE3]
->:pencil: **NOTE:**
+>📝**Note:**
 >the example uses the option `QuotationMode.Critical`, [learn more here](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html).
+{: .text-grey-dk-300 .bg-grey-lt-000 }
 
 ```vb
 Sub ImportTopTenRecords_RFC4180()
@@ -88,8 +91,9 @@ End Sub
 The [EXAMPLE4] shows how you can import 10 middle records from a CSV file using the RFC-4180 standard as paramount.
 
 #### [EXAMPLE4]
->:pencil: **NOTE:**
+>📝**Note:**
 >the example uses the option `QuotationMode.Critical`, [learn more here](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html).
+{: .text-grey-dk-300 .bg-grey-lt-000 }
 
 ```vb
 Sub ImportTenMiddleRecords_RFC4180()
@@ -117,8 +121,10 @@ The [EXAMPLE5] shows how you can import all the data from a CSV file without che
 See also
 :[QuotationMode](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html), [EscapeType](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/escapetype.html).
 #### [EXAMPLE5]
->:pencil: **NOTE:**
+>📝**Note:**
 >the example uses the option `QuotationMode.All`, and `EscapeType.NullChar`.
+{: .text-grey-dk-300 .bg-grey-lt-000 }
+
 ```vb
 Sub ImportRecords()
 	Dim CSVix As CSVinterface
@@ -155,8 +161,9 @@ The [EXAMPLE7] shows how you can import all the data from a CSV file without che
 See also
 :[QuotationMode](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html), [EscapeType](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/escapetype.html).
 #### [EXAMPLE7]
->:pencil: **NOTE:**
+>📝**Note:**
 >the example uses the option `QuotationMode.All`, and `EscapeType.DoubleQuotes`.
+{: .text-grey-dk-300 .bg-grey-lt-000 }
 
 ```vb
 Sub ImportRecords()

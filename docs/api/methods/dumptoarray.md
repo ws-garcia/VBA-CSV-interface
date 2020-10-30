@@ -25,9 +25,9 @@ The required *OutPutArray* argument is an identifier specifying a dynamic `Strin
 
 _None_
 
->:pencil: **NOTE:**
->
+>📝**Note:**
 >Before dump data, is recommended to make a `ImportFromCSV` or `ImportFromCSVstring` method call. The *OutPutArray* parameter must be declared as dynamic `String` array. If user forget to do this, an error will occur.
+{: .text-grey-dk-300 .bg-grey-lt-000 }
 
 See also
 : [ImportFromCSV method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/importfromcsv.html), [ImportFromCSVstring method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/importfromcsvstring.html).

@@ -25,9 +25,9 @@ The required *csvArray* argument is an identifier specifying a `Variant` array v
 
 _None_
 
->:pencil: **NOTE:**
->
+>📝**Note:**
 >Before invoke the `ExportToCSV` method, the user must to open a connection to the CSV file. The *csvArray* parameter must be declared as `Variant` array. Passing a variable that isn't an array will cause an error and the operation aborts. 
+{: .text-grey-dk-300 .bg-grey-lt-000 }
 
 See also
 : [OpenConnection method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/openconnection.html), [FieldsDelimiter property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/fieldsdelimiter.html), [RecordsDelimiter property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/recordsdelimiter.html), [EscapeChar property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/escapechar.html).

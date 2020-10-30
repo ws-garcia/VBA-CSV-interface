@@ -26,9 +26,9 @@ Provides a list of constants to configure the CSV parsing/writing operation beha
 
 *variable* = `QuotationMode`.*Constant*
 
->:pencil: **NOTE:**
->
+>📝**Note:**
 >The `QuotationMode.Critical` value, default one, is used to indicates the CSV file must use escape char only in fields having special char. The `QuotationMode.All` value most be used for those CSV files in wich all its fields will be escaped with the escape char given with the `EscapeChar` property.
+{: .text-grey-dk-300 .bg-grey-lt-000 }
 
 See also
 : [EscapeChar Property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/escapechar.html).

@@ -21,8 +21,9 @@ nav_order: 2
 The [EXAMPLE1] shows how you can export all the data in VBA array to a CSV file using the RFC-4180 standard as paramount. 
 
 #### [EXAMPLE1]
->:pencil: **NOTE:**
+>📝**Note:**
 >the example uses the option `QuotationMode.Critical`, [learn more here](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html).
+{: .text-grey-dk-300 .bg-grey-lt-000 }
 
 ```vb
 Sub ExportToCSV_RFC4180()
@@ -55,8 +56,9 @@ See also
 :[QuotationMode](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html), [EscapeType](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/escapetype.html).
 
 #### [EXAMPLE2]
->:pencil: **NOTE:**
+>📝**Note:**
 >the example uses the option `QuotationMode.All`, and `EscapeType.NullChar`.
+{: .text-grey-dk-300 .bg-grey-lt-000 }
 
 ```vb
 Sub ExportToCSV()
@@ -88,8 +90,9 @@ See also
 :[QuotationMode](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html), [EscapeType](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/escapetype.html).
 
 #### [EXAMPLE3]
->:pencil: **NOTE:**
+>📝**Note:**
 >the example uses the option `QuotationMode.All`, and `EscapeType.NullChar`.
+{: .text-grey-dk-300 .bg-grey-lt-000 }
 
 ```vb
 Sub ExportToCSV()

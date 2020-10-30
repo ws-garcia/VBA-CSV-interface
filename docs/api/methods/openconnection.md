@@ -42,16 +42,14 @@ Loads a CSV file on memory for data Input/Output operations.
 
 _None_
 
->:warning: **CAUTION**
->
+>⚠️**Caution:**
 >The `OpenConnection` method don't rejects any kind of file extension, user need to ensure the target file has a name ending in `.csv` or `.txt`.
+{: .text-grey-dk-300 .bg-yellow-000 }
 
-
->:pencil: **NOTE:**
->
+>📝**Note:**
 >The `OpenConnection` method is the preamble to the `ImportFromCSV` and `ExportToCSV` methods, this means each call to the citated methods must be preceded by a `OpenConnection` method call.
->
 >After call the `OpenConnection` method is possible to check if the instance is bind to the CSV file, for which is only needed to read the current instance `Connected` property.
+{: .text-grey-dk-300 .bg-grey-lt-000 }
 
 See also
 : [Connected property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/connected.html), [ImportFromCSV method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/importfromcsv.html), [ExportToCSV method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/exporttocsv.html).

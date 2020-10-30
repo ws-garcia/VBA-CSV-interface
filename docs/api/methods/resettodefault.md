@@ -25,10 +25,9 @@ _None_
 
 _None_
 
->:pencil: **NOTE:**
->
+>📝**Note:**
 >Before call the `ResetToDefault` method, user must to check if the target CSV will be well parsed with the config options shown in the table below.
-
+{: .text-grey-dk-300 .bg-grey-lt-000 }
 
 <table>
 <thead>
