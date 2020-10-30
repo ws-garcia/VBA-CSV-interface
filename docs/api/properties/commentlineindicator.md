@@ -1,4 +1,4 @@
- ---
+---
 title: CommentLineIndicator
 parent: Properties
 grand_parent: API
