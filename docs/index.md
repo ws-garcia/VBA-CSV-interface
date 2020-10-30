@@ -16,6 +16,11 @@ VBA CSV interface is a class module developed to accomplish the data exchange ta
 * Writes and reads files at high speed.
 * Supports those CSV's compliant with the RFC-4180 standard.
 * Supports commented lines, empty lines an blank ones.
+{: .d-inline-block }
+
+New
+{: .label .label-purple }
+
 * User have the option to import only certain range of records from given CSV file.
 * Auto exclude any quote mark when data is imported.
 * Simple code logic that allows you easy modify and enhance it!
