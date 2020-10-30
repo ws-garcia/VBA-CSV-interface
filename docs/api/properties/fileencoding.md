@@ -31,9 +31,9 @@ _None_
 
 *Type*: `String`
 
->:pencil: **NOTE:**
->
+>📝**Note:**
 >The `FileEncoding` property is set when CSV file is load on memory. In other words, the property holds the encoding for the last opened file. All the possible values are shown in this section.
+{: .text-grey-dk-300 .bg-grey-lt-000 }
 
 <table>
 <thead>
@@ -66,8 +66,8 @@ _None_
 </tbody>
 </table>
 
->:pencil: **NOTE:**
->
+>📝**Note:**
 >Since VBA works with Unicode charset, a check to the `FileEncoding` property can help user overcome some codification issues. For this purposes, out there are free tools like [Notepad++](https://npp-user-manual.org/preferences/) with options to change a file codification with just a left mouse click.
+{: .text-grey-dk-300 .bg-grey-lt-000 }
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)

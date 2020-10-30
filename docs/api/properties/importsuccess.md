@@ -31,8 +31,8 @@ _None_
 
 *Type*: `Boolean`
 
->:pencil: **NOTE:**
->
+>📝**Note:**
 >A `False` value from `ImportSuccess` property indicates the last import operation wouldn't succeeded.
+{: .text-grey-dk-300 .bg-grey-lt-000 }
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)

@@ -36,8 +36,8 @@ _Yes_
 |Get|`String`|
 |Let|_None_|
 
->:pencil: **NOTE:**
->
+>📝**Note:**
 >The `RecordsDelimiter` property can be set to`vbCr`, `vbCrLf` or `vbLf`. This options unlocks a limitation from RFC-4180 CSV standard .
+{: .text-grey-dk-300 .bg-grey-lt-000 }
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)

@@ -31,8 +31,8 @@ _None_
 
 *Type*: `Boolean`
 
->:pencil: **NOTE:**
->
+>📝**Note:**
 >A `False` value from `ExportSuccess` property indicates the last export operation wouldn't succeeded.
+{: .text-grey-dk-300 .bg-grey-lt-000 }
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)

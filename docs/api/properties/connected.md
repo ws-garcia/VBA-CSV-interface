@@ -31,8 +31,8 @@ _None_
 
 *Type*: `Boolean`
 
->:pencil: **NOTE:**
->
+>📝**Note:**
 >A `False` value from `Connected` property indicates the CSV file is not load in memory.
+{: .text-grey-dk-300 .bg-grey-lt-000 }
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)

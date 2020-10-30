@@ -6,7 +6,10 @@ nav_order: 1
 ---
 
 # CommentLineIndicator
-{: .fs-9 }
+{: .d-inline-block }
+
+New
+{: .label .label-purple }
 
 Gets or sets the char used for identify comments lines on the current instance.
 {: .fs-6 .fw-300 }
@@ -36,13 +39,13 @@ _Yes_
 |Get|`String`|
 |Let|_None_|
 
->:pencil: **NOTE:**
->
+>📝**Note:**
 >A line starting with the `CommentLineIndicator` char is expected to be automatic ignored by the parser. By default, the char "#" is used for indicate commented lines, but this property can be set to whatever character. If the `CommentLineIndicator` has a length greater than 1, only the first char of it is used.
+{: .text-grey-dk-300 .bg-grey-lt-000 }
 
->:warning: **CAUTION**
->
+>⚠️**Caution:**
 >This option is only available when the `QuotingMode` property is set to `QuotationMode.Critical`.
+{: .text-grey-dk-300 .bg-yellow-000 }
 
 See also
 : [EscapeChar Property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/escapechar.html), [QuotationMode Enumeration](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html), [FieldsDelimiter Property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/fieldsdelimiter.html).

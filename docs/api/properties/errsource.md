@@ -31,9 +31,9 @@ _None_
 
 *Type*: `String`
 
->:pencil: **NOTE:**
->
+>📝**Note:**
 >Use the `ErrSource` property to check if the last requested operation succeed.
+{: .text-grey-dk-300 .bg-grey-lt-000 }
 
 See also
 :  [ErrDescription property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/errors/errdescription.html), [ErrNumber property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/errors/errnumber.html).

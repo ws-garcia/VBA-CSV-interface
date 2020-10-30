@@ -31,8 +31,8 @@ _None_
 
 *Type*: `String`
 
->:pencil: **NOTE:**
->
+>📝**Note:**
 >The `fileName` property is set when CSV file is load to memory. This is, the property holds the last opened file’s name.
+{: .text-grey-dk-300 .bg-grey-lt-000 }
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)

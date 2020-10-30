@@ -36,9 +36,9 @@ _Yes_
 |Get|`QuotationMode`/`Long`|
 |Let|_None_|
 
->:pencil: **NOTE:**
->
+>📝**Note:**
 >Use the `QuotingMode` property to set the parser behavior. Some CSV files not require further processes after an easy to do string split.
+{: .text-grey-dk-300 .bg-grey-lt-000 }
 
 See also
 : [QuotationMode Enumeration](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html).

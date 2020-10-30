@@ -36,8 +36,8 @@ _Yes_
 |Get|`String`|
 |Let|_None_|
 
->:warning: **CAUTION**
->
+>⚠️**Caution:**
 >The current behavior for the CSV interface forces `FieldsDelimiter` property to be distinct than a `Space` or`vbTab` char, set the property to comma or semicolon are the most logical options.
+{: .text-grey-dk-300 .bg-yellow-000 }
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)
