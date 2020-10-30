@@ -44,7 +44,7 @@ _Yes_
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 >⚠️**Caution:**
->This option is only available when the `QuotingMode` property is set to `QuotationMode.Critical`.
+>This property is only used when the `QuotingMode` property is set to `QuotationMode.Critical`.
 {: .text-grey-dk-300 .bg-yellow-000 }
 
 See also
