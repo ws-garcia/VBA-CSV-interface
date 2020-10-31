@@ -15,7 +15,7 @@ VBA CSV interface is a class module developed to accomplish the data exchange ta
 ## Advantages
 * Writes and reads files at high speed.
 * Supports those CSV's compliant with the RFC-4180 specs.
-* Supports commented lines, empty lines an blank ones. See [Papa Parse](https://www.papaparse.com/) project.
+* Supports commented lines, empty lines and blank ones. See [Papa Parse](https://www.papaparse.com/) project.
 * User have the option to import only certain range of records from given CSV file.
 * Auto exclude any quote mark when data is imported.
 * Simple code logic that allows you easy modify and enhance it!
