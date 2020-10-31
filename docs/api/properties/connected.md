@@ -31,7 +31,8 @@ _None_
 
 *Type*: `Boolean`
 
->📝**Note:**
+>📝**Note**
+>{: .text-grey-dk-300 .bg-green-000 }
 >A `False` value from `Connected` property indicates the CSV file is not load in memory.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 

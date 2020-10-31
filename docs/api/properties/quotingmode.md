@@ -36,7 +36,8 @@ _Yes_
 |Get|`QuotationMode`/`Long`|
 |Let|_None_|
 
->📝**Note:**
+>📝**Note**
+>{: .text-grey-dk-300 .bg-green-000 }
 >Use the `QuotingMode` property to set the parser behavior. Some CSV files not require further processes after an easy to do string split.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 

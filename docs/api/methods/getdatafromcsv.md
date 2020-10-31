@@ -25,7 +25,8 @@ The required *csvPathAndFilename* argument is an identifier specifying a `String
 
 *Type*: `String`
 
->📝**Note:**
+>📝**Note**
+>{: .text-grey-dk-300 .bg-green-000 }
 >The *csvPathAndFilename* parameter must be the full path to the target CSV file, this means, the parameter holds the folder path, the file name and the ".csv" extension.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 

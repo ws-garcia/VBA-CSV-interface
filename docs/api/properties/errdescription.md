@@ -31,7 +31,8 @@ _None_
 
 *Type*: `String`
 
->📝**Note:**
+>📝**Note**
+>{: .text-grey-dk-300 .bg-green-000 }
 >Use the `ErrDescription` property to check if the last requested operation succeed.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 

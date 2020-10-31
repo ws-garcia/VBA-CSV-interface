@@ -39,11 +39,13 @@ _Yes_
 |Get|`String`|
 |Let|_None_|
 
->📝**Note:**
+>📝**Note**
+>{: .text-grey-dk-300 .bg-green-000 }
 >A line starting with the `CommentLineIndicator` char is expected to be automatic ignored by the parser. By default, the char "#" is used for indicate commented lines, but this property can be set to whatever character. If the `CommentLineIndicator` has a length greater than 1, only the first char of it is used.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
->⚠️**Caution:**
+>⚠️**Caution**
+>{: .text-grey-dk-300 .bg-green-000 }
 >This property is only used when the `QuotingMode` property is set to `QuotationMode.Critical`.
 {: .text-grey-dk-300 .bg-yellow-000 }
 

@@ -36,7 +36,8 @@ _Yes_
 |Get|`Long`|
 |Let|_None_|
 
->📝**Note:**
+>📝**Note**
+>{: .text-grey-dk-300 .bg-green-000 }
 >The `EndingRecord` property must be used in combination with the `StartingRecord` property for import a certain range of records from a CSV file.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
