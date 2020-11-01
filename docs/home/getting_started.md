@@ -162,7 +162,7 @@ In the above results, the 2nd value, for cells with two values, is obtained when
 >Keep in mind that not all CSV files can be successful imported using the previous tweaking.
 {: .text-grey-dk-300 .bg-yellow-000 }
 
-The image bellow shows the overall performance for the imports and exports operations from the CSV interface class. Notice, specials syntax CSV’s will take about 1.8x more time to be parsed due the parser expands its syntax analysis range. In the same way, but in less magnitude, the exportation procedure will have an overheat when the instance is setting up to be RCF-4180 standard compliant.
+The image bellow shows the overall performance for the imports and exports operations from the CSV interface class. Notice, specials syntax CSV’s will take about 1.8x more time to be parsed due the parser expands its syntax analysis range. In the same way, but in less magnitude, the exportation procedure will have an overheat when the instance is setting up to be RCF-4180 compliant.
 
 ![BenchMark](Benchmark.png)
 
