@@ -22,9 +22,11 @@ description: "Introduction to the VBA CSV interface class."
 {:toc}
 </details>
 
-In order to be able to use `CSVinterface.cls` within your project, please review the [installation instructions](https://ws-garcia.github.io/VBA-CSV-interface/home/installation.html).
+In order to be able to use `CSVinterface.cls` within your project, please review the installation instructions by clicking the button below.
 
-The CSV files are special kind of tabulated plain text data container widely used in data exchange. There is no globally accepted standard format for that kind of files, however, out there are well formed standards such as [RFC-4180](https://www.ietf.org/rfc/rfc4180.txt) proposed by The Internet Society.
+[Installation](https://ws-garcia.github.io/VBA-CSV-interface/home/installation.html){: .btn .btn-green }
+
+The CSV files are special kind of tabulated plain text data container widely used in data exchange. There is no globally accepted standard format for that kind of files, however, out there are well formed specs such as [RFC-4180](https://www.ietf.org/rfc/rfc4180.txt) proposed by The Internet Society.
 Although many solutions has been developed for work with CSV files into VBA, including projects from [@sdkn104](https://github.com/sdkn104/VBA-CSV) and [@Senipah](https://github.com/Senipah/VBA-Better-Array) on GitHub, the performance philosophy conduce me to the development of a VBA class module that allows users exchange data between VBA arrays and CSV files at superior speed for the VBA programing language.
 
 ## Philosophy
@@ -94,8 +96,8 @@ ENC = CSVix.FileEncoding
 ## Benchmark
 The benchmark provided here is focused on the supposed most critical operation, this is the parse one when working with CSV files. Although, benchmark for the exportation procedure is given on. 
 
-The class was tested against two solutions (the one from [@Senipah](https://github.com/Senipah/VBA-Better-Array) and the other from [@sdkn104](https://github.com/sdkn104/VBA-CSV)) using a laptop running `Win 10 Pro x64, Intel® Core™ i7-4500U CPU @1.80-2.40 GHz, 8 GB RAM, Excel 2019 x86`. The test works in two ways, 100K calls to the import procedure over three (3) different files, each of this with three records (3) and four fields (4) or one (1) call to the import procedure when parsing the larger files. In all cases, the overall work load is 1.2MM of fields. The CSV files are:
-* _RFC-4180_OH.csv_: **OH**- Only the teaders are quoted (4 fields)
+The class was tested against two solutions (the one from [@Senipah](https://github.com/Senipah/VBA-Better-Array) and the other from [@sdkn104](https://github.com/sdkn104/VBA-CSV)) using a laptop running `Win 10 Pro x64, Intel® Core™ i7-4500U CPU @1.80-2.40 GHz, 8 GB RAM, Excel 2019 x86`. The test works in two ways, 100K calls to the import procedure over three (3) different files, each of this with three records (3) and four fields (4), or one (1) call to the import procedure parsing a larger file. In all cases, the overall work load is 1.2MM of fields. The CSV files are:
+* _RFC-4180_OH.csv_: **OH**- Only the headers are quoted (4 fields)
 * _RFC-4180_HF.csv_: **HF**- Half of fields are quoted (6 fields)
 * _RFC-4180_AF.csv_: **AF**- All fields are quoted (12 fields) 
 * *Demo_400k_records.csv*: **LargeF**- 1.2MM fields.
@@ -160,7 +162,7 @@ In the above results, the 2nd value, for cells with two values, is obtained when
 >Keep in mind that not all CSV files can be successful imported using the previous tweaking.
 {: .text-grey-dk-300 .bg-yellow-000 }
 
-The image bellow shows the overall performance for the imports and exports operations from the CSV interface class. Notice, specials syntax CSV’s will take about 1.8x more time to be parsed due the parser expands its syntax analysis range. In the same way, but in less magnitude, the exportation procedure will have an overheat when the instance is setting up to be RCF-4180 standard compliant.
+The image bellow shows the overall performance for the imports and exports operations from the CSV interface class. Notice, specials syntax CSV’s will take about 1.8x more time to be parsed due the parser expands its syntax analysis range. In the same way, but in less magnitude, the exportation procedure will have an overheat when the instance is setting up to be RCF-4180 compliant.
 
 ![BenchMark](Benchmark.png)
 
