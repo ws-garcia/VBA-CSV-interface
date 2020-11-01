@@ -18,7 +18,7 @@ nav_order: 1
 
 ## Import CSV file data
 
-The [EXAMPLE1] shows how you can import all the data from a CSV file using the RFC-4180 standard as paramount. 
+The [EXAMPLE1] shows how you can import all the data from a CSV file using the RFC-4180 specs as paramount. 
 
 #### [EXAMPLE1]
 >📝**Note**
@@ -43,7 +43,7 @@ End Sub
 
 ## Import top 10 records from a CSV file into a VBA array 
 
-The [EXAMPLE2] shows how you can import the Top 10 records from a CSV file using the RFC-4180 standard as paramount.
+The [EXAMPLE2] shows how you can import the Top 10 records from a CSV file using the RFC-4180 specs as paramount.
 
 #### [EXAMPLE2]
 >📝**Note**
@@ -91,7 +91,7 @@ End Sub
 ```
 
 ## Import ten middle records from a CSV file into a VBA array 
-The [EXAMPLE4] shows how you can import 10 middle records from a CSV file using the RFC-4180 standard as paramount.
+The [EXAMPLE4] shows how you can import 10 middle records from a CSV file using the RFC-4180 specs as paramount.
 
 #### [EXAMPLE4]
 >📝**Note**
@@ -118,9 +118,9 @@ End Sub
 
 ## Import CSV file that haven’t special syntax
 
-This is the fastest way to work with CSV files because the CSV interface class don't check the syntax given at the RFC-4180 standard. If your CSV files has trailing spaces, or you don't know if it holds a field needing to be escaped, please [reset the config options](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/resettodefault.html) for the current instance to avoid incorrect results.
+This is the fastest way to work with CSV files because the CSV interface class don't check the syntax given at the RFC-4180 specs. If your CSV files has trailing spaces, or you don't know if it holds a field needing to be escaped, please [reset the config options](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/resettodefault.html) for the current instance to avoid incorrect results.
 
-The [EXAMPLE5] shows how you can import all the data from a CSV file without checking the syntax given at the RFC-4180 standard. The file to be parsed has neither field needing to be escaped.
+The [EXAMPLE5] shows how you can import all the data from a CSV file without checking the syntax given at the RFC-4180 specs. The file to be parsed has neither field needing to be escaped.
 
 See also
 :[QuotationMode](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html), [EscapeType](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/escapetype.html).
@@ -161,7 +161,7 @@ Sub ImportRecords_RFC4180()
 	Set CSVix = Nothing 'Terminate the current instance
 End Sub
 ```
-The [EXAMPLE7] shows how you can import all the data from a CSV file without checking the syntax given at the RFC-4180 standard. In the file to be parsed, all fields need to be escaped.
+The [EXAMPLE7] shows how you can import all the data from a CSV file without checking the syntax given at the RFC-4180 specs. In the file to be parsed, all fields need to be escaped.
 
 See also
 :[QuotationMode](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html), [EscapeType](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/escapetype.html).

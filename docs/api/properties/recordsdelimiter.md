@@ -38,7 +38,7 @@ _Yes_
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->The `RecordsDelimiter` property can be set to`vbCr`, `vbCrLf` or `vbLf`. This options unlocks a limitation from RFC-4180 CSV standard .
+>The `RecordsDelimiter` property can be set to`vbCr`, `vbCrLf` or `vbLf`. This options unlocks a limitation from RFC-4180 CSV specs.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)
