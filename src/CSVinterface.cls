@@ -303,7 +303,7 @@ Attribute DumpToArray.VB_UserMemId = 0
 End Sub
 Public Sub DumpToSheet(Optional WBookName As String, _
                         Optional SheetName As String, _
-                        Optional RngName As String = "A1")
+                        Optional rngName As String = "A1")
 Attribute DumpToSheet.VB_Description = "Dumps the CSV data from the current instance to an Excel Worksheet."
     Dim WBook As Workbook
     Dim OutputSheet As Worksheet
@@ -330,7 +330,7 @@ Attribute DumpToSheet.VB_Description = "Dumps the CSV data from the current inst
         End If
         '@------------------------------------------------------
         'Set the target Range
-        Set OutputRange = OutputSheet.Range(RngName) _
+        Set OutputRange = OutputSheet.Range(rngName) _
                             .Resize _
                             ( _
                             UBound(P_CSV_DATA, 1) - LBound(P_CSV_DATA, 1) + 1, _
@@ -1277,7 +1277,6 @@ Private Sub ParseCriticalCSV(ByRef csvText As String, _
                             SplittedToken = False 'Restart Token status
                             tmpCSV(index) = vbNullString
                             index = index + 1&
-                            If index <= MaxIndex Then LenCurrentIndex = LenB(tmpCSV(index))
                             OverStringPointer = 1&
                         Else
                             If SplittedToken Then 'Store the Left most Token portion from the current Index
@@ -1317,7 +1316,6 @@ Private Sub ParseCriticalCSV(ByRef csvText As String, _
                                                                 - TokenBeginningPos + 1)
                     tmpCSV(index) = vbNullString
                     index = index + 1&
-                    If index <= MaxIndex Then LenCurrentIndex = LenB(tmpCSV(index))
                     OverStringPointer = 1&
                 End If
             End If
@@ -1336,6 +1334,7 @@ Private Sub ParseCriticalCSV(ByRef csvText As String, _
         '@----------------------------------------------------------------------------
         'Skip lines if needed
         SkipUnwantedLines index, MaxIndex, tmpCSV
+        If index <= MaxIndex Then LenCurrentIndex = LenB(tmpCSV(index))
     Loop
     If ImportDepth <> RecordsCount Then 'There are empty index in the array
         ReDim tmpOutputArray(0 To RecordsCount - 1, 0 To FieldsAmount - 1)
