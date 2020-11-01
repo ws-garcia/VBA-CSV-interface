@@ -97,7 +97,7 @@ ENC = CSVix.FileEncoding
 The benchmark provided here is focused on the supposed most critical operation, this is the parse one when working with CSV files. Although, benchmark for the exportation procedure is given on. 
 
 The class was tested against two solutions (the one from [@Senipah](https://github.com/Senipah/VBA-Better-Array) and the other from [@sdkn104](https://github.com/sdkn104/VBA-CSV)) using a laptop running `Win 10 Pro x64, Intel® Core™ i7-4500U CPU @1.80-2.40 GHz, 8 GB RAM, Excel 2019 x86`. The test works in two ways, 100K calls to the import procedure over three (3) different files, each of this with three records (3) and four fields (4), or one (1) call to the import procedure parsing a larger file. In all cases, the overall work load is 1.2MM of fields. The CSV files are:
-* _RFC-4180_OH.csv_: **OH**- Only the teaders are quoted (4 fields)
+* _RFC-4180_OH.csv_: **OH**- Only the headers are quoted (4 fields)
 * _RFC-4180_HF.csv_: **HF**- Half of fields are quoted (6 fields)
 * _RFC-4180_AF.csv_: **AF**- All fields are quoted (12 fields) 
 * *Demo_400k_records.csv*: **LargeF**- 1.2MM fields.
