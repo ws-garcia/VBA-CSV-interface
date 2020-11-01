@@ -37,7 +37,7 @@ _Yes_
 |Let|_None_|
 
 >📝**Note**
->{: .text-grey-dk-300 .bg-green-000 }
+>{: .text-grey-lt-000 .bg-green-000 }
 >The `RecordsDelimiter` property can be set to`vbCr`, `vbCrLf` or `vbLf`. This options unlocks a limitation from RFC-4180 CSV standard .
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 

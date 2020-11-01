@@ -28,7 +28,7 @@ Provides a list of constants for use to configure the char used as escape one.
 *variable* = `EscapeType`.*Constant*
 
 >📝**Note**
->{: .text-grey-dk-300 .bg-green-000 }
+>{: .text-grey-lt-000 .bg-green-000 }
 >The `EscapeType.NullChar` value is used with the`QuotationMode.All` setting to indicates the CSV file does not use any escape char in its whole length. This values combination conduces the CSV file to be parse/write assuming the `FieldsDelimiter` property is enough for the import/export operations.
 >
 >In the case the `FieldsDelimiter` property is not enough for successfully done the import/export operations, the `EscapeType.DoubleQuotes` value would be used for parse/write an CSV having fields to be escaped with double quote and the `EscapeType.Apostrophe` values for parse/write an CSV having fields to be escaped with the apostrophe, using the `QuotationMode.Critical` mode.

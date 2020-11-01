@@ -32,7 +32,7 @@ _None_
 *Type*: `String`
 
 >📝**Note**
->{: .text-grey-dk-300 .bg-green-000 }
+>{: .text-grey-lt-000 .bg-green-000 }
 >The `fileName` property is set when CSV file is load to memory. This is, the property holds the last opened file’s name.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 

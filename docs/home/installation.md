@@ -14,7 +14,7 @@ description: "Install instructions for the VBA CSV interface class."
 For use the lasted release into your VBA code you must to download the provides `.zip` archive. Once downloaded, import the `CSVinterface.cls` file from the VBA IDE. 
 
 >⚠️**Caution**
->{: .text-grey-dk-300 .bg-green-000 }
+>{: .text-grey-lt-000 .bg-green-000 }
 >Do not use copy and paste the content from the `.cls`  file  to your project. The class file contains certain information the VBA-IDE needs to parse to ensure the `CSVinterface.cls` works properly.
 {: .text-grey-dk-300 .bg-yellow-000 }
 

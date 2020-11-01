@@ -34,7 +34,7 @@ _None_
 *Type*: `Long`
 
 >📝**Note**
->{: .text-grey-dk-300 .bg-green-000 }
+>{: .text-grey-lt-000 .bg-green-000 }
 >Use the `ErrNumber` property to check if the last requested operation succeed.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 

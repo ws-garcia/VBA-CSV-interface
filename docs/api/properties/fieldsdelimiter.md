@@ -37,7 +37,7 @@ _Yes_
 |Let|_None_|
 
 >⚠️**Caution**
->{: .text-grey-dk-300 .bg-green-000 }
+>{: .text-grey-lt-000 .bg-green-000 }
 >The current behavior for the CSV interface forces `FieldsDelimiter` property to be distinct than a `Space` or`vbTab` char, set the property to comma or semicolon are the most logical options.
 {: .text-grey-dk-300 .bg-yellow-000 }
 

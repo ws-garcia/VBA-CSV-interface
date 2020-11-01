@@ -32,7 +32,7 @@ _None_
 *Type*: `Boolean`
 
 >📝**Note**
->{: .text-grey-dk-300 .bg-green-000 }
+>{: .text-grey-lt-000 .bg-green-000 }
 >A `False` value from `ImportSuccess` property indicates the last import operation wouldn't succeeded.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 

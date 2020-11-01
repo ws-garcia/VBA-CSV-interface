@@ -37,7 +37,7 @@ _Yes_
 |Let|_None_|
 
 >📝**Note**
->{: .text-grey-dk-300 .bg-green-000 }
+>{: .text-grey-lt-000 .bg-green-000 }
 >Setting the `EscapeChar` property to `EscapeType.NullChar` is only recommended when the `QuotingMode` property is set to `QuotationMode.All`. This scenario comes to reality when user have to work with CSV files over which neither fields need to be escaped.
 >
 >The above means if the target CSV have an unknown structure, the best alternative is set the `EscapeChar` property to `EscapeType.DoubleQuotes` and the `QuotingMode` property to `QuotationMode.Critical`. These are the defaults settings.

@@ -50,7 +50,7 @@ Dumps the data from the current instance to an Excel WorkSheet.
 _None_
 
 >📝**Note**
->{: .text-grey-dk-300 .bg-green-000 }
+>{: .text-grey-lt-000 .bg-green-000 }
 >Before dump data, is recommended to make a `ImportFromCSV` or `ImportFromCSVstring` method call.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
