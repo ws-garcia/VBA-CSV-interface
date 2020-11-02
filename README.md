@@ -18,6 +18,10 @@ Power Query, and its legacy counterpart, was not able to handle fields’ embedd
 
 If you don't know how to get started with VBA-CSV Interface class, visit the [documentation repo](https://ws-garcia.github.io/VBA-CSV-interface/).
 
+## Contributing
+
+In order to contribute whit in this project, please see the [guidance for contributing](https://ws-garcia.github.io/VBA-CSV-interface/contributing.html).
+
 ## Benchmark
 
 The benchmark results for VBA-CSV Interface are available at [this site](https://ws-garcia.github.io/VBA-CSV-interface/home/getting_started.html#benchmark).
