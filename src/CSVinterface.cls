@@ -93,6 +93,9 @@ Private P_ESCAPE_CHAR As EscapeType '------------Holds the char used for escape 
 Private P_FIELDS_DELIMITER As String '-----------Holds the current delimiter for CSV fields
 Private P_FILEENCODING As String '---------------Holds the encoding for the opened CSV file
 Private P_FILENAME As String '-------------------Holds the actual file name
+Private P_NEED_SHRINK As Boolean '---------------When TRUE the P_CSV_DATA array need to be shrinked
+Private P_OUTPUT_UB1 As Long '-------------------Holds the max 1stD used index in the P_CSV_DATA array
+Private P_OUTPUT_UB2 As Long '-------------------Holds the max 2ndD used index in the P_CSV_DATA array
 Private P_QUOTING_MODE As QuotationMode '--------Hols the mode used for fields quotation.
 Private P_RECORDS_DELIMITER As String '----------Holds the records delimiter (CR, LF or CRLF)
 Private P_STARTING_RECORD As Long '--------------Pointer to the first record to be imported
@@ -258,6 +261,7 @@ End Function
 Private Sub CloseConnection()
 Attribute CloseConnection.VB_Description = "Closes a connection that point to the memory opened CSV file."
     On Error GoTo ErrHandler_CloseConnection
+    '@------------------------------------------------------
     'Close the last opened file
     Close #FileHandled
     P_ERROR_DESC = vbNullString
@@ -298,8 +302,22 @@ End Function
 Public Sub DumpToArray(OutPutArray() As String)
 Attribute DumpToArray.VB_Description = "Dumps the CSV data from the current instance to a 2D array."
 Attribute DumpToArray.VB_UserMemId = 0
-    OutPutArray() = P_CSV_DATA
-    Erase P_CSV_DATA
+    If P_SUCCESSFUL_IMPORT Then
+        If Not P_NEED_SHRINK Then
+            OutPutArray() = P_CSV_DATA
+        Else
+            Dim Counter1 As Long, Counter2 As Long
+            ReDim OutPutArray(0 To P_OUTPUT_UB1, 0 To P_OUTPUT_UB2)
+            For Counter1 = 0 To P_OUTPUT_UB1
+                For Counter2 = 0 To P_OUTPUT_UB2
+                    OutPutArray(Counter1, Counter2) = P_CSV_DATA(Counter1, Counter2)
+                    P_CSV_DATA(Counter1, Counter2) = vbNullString 'Release memory
+                Next Counter2
+            Next Counter1
+        End If
+        P_SUCCESSFUL_IMPORT = False
+        Erase P_CSV_DATA
+    End If
 End Sub
 Public Sub DumpToSheet(Optional WBookName As String, _
                         Optional SheetName As String, _
@@ -329,17 +347,41 @@ Attribute DumpToSheet.VB_Description = "Dumps the CSV data from the current inst
             Set OutputSheet = WBook.Sheets.Add
         End If
         '@------------------------------------------------------
-        'Set the target Range
-        Set OutputRange = OutputSheet.Range(rngName) _
+        'Dump the data
+        If Not P_NEED_SHRINK Then
+            '@------------------------------------------------------
+            'Set the target Range
+            Set OutputRange = OutputSheet.Range(rngName) _
                             .Resize _
                             ( _
                             UBound(P_CSV_DATA, 1) - LBound(P_CSV_DATA, 1) + 1, _
                             UBound(P_CSV_DATA, 2) - LBound(P_CSV_DATA, 2) + 1 _
                             )
-        '@------------------------------------------------------
-        'Dump the data
-        OutputRange.Value2 = P_CSV_DATA
+            OutputRange.Value2 = P_CSV_DATA
+        Else
+            '@------------------------------------------------------
+            'Set the target Range
+            Set OutputRange = OutputSheet.Range(rngName) _
+                            .Resize _
+                            ( _
+                            P_OUTPUT_UB1 + 1, _
+                            P_OUTPUT_UB2 + 1 _
+                            )
+            Dim Counter1 As Long, Counter2 As Long
+            Dim tmpOutputArray() As String
+            ReDim tmpOutputArray(0 To P_OUTPUT_UB1, 0 To P_OUTPUT_UB2)
+            For Counter1 = 0 To P_OUTPUT_UB1
+                For Counter2 = 0 To P_OUTPUT_UB2
+                    tmpOutputArray(Counter1, Counter2) = P_CSV_DATA(Counter1, Counter2)
+                    P_CSV_DATA(Counter1, Counter2) = vbNullString 'Release memory
+                Next Counter2
+            Next Counter1
+            OutputRange.Value2 = tmpOutputArray
+            Erase tmpOutputArray
+        End If
         EnableOptimization False
+        P_SUCCESSFUL_IMPORT = False
+        Erase P_CSV_DATA
     End If
 End Sub
 Private Sub EnableOptimization(Optional Optimize As Boolean = True)
@@ -708,12 +750,20 @@ Attribute JoinRecordsFields.VB_Description = "Joins all fields for each record i
     Dim JoinBuffer(0 To 2) As String
     Dim LB1 As Long, UB1 As Long
     Dim LB2 As Long, UB2 As Long
+    Dim TwoDimensional As Boolean
     
     On Error GoTo JoinRecordsFields_Error
-    LB1 = LBound(RecordsArray, 1)
-    LB2 = LBound(RecordsArray, 2)
-    UB1 = UBound(RecordsArray, 1)
-    UB2 = UBound(RecordsArray, 2)
+    If MultiDimensional(RecordsArray) Then
+        TwoDimensional = True
+        LB1 = LBound(RecordsArray, 1)
+        LB2 = LBound(RecordsArray, 2)
+        UB1 = UBound(RecordsArray, 1)
+        UB2 = UBound(RecordsArray, 2)
+    Else
+        TwoDimensional = False
+        LB1 = LBound(RecordsArray, 1)
+        UB1 = UBound(RecordsArray, 1)
+    End If
     '@----------------------------------------------------------------------------
     Select Case P_QUOTING_MODE
         Case QuotationMode.Critical
@@ -732,39 +782,71 @@ Attribute JoinRecordsFields.VB_Description = "Joins all fields for each record i
             JoinBuffer(0) = CoerceChr
             JoinBuffer(1) = vbNullString
             JoinBuffer(2) = CoerceChr
-            '@----------------------------------------------------------------------------
-            'Set array sizes
-            ReDim ConcatenatedArray(LB1 To UB1)
-            ReDim buffer(LB2 To UB2)
-            '@----------------------------------------------------------------------------
-            'Concatenate fields
-            For iLCounter = LB1 To UB1
-                For jLCounter = LB2 To UB2
-                    If InStrB(1, RecordsArray(iLCounter, jLCounter), P_FIELDS_DELIMITER) Then
-                        JoinBuffer(1) = RecordsArray(iLCounter, jLCounter)
-                        buffer(jLCounter) = Join$(JoinBuffer, vbNullString)
-                    ElseIf InStrB(1, RecordsArray(iLCounter, jLCounter), CoerceChr) Then
-                        JoinBuffer(1) = RecordsArray(iLCounter, jLCounter)
-                        buffer(jLCounter) = Join$(JoinBuffer, vbNullString)
-                    ElseIf InStrB(1, RecordsArray(iLCounter, jLCounter), P_RECORDS_DELIMITER) Then
-                        JoinBuffer(1) = RecordsArray(iLCounter, jLCounter)
-                        buffer(jLCounter) = Join$(JoinBuffer, vbNullString)
+            If TwoDimensional Then
+                '@----------------------------------------------------------------------------
+                'Set array sizes
+                ReDim ConcatenatedArray(LB1 To UB1)
+                ReDim buffer(LB2 To UB2)
+                '@----------------------------------------------------------------------------
+                'Concatenate fields
+                For iLCounter = LB1 To UB1
+                    For jLCounter = LB2 To UB2
+                        If InStrB(1, RecordsArray(iLCounter, jLCounter), P_FIELDS_DELIMITER) Then
+                            JoinBuffer(1) = RecordsArray(iLCounter, jLCounter)
+                            buffer(jLCounter) = Join$(JoinBuffer, vbNullString)
+                        ElseIf InStrB(1, RecordsArray(iLCounter, jLCounter), CoerceChr) Then
+                            JoinBuffer(1) = RecordsArray(iLCounter, jLCounter)
+                            buffer(jLCounter) = Join$(JoinBuffer, vbNullString)
+                        ElseIf InStrB(1, RecordsArray(iLCounter, jLCounter), P_RECORDS_DELIMITER) Then
+                            JoinBuffer(1) = RecordsArray(iLCounter, jLCounter)
+                            buffer(jLCounter) = Join$(JoinBuffer, vbNullString)
+                        Else
+                            buffer(jLCounter) = RecordsArray(iLCounter, jLCounter)
+                        End If
+                        JoinBuffer(1) = vbNullString
+                    Next jLCounter
+                    ConcatenatedArray(iLCounter) = Join$(buffer, P_FIELDS_DELIMITER)
+                Next iLCounter
+                '@----------------------------------------------------------------------------
+                'Concatenate records
+                JoinRecordsFields = Join$(ConcatenatedArray, P_RECORDS_DELIMITER)
+                '@----------------------------------------------------------------------------
+                'Free the memory
+                Erase ConcatenatedArray
+                Erase buffer
+            Else
+                '@----------------------------------------------------------------------------
+                'Set array sizes
+                ReDim ConcatenatedArray(LB1 To UB1)
+                ReDim buffer(0)
+                '@----------------------------------------------------------------------------
+                'Concatenate fields
+                For iLCounter = LB1 To UB1
+                    If InStrB(1, RecordsArray(iLCounter), P_FIELDS_DELIMITER) Then
+                        JoinBuffer(1) = RecordsArray(iLCounter)
+                        buffer(0) = Join$(JoinBuffer, vbNullString)
+                    ElseIf InStrB(1, RecordsArray(iLCounter), CoerceChr) Then
+                        JoinBuffer(1) = RecordsArray(iLCounter)
+                        buffer(0) = Join$(JoinBuffer, vbNullString)
+                    ElseIf InStrB(1, RecordsArray(iLCounter), P_RECORDS_DELIMITER) Then
+                        JoinBuffer(1) = RecordsArray(iLCounter)
+                        buffer(0) = Join$(JoinBuffer, vbNullString)
                     Else
-                        buffer(jLCounter) = RecordsArray(iLCounter, jLCounter)
+                        buffer(0) = RecordsArray(iLCounter)
                     End If
                     JoinBuffer(1) = vbNullString
-                Next jLCounter
-                ConcatenatedArray(iLCounter) = Join$(buffer, P_FIELDS_DELIMITER)
-            Next iLCounter
-            '@----------------------------------------------------------------------------
-            'Concatenate records
-            JoinRecordsFields = Join$(ConcatenatedArray, P_RECORDS_DELIMITER)
-            '@----------------------------------------------------------------------------
-            'Free the memory
-            Erase ConcatenatedArray
-            Erase buffer
+                    ConcatenatedArray(iLCounter) = buffer(0)
+                Next iLCounter
+                '@----------------------------------------------------------------------------
+                'Concatenate records
+                JoinRecordsFields = Join$(ConcatenatedArray, P_RECORDS_DELIMITER)
+                '@----------------------------------------------------------------------------
+                'Free the memory
+                Erase ConcatenatedArray
+                Erase buffer
+            End If
         Case Else
-            If MultiDimensional(RecordsArray) Then
+            If TwoDimensional Then
                 '@----------------------------------------------------------------------------
                 'Set delimiters
                 Select Case P_ESCAPE_CHAR
@@ -858,7 +940,7 @@ Private Sub ParseCriticalCSV(ByRef csvText As String, _
                                     Optional HeadersOmission As Boolean = False)
     Dim ASCIIcharw As Long
     Dim buffer() As String
-    Dim Counter1 As Long, Counter2 As Long
+    Dim Counter1 As Long
     Dim CurrentBufferIndex As Long
     Dim CurrentRecordSize As Long
     Dim CurrenttmpTokenIndex As Long
@@ -885,7 +967,6 @@ Private Sub ParseCriticalCSV(ByRef csvText As String, _
     Dim SplittedToken As Boolean
     Dim StartRecord As Long
     Dim tmpCSV() As String
-    Dim tmpOutputArray() As String
     Dim tmpToken() As String
     Dim TokenBeginningPos As Long
     Dim TokenEndingPos As Long
@@ -1336,22 +1417,18 @@ Private Sub ParseCriticalCSV(ByRef csvText As String, _
         SkipUnwantedLines index, MaxIndex, tmpCSV
         If index <= MaxIndex Then LenCurrentIndex = LenB(tmpCSV(index))
     Loop
-    If ImportDepth <> RecordsCount Then 'There are empty index in the array
-        ReDim tmpOutputArray(0 To RecordsCount - 1, 0 To FieldsAmount - 1)
-        For Counter1 = 0 To RecordsCount - 1
-            For Counter2 = 0 To FieldsAmount - 1
-                tmpOutputArray(Counter1, Counter2) = P_CSV_DATA(Counter1, Counter2)
-                P_CSV_DATA(Counter1, Counter2) = vbNullString 'Release memory
-            Next Counter2
-        Next Counter1
-        Erase P_CSV_DATA
-        P_CSV_DATA() = tmpOutputArray()
-        Erase tmpOutputArray
+    '@----------------------------------------------------------------------------
+    'Check if the array need to be shrinked at the output stage
+    If ImportDepth <> RecordsCount Then
+        P_NEED_SHRINK = True
+        P_OUTPUT_UB1 = RecordsCount - 1
+        P_OUTPUT_UB2 = FieldsAmount - 1
+    Else
+        P_NEED_SHRINK = False
     End If
     Erase tmpCSV
     Exit Sub
 ParseCriticalCSV_Error_Handler:
-    Erase tmpOutputArray
     Erase P_CSV_DATA
     Erase tmpCSV
     P_ERROR_NUMBER = Err.number
