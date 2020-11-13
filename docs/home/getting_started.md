@@ -105,11 +105,6 @@ The class was tested against two solutions (the one from [@Senipah](https://gith
 
 First three of files have special chars (line breaks, commas, double quotes) into fields, also have trailing spaces at the field’s boundaries. The main objective of this test is to measure the performance of the different procedures against the possible configurations of a potential CSV file. The test results can help answer the following questions: does the number of fields to be escaped affect the performance of the procedure? If yes, in what magnitude? The test also includes benchmark for parse to a CSV file of considerable size.
 
->📝**Note**
->{: .text-grey-lt-000 .bg-green-000 }
->The table below shows the benchmark results, in seconds, for the currently tested procedures. Some projects were excluded from the benchmark due they do not handle those CSV's compliant with the RFC-4180 specs.
-{: .text-grey-dk-300 .bg-grey-lt-000 }
-
 <table>
 <thead>
 <tr>
@@ -148,6 +143,12 @@ First three of files have special chars (line breaks, commas, double quotes) int
 </tr>
 </tbody>
 </table>
+
+
+>📝**Note**
+>{: .text-grey-lt-000 .bg-green-000 }
+>The above table shows the benchmark results, in seconds, for the currently tested procedures. Some projects were excluded from the benchmark due they do not handle those CSV's compliant with the RFC-4180 specs.
+{: .text-grey-dk-300 .bg-grey-lt-000 }
 
 ### Conclusions
 
