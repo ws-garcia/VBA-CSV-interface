@@ -8,9 +8,9 @@ nav_order: 3
 # RFC-4180 rules
 {: .fs-9 }
 
-The CSVinterface class is intended to be fully RFC-4180 CSV standard compliant, despite this some tweaks are added to make the interface more robust and purposes useful.
+The CSVinterface class is intended to be fully RFC-4180 CSV specs compliant, despite this some tweaks are added to make the interface more robust and purposes useful.
 
-In the table bellow all the rules of [RFC-4180](https://www.ietf.org/rfc/rfc4180.txt) standard and its counterparts on the `CSVinterface.cls` are listed. This topic is highly recommended for CSV interface behavior knowledge.
+In the table bellow all the rules of [RFC-4180](https://www.ietf.org/rfc/rfc4180.txt) specs and its counterparts on the `CSVinterface.cls` are listed. This topic is highly recommended for CSV interface behavior knowledge.
 
 <table>
 <thead>
@@ -46,7 +46,7 @@ In the table bellow all the rules of [RFC-4180](https://www.ietf.org/rfc/rfc4180
 </tr>
 <tr>
 <td style="text-align: left;"><em>If double-quotes are used to enclose fields, then<br> a double-quote appearing inside a field must be<br> escaped by preceding it with another double quote.</em></td>
-<td style="text-align: left;">Ignored rule. The class accepts the apostrophe<br> as escape char, and follow the standard claims<br> may cause conflict with some abbreviate US<br> slangs (e.g.: "<strong>isn't</strong>").</td>
+<td style="text-align: left;">Ignored rule. The class accepts the apostrophe<br> as escape char, and follow the specs claims<br> may cause conflict with some abbreviate US<br> slangs (e.g.: "<strong>isn't</strong>").</td>
 </tr>
 </tbody>
 </table>
