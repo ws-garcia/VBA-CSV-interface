@@ -147,7 +147,7 @@ First three of files have special chars (line breaks, commas, double quotes) int
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->The above table shows the benchmark results, in seconds, for the currently tested procedures. Some projects were excluded from the benchmark due they do not handle those CSV's compliant with the RFC-4180 specs.
+>The above table shows the benchmark results, in seconds, for the currently tested procedures. Some projects were excluded from the benchmark due they do not handle those CSV's compliant with the RFC-4180 specs. The 2nd value, showed in some cells having two values, is obtained when setting `QuotingMode = QuotationMode.All`. 
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 ### Conclusions
@@ -156,11 +156,9 @@ First three of files have special chars (line breaks, commas, double quotes) int
 - The CSV syntax impacts the performance in this way: as the number of escaped fields is increased, the performance is decreased.
 - As larger CSV file size, longer time to parse it.
 
-In the above results, the 2nd value, for cells with two values, is obtained when setting `QuotingMode = QuotationMode.All`. As we can see, the class performance gets a little improve using this configuration. 
-
 >⚠️**Caution**
 >{: .text-grey-lt-000 .bg-green-000 }
->Keep in mind that not all CSV files can be successful imported using the previous tweaking.
+>Keep in mind that not all CSV files can be successful imported by change the `QuotingMode` parameter.
 {: .text-grey-dk-300 .bg-yellow-000 }
 
 The image bellow shows the overall performance for the imports and exports operations from the CSV interface class. Notice, specials syntax CSV’s will take about 1.8x more time to be parsed due the parser expands its syntax analysis range. In the same way, but in less magnitude, the exportation procedure will have an overheat when the instance is setting up to be RCF-4180 compliant.
