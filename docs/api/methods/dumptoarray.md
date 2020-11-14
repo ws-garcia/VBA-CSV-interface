@@ -19,7 +19,7 @@ Dumps the data from the current instance to an array.
 
 ### Parameters
 
-The required *OutPutArray* argument is an identifier specifying a dynamic `String` array variable.
+The required *OutPutArray* argument is an identifier specifying a dynamic `Variant` array variable.
 
 ### Return value
 
