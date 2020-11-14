@@ -29,7 +29,7 @@ The [EXAMPLE1] shows how you can export all the data in VBA array to a CSV file 
 ```vb
 Sub ExportToCSV_RFC4180()
 	Dim CSVix As CSVinterface
-	Dim MyArray() As String
+	Dim MyArray() As Variant
 	Dim filePath As String, tmpCSV As String
 	Dim outputFile As String
 	
@@ -40,7 +40,6 @@ Sub ExportToCSV_RFC4180()
 	CSVix.EndingRecord = 10 'Sets the importation ending
 	Call CSVix.ImportFromCSVString(tmpCSV) 'Import the range of records
 	Call CSVix(MyArray) 'Dumps the data to array
-	Set CSVix = Nothing 'Terminate the current instance
 	'@---------------------------------------------------------------------------------
 	' Exportation code block start
 	Call CSVix.OpenConnection(outputFile, DeleExistingFile:=True) 'Open a physical connection to the CSV file
@@ -65,7 +64,7 @@ See also
 ```vb
 Sub ExportToCSV()
 	Dim CSVix As CSVinterface
-	Dim MyArray() As String
+	Dim MyArray() As Variant
 	Dim filePath As String, tmpCSV As String
 	Dim outputFile As String
 	
@@ -76,7 +75,6 @@ Sub ExportToCSV()
 	CSVix.EndingRecord = 10 'Sets the importation ending
 	Call CSVix.ImportFromCSVString(tmpCSV) 'Import the range of records
 	Call CSVix(MyArray) 'Dumps the data to array
-	Set CSVix = Nothing 'Terminate the current instance
 	'@---------------------------------------------------------------------------------
 	' Exportation code block start
 	Call CSVix.OpenConnection(outputFile, DeleExistingFile:=True) 'Open a physical connection to the CSV file
@@ -100,7 +98,7 @@ See also
 ```vb
 Sub ExportToCSV()
 	Dim CSVix As CSVinterface
-	Dim MyArray() As String
+	Dim MyArray() As Variant
 	Dim filePath As String, tmpCSV As String
 	Dim outputFile As String
 	
@@ -111,7 +109,6 @@ Sub ExportToCSV()
 	CSVix.EndingRecord = 10 'Sets the importation ending
 	Call CSVix.ImportFromCSVString(tmpCSV) 'Import the range of records
 	Call CSVix(MyArray) 'Dumps the data to array
-	Set CSVix = Nothing 'Terminate the current instance
 	'@---------------------------------------------------------------------------------
 	' Exportation code block start
 	Call CSVix.OpenConnection(outputFile, DeleExistingFile:=True) 'Open a physical connection to the CSV file
