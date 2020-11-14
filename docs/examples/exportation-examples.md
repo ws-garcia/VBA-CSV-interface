@@ -29,7 +29,7 @@ The [EXAMPLE1] shows how you can export all the data in VBA array to a CSV file 
 ```vb
 Sub ExportToCSV_RFC4180()
 	Dim CSVix As CSVinterface
-	Dim MyArray() As Variant
+	Dim MyArray() As String
 	Dim filePath As String, tmpCSV As String
 	Dim outputFile As String
 	
@@ -64,7 +64,7 @@ See also
 ```vb
 Sub ExportToCSV()
 	Dim CSVix As CSVinterface
-	Dim MyArray() As Variant
+	Dim MyArray() As String
 	Dim filePath As String, tmpCSV As String
 	Dim outputFile As String
 	
@@ -98,7 +98,7 @@ See also
 ```vb
 Sub ExportToCSV()
 	Dim CSVix As CSVinterface
-	Dim MyArray() As Variant
+	Dim MyArray() As String
 	Dim filePath As String, tmpCSV As String
 	Dim outputFile As String
 	
