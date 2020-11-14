@@ -27,7 +27,7 @@ _None_
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->Before dump data, is recommended to make a `ImportFromCSV` or `ImportFromCSVstring` method call. The *OutPutArray* parameter must be declared as dynamic `String` array. If user forget to do this, an error will occur.
+>Before dump data, is recommended to make a `ImportFromCSV` or `ImportFromCSVstring` method call. The *OutPutArray* parameter must be declared as dynamic `Variant` array. If user forget to do this, an error can occur.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 See also
