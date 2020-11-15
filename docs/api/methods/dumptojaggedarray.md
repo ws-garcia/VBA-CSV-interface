@@ -46,7 +46,7 @@ The dumped data will be successively erased from memory, in other words, the cur
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->The `OutPutArray` argument will holds a set of `String` type arrays. To access to an individual element user must use something like **_expression(i)(j)_**, where **_i_** denotes an index in the main array and **_j_** denotes an index in the child array.
+>The *OutPutArray* argument will holds a set of `String` type arrays. To access to an individual element user must use something like **_expression(i)(j)_**, where **_i_** denotes an index in the main array and **_j_** denotes an index in the child array.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)
