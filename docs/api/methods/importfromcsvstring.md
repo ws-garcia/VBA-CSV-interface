@@ -8,7 +8,7 @@ nav_order: 7
 # ImportFromCSVstring
 {: .fs-9 }
 
-Parses a string and save its CSV data to an array.
+Parses a string and save its CSV data to the current instance.
 {: .fs-6 .fw-300 }
 
 ---
