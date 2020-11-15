@@ -157,14 +157,15 @@ First three of files have special chars (line breaks, commas, double quotes) int
 
 The images bellow shows the overall performance for the imports and exports operations from the CSV interface class. Notice, specials syntax CSV’s will sure take more time to be parsed due the parser has extra work to be done.
 
-![RFC-4180 Benchmark](RFC-4180 Benchmark.png)
-![NOT RFC-4180 Benchmark](NOT RFC-4180 Benchmark.png)
+![RFC-4180 Benchmark](RFC-4180-Benchmark.png)
+
+![NOT RFC-4180 Benchmark](NOT-RFC-4180-Benchmark.png)
 
 ### Conclusions
 
 - `ImportFromCSVString` is the tested faster one import method, outperforming its nearer counterpart by a factor of 2.5x in performance.
 - The CSV syntax impacts the performance in this way: as the number of escaped fields is increased, the performance is decreased.
-- When working with CSVs compliant with the RFC-4180 specs, the `ImportFromCSVString` method is faster than the `ExportToCSV` method. This scenario is inverted when working with well-formed CSVs not compliant with the RFC-4180 specs.
+- When working with CSVs compliant with the RFC-4180 specs, the `ImportFromCSVString` method is faster than the `ExportToCSV` method. This scenario is inverted when working with well-formed CSVs without checking the RFC-4180 specs.
 
 ## Licence
 Copyright (C) 2020  [W. García](https://github.com/ws-garcia/VBA-CSV-interface/).
