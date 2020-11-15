@@ -2,7 +2,7 @@
 title: OpenConnection
 parent: Methods
 grand_parent: API
-nav_order: 8
+nav_order: 7
 ---
 
 # OpenConnection
