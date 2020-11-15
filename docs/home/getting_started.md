@@ -165,7 +165,7 @@ The images bellow shows the overall performance for the imports and exports oper
 
 - `ImportFromCSVString` is the tested faster one import method, outperforming its nearer counterpart by a factor of 2.5x in performance.
 - The CSV syntax impacts the performance in this way: as the number of escaped fields is increased, the performance is decreased.
-- When working with CSVs compliant with the RFC-4180 specs, the `ImportFromCSVString` method is faster than the `ExportToCSV` method. This scenario is inverted when working with well-formed CSVs not compliant with the RFC-4180 specs.
+- When working with CSVs compliant with the RFC-4180 specs, the `ImportFromCSVString` method is faster than the `ExportToCSV` method. This scenario is inverted when working with well-formed CSVs without checking the RFC-4180 specs.
 
 ## Licence
 Copyright (C) 2020  [W. García](https://github.com/ws-garcia/VBA-CSV-interface/).
