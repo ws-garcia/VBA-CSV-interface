@@ -99,7 +99,7 @@ ENC = CSVix.FileEncoding
 >{: .text-grey-lt-000 .bg-green-000 }
 >Since the v2.0.0 of the `CSVinterface` we adopted the variant data Type array for internals data storage. Is well-known that this data Type has the worst performance in the VBA universe, but we desire bring to user the possibility to work with jagged arrays and let the class pay the cost in performance by that choice. 
 >
->However, if you need more data processing performance and not want support to jagged arrays, you can download [this version]( https://github.com/ws-garcia/VBA-CSV-interface/releases/tag/1.1.6) of the `CSVinterface` class.
+>However, if you need more data processing performance and not want support to jagged arrays, you can download [this version](https://github.com/ws-garcia/VBA-CSV-interface/releases/download/1.1.6/VBA-CSV-interface-1.1.6.zip) of the `CSVinterface` class.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 The benchmark provided here is focused on the supposed most critical operation, this is the parse one for many authors. Although, benchmark for the exportation procedure is given on. 
