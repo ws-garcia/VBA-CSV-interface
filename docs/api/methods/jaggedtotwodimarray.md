@@ -1,24 +1,24 @@
 ---
-title: TwoDimToJaggedArray
+title: JaggedToTwoDimArray
 parent: Methods
 grand_parent: API
-nav_order: 13
+nav_order: 10
 ---
 
-# TwoDimToJaggedArray
+# JaggedToTwoDimArray
 {: .d-inline-block }
 
 New
 {: .label .label-purple }
 
-Deconstructs a 2D string array and puts its content into a jagged array.
+Deconstructs a jagged array and puts its content into a 2D string array.
 {: .fs-6 .fw-300 }
 
 ---
 
 ## Syntax
 
-*expression*.`TwoDimToJaggedArray`*(TwoDimArray, JaggedArray)*
+*expression*.`JaggedToTwoDimArray`*(JaggedArray, TwoDimArray)*
 
 ### Parameters
 
@@ -31,12 +31,12 @@ Deconstructs a 2D string array and puts its content into a jagged array.
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><em>TwoDimArray</em></td>
-<td style="text-align: left;">Required. Identifier specifying a dynamic <code>String</code> Type array variable.</td>
-</tr>
-<tr>
 <td style="text-align: left;"><em>JaggedArray</em></td>
 <td style="text-align: left;">Required. Identifier specifying a dynamic <code>Variant</code> Type array variable.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><em>TwoDimArray</em></td>
+<td style="text-align: left;">Required. Identifier specifying a dynamic <code>String</code> Type array variable.</td>
 </tr>
 </tbody>
 </table>
@@ -51,7 +51,7 @@ _None_
 
 >⚠️**Caution**
 >{: .text-grey-lt-000 .bg-green-000 }
->The *TwoDimArray* parameter must be declared as `String` type array, and will be successively deconstructed and erased by the `TwoDimToJaggedArray` method passing its content to the *JaggedArray* parameter.
+>The *JaggedArray* parameter must hold a set of `String` type arrays, and will be successively deconstructed and erased by the `JaggedToTwoDimArray` method passing its content to the *TwoDimArray* parameter.
 {: .text-grey-dk-300 .bg-yellow-000 }
 
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)

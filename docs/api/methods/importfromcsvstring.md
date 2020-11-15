@@ -2,7 +2,7 @@
 title: ImportFromCSVstring
 parent: Methods
 grand_parent: API
-nav_order: 7
+nav_order: 8
 ---
 
 # ImportFromCSVstring
@@ -29,15 +29,15 @@ Parses a string and save its CSV data to the current instance.
 <tbody>
 <tr>
 <td style="text-align: left;"><em>CSVstring</em></td>
-<td style="text-align: left;">Required. Identifier specifying a <code>String</code> variable to be parsed.</td>
+<td style="text-align: left;">Required. Identifier specifying a <code>String</code> Type variable to be parsed.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><em>HeadersOmission</em></td>
-<td style="text-align: left;">Optional. Identifier specifying a <code>Boolean</code> variable.</td>
+<td style="text-align: left;">Optional. Identifier specifying a <code>Boolean</code> Type variable.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><em>PassControlToOS</em></td>
-<td style="text-align: left;">Optional. Identifier specifying a <code>Boolean</code> variable.</td>
+<td style="text-align: left;">Optional. Identifier specifying a <code>Boolean</code> Type variable.</td>
 </tr>
 </tbody>
 </table>

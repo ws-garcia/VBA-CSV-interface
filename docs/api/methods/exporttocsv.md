@@ -2,7 +2,7 @@
 title: ExportToCSV
 parent: Methods
 grand_parent: API
-nav_order: 4
+nav_order: 5
 ---
 
 # ExportToCSV
@@ -29,11 +29,11 @@ Exports an array's content to a CSV file.
 <tbody>
 <tr>
 <td style="text-align: left;"><em>csvArray</em></td>
-<td style="text-align: left;">Required. Identifier specifying a <code>Variant</code> array variable.</td>
+<td style="text-align: left;">Required. Identifier specifying a <code>Variant</code> Type variable.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><em>PassControlToOS</em></td>
-<td style="text-align: left;">Optional. Identifier specifying a <code>Boolean</code> variable.</td>
+<td style="text-align: left;">Optional. Identifier specifying a <code>Boolean</code> Type variable.</td>
 </tr>
 </tbody>
 </table>
@@ -44,7 +44,7 @@ _None_
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->Before invoke the `ExportToCSV` method, the user must to open a connection to the CSV file. The *csvArray* parameter must be declared as `Variant` array. Passing a variable that isn't an array will cause an error and the operation aborts. 
+>Before invoke the `ExportToCSV` method, the user must to open a connection to the CSV file. Passing a variable that isn't an array will cause an error and the operation aborts. 
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 See also
@@ -53,11 +53,6 @@ See also
 ---
 
 ## Behavior
-
->⚠️**Caution**
->{: .text-grey-lt-000 .bg-green-000 }
-If the `QuotingMode` property is set to `QuotationMode.Critical` and the *csvArray* argument points to a jagged array, the *csvArray* array will be turn to a `Variant` Type Two-dimensional array for hold string data. Use jagged arrays keeping in mind they can make the VBA hosting application run out of memory.
-{: .text-grey-dk-300 .bg-yellow-000 }
 
 The `FieldsDelimiter`, `RecordsDelimiter` and `EscapeChar` properties sets the method's behavior to the needs.
 
