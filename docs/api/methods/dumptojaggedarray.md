@@ -42,11 +42,11 @@ See also
 
 The `DumpToJaggedArray` method make a copy of all the data stored in the current instance. The data is returned in the *OutPutArray* parameter for avoid additional data copies in the internals.
 
-The dumped data will be successively erased from memory, in other words, the current instance will doesn't hold the read CSV data any more. In the same way, the `DumpToJaggedArray` method doesn’t perform any modifications to the `String` type array for subsequent calls not preceded by one `ImportFromCSV` or `ImportFromCSVstring` method call.
+The dumped data will be successively erased from memory, in other words, the current instance will doesn't hold the read CSV data any more. In the same way, the `DumpToJaggedArray` method doesn’t perform any modifications to the *OutPutArray* array for subsequent calls not preceded by one `ImportFromCSV` or `ImportFromCSVstring` method call.
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->The *OutPutArray* argument will holds a set of `String` type arrays. To access to an individual element user must use something like **_expression(i)(j)_**, where **_i_** denotes an index in the main array and **_j_** denotes an index in the child array.
+>The *OutPutArray* argument will contain a set of `String` type arrays. To access to an individual element user must use something like **_expression(i)(j)_**, where **_i_** denotes an index in the main array and **_j_** denotes an index in the child array.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)
