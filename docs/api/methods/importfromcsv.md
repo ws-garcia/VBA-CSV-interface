@@ -2,7 +2,7 @@
 title: ImportFromCSV
 parent: Methods
 grand_parent: API
-nav_order: 6
+nav_order: 7
 ---
 
 # ImportFromCSV
@@ -29,11 +29,11 @@ Imports a CSV file's content to the current instance.
 <tbody>
 <tr>
 <td style="text-align: left;"><em>HeadersOmission</em></td>
-<td style="text-align: left;">Optional. Identifier specifying a <code>Boolean</code> variable.</td>
+<td style="text-align: left;">Optional. Identifier specifying a <code>Boolean</code> Type variable.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><em>PassControlToOS</em></td>
-<td style="text-align: left;">Optional. Identifier specifying a <code>Boolean</code> variable.</td>
+<td style="text-align: left;">Optional. Identifier specifying a <code>Boolean</code> Type variable.</td>
 </tr>
 </tbody>
 </table>

@@ -2,7 +2,7 @@
 title: DumpToSheet
 parent: Methods
 grand_parent: API
-nav_order: 3
+nav_order: 4
 ---
 
 # DumpToSheet
@@ -29,15 +29,15 @@ Dumps the data from the current instance to an Excel WorkSheet.
 <tbody>
 <tr>
 <td style="text-align: left;"><em>WBookName</em></td>
-<td style="text-align: left;">Optional. Identifier specifying a <code>String</code> variable representing the output Workbook name.</td>
+<td style="text-align: left;">Optional. Identifier specifying a <code>String</code> Type variable representing the output Workbook name.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><em>SheetName</em></td>
-<td style="text-align: left;">Optional. Identifier specifying a <code>String</code> variable representing the output Worksheet name.</td>
+<td style="text-align: left;">Optional. Identifier specifying a <code>String</code> Type variable representing the output Worksheet name.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><em>RngName</em></td>
-<td style="text-align: left;">Optional. Identifier specifying a <code>String</code> variable representing the name of the output top left-most range.</td>
+<td style="text-align: left;">Optional. Identifier specifying a <code>String</code> Type variable representing the name of the output top left-most range.</td>
 </tr>
 </tbody>
 </table>

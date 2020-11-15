@@ -2,7 +2,7 @@
 title: OpenConnection
 parent: Methods
 grand_parent: API
-nav_order: 8
+nav_order: 11
 ---
 
 # OpenConnection
@@ -29,11 +29,11 @@ Loads a CSV file on memory for data Input/Output operations.
 <tbody>
 <tr>
 <td style="text-align: left;"><em>csvPathAndFilename</em></td>
-<td style="text-align: left;">Required. Identifier specifying a <code>String</code> variable holding the file's path.</td>
+<td style="text-align: left;">Required. Identifier specifying a <code>String</code> Type variable holding the file's path.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><em>DeleExistingFile</em></td>
-<td style="text-align: left;">Optional. Identifier specifying a <code>Boolean</code> variable.</td>
+<td style="text-align: left;">Optional. Identifier specifying a <code>Boolean</code> Type variable.</td>
 </tr>
 </tbody>
 </table>
