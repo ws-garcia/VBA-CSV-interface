@@ -19,7 +19,7 @@ Dumps the data from the current instance to an array.
 
 ### Parameters
 
-The required *OutPutArray* argument is an identifier specifying a dynamic `String` type array variable.
+The required *OutPutArray* argument is an identifier specifying a dynamic `String` array variable.
 
 ### Return value
 
@@ -27,7 +27,7 @@ _None_
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->Before dump data, is recommended to make a `ImportFromCSV` or `ImportFromCSVstring` method call. The *OutPutArray* parameter must be declared as dynamic `String` type array. If user forget to do this, an error can occur.
+>Before dump data, is recommended to make a `ImportFromCSV` or `ImportFromCSVstring` method call. The *OutPutArray* parameter must be declared as dynamic `String` array. If user forget to do this, an error can occur.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 See also
@@ -39,6 +39,6 @@ See also
 
 The `DumpToArray` method make a copy of all the data stored in the current instance. The data is returned in the *OutPutArray* parameter for avoid additional data copies in the internals.
 
-The dumped data will be successively erased from memory, in other words, the current instance will doesn't hold the read CSV data any more. In the same way, the `DumpToArray` method doesn’t perform any modifications to the *OutPutArray* array for subsequent calls not preceded by one `ImportFromCSV` or `ImportFromCSVstring` method call.
+The dumped data will be erased from memory, in other words, the current instance doesn't hold the CSV read data any more. In the same way, the `DumpToArray` method returns an empty `String` array for subsequent calls not preceded by `ImportFromCSV` or or `ImportFromCSVstring` method call.
 
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)

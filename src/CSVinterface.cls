@@ -22,7 +22,7 @@ Attribute VB_Exposed = False
 ' See the GNU General Public License for more details.
 '#
 ' You should have received a copy of the GNU General Public License along with this program.
-' If not, see https://www.gnu.org/licenses/gpl-3.0.html.
+' If not, see https://www.gnu.org/licenses/.
 '#
 '////////////////////////////////////////////////////////////////////////////////////////////
 ' GENERAL INFO:
@@ -84,7 +84,7 @@ Private Const CHR_SPACE As String = " "
 ' PROPERTIES VARIABLES:
 Private P_COMMENTLINEINDICATOR As Long
 Private P_CONNECTED As Boolean '-----------------Holds the connection state
-Private P_CSV_DATA() As Variant '----------------Holds the CSV data for current instance
+Private P_CSV_DATA() As String '-----------------Holds the CSV data for current instance
 Private P_ENDING_RECORD As Long '----------------Pointer to the last record to be imported
 Private P_ERROR_DESC As String '-----------------Holds the Error Description
 Private P_ERROR_NUMBER As Long '-----------------Holds the Error number
@@ -93,7 +93,9 @@ Private P_ESCAPE_CHAR As EscapeType '------------Holds the char used for escape 
 Private P_FIELDS_DELIMITER As String '-----------Holds the current delimiter for CSV fields
 Private P_FILEENCODING As String '---------------Holds the encoding for the opened CSV file
 Private P_FILENAME As String '-------------------Holds the actual file name
-Private P_MAX_JAGG_INDEX As Long '---------------Maximum index on jagged array
+Private P_NEED_SHRINK As Boolean '---------------When TRUE the P_CSV_DATA array need to be shrinked
+Private P_OUTPUT_UB1 As Long '-------------------Holds the max 1stD used index in the P_CSV_DATA array
+Private P_OUTPUT_UB2 As Long '-------------------Holds the max 2ndD used index in the P_CSV_DATA array
 Private P_QUOTING_MODE As QuotationMode '--------Hols the mode used for fields quotation.
 Private P_RECORDS_DELIMITER As String '----------Holds the records delimiter (CR, LF or CRLF)
 Private P_STARTING_RECORD As Long '--------------Pointer to the first record to be imported
@@ -272,19 +274,6 @@ ErrHandler_CloseConnection:
     P_ERROR_NUMBER = Err.number
     P_ERROR_SOURCE = Err.source
 End Sub
-Private Sub CreateJagged(ByRef ArrVar() As Variant, VectorSize As Long)
-Attribute CreateJagged.VB_Description = "Creates an empty array of vector, each of which have a fixed custom size."
-    Dim arrUB As Long, arrLB As Long, Vector() As String
-    Dim arrPointer As Long
-    
-    ReDim Vector(0 To VectorSize)
-    
-    arrUB = UBound(ArrVar)
-    arrLB = LBound(ArrVar)
-    For arrPointer = arrLB To arrUB
-        ArrVar(arrPointer) = Vector()
-    Next arrPointer
-End Sub
 Private Function CSVcolumns(csvArray() As String, _
                                         Optional FieldsDelimiter As String = CHR_COMMA) As Long
 Attribute CSVcolumns.VB_Description = "Computes fields amount for a CSV file in which each fields is surrounded by quotes."
@@ -314,36 +303,18 @@ Public Sub DumpToArray(OutPutArray() As String)
 Attribute DumpToArray.VB_Description = "Dumps the CSV data from the current instance to a 2D array."
 Attribute DumpToArray.VB_UserMemId = 0
     If P_SUCCESSFUL_IMPORT Then
-        Dim UB1 As Long, UB2 As Long
-        Dim Counter1 As Long, Counter2 As Long
-        
-        UB1 = UBound(P_CSV_DATA)
-        ReDim OutPutArray(0 To UB1, 0 To P_MAX_JAGG_INDEX)
-        
-        For Counter1 = 0 To UB1
-            UB2 = UBound(P_CSV_DATA(Counter1))
-            For Counter2 = 0 To UB2
-                OutPutArray(Counter1, Counter2) = P_CSV_DATA(Counter1)(Counter2)
-            Next Counter2
-            Erase P_CSV_DATA(Counter1) 'Release memory
-        Next Counter1
-        P_SUCCESSFUL_IMPORT = False
-        Erase P_CSV_DATA
-    End If
-End Sub
-Public Sub DumpToJaggedArray(OutPutArray() As Variant)
-Attribute DumpToJaggedArray.VB_Description = "Dumps the CSV data from the current instance to a jagged array."
-    If P_SUCCESSFUL_IMPORT Then
-        Dim UB1 As Long
-        Dim Counter1 As Long
-        
-        UB1 = UBound(P_CSV_DATA)
-        ReDim OutPutArray(0 To UB1)
-        
-        For Counter1 = 0 To UB1
-            OutPutArray(Counter1) = P_CSV_DATA(Counter1)
-            Erase P_CSV_DATA(Counter1) 'Release memory
-        Next Counter1
+        If Not P_NEED_SHRINK Then
+            OutPutArray() = P_CSV_DATA
+        Else
+            Dim Counter1 As Long, Counter2 As Long
+            ReDim OutPutArray(0 To P_OUTPUT_UB1, 0 To P_OUTPUT_UB2)
+            For Counter1 = 0 To P_OUTPUT_UB1
+                For Counter2 = 0 To P_OUTPUT_UB2
+                    OutPutArray(Counter1, Counter2) = P_CSV_DATA(Counter1, Counter2)
+                    P_CSV_DATA(Counter1, Counter2) = vbNullString 'Release memory
+                Next Counter2
+            Next Counter1
+        End If
         P_SUCCESSFUL_IMPORT = False
         Erase P_CSV_DATA
     End If
@@ -377,30 +348,37 @@ Attribute DumpToSheet.VB_Description = "Dumps the CSV data from the current inst
         End If
         '@------------------------------------------------------
         'Dump the data
-        Dim tmpOutputArray() As String
-        Dim UB1 As Long, UB2 As Long
-        Dim Counter1 As Long, Counter2 As Long
-        
-        UB1 = UBound(P_CSV_DATA)
-        ReDim tmpOutputArray(0 To UB1, 0 To P_MAX_JAGG_INDEX)
-        
-        For Counter1 = 0 To UB1
-            UB2 = UBound(P_CSV_DATA(Counter1))
-            For Counter2 = 0 To UB2
-                tmpOutputArray(Counter1, Counter2) = P_CSV_DATA(Counter1)(Counter2)
-            Next Counter2
-            Erase P_CSV_DATA(Counter1) 'Release memory
-        Next Counter1
-        '@------------------------------------------------------
-        'Set the target Range
-        Set OutputRange = OutputSheet.Range(rngName) _
+        If Not P_NEED_SHRINK Then
+            '@------------------------------------------------------
+            'Set the target Range
+            Set OutputRange = OutputSheet.Range(rngName) _
                             .Resize _
                             ( _
-                            UB1 + 1, _
-                            P_MAX_JAGG_INDEX + 1 _
+                            UBound(P_CSV_DATA, 1) - LBound(P_CSV_DATA, 1) + 1, _
+                            UBound(P_CSV_DATA, 2) - LBound(P_CSV_DATA, 2) + 1 _
                             )
-        OutputRange.Value2 = tmpOutputArray
-        Erase tmpOutputArray
+            OutputRange.Value2 = P_CSV_DATA
+        Else
+            '@------------------------------------------------------
+            'Set the target Range
+            Set OutputRange = OutputSheet.Range(rngName) _
+                            .Resize _
+                            ( _
+                            P_OUTPUT_UB1 + 1, _
+                            P_OUTPUT_UB2 + 1 _
+                            )
+            Dim Counter1 As Long, Counter2 As Long
+            Dim tmpOutputArray() As String
+            ReDim tmpOutputArray(0 To P_OUTPUT_UB1, 0 To P_OUTPUT_UB2)
+            For Counter1 = 0 To P_OUTPUT_UB1
+                For Counter2 = 0 To P_OUTPUT_UB2
+                    tmpOutputArray(Counter1, Counter2) = P_CSV_DATA(Counter1, Counter2)
+                    P_CSV_DATA(Counter1, Counter2) = vbNullString 'Release memory
+                Next Counter2
+            Next Counter1
+            OutputRange.Value2 = tmpOutputArray
+            Erase tmpOutputArray
+        End If
         EnableOptimization False
         P_SUCCESSFUL_IMPORT = False
         Erase P_CSV_DATA
@@ -422,11 +400,11 @@ Attribute EnableOptimization.VB_Description = "Turns On and Off the optimized ov
         Application.EnableEvents = True
     End If
 End Sub
-Public Sub ExportToCSV(ByRef csvArray As Variant, Optional PassControlToOS As Boolean = True)
-Attribute ExportToCSV.VB_Description = "Exports a 2D or jagged array to a CSV file located in the path specified with the OpenConnection method."
+Public Sub ExportToCSV(csvArray As Variant)
+Attribute ExportToCSV.VB_Description = "Exports a 2D array to a CSV file located in the path specified in the OpenConnection method."
     On Error GoTo ErrHandler_ExportToCSV
-    If PassControlToOS Then DoEvents 'Pass the control to the Operative System
-    If P_CONNECTED And IsArray(csvArray) Then
+    DoEvents
+    If P_CONNECTED Then
         '@----------------------------------------------------------------------------
         'Join all the records and write the data on the current opened file
         Put #FileHandled, , JoinRecordsFields(csvArray)
@@ -434,6 +412,7 @@ Attribute ExportToCSV.VB_Description = "Exports a 2D or jagged array to a CSV fi
         If P_ERROR_NUMBER = 0& Then
             Call CloseConnection
             P_SUCCESSFUL_EXPORT = True
+            P_CSV_DATA = csvArray
             P_ERROR_DESC = vbNullString
             P_ERROR_SOURCE = vbNullString
         Else
@@ -441,8 +420,7 @@ Attribute ExportToCSV.VB_Description = "Exports a 2D or jagged array to a CSV fi
         End If
     Else
         P_SUCCESSFUL_EXPORT = False
-        P_ERROR_DESC = "[CSV file Export]: the object is not linked to a CSV file or " _
-                        & "the passed argument isn't an array. " _
+        P_ERROR_DESC = "[CSV file Export]: the object is not linked to a CSV file. " _
                         & "Ensure use the OpenConnection method before export data."
         P_ERROR_NUMBER = vbObjectError + 9009
         P_ERROR_SOURCE = "CSVinterface"
@@ -453,9 +431,9 @@ ErrHandler_ExportToCSV:
     P_SUCCESSFUL_EXPORT = False
     P_ERROR_DESC = "[CSV file Export]: " & P_ERROR_DESC
 End Sub
-Private Function FileExists(ByVal filepath As String) As Boolean
+Private Function FileExists(ByVal filePath As String) As Boolean
 Attribute FileExists.VB_Description = "Determines if a file exist in the path specified."
-    FileExists = CBool(LenB(Dir(filepath, vbHidden + vbNormal + vbSystem + vbReadOnly + vbArchive)))
+    FileExists = CBool(LenB(Dir(filePath, vbHidden + vbNormal + vbSystem + vbReadOnly + vbArchive)))
 End Function
 Private Sub GetCSVtext(ByRef OutPutVar As String)
 Attribute GetCSVtext.VB_Description = "Gets the CSV content from a file located in the path specified in the OpenConnection method."
@@ -654,16 +632,13 @@ GetRecordIndex_Error_Handler:
 End Function
 Public Sub ImportFromCSV(Optional HeadersOmission As Boolean = False, _
                             Optional PassControlToOS As Boolean = True)
-Attribute ImportFromCSV.VB_Description = "Imports the content of a CSV file, located in the path specified with the OpenConnection method, to the current instance."
     If PassControlToOS Then DoEvents 'Pass the control to the Operative System
     If P_CONNECTED Then
         '@--------------------------------------------------------------------------------
         'Read whole file content
         GetCSVtext FileContent
         If LenB(FileContent) = 0 Then
-            ReDim P_CSV_DATA(0)
-            Call CreateJagged(P_CSV_DATA, 0)
-            P_CSV_DATA(0) = Split(FileContent, vbCrLf)
+            P_CSV_DATA() = Split(FileContent, vbCrLf)
             Exit Sub
         End If
         '@--------------------------------------------------------------------------------
@@ -705,12 +680,9 @@ End Sub
 Public Sub ImportFromCSVString(ByRef CSVString As String, _
                                 Optional HeadersOmission As Boolean = False, _
                                 Optional PassControlToOS As Boolean = False)
-Attribute ImportFromCSVString.VB_Description = "Imports the content of a CSV file, holded in a string variable, to the current instance."
     If PassControlToOS Then DoEvents 'Pass the control to the Operative System
     If LenB(CSVString) = 0 Then
-        ReDim P_CSV_DATA(0)
-        Call CreateJagged(P_CSV_DATA, 0)
-        P_CSV_DATA(0) = Split(CSVString, vbCrLf)
+        P_CSV_DATA() = Split(CSVString, vbCrLf)
         Exit Sub
     End If
     '@--------------------------------------------------------------------------------
@@ -751,21 +723,6 @@ Attribute IsANSI.VB_Description = "Verifies the charset for ANSI encoding."
     Erase bytFile
     IsANSI = (lngIndx > lngUprBnd)
 End Function
-Private Function IsJaggedArray(arr As Variant) As Boolean
-Attribute IsJaggedArray.VB_Description = "Checks if the given array is an array of arrays."
-    On Error GoTo IsJaggedArray_Err_Handler
-    If MultiDimensional(arr) Then
-        IsJaggedArray = False
-    Else
-        Dim BoundingTest As Variant
-        BoundingTest = arr(LBound(arr))
-        BoundingTest = LBound(BoundingTest)
-        IsJaggedArray = True
-    End If
-    Exit Function
-IsJaggedArray_Err_Handler:
-    IsJaggedArray = False
-End Function
 Private Function IsSheetInWorkbook(SheetName As String, WBook As Workbook) As Boolean
 Attribute IsSheetInWorkbook.VB_Description = "Checks if the given sheet is part of the given or of the active one Workbook."
     With WBook
@@ -784,74 +741,48 @@ Attribute IsWorkbookOpen.VB_Description = "Checks if the given Workbook is opene
     Next
     IsWorkbookOpen = BookMatching
 End Function
-Private Sub JaggedToTwoDimArray(ByRef JaggedArray As Variant)
-Attribute JaggedToTwoDimArray.VB_Description = "Turns a jagged array to a 2D string array."
-    Dim TwoDimArray() As Variant
-    Dim UBj1 As Long, LBj1 As Long
-    Dim UBj2 As Long, LBj2 As Long
-    Dim MaxDim1 As Long, MaxDim2 As Long
-    Dim jgdCounter1 As Long, jgdCounter2 As Long
-    Dim tmpDimension As Long, tdimCounter As Long
-    
-    On Error GoTo JaggedToTwoDimArray_Err_Handler
-    LBj1 = LBound(JaggedArray)
-    UBj1 = UBound(JaggedArray)
-    MaxDim1 = Abs(UBj1 - LBj1) 'Dimension One in base 0
-    MaxDim2 = Abs(UBound(JaggedArray(LBj1)) - LBound(JaggedArray(LBj1))) 'Dimension Two in base 0
-    ReDim TwoDimArray(0 To MaxDim1, 0 To MaxDim2)
-    For jgdCounter1 = LBj1 To UBj1
-        LBj2 = LBound(JaggedArray(jgdCounter1))
-        UBj2 = UBound(JaggedArray(jgdCounter1))
-        tdimCounter = 0
-        tmpDimension = Abs(UBj2 - LBj2)
-        If tmpDimension > MaxDim2 Then
-            MaxDim2 = tmpDimension
-            ReDim Preserve TwoDimArray(0 To MaxDim1, 0 To MaxDim2)
-        End If
-        For jgdCounter2 = LBj2 To UBj2
-            TwoDimArray(jgdCounter1, tdimCounter) = JaggedArray(jgdCounter1)(jgdCounter2)
-            tdimCounter = tdimCounter + 1&
-        Next jgdCounter2
-        Erase JaggedArray(jgdCounter1) 'Free memory
-    Next jgdCounter1
-    JaggedArray = TwoDimArray
-    Erase TwoDimArray
-JaggedToTwoDimArray_Err_Handler:
-End Sub
-Private Function JoinRecordsFields(ByRef RecordsArray As Variant) As String
+Private Function JoinRecordsFields(RecordsArray As Variant) As String
 Attribute JoinRecordsFields.VB_Description = "Joins all fields for each record in the specified array."
     Dim buffer() As String
     Dim CoerceChr As String
     Dim ConcatenatedArray() As String
     Dim iLCounter As Long, jLCounter As Long
-    Dim IsJagged As Boolean
     Dim JoinBuffer(0 To 2) As String
     Dim LB1 As Long, UB1 As Long
     Dim LB2 As Long, UB2 As Long
+    Dim TwoDimensional As Boolean
     
     On Error GoTo JoinRecordsFields_Error
-    '@----------------------------------------------------------------------------
-    'Set coerce char
-    Select Case P_ESCAPE_CHAR
-        Case 0
-            CoerceChr = vbNullString
-        Case 1
-            CoerceChr = CHR_APOSTROPHE
-        Case Else
-            CoerceChr = CHR_DOUBLE_QUOTES
-    End Select
-    '@----------------------------------------------------------------------------
-    'Set the char buffer
-    JoinBuffer(0) = CoerceChr
-    JoinBuffer(1) = vbNullString
-    JoinBuffer(2) = CoerceChr
     If MultiDimensional(RecordsArray) Then
+        TwoDimensional = True
         LB1 = LBound(RecordsArray, 1)
         LB2 = LBound(RecordsArray, 2)
         UB1 = UBound(RecordsArray, 1)
         UB2 = UBound(RecordsArray, 2)
-        Select Case P_QUOTING_MODE
-            Case QuotationMode.Critical
+    Else
+        TwoDimensional = False
+        LB1 = LBound(RecordsArray, 1)
+        UB1 = UBound(RecordsArray, 1)
+    End If
+    '@----------------------------------------------------------------------------
+    Select Case P_QUOTING_MODE
+        Case QuotationMode.Critical
+            '@----------------------------------------------------------------------------
+            'Set coerce char
+            Select Case P_ESCAPE_CHAR
+                Case 0
+                    CoerceChr = vbNullString
+                Case 1
+                    CoerceChr = CHR_APOSTROPHE
+                Case Else
+                    CoerceChr = CHR_DOUBLE_QUOTES
+            End Select
+            '@----------------------------------------------------------------------------
+            'Set the char buffer
+            JoinBuffer(0) = CoerceChr
+            JoinBuffer(1) = vbNullString
+            JoinBuffer(2) = CoerceChr
+            If TwoDimensional Then
                 '@----------------------------------------------------------------------------
                 'Set array sizes
                 ReDim ConcatenatedArray(LB1 To UB1)
@@ -883,7 +814,57 @@ Attribute JoinRecordsFields.VB_Description = "Joins all fields for each record i
                 'Free the memory
                 Erase ConcatenatedArray
                 Erase buffer
-            Case Else
+            Else
+                '@----------------------------------------------------------------------------
+                'Set array sizes
+                ReDim ConcatenatedArray(LB1 To UB1)
+                ReDim buffer(0)
+                '@----------------------------------------------------------------------------
+                'Concatenate fields
+                For iLCounter = LB1 To UB1
+                    If InStrB(1, RecordsArray(iLCounter), P_FIELDS_DELIMITER) Then
+                        JoinBuffer(1) = RecordsArray(iLCounter)
+                        buffer(0) = Join$(JoinBuffer, vbNullString)
+                    ElseIf InStrB(1, RecordsArray(iLCounter), CoerceChr) Then
+                        JoinBuffer(1) = RecordsArray(iLCounter)
+                        buffer(0) = Join$(JoinBuffer, vbNullString)
+                    ElseIf InStrB(1, RecordsArray(iLCounter), P_RECORDS_DELIMITER) Then
+                        JoinBuffer(1) = RecordsArray(iLCounter)
+                        buffer(0) = Join$(JoinBuffer, vbNullString)
+                    Else
+                        buffer(0) = RecordsArray(iLCounter)
+                    End If
+                    JoinBuffer(1) = vbNullString
+                    ConcatenatedArray(iLCounter) = buffer(0)
+                Next iLCounter
+                '@----------------------------------------------------------------------------
+                'Concatenate records
+                JoinRecordsFields = Join$(ConcatenatedArray, P_RECORDS_DELIMITER)
+                '@----------------------------------------------------------------------------
+                'Free the memory
+                Erase ConcatenatedArray
+                Erase buffer
+            End If
+        Case Else
+            If TwoDimensional Then
+                '@----------------------------------------------------------------------------
+                'Set delimiters
+                Select Case P_ESCAPE_CHAR
+                    Case 0
+                        DataDelimiter = P_FIELDS_DELIMITER
+                        CoerceChr = vbNullString
+                    Case 1
+                        DataDelimiter = CHR_APOSTROPHE & P_FIELDS_DELIMITER & CHR_APOSTROPHE
+                        CoerceChr = CHR_APOSTROPHE
+                    Case Else
+                        DataDelimiter = CHR_DOUBLE_QUOTES & P_FIELDS_DELIMITER & CHR_DOUBLE_QUOTES
+                        CoerceChr = CHR_DOUBLE_QUOTES
+                End Select
+                '@----------------------------------------------------------------------------
+                'Set the char buffer
+                JoinBuffer(0) = CoerceChr
+                JoinBuffer(1) = vbNullString
+                JoinBuffer(2) = CoerceChr
                 '@----------------------------------------------------------------------------
                 'Set array sizes
                 ReDim ConcatenatedArray(LB1 To UB1)
@@ -904,73 +885,10 @@ Attribute JoinRecordsFields.VB_Description = "Joins all fields for each record i
                 'Free the memory
                 Erase ConcatenatedArray
                 Erase buffer
-        End Select
-    Else
-        '@----------------------------------------------------------------------------
-        'Check for jagged arrays
-        IsJagged = IsJaggedArray(RecordsArray)
-        LB1 = LBound(RecordsArray, 1)
-        UB1 = UBound(RecordsArray, 1)
-        Select Case P_QUOTING_MODE
-            Case QuotationMode.Critical
-                If Not IsJagged Then
-                    '@----------------------------------------------------------------------------
-                    'Set array sizes
-                    ReDim ConcatenatedArray(LB1 To UB1)
-                    ReDim buffer(0)
-                    '@----------------------------------------------------------------------------
-                    'Concatenate fields
-                    For iLCounter = LB1 To UB1
-                        If InStrB(1, RecordsArray(iLCounter), P_FIELDS_DELIMITER) Then
-                            JoinBuffer(1) = RecordsArray(iLCounter)
-                            buffer(0) = Join$(JoinBuffer, vbNullString)
-                        ElseIf InStrB(1, RecordsArray(iLCounter), CoerceChr) Then
-                            JoinBuffer(1) = RecordsArray(iLCounter)
-                            buffer(0) = Join$(JoinBuffer, vbNullString)
-                        ElseIf InStrB(1, RecordsArray(iLCounter), P_RECORDS_DELIMITER) Then
-                            JoinBuffer(1) = RecordsArray(iLCounter)
-                            buffer(0) = Join$(JoinBuffer, vbNullString)
-                        Else
-                            buffer(0) = RecordsArray(iLCounter)
-                        End If
-                        JoinBuffer(1) = vbNullString
-                        ConcatenatedArray(iLCounter) = buffer(0)
-                    Next iLCounter
-                    '@----------------------------------------------------------------------------
-                    'Concatenate records
-                    JoinRecordsFields = Join$(ConcatenatedArray, P_RECORDS_DELIMITER)
-                    '@----------------------------------------------------------------------------
-                    'Free the memory
-                    Erase ConcatenatedArray
-                    Erase buffer
-                Else 'Recursive call
-                    '@----------------------------------------------------------------------------
-                    'Transform array
-                    Call JaggedToTwoDimArray(RecordsArray)
-                    JoinRecordsFields = JoinRecordsFields(RecordsArray)
-                End If
-            Case Else
-                If Not IsJagged Then
-                    JoinRecordsFields = Join$(RecordsArray, P_RECORDS_DELIMITER)
-                Else
-                    '@----------------------------------------------------------------------------
-                    'Set array sizes
-                    ReDim ConcatenatedArray(LB1 To UB1)
-                    '@----------------------------------------------------------------------------
-                    'Concatenate fields
-                    For iLCounter = LB1 To UB1
-                        ConcatenatedArray(iLCounter) = Join$(RecordsArray(iLCounter), P_FIELDS_DELIMITER)
-                    Next iLCounter
-                    '@----------------------------------------------------------------------------
-                    'Concatenate records
-                    JoinRecordsFields = Join$(ConcatenatedArray, P_RECORDS_DELIMITER)
-                    '@----------------------------------------------------------------------------
-                    'Free the memory
-                    Erase ConcatenatedArray
-                    Erase buffer
-                End If
-        End Select
-    End If
+            Else
+                JoinRecordsFields = Join$(RecordsArray, P_RECORDS_DELIMITER)
+            End If
+    End Select
     Exit Function
 JoinRecordsFields_Error:
     JoinRecordsFields = vbNullString
@@ -1020,7 +938,6 @@ ErrHandler_OpenConnection:
 End Sub
 Private Sub ParseCriticalCSV(ByRef csvText As String, _
                                     Optional HeadersOmission As Boolean = False)
-Attribute ParseCriticalCSV.VB_Description = "Parses text strings CSV’s compliant with the RFC-4180 specs."
     Dim ASCIIcharw As Long
     Dim buffer() As String
     Dim Counter1 As Long
@@ -1034,7 +951,6 @@ Attribute ParseCriticalCSV.VB_Description = "Parses text strings CSV’s compliant
     Dim FieldsAmount As Long
     Dim FieldsCount As Long
     Dim FDAscW As Long
-    Dim HeaderSize As Long
     Dim index As Long, MaxIndex As Long
     Dim ImportDepth As Long
     Dim JaggedDepth() As String
@@ -1062,7 +978,6 @@ Attribute ParseCriticalCSV.VB_Description = "Parses text strings CSV’s compliant
     SearchBeginningMark = 1&
     FieldsCount = 0&
     RecordsCount = 0&
-    P_MAX_JAGG_INDEX = 0&
     MaxBufferIndex = 127
     MaxtmpTokenIndex = 15
     ReDim buffer(0 To MaxBufferIndex) 'Reserve space to dimension the OutputData array
@@ -1247,7 +1162,7 @@ Attribute ParseCriticalCSV.VB_Description = "Parses text strings CSV’s compliant
                                     MaxtmpTokenIndex = 2& * MaxtmpTokenIndex + 1&
                                     ReDim Preserve tmpToken(0 To MaxtmpTokenIndex)
                                 End If
-                                tmpToken(CurrenttmpTokenIndex) = LeftB$(tmpCSV(index), OverStringPointer - 3)
+                                tmpToken(CurrenttmpTokenIndex) = LeftB$(tmpCSV(index), OverStringPointer - 1)
                                 ReDim Preserve tmpToken(0 To CurrenttmpTokenIndex)
                                 buffer(CurrentBufferIndex) = Join$(tmpToken, P_RECORDS_DELIMITER) 'Save whole Token
                                 CurrenttmpTokenIndex = -1&
@@ -1308,14 +1223,10 @@ Attribute ParseCriticalCSV.VB_Description = "Parses text strings CSV’s compliant
     Loop
     '@----------------------------------------------------------------------------
     'Save the the first record to output array
-    HeaderSize = CurrentBufferIndex
-    P_MAX_JAGG_INDEX = HeaderSize
-    CurrentRecordSize = P_MAX_JAGG_INDEX
-    'ReDim P_CSV_DATA(LBound(tmpCSV) To ImportDepth - 1&, 0 To CurrentRecordSize)
-    ReDim P_CSV_DATA(LBound(tmpCSV) To ImportDepth - 1&)
-    Call CreateJagged(P_CSV_DATA, HeaderSize)
-    For Counter1 = 0 To HeaderSize
-        P_CSV_DATA(0)(Counter1) = buffer(Counter1)
+    CurrentRecordSize = CurrentBufferIndex
+    ReDim P_CSV_DATA(LBound(tmpCSV) To ImportDepth - 1&, 0 To CurrentRecordSize)
+    For Counter1 = 0 To CurrentBufferIndex
+        P_CSV_DATA(0, Counter1) = buffer(Counter1)
     Next Counter1
     Erase buffer
     If FieldsAmount = 0 Then FieldsAmount = FieldsCount
@@ -1401,7 +1312,7 @@ Attribute ParseCriticalCSV.VB_Description = "Parses text strings CSV’s compliant
                         'Save the Token
                         Select Case SplittedToken
                             Case False 'Just save Token
-                                P_CSV_DATA(RecordsCount)(OutputColumn) = MidB$(tmpCSV(index), _
+                                P_CSV_DATA(RecordsCount, OutputColumn) = MidB$(tmpCSV(index), _
                                                                                 TokenBeginningPos, _
                                                                                 TokenEndingPos - TokenBeginningPos + 1)
                             Case Else 'The Token is stored on tmpToken array
@@ -1412,7 +1323,7 @@ Attribute ParseCriticalCSV.VB_Description = "Parses text strings CSV’s compliant
                                 End If
                                 tmpToken(CurrenttmpTokenIndex) = LeftB$(tmpCSV(index), TokenEndingPos)
                                 ReDim Preserve tmpToken(0 To CurrenttmpTokenIndex)
-                                P_CSV_DATA(RecordsCount)(OutputColumn) = Join$(tmpToken, P_RECORDS_DELIMITER) 'Save whole Token
+                                P_CSV_DATA(RecordsCount, OutputColumn) = Join$(tmpToken, P_RECORDS_DELIMITER) 'Save whole Token
                                 CurrenttmpTokenIndex = -1&
                                 ReDim tmpToken(0 To MaxtmpTokenIndex) 'Clear tmpToken array content
                         End Select
@@ -1429,7 +1340,7 @@ Attribute ParseCriticalCSV.VB_Description = "Parses text strings CSV’s compliant
                             'Save the Token
                             Select Case SplittedToken
                                 Case False 'Just save Token
-                                    P_CSV_DATA(RecordsCount)(OutputColumn) = MidB$(tmpCSV(index), _
+                                    P_CSV_DATA(RecordsCount, OutputColumn) = MidB$(tmpCSV(index), _
                                                                                 TokenBeginningPos, _
                                                                                 TokenEndingPos - TokenBeginningPos + 1)
                                 Case Else 'The Token is stored on tmpToken array
@@ -1438,9 +1349,9 @@ Attribute ParseCriticalCSV.VB_Description = "Parses text strings CSV’s compliant
                                         MaxtmpTokenIndex = 2& * MaxtmpTokenIndex + 1&
                                         ReDim Preserve tmpToken(0 To MaxtmpTokenIndex)
                                     End If
-                                    tmpToken(CurrenttmpTokenIndex) = LeftB$(tmpCSV(index), OverStringPointer - 3)
+                                    tmpToken(CurrenttmpTokenIndex) = LeftB$(tmpCSV(index), OverStringPointer - 1)
                                     ReDim Preserve tmpToken(0 To CurrenttmpTokenIndex)
-                                    P_CSV_DATA(RecordsCount)(OutputColumn) = Join$(tmpToken, P_RECORDS_DELIMITER) 'Save whole Token
+                                    P_CSV_DATA(RecordsCount, OutputColumn) = Join$(tmpToken, P_RECORDS_DELIMITER) 'Save whole Token
                                     CurrenttmpTokenIndex = -1&
                                     ReDim tmpToken(0 To MaxtmpTokenIndex) 'Clear tmpToken array content
                             End Select
@@ -1475,14 +1386,14 @@ Attribute ParseCriticalCSV.VB_Description = "Parses text strings CSV’s compliant
                     RecordEndReached = False
                     '@----------------------------------------------------------------------------
                     'Save the Token
-                    P_CSV_DATA(RecordsCount)(OutputColumn) = MidB$(tmpCSV(index), TokenBeginningPos, _
+                    P_CSV_DATA(RecordsCount, OutputColumn) = MidB$(tmpCSV(index), TokenBeginningPos, _
                                                                     TokenEndingPos - TokenBeginningPos + 1)
                 Else 'Missing fields delimiter char
                     TokenEndReached = True
                     RecordEndReached = True
                     '@----------------------------------------------------------------------------
                     'Save the Token
-                    P_CSV_DATA(RecordsCount)(OutputColumn) = RightB$(tmpCSV(index), LenCurrentIndex _
+                    P_CSV_DATA(RecordsCount, OutputColumn) = RightB$(tmpCSV(index), LenCurrentIndex _
                                                                 - TokenBeginningPos + 1)
                     tmpCSV(index) = vbNullString
                     index = index + 1&
@@ -1495,17 +1406,11 @@ Attribute ParseCriticalCSV.VB_Description = "Parses text strings CSV’s compliant
                     '@----------------------------------------------------------------------------
                     'Reserve space for store at least another field
                     CurrentRecordSize = CurrentRecordSize + 1&
-                    If CurrentRecordSize > P_MAX_JAGG_INDEX Then
-                        P_MAX_JAGG_INDEX = CurrentRecordSize
-                    End If
-                    buffer() = P_CSV_DATA(RecordsCount)
-                    ReDim Preserve buffer(0 To CurrentRecordSize)
-                    P_CSV_DATA(RecordsCount) = buffer
-                    Erase buffer
+                    ReDim Preserve P_CSV_DATA(LBound(P_CSV_DATA) To UBound(P_CSV_DATA), _
+                                                0 To CurrentRecordSize)
                 End If
             End If
         Loop
-        CurrentRecordSize = HeaderSize 'Restart jagged size
         RecordsCount = RecordsCount + 1&
         '@----------------------------------------------------------------------------
         'Skip lines if needed
@@ -1515,7 +1420,11 @@ Attribute ParseCriticalCSV.VB_Description = "Parses text strings CSV’s compliant
     '@----------------------------------------------------------------------------
     'Check if the array need to be shrinked at the output stage
     If ImportDepth <> RecordsCount Then
-        ReDim Preserve P_CSV_DATA(0 To RecordsCount - 1&)
+        P_NEED_SHRINK = True
+        P_OUTPUT_UB1 = RecordsCount - 1
+        P_OUTPUT_UB2 = FieldsAmount - 1
+    Else
+        P_NEED_SHRINK = False
     End If
     Erase tmpCSV
     Exit Sub
@@ -1544,7 +1453,7 @@ ParseCriticalCSV_MissingEscapeChar:
 End Sub
 Private Sub ParseCSV(ByRef csvText As String, _
                         Optional HeadersOmission As Boolean = False)
-Attribute ParseCSV.VB_Description = "Parses text strings CSV’s without check RFC-4180 specs."
+Attribute ParseCSV.VB_Description = "Parses a CSV text string assuming all fields are surrounded by quotes."
     Dim ArrayLB As Long
     Dim ArrayUB As Long
     Dim csvArray() As String
@@ -1629,9 +1538,7 @@ Attribute ParseCSV.VB_Description = "Parses text strings CSV’s without check RFC
     lRows = lngUB - lngLB
     lColumns = CSVcolumns(csvArray, DataDelimiter) - 1
     lCounter = lngLB + hPos
-    ReDim P_CSV_DATA(0 To lRows - hPos)
-    Call CreateJagged(P_CSV_DATA, lColumns)
-    P_MAX_JAGG_INDEX = lColumns
+    ReDim P_CSV_DATA(0 To lRows - hPos, 0 To lColumns)
     '@----------------------------------------------------------------------------
     'Process the data
     Pointer = hPos
@@ -1641,13 +1548,13 @@ Attribute ParseCSV.VB_Description = "Parses text strings CSV’s without check RFC
         NextPos = CLng(InStrB(PrevPos, csvArray(lCounter), _
                             DataDelimiter))
         Do While NextPos
-            P_CSV_DATA(Pointer - hPos)(mCounter) = MidB$(csvArray(lCounter), _
+            P_CSV_DATA(Pointer - hPos, mCounter) = MidB$(csvArray(lCounter), _
                                                         PrevPos, NextPos - PrevPos)
             PrevPos = NextPos + CLng(LenB(DataDelimiter))
             mCounter = mCounter + 1
             NextPos = CLng(InStrB(PrevPos, csvArray(lCounter), DataDelimiter))
         Loop
-        P_CSV_DATA(Pointer - hPos)(mCounter) = MidB$(csvArray(lCounter), PrevPos)
+        P_CSV_DATA(Pointer - hPos, mCounter) = MidB$(csvArray(lCounter), PrevPos)
         lCounter = lCounter + 1
         Pointer = Pointer + 1
     Loop
@@ -1772,60 +1679,6 @@ Attribute SkipUnwantedLines.VB_Description = "Ignores empty, blanks and commente
             End If
         Loop While UnwantedLine And Idx <= MaxIdx
     End If
-End Sub
-Public Sub TwoDimToJaggedArray(ByRef TwoDimArray() As Variant, ByRef JaggedArray() As Variant)
-Attribute TwoDimToJaggedArray.VB_Description = "Deconstructs a 2D string array and puts its content into a jagged array."
-    Dim UBj1 As Long, LBj1 As Long
-    Dim UBj2 As Long, LBj2 As Long
-    Dim MaxDim1 As Long, MaxDim2 As Long
-    Dim jgdCounter1 As Long, jgdCounter2 As Long
-    Dim tmpDimension As Long
-    Dim tdimCounter As Long, tdimCounter2 As Long
-    
-    On Error GoTo TwoDimToJaggedArray_Err_Handler
-    If MultiDimensional(TwoDimArray) Then
-        LBj1 = LBound(TwoDimArray)
-        UBj1 = UBound(TwoDimArray)
-        MaxDim1 = Abs(UBj1 - LBj1) 'Dimension One in base 0
-        LBj2 = LBound(TwoDimArray, 2)
-        UBj2 = UBound(TwoDimArray, 2)
-        MaxDim2 = Abs(UBj2 - LBj2) 'Dimension Two in base 0
-        '@----------------------------------------------
-        'Create the jagged array
-        ReDim JaggedArray(0 To MaxDim1)
-        Call CreateJagged(JaggedArray, MaxDim2)
-        '@----------------------------------------------
-        'Deconstruct and dump the data
-        jgdCounter1 = 0
-        For tdimCounter = LBj1 To UBj1
-            jgdCounter2 = 0
-            For tdimCounter2 = LBj2 To UBj2
-                JaggedArray(jgdCounter1)(jgdCounter2) = TwoDimArray(tdimCounter, tdimCounter2)
-                TwoDimArray(tdimCounter, tdimCounter2) = vbNullString
-                jgdCounter2 = jgdCounter2 + 1&
-            Next tdimCounter2
-            jgdCounter1 = jgdCounter1 + 1&
-        Next tdimCounter
-    Else
-        LBj1 = LBound(TwoDimArray)
-        UBj1 = UBound(TwoDimArray)
-        MaxDim1 = Abs(UBj1 - LBj1) 'Dimension One in base 0
-        MaxDim2 = 0 'Dimension Two in base 0
-        '@----------------------------------------------
-        'Create the jagged array
-        ReDim JaggedArray(0 To MaxDim1)
-        Call CreateJagged(JaggedArray, MaxDim2)
-        '@----------------------------------------------
-        'Deconstruct and dump the data
-        jgdCounter1 = 0
-        For tdimCounter = LBj1 To UBj1
-            JaggedArray(jgdCounter1)(0) = TwoDimArray(tdimCounter)
-            TwoDimArray(tdimCounter) = vbNullString
-            jgdCounter1 = jgdCounter1 + 1&
-        Next tdimCounter
-    End If
-    Erase TwoDimArray
-TwoDimToJaggedArray_Err_Handler:
 End Sub
 Private Sub Class_Initialize()
     ResetToDefault

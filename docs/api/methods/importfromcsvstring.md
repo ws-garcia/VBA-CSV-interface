@@ -2,13 +2,13 @@
 title: ImportFromCSVstring
 parent: Methods
 grand_parent: API
-nav_order: 7
+nav_order: 6
 ---
 
 # ImportFromCSVstring
 {: .fs-9 }
 
-Parses a string and save its CSV data to the current instance.
+Parses a string and save its CSV data to an array.
 {: .fs-6 .fw-300 }
 
 ---
