@@ -37,7 +37,7 @@ See also
 
 ## Behavior
 
-The `DumpToArray` method make a copy of all the data stored in the current instance. The data is returned in the *OutPutArray* parameter for avoid additional data copies in the internals.
+The `DumpToArray` method makes a copy of all the data stored in the current instance. The data is returned in the *OutPutArray* parameter for avoid additional data copies in the internals.
 
 The dumped data will be successively erased from memory, in other words, the current instance will doesn't hold the read CSV data any more. In the same way, the `DumpToArray` method doesn’t perform any modifications to the *OutPutArray* array for subsequent calls not preceded by one `ImportFromCSV` or `ImportFromCSVstring` method call.
 
