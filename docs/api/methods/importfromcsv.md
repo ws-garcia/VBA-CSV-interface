@@ -8,7 +8,7 @@ nav_order: 6
 # ImportFromCSV
 {: .fs-9 }
 
-Imports a CSV file's content to an array.
+Imports a CSV file's content to the current instance.
 {: .fs-6 .fw-300 }
 
 ---
