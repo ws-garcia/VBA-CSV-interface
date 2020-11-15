@@ -56,7 +56,7 @@ See also
 
 >⚠️**Caution**
 >{: .text-grey-lt-000 .bg-green-000 }
-If the `QuotingMode` property is set to `QuotationMode.Critical` and the *csvArray* argument points to a jagged array, the *csvArray* array will be turn to a `Variant` Type Two-dimensional array.
+If the `QuotingMode` property is set to `QuotationMode.Critical` and the *csvArray* argument points to a jagged array, the *csvArray* array will be turn to a `Variant` Type Two-dimensional array for hold string data. Use jagged arrays keeping in mind they can make the VBA hosting application run out of memory.
 {: .text-grey-dk-300 .bg-yellow-000 }
 
 The `FieldsDelimiter`, `RecordsDelimiter` and `EscapeChar` properties sets the method's behavior to the needs.
