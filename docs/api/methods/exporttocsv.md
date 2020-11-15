@@ -2,7 +2,7 @@
 title: ExportToCSV
 parent: Methods
 grand_parent: API
-nav_order: 3
+nav_order: 4
 ---
 
 # ExportToCSV
@@ -15,11 +15,28 @@ Exports an array's content to a CSV file.
 
 ## Syntax
 
-*expression*.`ExportToCSV`*(csvArray)*
+*expression*.`ExportToCSV`*(csvArray, {PassControlToOS:= `True`})*
 
 ### Parameters
 
-The required *csvArray* argument is an identifier specifying a `Variant` array variable.
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Part</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><em>csvArray</em></td>
+<td style="text-align: left;">Required. Identifier specifying a <code>Variant</code> array variable.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><em>PassControlToOS</em></td>
+<td style="text-align: left;">Optional. Identifier specifying a <code>Boolean</code> variable.</td>
+</tr>
+</tbody>
+</table>
 
 ### Return value
 
@@ -36,6 +53,11 @@ See also
 ---
 
 ## Behavior
+
+>⚠️**Caution**
+>{: .text-grey-lt-000 .bg-green-000 }
+If the `QuotingMode` property is set to `QuotationMode.Critical` and the *csvArray* argument points to a jagged array, the *csvArray* array will be turn to a `Variant` Type Two-dimensional array.
+{: .text-grey-dk-300 .bg-yellow-000 }
 
 The `FieldsDelimiter`, `RecordsDelimiter` and `EscapeChar` properties sets the method's behavior to the needs.
 
