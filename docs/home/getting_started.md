@@ -94,7 +94,15 @@ ENC = CSVix.FileEncoding
 {: .text-grey-dk-300 .bg-yellow-000 }
 
 ## Benchmark
-The benchmark provided here is focused on the supposed most critical operation, this is the parse one when working with CSV files. Although, benchmark for the exportation procedure is given on. 
+
+>📝**Note**
+>{: .text-grey-lt-000 .bg-green-000 }
+>Since the v2.0.0 of the `CSVinterface` we adopted the variant data Type array for internals data storage. Is well-known that this data Type has the worst performance in the VBA universe, but we desire bring to user the possibility to work with jagged arrays and let the class pay the cost in performance by that choice. 
+>
+>However, if you need more data processing performance and not want support to jagged arrays, you can download [this version]( https://github.com/ws-garcia/VBA-CSV-interface/releases/tag/1.1.6) of the `CSVinterface` class.
+{: .text-grey-dk-300 .bg-grey-lt-000 }
+
+The benchmark provided here is focused on the supposed most critical operation, this is the parse one for many authors. Although, benchmark for the exportation procedure is given on. 
 
 The class was tested against two solutions (the one from [@Senipah](https://github.com/Senipah/VBA-Better-Array) and the other from [@sdkn104](https://github.com/sdkn104/VBA-CSV)) using a laptop running `Win 10 Pro x64, Intel® Core™ i7-4500U CPU @1.80-2.40 GHz, 8 GB RAM, Excel 2019 x86`. The test works in two ways, 100K calls to the import procedure over three (3) different files, each of this with three records (3) and four fields (4), or one (1) call to the import procedure parsing a larger file. In all cases, the overall work load is 1.2MM of fields. The CSV files are:
 * _RFC-4180_OH.csv_: **OH**- Only the headers are quoted (4 fields)
@@ -119,27 +127,27 @@ First three of files have special chars (line breaks, commas, double quotes) int
 <tbody>
 <tr>
 <td style="text-align: left;"><em>ImportFromCSVString<br>(W. García)</em></td>
-<td style="text-align: right;"><p style="color:blue;">2.4844</p></td>
-<td style="text-align: right;"><p style="color:blue;">2.6797</p></td>
-<td style="text-align: right;"><p style="color:blue;">2.5625<br>0.9531</p></td>
-<td style="text-align: right;"><p style="color:blue;">2.9844</p></td>
-<td style="text-align: right;"><p style="color:blue;">4.3906<br>2.4844</p></td>
+<td style="text-align: right;"><p style="color:blue;">3.4297</p></td>
+<td style="text-align: right;"><p style="color:blue;">3.4609</p></td>
+<td style="text-align: right;"><p style="color:blue;">3.2031<br>1.3086</p></td>
+<td style="text-align: right;"><p style="color:blue;">3.7266</p></td>
+<td style="text-align: right;"><p style="color:blue;">5.0312<br>2.9492</p></td>
 </tr>
 <tr>
 <td style="text-align: left;"><em>FromCSVString<br>(@Senipah)</em></td>
-<td style="text-align: right;">13.5312</td>
-<td style="text-align: right;">13.4922</td>
-<td style="text-align: right;">14.4453</td>
-<td style="text-align: right;">16.0234</td>
-<td style="text-align: right;">22.3047</td>
+<td style="text-align: right;">14.9219</td>
+<td style="text-align: right;">14.1914</td>
+<td style="text-align: right;">14.2617</td>
+<td style="text-align: right;">16.2227</td>
+<td style="text-align: right;">22.9102</td>
 </tr>
 <tr>
 <td style="text-align: left;"><em>ParseCSVToArray<br>(@sdkn104)</em></td>
-<td style="text-align: right;">3.5000</td>
-<td style="text-align: right;">3.7969</td>
-<td style="text-align: right;">4.5156</td>
-<td style="text-align: right;">7.2812</td>
-<td style="text-align: right;">11.7422</td>
+<td style="text-align: right;">4.0898</td>
+<td style="text-align: right;">4.6992</td>
+<td style="text-align: right;">4.9688</td>
+<td style="text-align: right;">8.0312</td>
+<td style="text-align: right;">15.0938</td>
 </tr>
 </tbody>
 </table>
@@ -163,8 +171,8 @@ The images bellow shows the overall performance for the imports and exports oper
 
 ### Conclusions
 
-- `ImportFromCSVString` is the tested faster one import method, outperforming its nearer counterpart by a factor of 2.5x in performance.
-- The CSV syntax impacts the performance in this way: as the number of escaped fields is increased, the performance is decreased.
+- `ImportFromCSVString` is the tested faster one import method, outperforming its nearer counterpart by a 2x to 3x factor in performance.
+- The CSV syntax slow-down the performance when the number of escaped fields, the number of white spaces between fields and the lines-breaks into fields are increased.
 - When working with CSVs compliant with the RFC-4180 specs, the `ImportFromCSVString` method is faster than the `ExportToCSV` method. This scenario is inverted when working with well-formed CSVs without checking the RFC-4180 specs.
 
 ## Licence
