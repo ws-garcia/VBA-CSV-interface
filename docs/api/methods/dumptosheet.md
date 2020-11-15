@@ -2,14 +2,11 @@
 title: DumpToSheet
 parent: Methods
 grand_parent: API
-nav_order: 2
+nav_order: 3
 ---
 
 # DumpToSheet
-{: .d-inline-block }
-
-New
-{: .label .label-purple }
+{: .fs-9 }
 
 Dumps the data from the current instance to an Excel WorkSheet.
 {: .fs-6 .fw-300 }
@@ -63,4 +60,5 @@ See also
 
 When the *WBookName* parameter is omitted the data is dumped into the Workbook that holds the CSV interface's *VBAProject*. Omitting the *SheetName* parameter adds a new Worksheet to the desired Workbook. Also, if the *RngName* parameter is omitted the data will dumped starting on the "A1" named cell in the desired Worksheet.
 
+The dumped data will be successively erased from memory, in other words, the current instance will doesn't hold the read CSV data any more. In the same way, the `DumpToSheet` method doesn’t perform any action for subsequent calls not preceded by one `ImportFromCSV` or `ImportFromCSVstring` method call.
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)
