@@ -21,6 +21,7 @@ Dumps the data from the current instance to a jagged array.
 *expression*.`DumpToJaggedArray`*(OutPutArray)*
 
 ### Parameters
+
 The required *OutPutArray* argument is an identifier specifying a dynamic `Variant` type array variable.
 
 ### Return value
