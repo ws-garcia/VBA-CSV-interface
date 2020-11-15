@@ -272,18 +272,18 @@ ErrHandler_CloseConnection:
     P_ERROR_NUMBER = Err.number
     P_ERROR_SOURCE = Err.source
 End Sub
-Private Sub CreateJagged(ByRef ArrVar() As Variant, VectorSize As Long)
-Attribute CreateJagged.VB_Description = "Creates an empty array of vector, each of which have a fixed custom size."
-    Dim arrUB As Long, arrLB As Long, Vector() As String
+Public Sub CreateJagged(ByRef ArrVar() As Variant, ArraySize As Long, VectorSize As Long)
+Attribute CreateJagged.VB_Description = "Creates an empty array of vectors, each of which having a fixed custom size."
+    Dim Vector() As String
     Dim arrPointer As Long
     
+    ReDim ArrVar(0 To ArraySize)
     ReDim Vector(0 To VectorSize)
-    
-    arrUB = UBound(ArrVar)
-    arrLB = LBound(ArrVar)
-    For arrPointer = arrLB To arrUB
+
+    For arrPointer = 0 To ArraySize
         ArrVar(arrPointer) = Vector()
     Next arrPointer
+    Erase Vector
 End Sub
 Private Function CSVcolumns(csvArray() As String, _
                                         Optional FieldsDelimiter As String = CHR_COMMA) As Long
@@ -661,8 +661,7 @@ Attribute ImportFromCSV.VB_Description = "Imports the content of a CSV file, loc
         'Read whole file content
         GetCSVtext FileContent
         If LenB(FileContent) = 0 Then
-            ReDim P_CSV_DATA(0)
-            Call CreateJagged(P_CSV_DATA, 0)
+            Call CreateJagged(P_CSV_DATA, 0, 0)
             P_CSV_DATA(0) = Split(FileContent, vbCrLf)
             Exit Sub
         End If
@@ -708,8 +707,7 @@ Public Sub ImportFromCSVString(ByRef CSVString As String, _
 Attribute ImportFromCSVString.VB_Description = "Imports the content of a CSV file, holded in a string variable, to the current instance."
     If PassControlToOS Then DoEvents 'Pass the control to the Operative System
     If LenB(CSVString) = 0 Then
-        ReDim P_CSV_DATA(0)
-        Call CreateJagged(P_CSV_DATA, 0)
+        Call CreateJagged(P_CSV_DATA, 0, 0)
         P_CSV_DATA(0) = Split(CSVString, vbCrLf)
         Exit Sub
     End If
@@ -751,16 +749,18 @@ Attribute IsANSI.VB_Description = "Verifies the charset for ANSI encoding."
     Erase bytFile
     IsANSI = (lngIndx > lngUprBnd)
 End Function
-Private Function IsJaggedArray(arr As Variant) As Boolean
+Public Function IsJaggedArray(Arr As Variant) As Boolean
 Attribute IsJaggedArray.VB_Description = "Checks if the given array is an array of arrays."
     On Error GoTo IsJaggedArray_Err_Handler
-    If MultiDimensional(arr) Then
-        IsJaggedArray = False
-    Else
-        Dim BoundingTest As Variant
-        BoundingTest = arr(LBound(arr))
-        BoundingTest = LBound(BoundingTest)
-        IsJaggedArray = True
+    If IsArray(Arr) Then
+        If MultiDimensional(Arr) Then
+            IsJaggedArray = False
+        Else
+            Dim BoundingTest As Variant
+            BoundingTest = Arr(LBound(Arr))
+            BoundingTest = LBound(BoundingTest)
+            IsJaggedArray = True
+        End If
     End If
     Exit Function
 IsJaggedArray_Err_Handler:
@@ -784,9 +784,8 @@ Attribute IsWorkbookOpen.VB_Description = "Checks if the given Workbook is opene
     Next
     IsWorkbookOpen = BookMatching
 End Function
-Private Sub JaggedToTwoDimArray(ByRef JaggedArray As Variant)
-Attribute JaggedToTwoDimArray.VB_Description = "Turns a jagged array to a 2D string array."
-    Dim TwoDimArray() As Variant
+Public Sub JaggedToTwoDimArray(ByRef JaggedArray() As Variant, ByRef TwoDimArray() As String)
+Attribute JaggedToTwoDimArray.VB_Description = "Deconstructs a jagged array and puts its content into a 2D string array."
     Dim UBj1 As Long, LBj1 As Long
     Dim UBj2 As Long, LBj2 As Long
     Dim MaxDim1 As Long, MaxDim2 As Long
@@ -814,8 +813,6 @@ Attribute JaggedToTwoDimArray.VB_Description = "Turns a jagged array to a 2D str
         Next jgdCounter2
         Erase JaggedArray(jgdCounter1) 'Free memory
     Next jgdCounter1
-    JaggedArray = TwoDimArray
-    Erase TwoDimArray
 JaggedToTwoDimArray_Err_Handler:
 End Sub
 Private Function JoinRecordsFields(ByRef RecordsArray As Variant) As String
@@ -943,11 +940,42 @@ Attribute JoinRecordsFields.VB_Description = "Joins all fields for each record i
                     'Free the memory
                     Erase ConcatenatedArray
                     Erase buffer
-                Else 'Recursive call
+                Else
                     '@----------------------------------------------------------------------------
-                    'Transform array
-                    Call JaggedToTwoDimArray(RecordsArray)
-                    JoinRecordsFields = JoinRecordsFields(RecordsArray)
+                    'Set array sizes
+                    ReDim ConcatenatedArray(LB1 To UB1)
+                    '@----------------------------------------------------------------------------
+                    'Concatenate fields
+                    Dim tmpBuffer As Variant
+                    For iLCounter = LB1 To UB1
+                        tmpBuffer = RecordsArray(iLCounter)
+                        LB2 = LBound(tmpBuffer)
+                        UB2 = UBound(tmpBuffer)
+                        ReDim buffer(LB2 To UB2)
+                        For jLCounter = LB2 To UB2
+                            If InStrB(1, tmpBuffer(jLCounter), P_FIELDS_DELIMITER) Then
+                                JoinBuffer(1) = tmpBuffer(jLCounter)
+                                buffer(jLCounter) = Join$(JoinBuffer, vbNullString)
+                            ElseIf InStrB(1, tmpBuffer(jLCounter), CoerceChr) Then
+                                JoinBuffer(1) = tmpBuffer(jLCounter)
+                                buffer(jLCounter) = Join$(JoinBuffer, vbNullString)
+                            ElseIf InStrB(1, tmpBuffer(jLCounter), P_RECORDS_DELIMITER) Then
+                                JoinBuffer(1) = tmpBuffer(jLCounter)
+                                buffer(jLCounter) = Join$(JoinBuffer, vbNullString)
+                            Else
+                                buffer(jLCounter) = tmpBuffer(jLCounter)
+                            End If
+                            JoinBuffer(1) = vbNullString
+                        Next jLCounter
+                        ConcatenatedArray(iLCounter) = Join$(buffer, P_FIELDS_DELIMITER)
+                    Next iLCounter
+                    '@----------------------------------------------------------------------------
+                    'Concatenate records
+                    JoinRecordsFields = Join$(ConcatenatedArray, P_RECORDS_DELIMITER)
+                    '@----------------------------------------------------------------------------
+                    'Free the memory
+                    Erase ConcatenatedArray
+                    Erase buffer
                 End If
             Case Else
                 If Not IsJagged Then
@@ -1311,9 +1339,7 @@ Attribute ParseCriticalCSV.VB_Description = "Parses text strings CSV’s compliant
     HeaderSize = CurrentBufferIndex
     P_MAX_JAGG_INDEX = HeaderSize
     CurrentRecordSize = P_MAX_JAGG_INDEX
-    'ReDim P_CSV_DATA(LBound(tmpCSV) To ImportDepth - 1&, 0 To CurrentRecordSize)
-    ReDim P_CSV_DATA(LBound(tmpCSV) To ImportDepth - 1&)
-    Call CreateJagged(P_CSV_DATA, HeaderSize)
+    Call CreateJagged(P_CSV_DATA, ImportDepth - 1&, HeaderSize)
     For Counter1 = 0 To HeaderSize
         P_CSV_DATA(0)(Counter1) = buffer(Counter1)
     Next Counter1
@@ -1629,8 +1655,7 @@ Attribute ParseCSV.VB_Description = "Parses text strings CSV’s without check RFC
     lRows = lngUB - lngLB
     lColumns = CSVcolumns(csvArray, DataDelimiter) - 1
     lCounter = lngLB + hPos
-    ReDim P_CSV_DATA(0 To lRows - hPos)
-    Call CreateJagged(P_CSV_DATA, lColumns)
+    Call CreateJagged(P_CSV_DATA, lRows - hPos, lColumns)
     P_MAX_JAGG_INDEX = lColumns
     '@----------------------------------------------------------------------------
     'Process the data
@@ -1732,7 +1757,7 @@ Attribute ResetToDefault.VB_Description = "Resets the all the options to its def
     P_SUCCESSFUL_IMPORT = False
 End Sub
 Private Sub SkipUnwantedLines(ByRef Idx As Long, ByRef MaxIdx As Long, _
-                                ByRef arr() As String)
+                                ByRef Arr() As String)
 Attribute SkipUnwantedLines.VB_Description = "Ignores empty, blanks and commented lines."
     Dim CurLength As Long
     Dim CharCode As Long
@@ -1743,13 +1768,13 @@ Attribute SkipUnwantedLines.VB_Description = "Ignores empty, blanks and commente
     'Skip commented and blank lines if needed
     If Idx <= MaxIdx Then
         Do
-            CurLength = LenB(arr(Idx))
+            CurLength = LenB(Arr(Idx))
             UnwantedLine = False
             StrPointer = 1&
             If CurLength = 0 Then 'Empty line found
                 UnwantedLine = True
             Else
-                CharCode = AscW(arr(Idx))
+                CharCode = AscW(Arr(Idx))
                 If CharCode = P_COMMENTLINEINDICATOR Then 'Commented line found
                     UnwantedLine = True
                 Else
@@ -1761,19 +1786,19 @@ Attribute SkipUnwantedLines.VB_Description = "Ignores empty, blanks and commente
                             UnwantedLine = True
                             Exit Do
                         End If
-                        CharCode = AscW(MidB$(arr(Idx), StrPointer, 2))
+                        CharCode = AscW(MidB$(Arr(Idx), StrPointer, 2))
                     Loop
                     If CharCode = P_COMMENTLINEINDICATOR Then UnwantedLine = True
                 End If
             End If
             If UnwantedLine Then
                 Idx = Idx + 1&
-                CurLength = LenB(arr(Idx))
+                CurLength = LenB(Arr(Idx))
             End If
         Loop While UnwantedLine And Idx <= MaxIdx
     End If
 End Sub
-Public Sub TwoDimToJaggedArray(ByRef TwoDimArray() As Variant, ByRef JaggedArray() As Variant)
+Public Sub TwoDimToJaggedArray(ByRef TwoDimArray() As String, ByRef JaggedArray() As Variant)
 Attribute TwoDimToJaggedArray.VB_Description = "Deconstructs a 2D string array and puts its content into a jagged array."
     Dim UBj1 As Long, LBj1 As Long
     Dim UBj2 As Long, LBj2 As Long
@@ -1792,8 +1817,7 @@ Attribute TwoDimToJaggedArray.VB_Description = "Deconstructs a 2D string array a
         MaxDim2 = Abs(UBj2 - LBj2) 'Dimension Two in base 0
         '@----------------------------------------------
         'Create the jagged array
-        ReDim JaggedArray(0 To MaxDim1)
-        Call CreateJagged(JaggedArray, MaxDim2)
+        Call CreateJagged(JaggedArray, MaxDim1, MaxDim2)
         '@----------------------------------------------
         'Deconstruct and dump the data
         jgdCounter1 = 0
@@ -1813,8 +1837,7 @@ Attribute TwoDimToJaggedArray.VB_Description = "Deconstructs a 2D string array a
         MaxDim2 = 0 'Dimension Two in base 0
         '@----------------------------------------------
         'Create the jagged array
-        ReDim JaggedArray(0 To MaxDim1)
-        Call CreateJagged(JaggedArray, MaxDim2)
+        Call CreateJagged(JaggedArray, MaxDim1, MaxDim2)
         '@----------------------------------------------
         'Deconstruct and dump the data
         jgdCounter1 = 0
