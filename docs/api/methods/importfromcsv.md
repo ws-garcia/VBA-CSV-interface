@@ -2,13 +2,13 @@
 title: ImportFromCSV
 parent: Methods
 grand_parent: API
-nav_order: 5
+nav_order: 6
 ---
 
 # ImportFromCSV
 {: .fs-9 }
 
-Imports a CSV file's content to an array.
+Imports a CSV file's content to the current instance.
 {: .fs-6 .fw-300 }
 
 ---
@@ -55,7 +55,7 @@ See also
 
 ## Behavior
 
-User can set `CommentLineIndicator` for those CSV files having a combination of empties lines, blanks lines or commented ones for parse the file ONLY when the parser is working on `QuotationMode.Critical` mode. In that mode, the cited lines are simply skipped, leaving no empty values between records separated by this kind of lines. In other words, if the CSV file holds a record and then some special lines (blank, empty or commented) and then another record, the second record will be saved contiguous to the first record ignoring the lines between both.
+User can set `CommentLineIndicator` property for those CSV files having a combination of empties lines, blanks lines or commented ones for parse the file ONLY when the parser is working on `QuotationMode.Critical` mode. In that mode, the cited lines are simply skipped, leaving no empty values between records separated by this kind of lines. In other words, if the CSV file holds a record and then some special lines (blank, empty or commented) and then another record, the second record will be saved contiguous to the first record ignoring the lines between both.
 
 >⚠️**Caution**
 >{: .text-grey-lt-000 .bg-green-000 }
