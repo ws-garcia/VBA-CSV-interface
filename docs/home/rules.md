@@ -34,7 +34,7 @@ In the table bellow all the rules of [RFC-4180](https://www.ietf.org/rfc/rfc4180
 </tr>
 <tr>
 <td style="text-align: left;"><em>Within the header and each record, there may be<br> one or more fields, separated by commas.  Each<br> line should contain the same number of fields<br> throughout the file.  Spaces are considered part<br> of a field and should not be ignored.  The last<br> field in the record must not be followed by a<br> comma.</em></td>
-<td style="text-align: left;">The class accepts CSV files with different numbers<br> of fields per record. The spaces betwen the<br> fields separator char and a single field is ignored<br> only if that field need to be escaped.</td>
+<td style="text-align: left;">The class accepts CSV files with different numbers<br> of fields per record. The spaces betwen the<br> fields separator char and a single field is ignored<br> only if that field is enclosed in double quotes.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><em>Each field may or may not be enclosed in double<br> quotes (however some programs, such as Microsoft<br> Excel, do not use double quotes at all).  If<br> fields are not enclosed with double quotes, then<br> double quotes may not appear inside the fields</em></td>
