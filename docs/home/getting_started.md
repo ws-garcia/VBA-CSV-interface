@@ -155,7 +155,7 @@ First three of files have special chars (line breaks, commas, double quotes) int
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->The above table shows the benchmark results, in seconds, for the currently tested procedures. The 2nd value, showed in some cells having two values, is obtained when setting the property `QuotingMode` to `QuotationMode.All`. 
+>The above table shows the benchmark results, in seconds, for the currently tested procedures. The 2nd value, showed in some cells having two values, is obtained when setting the `QuotingMode` property to `QuotationMode.All`. 
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 >⚠️**Caution**
