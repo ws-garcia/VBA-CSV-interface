@@ -22,7 +22,7 @@ description: "Introduction to the VBA CSV interface class."
 {:toc}
 </details>
 
-In order to be able to use `CSVinterface.cls` within your project, please review the installation instructions by clicking the button below.
+In order to be able to use `CSVinterface.cls` module within your project, please review the installation instructions by clicking the button below.
 
 [Installation](https://ws-garcia.github.io/VBA-CSV-interface/home/installation.html){: .btn .btn-green }
 
