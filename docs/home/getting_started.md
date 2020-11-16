@@ -97,7 +97,7 @@ ENC = CSVix.FileEncoding
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->Since the v2.0.0 of the `CSVinterface` we adopted the variant data Type array for internals data storage. Is well-known that this data Type has the worst performance in the VBA universe, but we desire bring to user the possibility to work with jagged arrays and let the class pay the cost in performance by that choice. 
+>Since the v2.0.0 of the `CSVinterface` class we adopted the variant data Type array for internals data storage. Is well-known that this data Type has the worst performance in the VBA universe, but we desire bring to user the possibility to work with jagged arrays and let the class pay the cost in performance by that choice. 
 >
 >However, if you need more data processing performance and not want support to jagged arrays, you can download [this version](https://github.com/ws-garcia/VBA-CSV-interface/releases/download/1.1.6/VBA-CSV-interface-1.1.6.zip) of the `CSVinterface` class.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
@@ -155,12 +155,12 @@ First three of files have special chars (line breaks, commas, double quotes) int
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->The above table shows the benchmark results, in seconds, for the currently tested procedures. Some projects were excluded from the benchmark due they do not handle those CSV's compliant with the RFC-4180 specs. The 2nd value, showed in some cells having two values, is obtained when setting `QuotingMode = QuotationMode.All`. 
+>The above table shows the benchmark results, in seconds, for the currently tested procedures. The 2nd value, showed in some cells having two values, is obtained when setting the property `QuotingMode` to `QuotationMode.All`. 
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 >⚠️**Caution**
 >{: .text-grey-lt-000 .bg-green-000 }
->Keep in mind that not all CSV files can be successful imported by change the `QuotingMode` parameter.
+>Keep in mind that not all CSV files can be successful imported by change the `QuotingMode` property.
 {: .text-grey-dk-300 .bg-yellow-000 }
 
 The images bellow shows the overall performance for the imports and exports operations from the CSV interface class. Notice, specials syntax CSV’s will sure take more time to be parsed due the parser has extra work to be done.
