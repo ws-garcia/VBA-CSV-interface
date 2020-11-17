@@ -18,7 +18,7 @@ In order to use the latest release of the CSVinterface class within your VBA cod
 >Do not copy and paste content from the `.cls`  file  to your project. The class file contains certain information the VBA-IDE needs to parse to ensure the `CSVinterface.cls` module works properly.
 {: .text-grey-dk-300 .bg-yellow-000 }
 
-[Download now](https://github.com/ws-garcia/VBA-CSV-interface/releases/latest/){: .btn .btn-primary .fs-4 .mb-4 .mb-md-0 .mr-2 } [View it on GitHub](https://github.com/ws-garcia/VBA-CSV-interface){: .btn .fs-4 .mb-4 .mb-md-0 }
+[Download latest version](https://github.com/ws-garcia/VBA-CSV-interface/releases/latest/download/VBA-CSV-Interface.zip){: .btn .btn-primary .fs-4 .mb-4 .mb-md-0 .mr-2 } [Download v1.1.6](https://github.com/ws-garcia/VBA-CSV-interface/releases/download/1.1.6/VBA-CSV-interface-1.1.6.zip){: .btn .fs-4 .mb-4 .mb-md-0 }
 ---
 
 Congratulations! Now you can proceed to the [Getting Started](https://ws-garcia.github.io/VBA-CSV-interface/home/getting_started.html) section to know how to start with the VBA CSV interface class. See you there!
