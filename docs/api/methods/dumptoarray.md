@@ -39,11 +39,11 @@ See also
 
 The `DumpToArray` method makes a copy of all the data stored in the current instance. The data is returned in the *OutPutArray* parameter for avoid additional data copies in the internals.
 
-The dumped data will be successively erased from memory, in other words, the current instance will doesn't hold the read CSV data any more. In the same way, the `DumpToArray` method doesn’t perform any modifications to the *OutPutArray* array for subsequent calls not preceded by one `ImportFromCSV` or `ImportFromCSVstring` method call.
+The dumped data will be successively erased from memory, in other words, the current instance will doesn't hold the read CSV/TSV data any more. In the same way, the `DumpToArray` method doesn’t perform any modifications to the *OutPutArray* array for subsequent calls not preceded by one `ImportFromCSV` or `ImportFromCSVstring` method call.
 
 >⚠️**Caution**
 >{: .text-grey-lt-000 .bg-green-000 }
->The data is always returned in a Two-dimensional array, even when the imported CSV file only contain a field per record.
+>The data is always returned in a Two-dimensional array, even when the imported file only contain a field per record.
 {: .text-grey-dk-300 .bg-yellow-000 }
 
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)

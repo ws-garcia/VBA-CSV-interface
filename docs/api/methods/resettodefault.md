@@ -27,7 +27,7 @@ _None_
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->Before call the `ResetToDefault` method, user must to check if the target CSV file will be well parsed with the config options shown in the table below.
+>Before call the `ResetToDefault` method, user must to check if the target file would be well parsed with the config options shown in the table below.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 <table>
@@ -51,8 +51,8 @@ _None_
 <td style="text-align: left;"><p style="color:navy;">vbCrLf</p></td>
 </tr>
 <tr>
-<td style="text-align: left;"><em>EscapeChar</em></td>
-<td style="text-align: left;"><p style="color:navy;"><code>EscapeType</code>.DoubleQuotes</p></td>
+<td style="text-align: left;"><em>EscapeToken</em></td>
+<td style="text-align: left;"><p style="color:navy;"><code>EscapeTokens</code>.DoubleQuotes</p></td>
 </tr>
 <tr>
 <td style="text-align: left;"><em>QuotingMode</em></td>

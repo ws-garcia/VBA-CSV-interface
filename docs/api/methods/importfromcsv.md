@@ -8,7 +8,7 @@ nav_order: 7
 # ImportFromCSV
 {: .fs-9 }
 
-Imports a CSV file's content to the current instance.
+Imports a CSV/TSV file's content to the current instance.
 {: .fs-6 .fw-300 }
 
 ---
@@ -44,22 +44,22 @@ _None_
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->If the *HeadersOmission* parameter is set to `True`, the CSV file headers, first record, will be ignored by the parser only when the `StartingRecord` property is set to 1. 
+>If the *HeadersOmission* parameter is set to `True`, the file headers, first record, will be ignored by the parser only when the `StartingRecord` property is set to 1. 
 >The *PassControlToOS* parameter allows user to pass control to the operating system. Control is returned after the operating system has finished processing the events in its queue.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 See also
-: [OpenConnection method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/openconnection.html), [FieldsDelimiter property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/fieldsdelimiter.html), [RecordsDelimiter property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/recordsdelimiter.html), [EscapeChar property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/escapechar.html), [StartingRecord property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/startingrecord.html), [EndingRecord property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/endingrecord.html), [CommentLineIndicator property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/commentlineindicator.html).
+: [OpenConnection method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/openconnection.html), [FieldsDelimiter property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/fieldsdelimiter.html), [RecordsDelimiter property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/recordsdelimiter.html), [EscapeToken property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/escapetoken.html), [StartingRecord property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/startingrecord.html), [EndingRecord property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/endingrecord.html), [CommentsToken property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/commentstoken.html).
 
 ---
 
 ## Behavior
 
-User can set `CommentLineIndicator` property for those CSV files having a combination of empties lines, blanks lines or commented ones for parse the file ONLY when the parser is working on `QuotationMode.Critical` mode. In that mode, the cited lines are simply skipped, leaving no empty values between records separated by this kind of lines. In other words, if the CSV file holds a record and then some special lines (blank, empty or commented) and then another record, the second record will be saved contiguous to the first record ignoring the lines between both.
+User can set `CommentsToken` property for those files having a combination of empties lines, blanks lines or commented ones for parse the file ONLY when the parser is working on `QuotationMode.Critical` mode. In that mode, the cited lines are simply skipped, leaving no empty values between records separated by this kind of lines. In other words, if the file holds a record and then some special lines (blank, empty or commented) and then another record, the second record will be saved contiguous to the first record ignoring the lines between both.
 
 >⚠️**Caution**
 >{: .text-grey-lt-000 .bg-green-000 }
->Before invoke the `ImportFromCSV` method, the user must to open a connection to the CSV file. If the CSV file has no data, this is the file is an empty one, the `ImportFromCSV` method returns an empty array, that is, an array bounded from 0 to -1 and holding no elements and no data.
+>Before invoke the `ImportFromCSV` method, the user must to open a connection to the file. If the target file has no data (the file is an empty one) the `ImportFromCSV` method returns an empty array, that is, an array bounded from 0 to -1 and holding no elements and no data.
 {: .text-grey-dk-300 .bg-yellow-000 }
 
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)

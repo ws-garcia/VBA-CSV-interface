@@ -8,7 +8,7 @@ nav_order: 5
 # ExportToCSV
 {: .fs-9 }
 
-Exports an array's content to a CSV file.
+Exports an array's content to a CSV/TSV file.
 {: .fs-6 .fw-300 }
 
 ---
@@ -44,16 +44,16 @@ _None_
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->Before invoke the `ExportToCSV` method, the user must to open a connection to the CSV file. Passing a variable that isn't an array will cause an error and the operation aborts. 
+>Before invoke the `ExportToCSV` method, the user must to open a connection to the file. Passing a variable that isn't an array will cause an error and the operation aborts. 
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 See also
-: [OpenConnection method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/openconnection.html), [FieldsDelimiter property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/fieldsdelimiter.html), [RecordsDelimiter property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/recordsdelimiter.html), [EscapeChar property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/escapechar.html).
+: [OpenConnection method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/openconnection.html), [FieldsDelimiter property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/fieldsdelimiter.html), [RecordsDelimiter property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/recordsdelimiter.html), [EscapeToken property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/escapetoken.html).
 
 ---
 
 ## Behavior
 
-The `FieldsDelimiter`, `RecordsDelimiter` and `EscapeChar` properties sets the method's behavior to the needs.
+The `FieldsDelimiter`, `RecordsDelimiter` and `EscapeToken` properties sets the method's behavior to the needs.
 
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)
