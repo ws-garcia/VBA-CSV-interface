@@ -39,6 +39,6 @@ _None_
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 See also
-: [ErrDescription property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/errors/errdescription.html), [ErrSource property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/errors/errsource.html).
+: [ErrDescription property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/errdescription.html), [ErrSource property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/errsource.html).
  
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)
