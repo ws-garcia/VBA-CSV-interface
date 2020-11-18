@@ -42,7 +42,7 @@ See also
 
 The `DumpToJaggedArray` method makes a copy of all the data stored in the current instance. The data is returned in the *OutPutArray* parameter for avoid additional data copies in the internals.
 
-The dumped data will be successively erased from memory, in other words, the current instance will doesn't hold the read CSV data any more. In the same way, the `DumpToJaggedArray` method doesn’t perform any modifications to the *OutPutArray* array for subsequent calls not preceded by one `ImportFromCSV` or `ImportFromCSVstring` method call.
+The dumped data will be successively erased from memory, in other words, the current instance will doesn't hold the read CSV/TSV data any more. In the same way, the `DumpToJaggedArray` method doesn’t perform any modifications to the *OutPutArray* array for subsequent calls not preceded by one `ImportFromCSV` or `ImportFromCSVstring` method call.
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }

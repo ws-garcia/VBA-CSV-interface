@@ -8,7 +8,7 @@ nav_order: 10
 # FileEncoding
 {: .fs-9 }
 
-Returns the charset used to encode the last opened CSV file.
+Returns the charset used to encode the last opened CSV/TSV file.
 {: .fs-6 .fw-300 }
 
 ---
@@ -33,7 +33,7 @@ _None_
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->The `FileEncoding` property is set when CSV file is load on memory. In other words, the property holds the encoding for the last opened file. All the possible values are shown in this section.
+>The `FileEncoding` property is set when the file is loaded to memory. In other words, the property holds the encoding for the last opened file. All the possible values are shown in this section.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 <table>
@@ -46,15 +46,15 @@ _None_
 <tbody>
 <tr>
 <td style="text-align: left;"><em>ANSI</em></td>
-<td style="text-align: left;">When the last opened CSV file is encoded in ANSI<br> format. Each char is represented using 8 bits.</td>
+<td style="text-align: left;">When the last opened file is encoded in ANSI<br> format. Each char is represented using 8 bits.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><em>Unicode</em></td>
-<td style="text-align: left;">The last opened CSV file is encoded in Unicode<br> format. Combinations of basic chars are allowed<br> over the CSV file and its takes 2 bytes per<br> character.</td>
+<td style="text-align: left;">The last opened file is encoded in Unicode<br> format. Combinations of basic chars are allowed<br> over the file and its takes 2 bytes per<br> character.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><em>UTF-8</em></td>
-<td style="text-align: left;">The CSV file is encoded in UTF-8 format.</td>
+<td style="text-align: left;">The file is encoded in UTF-8 format.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><em>BigEndian</em></td>

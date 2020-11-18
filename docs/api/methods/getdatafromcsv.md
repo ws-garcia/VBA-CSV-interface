@@ -8,7 +8,7 @@ nav_order: 6
 # GetDataFromCSV
 {: .fs-9 }
 
-Dumps a CSV file content to a string variable
+Dumps a CSV/TSV file content to a string variable
 {: .fs-6 .fw-300 }
 
 ---
@@ -27,7 +27,7 @@ The required *csvPathAndFilename* argument is an identifier specifying a `String
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->The *csvPathAndFilename* parameter must be the full path to the target CSV file, this means, the parameter holds the folder path, the file name and the ".csv" extension.
+>The *csvPathAndFilename* parameter must be the full path to the target file, this means, the parameter holds the folder path, the file name and the extension.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 ## Behavior

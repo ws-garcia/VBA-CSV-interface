@@ -27,10 +27,10 @@ In order to be able to use `CSVinterface.cls` module within your project, please
 [Installation](https://ws-garcia.github.io/VBA-CSV-interface/home/installation.html){: .btn .btn-green }
 
 The CSV files are special kind of tabulated plain text data container widely used in data exchange. There is no globally accepted standard format for that kind of files, however, out there are well formed specs such as the [RFC-4180](https://www.ietf.org/rfc/rfc4180.txt) proposed by The Internet Society.
-Although many solutions has been developed for work with CSV files into VBA, including projects from [@sdkn104](https://github.com/sdkn104/VBA-CSV) and [@Senipah](https://github.com/Senipah/VBA-Better-Array) on GitHub, the performance philosophy conduce me to the development of a VBA class module that allows users exchange data between VBA arrays and CSV files at superior speed for the VBA programing language.
+Although many solutions has been developed for work with CSV files into VBA, including projects from [@sdkn104](https://github.com/sdkn104/VBA-CSV) and [@Senipah](https://github.com/Senipah/VBA-Better-Array) on GitHub, the performance philosophy conduce me to the development of a VBA class module that allows users exchange data between VBA arrays and CSV files at superior speed for the VBA programing language, at time the proposed class supports TSV files as well.
 
 ## Philosophy
-The VBA CSVinterface class module is designed for gain advantage from the well-structured CSV files, this means, there isn't automatic syntax check, given the user decide how the class will works. This can be seen as a weakness, but the class get a speed-up on writing and reading procedures at time the user controls how the file is interpreted, keeping in mind that, in fact, VBA is a language with slow code execution speed. Under this idealization the developed solution complies with the RFC-4180 specs for user specified CSV document format.
+The VBA CSVinterface class module is designed for gain advantage from the well-structured CSV/TSV files, this means, there isn't automatic syntax check, given the user decide how the class will works. This can be seen as a weakness, but the class get a speed-up on writing and reading procedures at time the user controls how the file is interpreted, keeping in mind that, in fact, VBA is a language with slow code execution speed. Under this idealization the developed solution complies with the RFC-4180 specs for user specified CSV/TSV document format.
 
 ## Usage
 Import whole CSV file into an VBA array
@@ -99,7 +99,7 @@ ENC = CSVix.FileEncoding
 >{: .text-grey-lt-000 .bg-green-000 }
 >Since the v2.0.0 of the `CSVinterface` class we adopted the variant data Type array for internals data storage. Is well-known that this data Type has the worst performance in the VBA universe, but we desire bring to user the possibility to work with jagged arrays and let the class pay the cost in performance by that choice. 
 >
->However, if you need more data processing performance and not want support to jagged arrays, you can download [this version](https://github.com/ws-garcia/VBA-CSV-interface/releases/download/1.1.6/VBA-CSV-interface-1.1.6.zip) of the `CSVinterface` class.
+>However, if you need more data processing performance and not want support to jagged arrays neither for TSV files, you can download [this version](https://github.com/ws-garcia/VBA-CSV-interface/releases/download/1.1.6/VBA-CSV-interface-1.1.6.zip) of the `CSVinterface` class.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 The benchmark provided here is focused on the supposed most critical operation, this is the parse one for many authors. Although, benchmark for the exportation procedure is given on. 
