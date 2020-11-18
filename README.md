@@ -6,10 +6,15 @@
 
 VBA CSV interface is a class module developed to accomplish the data exchange task between VBA arrays and CSV files at high speed. Projects from [@sdkn104](https://github.com/sdkn104/VBA-CSV) and [@Senipah](https://github.com/Senipah/VBA-Better-Array), both on Github, were used for comparative performance purposes.
 
-The parser is compatible with those CSV files compliant with the RFC-4180 specs, but add some useful features like: 
-* In-line comments (with a user-defined character). See [Papa Parse](https://www.papaparse.com/) project.
-* Skip blanks lines and empty ones.
-* User-defined escape character (option not available in _Power Query for Excel 2019_ and with some inconsistences when use the _From Text(Legacy)_ wizard)[[1]](#1).
+## Advantages
+* Writes and reads files at high speed.
+* Supports those CSV's that follows the RFC-4180 specs.
+* Auto exclude any quote mark when data is imported.
+* Allows an user-defined escape token (option not available in _Power Query for Excel 2019_ and with some inconsistences when user launch the _From Text(Legacy)_ wizard)[[1]](#1).
+* User have the option to import only certain range of records from given CSV file.
+* Supports One-dimensional arrays, Two-dimensional arrays and jagged arrays.
+* Supports in-line comments (with a user-defined character). See [Papa Parse](https://www.papaparse.com/) project.
+* Supports blanks lines and empty ones.
 
 <a id="1">[1]</a> 
 Power Query, and its legacy counterpart, was not able to handle fields’ embedded line breaks when the CSV's "Text qualifier" is a Single Quote or the Apostrophe char.
