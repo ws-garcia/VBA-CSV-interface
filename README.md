@@ -4,7 +4,7 @@
 
 ## Introductory words
 
-VBA CSV interface is a class module developed to accomplish the data exchange task between VBA arrays and CSV files at high speed. Projects from [@sdkn104](https://github.com/sdkn104/VBA-CSV) and [@Senipah](https://github.com/Senipah/VBA-Better-Array), both on Github, were used for comparative performance purposes.
+VBA CSV interface is a class module developed to accomplish the data exchange task between VBA arrays and CSV/TSV files at high speed. Projects from [@sdkn104](https://github.com/sdkn104/VBA-CSV) and [@Senipah](https://github.com/Senipah/VBA-Better-Array), both on Github, were used for comparative performance purposes.
 
 ## Advantages
 * Writes and reads files at high speed.
