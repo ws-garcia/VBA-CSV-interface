@@ -1,11 +1,11 @@
 ---
-title: CommentLineIndicator
+title: CommentsToken
 parent: Properties
 grand_parent: API
 nav_order: 1
 ---
 
-# CommentLineIndicator
+# CommentsToken
 {: .d-inline-block }
 
 New
@@ -26,13 +26,13 @@ _Yes_
 
 |**_Accesor_**|**_Syntax_**|
 |:----------|:----------|
-|Get|*expression*.`CommentLineIndicator`|
-|Let|*expression*.`CommentLineIndicator` = value|
+|Get|*expression*.`CommentsToken`|
+|Let|*expression*.`CommentsToken` = value|
 
 |**_Accesor_**|**_Parameters_**|
 |:----------|:----------|
 |Get|_None_|
-|Let|*Name*: Indicator:<br>*Type*: `String`<br>*Modifiers*: `ByVal`|
+|Let|*Name*: Token:<br>*Type*: `String`<br>*Modifiers*: `ByVal`|
 
 |**_Accesor_**|**_Returns Type_**|
 |:----------|:----------|
@@ -41,7 +41,7 @@ _Yes_
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->A line starting with the `CommentLineIndicator` char is expected to be automatic ignored by the parser. By default, the char "#" is used for indicate commented lines, but this property can be set to whatever character. If the `CommentLineIndicator` has a length greater than 1, only the first char of it is used.
+>A line starting with the `CommentsToken` char is expected to be automatic ignored by the parser. By default, the char "#" is used for indicate commented lines, but this property can be set to whatever character. If the `CommentsToken` has a length greater than 1, only the first char of it is used.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 >⚠️**Caution**
@@ -50,6 +50,6 @@ _Yes_
 {: .text-grey-dk-300 .bg-yellow-000 }
 
 See also
-: [EscapeChar Property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/escapechar.html), [QuotationMode Enumeration](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html), [FieldsDelimiter Property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/fieldsdelimiter.html).
+: [EscapeToken Property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/escapetoken.html), [QuotationMode Enumeration](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html), [FieldsDelimiter Property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/fieldsdelimiter.html).
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)
