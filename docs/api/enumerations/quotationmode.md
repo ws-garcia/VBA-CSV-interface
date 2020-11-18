@@ -32,6 +32,6 @@ Provides a list of constants to configure the CSV parsing/writing operation beha
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 See also
-: [EscapeChar Property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/escapechar.html).
+: [EscapeToken Property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/escapetoken.html).
 
 [Back to Enumerations overview](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/)
