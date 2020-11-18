@@ -8,7 +8,7 @@ nav_order: 13
 # QuotingMode
 {: .fs-9 }
 
-Configures the CSV parsing/writing operation behavior.
+Configures the CSV/TSV parsing/writing operation behavior.
 {: .fs-6 .fw-300 }
 
 ---
@@ -38,7 +38,7 @@ _Yes_
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->Use the `QuotingMode` property to set the parser behavior. Some CSV files not require further processes after an easy to do string split.
+>Use the `QuotingMode` property to set the parser behavior. Some files do not require further processes after an easy to do string split.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 See also

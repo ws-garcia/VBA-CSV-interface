@@ -38,7 +38,7 @@ _Yes_
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->Setting the `EscapeToken` property to `EscapeTokens.NullChar` is only recommended when the `QuotingMode` property is set to `QuotationMode.All`. This scenario comes to reality when user have to work with CSV files over which neither fields need to be escaped.
+>Setting the `EscapeToken` property to `EscapeTokens.NullChar` is only recommended when the `QuotingMode` property is set to `QuotationMode.All`. This scenario comes to reality when user have to work with files over which neither fields need to be escaped.
 >
 >The above means if the target file have an unknown structure, the best alternative is set the `EscapeToken` property to `EscapeTokens.DoubleQuotes` and the `QuotingMode` property to `QuotationMode.Critical`. These are the defaults settings.
 {: .text-grey-dk-300 .bg-grey-lt-000 }

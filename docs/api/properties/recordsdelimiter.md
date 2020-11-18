@@ -8,7 +8,7 @@ nav_order: 14
 # RecordsDelimiter
 {: .fs-9 }
 
-Indicates the char that will be used for delimit records in the target CSV file.
+Indicates the char that will be used for delimit records in the target CSV/TSV file.
 {: .fs-6 .fw-300 }
 
 ---
@@ -38,7 +38,7 @@ _Yes_
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->The `RecordsDelimiter` property can be set to`vbCr`, `vbCrLf` or `vbLf`. This options unlocks a limitation from RFC-4180 CSV specs.
+>The `RecordsDelimiter` property can be set to`vbCr`, `vbCrLf` or `vbLf`. This options unlocks a limitation from the RFC-4180 specs.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)

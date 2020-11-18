@@ -38,7 +38,7 @@ _Yes_
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->The `EndingRecord` property must be used in combination with the `StartingRecord` property for import a certain range of records from a CSV file.
+>The `EndingRecord` property must be used in combination with the `StartingRecord` property for import a certain range of records from a CSV/TSV file.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 See also
@@ -50,8 +50,8 @@ See also
 
 The `EndingRecord` property can be set to an value greater or equal than zero (0), trying to set it to a negative value will setting the property to its default value.
 
-The default value for the `EndingRecord` property is one(1) and force the class to import all successive records from de CSV file starting at the record specified with the `StartingRecord` property. Setting the `EndingRecord` property to zero (0) and the `StartingRecord` property to one (1) , will import the first record from the CSV file only. Whatever other `EndingRecord` property value less than the given in the `StartingRecord` property forces import one record.
+The default value for the `EndingRecord` property is one(1) and force the class to import all successive records from the file starting at the record specified with the `StartingRecord` property. Setting the `EndingRecord` property to zero (0) and the `StartingRecord` property to one (1) , will import the first record from the target file only. Whatever other `EndingRecord` property value less than the given in the `StartingRecord` property forces import one record.
 
-Setting the `EndingRecord` property to a value greater than the available records in the CSV file has the same effect than setting it to one(1).
+Setting the `EndingRecord` property to a value greater than the available records in the file has the same effect than setting it to one(1).
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)

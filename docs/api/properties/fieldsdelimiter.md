@@ -8,7 +8,7 @@ nav_order: 9
 # FieldsDelimiter
 {: .fs-9 }
 
-Indicates the char that will be used for delimit fields in the target CSV file.
+Indicates the char that will be used for delimit fields in the target CSV/TSV file.
 {: .fs-6 .fw-300 }
 
 ---
@@ -38,7 +38,7 @@ _Yes_
 
 >⚠️**Caution**
 >{: .text-grey-lt-000 .bg-green-000 }
->The current behavior for the CSV interface forces `FieldsDelimiter` property to be distinct than a `Space` or`vbTab` char, set the property to comma or semicolon are the most logical options.
+>The current behavior for the CSV interface forces `FieldsDelimiter` property to be distinct than a `Space` char, set the property to comma, semicolon or `vbTab`, are the allowable options.
 {: .text-grey-dk-300 .bg-yellow-000 }
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)
