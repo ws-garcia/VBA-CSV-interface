@@ -29,7 +29,7 @@ _Yes_
 |**_Accesor_**|**_Parameters_**|
 |:----------|:----------|
 |Get|_None_|
-|Let|*Name*: EscapeToken:<br>*Type*: `EscapeTokens`/`Long`<br>*Modifiers*: `ByVal`|
+|Let|*Name*: Token:<br>*Type*: `EscapeTokens`/`Long`<br>*Modifiers*: `ByVal`|
 
 |**_Accesor_**|**_Returns Type_**|
 |:----------|:----------|
