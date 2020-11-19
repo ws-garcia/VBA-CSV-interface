@@ -118,16 +118,16 @@ End Sub
 
 ## Import CSV file that haven’t special syntax
 
-This is the fastest way to work with CSV files because the CSV interface class don't check the syntax given at the RFC-4180 specs. If your CSV files has trailing spaces, or you don't know if it holds a field needing to be escaped, please [reset the config options](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/resettodefault.html) for the current instance to avoid incorrect results.
+This is the fastest way to work with CSV files because the CSV interface class don't check the syntax against the RFC-4180 specs. If your CSV files has trailing spaces, or you don't know if it holds a field needing to be escaped, please [reset the config options](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/resettodefault.html) for the current instance to avoid incorrect results.
 
-The [EXAMPLE5] shows how you can import all the data from a CSV file without checking the syntax given at the RFC-4180 specs. The file to be parsed has neither field needing to be escaped.
+The [EXAMPLE5] shows how you can import all the data from a CSV file without checking the RFC-4180 specs. The file to be parsed has neither field needing to be escaped.
 
 See also
-:[QuotationMode](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html), [EscapeType](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/escapetype.html).
+:[QuotationMode](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html), [EscapeTokens](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/escapetokens.html).
 #### [EXAMPLE5]
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->the example uses the option `QuotationMode.All`, and `EscapeType.NullChar`.
+>the example uses the option `QuotationMode.All`, and `EscapeTokens.NullChar`.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 ```vb
@@ -139,8 +139,8 @@ Sub ImportRecords()
 	filePath = "C:\Demo_400k_records.csv" 'Change this to suit your needs
 	Set CSVix = New CSVinterface 'Create new instance
 	Call CSVix.OpenConnection(fileName) 'Open a physical connection to the CSV file
-	CSVix.QuotingMode = All 'Alter behavior for escaped files
-	CSVix.EscapeChar = NullChar 'Specify that CSV file has neither field needing to be escaped.
+	CSVix.QuotingMode = QuotationMode.All 'Alter behavior for escaped files
+	CSVix.EscapeToken = EscapeTokens.NullChar 'Specify that CSV file has neither field needing to be escaped.
 	Call CSVix.ImportFromCSV 'Import data
 	Call CSVix(MyArray) 'Dumps the data to array
 	Set CSVix = Nothing 'Terminate the current instance
@@ -161,14 +161,14 @@ Sub ImportRecords_RFC4180()
 	Set CSVix = Nothing 'Terminate the current instance
 End Sub
 ```
-The [EXAMPLE7] shows how you can import all the data from a CSV file without checking the syntax given at the RFC-4180 specs. In the file to be parsed, all fields need to be escaped.
+The [EXAMPLE7] shows how you can import all the data from a CSV file without checking the RFC-4180 specs. In the file to be parsed, all fields need to be escaped.
 
 See also
-:[QuotationMode](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html), [EscapeType](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/escapetype.html).
+:[QuotationMode](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html), [EscapeTokens](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/escapetokens.html).
 #### [EXAMPLE7]
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->the example uses the option `QuotationMode.All`, and `EscapeType.DoubleQuotes`.
+>the example uses the option `QuotationMode.All`, and `EscapeTokens.DoubleQuotes`.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 ```vb
@@ -180,8 +180,8 @@ Sub ImportRecords()
 	filePath = "C:\Demo_Headed_400k_records.csv" 'Change this to suit your needs
 	Set CSVix = New CSVinterface 'Create new instance
 	Call CSVix.OpenConnection(fileName) 'Open a physical connection to the CSV file
-	CSVix.QuotingMode = All 'Alter behavior for escaped files
-	CSVix.EscapeChar = DoubleQuotes 'Specify that all fields need to be escaped.
+	CSVix.QuotingMode = QuotationMode.All 'Alter behavior for escaped files
+	CSVix.EscapeToken = EscapeTokens.DoubleQuotes 'Specify that all fields need to be escaped.
 	Call CSVix.ImportFromCSV 'Import data
 	Call CSVix(MyArray) 'Dumps the data to array
 	Set CSVix = Nothing 'Terminate the current instance
