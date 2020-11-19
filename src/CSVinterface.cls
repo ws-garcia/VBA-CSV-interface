@@ -583,7 +583,7 @@ Attribute GetRecordIndex.VB_Description = "Returns the Index in wich the record 
                         Do While hpointer = 0& 'Escape char may be on subsequent Index
                             CSVdataArray(index) = vbNullString
                             index = index + 1&
-                            LenCurrentIndex = LenB(CSVdataArray(index))
+                            If index <= MaxIndex Then LenCurrentIndex = LenB(CSVdataArray(index))
                             SearchBeginningMark = 1
                             hpointer = InStrB(SearchBeginningMark, CSVdataArray(index), EscapeChr) 'Find escape char
                         Loop
@@ -627,7 +627,7 @@ Attribute GetRecordIndex.VB_Description = "Returns the Index in wich the record 
                                 SplittedToken = False 'Restart Token status
                                 CSVdataArray(index) = vbNullString
                                 index = index + 1&
-                                LenCurrentIndex = LenB(CSVdataArray(index))
+                                If index <= MaxIndex Then LenCurrentIndex = LenB(CSVdataArray(index))
                                 OverStringPointer = 1&
                             Else
                                 SearchBeginningMark = OverStringPointer
@@ -650,7 +650,7 @@ Attribute GetRecordIndex.VB_Description = "Returns the Index in wich the record 
                         RecordEndReached = True
                         CSVdataArray(index) = vbNullString
                         index = index + 1&
-                        LenCurrentIndex = LenB(CSVdataArray(index))
+                        If index <= MaxIndex Then LenCurrentIndex = LenB(CSVdataArray(index))
                         OverStringPointer = 1&
                     End If
                 End If
@@ -659,6 +659,7 @@ Attribute GetRecordIndex.VB_Description = "Returns the Index in wich the record 
             '@----------------------------------------------------------------------------
             'Skip lines if needed
             SkipUnwantedLines index, MaxIndex, CSVdataArray
+            If index <= MaxIndex Then LenCurrentIndex = LenB(CSVdataArray(index))
         Loop
         If index <= MaxIndex Then
             GetRecordIndex = index
@@ -1390,6 +1391,7 @@ Attribute ParseCriticalCSV.VB_Description = "Parses text strings CSV’s compliant
     '@----------------------------------------------------------------------------
     'Skip lines if needed
      SkipUnwantedLines index, MaxIndex, tmpCSV
+     LenCurrentIndex = LenB(tmpCSV(index))
     '@----------------------------------------------------------------------------
     'Loop through tmpCSV array
     Do While (index <= MaxIndex And RecordsCount < ImportDepth)
@@ -1843,15 +1845,28 @@ Attribute SkipUnwantedLines.VB_Description = "Ignores empty, blanks and commente
                 Else
                     '@----------------------------------------------
                     'Ignore non printable chars at the string start
-                    Do While CharCode >= 0& And CharCode <= 32& And StrPointer < CurLength
-                        StrPointer = StrPointer + 2&
-                        If StrPointer > CurLength Then 'Non printable line
-                            UnwantedLine = True
-                            Exit Do
-                        End If
-                        CharCode = AscW(MidB$(Arr(Idx), StrPointer, 2))
-                    Loop
-                    If CharCode = P_COMMENTSTOKEN Then UnwantedLine = True
+                    Select Case P_ASCW_FIELDS_DELIMITER
+                        Case Is <> 9
+                            Do While CharCode >= 0& And CharCode <= 32& And StrPointer < CurLength
+                                StrPointer = StrPointer + 2&
+                                If StrPointer > CurLength Then 'Non printable line
+                                    UnwantedLine = True
+                                    Exit Do
+                                End If
+                                CharCode = AscW(MidB$(Arr(Idx), StrPointer, 2))
+                            Loop
+                            If CharCode = P_COMMENTSTOKEN Then UnwantedLine = True
+                        Case Else
+                            Do While (CharCode >= 0& And CharCode <= 32&) And (StrPointer < CurLength And CharCode <> 9)
+                                StrPointer = StrPointer + 2&
+                                If StrPointer > CurLength Then 'Non printable line
+                                    UnwantedLine = True
+                                    Exit Do
+                                End If
+                                CharCode = AscW(MidB$(Arr(Idx), StrPointer, 2))
+                            Loop
+                            If CharCode = P_COMMENTSTOKEN Then UnwantedLine = True
+                    End Select
                 End If
             End If
             If UnwantedLine Then
