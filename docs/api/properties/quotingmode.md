@@ -29,7 +29,7 @@ _Yes_
 |**_Accesor_**|**_Parameters_**|
 |:----------|:----------|
 |Get|_None_|
-|Let|*Name*: Mode:<br>*Type*: `QuotationMode`/`Long`<br>*Modifiers*: `ByRef`|
+|Let|*Name*: Mode<br>*Type*: `QuotationMode`/`Long`<br>*Modifiers*: `ByRef`|
 
 |**_Accesor_**|**_Returns Type_**|
 |:----------|:----------|

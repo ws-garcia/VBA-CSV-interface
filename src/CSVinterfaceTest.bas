@@ -1,26 +1,35 @@
 Attribute VB_Name = "CSVinterfaceTest"
 Option Explicit
-Sub Test_Import()
+Sub TestImportLikeRFC-4180CSV()
     Dim CSVix As CSVinterface
-    Dim s As Double, e As Double, H As Double
-    Dim fileName As String, i As Single
+    Dim fileName As String
     Dim tmpCSV As String
 	 
     Set CSVix = New CSVinterface
     
-    fileName = "C:\Demo_400k_records.csv"
+    fileName = "C:\RFC-4180_HF.csv"
 	 tmpCSV = CSVix.GetDataFromCSV(fileName)
-
-    H = 0#
-    For i = 1 To 10
-        s = Timer
-        Call CSVix.ImportFromCSVString(tmpCSV)
-        e = Timer
-        H = H + (e - s)
-    Next i
-    Debug.Print "CSVinterface [ImportFromCSVString]:"; Round(H / 10, 4)
-    Debug.Print "*********************************************************"
-    Debug.Print Err.Number
-
+	 Call CSVix.ImportFromCSVString(tmpCSV)
+	 If CSVix.ErrNumber <> 0 Then Goto Err_Handler
     Set CSVix = Nothing
+	 Exit Sub
+Err_Handler:
+    Debug.Print "Returned Error #", CSVix.ErrNumber; CSVix.ErrDescription
+End Sub
+
+Sub TestImportTSV()
+    Dim CSVix As CSVinterface
+    Dim fileName As String
+    Dim tmpCSV As String
+	 
+    Set CSVix = New CSVinterface
+    
+    fileName = "C:\TestTSV.tsv"
+	 tmpCSV = CSVix.GetDataFromCSV(fileName)
+	 Call CSVix.ImportFromCSVString(tmpCSV)
+	 If CSVix.ErrNumber <> 0 Then Goto Err_Handler
+    Set CSVix = Nothing
+	 Exit Sub
+Err_Handler:
+    Debug.Print "Returned Error #", CSVix.ErrNumber; CSVix.ErrDescription
 End Sub

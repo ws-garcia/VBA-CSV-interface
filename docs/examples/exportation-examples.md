@@ -53,12 +53,12 @@ End Sub
 The [EXAMPLE2] shows how you can export all the data in VBA array to a CSV file without check the RFC-4180 specs rules. Be careful, use this only if the array doesn't hold especial chars (vbCrLf [vbCr, vbLf], comma [semicolon], double quotes[apostrophe]) in neither of its fields. The output CSV file has neither field needing to be escaped.
 
 See also
-:[QuotationMode](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html), [EscapeType](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/escapetype.html).
+:[QuotationMode](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html), [EscapeTokens](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/escapetokens.html).
 
 #### [EXAMPLE2]
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->the example uses the option `QuotationMode.All`, and `EscapeType.NullChar`.
+>the example uses the option `QuotationMode.All`, and `EscapeTokens.NullChar`.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 ```vb
@@ -78,8 +78,8 @@ Sub ExportToCSV()
 	'@---------------------------------------------------------------------------------
 	' Exportation code block start
 	Call CSVix.OpenConnection(outputFile, DeleExistingFile:=True) 'Open a physical connection to the CSV file
-	CSVix.QuotingMode = All 'Alter behavior for escaped files
-	CSVix.EscapeChar = NullChar 'Specify that CSV file has neither field needing to be escaped.
+	CSVix.QuotingMode = QuotationMode.All 'Alter behavior for escaped files
+	CSVix.EscapeToken = EscapeTokens.NullChar 'Specify that CSV file has neither field needing to be escaped.
 	Call CSVix.ExportToCSV (MyArray) 'Export the array content
 	Set CSVix = Nothing 'Terminate the current instance
 End Sub
@@ -87,12 +87,12 @@ End Sub
 The [EXAMPLE3] shows how you can export all the data in VBA array to a CSV file without check the RFC-4180 specs rules. Each field CSV of the output file need to be escaped by desired char. The procedure presented in the [EXAMPLE3] can be used in whatever circumstance.
 
 See also
-:[QuotationMode](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html), [EscapeType](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/escapetype.html).
+:[QuotationMode](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html), [EscapeTokens](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/escapetokens.html).
 
 #### [EXAMPLE3]
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->the example uses the option `QuotationMode.All`, and `EscapeType.NullChar`.
+>the example uses the option `QuotationMode.All`, and `EscapeTokens.Apostrophe`.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 ```vb
@@ -112,8 +112,8 @@ Sub ExportToCSV()
 	'@---------------------------------------------------------------------------------
 	' Exportation code block start
 	Call CSVix.OpenConnection(outputFile, DeleExistingFile:=True) 'Open a physical connection to the CSV file
-	CSVix.QuotingMode = All 'Alter behavior for escaped files
-	CSVix.EscapeChar = Apostrophe 'Each CSV’s field need to be escaped with this char.
+	CSVix.QuotingMode = QuotationMode.All 'Alter behavior for escaped files
+	CSVix.EscapeToken = EscapeTokens.Apostrophe 'Each CSV’s field need to be escaped with this char.
 	Call CSVix.ExportToCSV (MyArray) 'Export the array content
 	Set CSVix = Nothing 'Terminate the current instance
 End Sub

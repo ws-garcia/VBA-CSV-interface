@@ -29,7 +29,7 @@ _Yes_
 |**_Accesor_**|**_Parameters_**|
 |:----------|:----------|
 |Get|_None_|
-|Let|*Name*: Delimiter:<br>*Type*: `String`<br>*Modifiers*: `ByVal`|
+|Let|*Name*: Delimiter<br>*Type*: `String`<br>*Modifiers*: `ByVal`|
 
 |**_Accesor_**|**_Returns Type_**|
 |:----------|:----------|

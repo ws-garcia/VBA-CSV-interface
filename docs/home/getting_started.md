@@ -45,6 +45,19 @@ Call CSVix(MyArray) 'Dumps the data to array
 Set CSVix = Nothing
 ```
 
+Import a TSV file into an VBA array
+
+```vb
+Dim CSVix As CSVinterface
+Dim MyArray() As String
+Set CSVix = New CSVinterface
+CSVix.FieldsDelimiter = vbTab
+Call CSVix.OpenConnection(fileName)
+Call CSVix.ImportFromCSV
+Call CSVix(MyArray) 'Dumps the data to array
+Set CSVix = Nothing
+```
+
 Import a range of records from a CSV file into a VBA array
 
 ```vb
@@ -57,6 +70,24 @@ Call CSVix.OpenConnection(fileName)
 Call CSVix.ImportFromCSV
 Call CSVix(MyArray) 'Dumps the data to array
 Set CSVix = Nothing
+```
+
+Create jagged array
+
+```vb
+Dim CSVix As CSVinterface
+Dim MyArray() As Variant
+CSVix.CreateJagged (MyArray, 5, 7)
+```
+
+Turn jagged array to two-dimensional array
+
+```vb
+Dim CSVix As CSVinterface
+Dim MyJaggedArray() As Variant
+Dim My2Darray() As String
+CSVix.CreateJagged(MyJaggedArray, 5, 7)
+CSVix.JaggedToTwoDimArray(MyJaggedArray, My2Darray)
 ```
 
 Set the char to escape special fields
