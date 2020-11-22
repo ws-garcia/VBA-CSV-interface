@@ -34,7 +34,7 @@ Sub ImportRecords_RFC4180()
 	
 	filePath = "C:\Demo_400k_records.csv" 'Change this to suit your needs
 	Set CSVix = New CSVinterface 'Create new instance
-	Call CSVix.OpenConnection(fileName) 'Open a physical connection to the CSV file
+	Call CSVix.OpenConnection(filePath) 'Open a physical connection to the CSV file
 	Call CSVix.ImportFromCSV 'Import data
 	Call CSVix(MyArray) 'Dumps the data to array
 	Set CSVix = Nothing 'Terminate the current instance
@@ -60,7 +60,7 @@ Sub ImportTopTenRecords_RFC4180()
 	filePath = "C:\Demo_400k_records.csv" 'Change this to suit your needs
 	Set CSVix = New CSVinterface 'Create new instance
 	CSVix.EndingRecord = 10 'Sets the importation ending
-	Call CSVix.OpenConnection(fileName) 'Open a physical connection to the CSV file
+	Call CSVix.OpenConnection(filePath) 'Open a physical connection to the CSV file
 	Call CSVix.ImportFromCSV 'Import the range of records
 	Call CSVix(MyArray) 'Dumps the data to array
 	Set CSVix = Nothing 'Terminate the current instance
@@ -138,7 +138,7 @@ Sub ImportRecords()
 	
 	filePath = "C:\Demo_400k_records.csv" 'Change this to suit your needs
 	Set CSVix = New CSVinterface 'Create new instance
-	Call CSVix.OpenConnection(fileName) 'Open a physical connection to the CSV file
+	Call CSVix.OpenConnection(filePath) 'Open a physical connection to the CSV file
 	CSVix.QuotingMode = QuotationMode.All 'Alter behavior for escaped files
 	CSVix.EscapeToken = EscapeTokens.NullChar 'Specify that CSV file has neither field needing to be escaped.
 	Call CSVix.ImportFromCSV 'Import data
@@ -155,7 +155,7 @@ Sub ImportRecords_RFC4180()
     
 	filePath = "C:\Demo_Headed_400k_records.csv" 'Change this to suit your needs
 	Set CSVix = New CSVinterface 'Create new instance
-	Call CSVix.OpenConnection(fileName) 'Open a physical connection to the CSV file
+	Call CSVix.OpenConnection(filePath) 'Open a physical connection to the CSV file
 	Call CSVix.ImportFromCSV 'Import data
 	Call CSVix.DumpToSheet 'Dumps the data to the current Workbook's new Worksheet starting at named "A1" range.
 	Set CSVix = Nothing 'Terminate the current instance
@@ -179,7 +179,7 @@ Sub ImportRecords()
 	
 	filePath = "C:\Demo_Headed_400k_records.csv" 'Change this to suit your needs
 	Set CSVix = New CSVinterface 'Create new instance
-	Call CSVix.OpenConnection(fileName) 'Open a physical connection to the CSV file
+	Call CSVix.OpenConnection(filePath) 'Open a physical connection to the CSV file
 	CSVix.QuotingMode = QuotationMode.All 'Alter behavior for escaped files
 	CSVix.EscapeToken = EscapeTokens.DoubleQuotes 'Specify that all fields need to be escaped.
 	Call CSVix.ImportFromCSV 'Import data
