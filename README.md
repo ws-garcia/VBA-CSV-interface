@@ -1,6 +1,5 @@
 # ![VBA-CSV interface](/docs/assets/img/CSVinterface.png)
-[![version](https://img.shields.io/static/v1?label=version&message=latest&color=brightgreen&style=plastic)](https://github.com/ws-garcia/VBA-CSV-interface/releases/latest/)
-[![version](https://img.shields.io/static/v1?label=licence&message=GPL&color=informational&style=plastic)](https://www.gnu.org/licenses/gpl-3.0.html)
+[![GitHub](https://img.shields.io/github/license/ws-garcia/VBA-CSV-interface?style=plastic)](https://github.com/ws-garcia/VBA-CSV-interface/blob/master/LICENSE) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/ws-garcia/VBA-CSV-interface?style=plastic)](https://github.com/ws-garcia/VBA-CSV-interface/releases/latest)
 
 ## Introductory words
 
