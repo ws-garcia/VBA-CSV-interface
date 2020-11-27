@@ -10,48 +10,16 @@ Attribute VB_Exposed = False
 '#
 '////////////////////////////////////////////////////////////////////////////////////////////
 ' Copyright © 2020 W. García
-' GPL-3.0 license | https://github.com/ws-garcia/
+' GPL-3.0 license | https://www.gnu.org/licenses/gpl-3.0.html/
 ' https://ingwilfredogarcia.wordpress.com
-'#
-' This program is free software: you can redistribute it and/or modify it under the terms of
-' the GNU General Public License as published by the Free Software Foundation, either
-' version 3 of the License, or (at your option) any later version.
-'#
-' This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-' without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-' See the GNU General Public License for more details.
-'#
-' You should have received a copy of the GNU General Public License along with this program.
-' If not, see https://www.gnu.org/licenses/gpl-3.0.html.
 '#
 '////////////////////////////////////////////////////////////////////////////////////////////
 ' GENERAL INFO:
-' This class is inspired in a work available in
-' https://www.freevbcode.com/ShowCode.asp?ID=3110. The class module was designed and tested
-' using Windows 7® and is supose to work as well over more recent Microsoft™ operative
-' system.
-'#
-' Use CSVinterface class to simplify the work with comma separated value (CSV) files.
-' It allow you to exchange information betwen an VBA array and an external CSV file without
-' using Excel Worksheets, neigter any external reference such as [MS Scripting Runtime].
-' The class develop is focusing in the code execution performance.
+' RFC-4180 compliant class module that allows users exchange data between VBA arrays and
+' CSV files at high speed.
 '#
 ' Feel free to visit the cited websites to explore some of the available solutions for
 ' work with CSV files and VBA Arrays.
-'////////////////////////////////////////////////////////////////////////////////////////////
-'#
-'////////////////////////////////////////////////////////////////////////////////////////////
-' USAGE:
-' #1- Create an instance of the class [Dim CSVix As CSVinterface]
-' #2- Connect to CSV [CSVix.OpenConnection] using the full path to the target file.
-' #3- Call the desired method
-'                                          CSVix.ImportFromCSV
-'                                          CSVix.ExportToCSV
-' #4- Declare a String Array [Dim ArrayOne() As String]
-' #5- Dump the class content to the array using the [CSVix.DumpToArray(ArrayOne)] method call.
-'
-' NOTE: you can modify the default value for the properties [FieldsDelimiter], [CoercType],
-' [StartingRecord] and [EndingRecord] to alter the way the class works.
 '////////////////////////////////////////////////////////////////////////////////////////////
 '#
 ' CREDITS:
@@ -77,7 +45,6 @@ Private Const CHR_APOSTROPHE As String = "'"
 Private Const CHR_COMMA As String = ","
 Private Const CHR_DOUBLE_QUOTES As String = """"
 Private Const CHR_SEMICOLON As String = ";"
-Private Const CHR_SPACE As String = " "
 '////////////////////////////////////////////////////////////////////////////////////////////
 '#
 '////////////////////////////////////////////////////////////////////////////////////////////
@@ -211,8 +178,8 @@ Public Property Get QuotingMode() As QuotationMode
 Attribute QuotingMode.VB_Description = "Gets or sets the mode used for fields quoting."
     QuotingMode = P_QUOTING_MODE
 End Property
-Public Property Let QuotingMode(Mode As QuotationMode)
-    P_QUOTING_MODE = Mode
+Public Property Let QuotingMode(mode As QuotationMode)
+    P_QUOTING_MODE = mode
 End Property
 Public Property Get RecordsDelimiter() As String
 Attribute RecordsDelimiter.VB_Description = "Gets or sets the char used as delimiter for the CSV file records in the current instance."
@@ -289,8 +256,7 @@ Attribute CreateJagged.VB_Description = "Creates an empty array of vectors, each
 End Sub
 Private Function CSVcolumns(csvArray() As String, _
                                         Optional FieldsDelimiter As String = CHR_COMMA) As Long
-Attribute CSVcolumns.VB_Description = "Computes fields amount for a CSV file in which each fields is surrounded by quotes."
-    Dim iCounter As Long
+Attribute CSVcolumns.VB_Description = "Computes fields amount for a CSV file Only works with the ParseCSV method."
     Dim LB As Long, UB As Long
     Dim lngPos As Long
     Dim MDCounter As Long
@@ -409,7 +375,7 @@ Attribute DumpToSheet.VB_Description = "Dumps the CSV data from the current inst
     End If
 End Sub
 Private Sub EnableOptimization(Optional Optimize As Boolean = True)
-Attribute EnableOptimization.VB_Description = "Turns On and Off the optimized over an Excel Worksheet data dumping."
+Attribute EnableOptimization.VB_Description = "Turns On and Off data-dump operation optimization over an Excel Worksheet."
     If Optimize Then
         '@------------------------------------------------------
         'Optimize resource consumption
@@ -456,7 +422,7 @@ ErrHandler_ExportToCSV:
     P_ERROR_DESC = "[CSV file Export]: " & P_ERROR_DESC
 End Sub
 Private Function FileExists(ByVal filePath As String) As Boolean
-Attribute FileExists.VB_Description = "Determines if a file exist in the path specified."
+Attribute FileExists.VB_Description = "Determines if the file exist in the specified path."
     FileExists = CBool(LenB(Dir(filePath, vbHidden + vbNormal + vbSystem + vbReadOnly + vbArchive)))
 End Function
 Private Sub GetCSVtext(ByRef OutPutVar As String)
@@ -497,7 +463,7 @@ End Function
 Private Function GetRecordIndex(ByVal RecordIndex As Long, _
                                 ByRef CSVdataArray() As String, _
                                 ByRef MaxIndex As Long) As Long
-Attribute GetRecordIndex.VB_Description = "Returns the Index in wich the record will start."
+Attribute GetRecordIndex.VB_Description = "Returns the Index in wich the specified record will start."
     Dim ASCIIcharw As Long
     Dim EscapedWFS As Boolean
     Dim EscapeAscW As Long
@@ -788,7 +754,7 @@ IsJaggedArray_Err_Handler:
     IsJaggedArray = False
 End Function
 Private Function IsSheetInWorkbook(SheetName As String, WBook As Workbook) As Boolean
-Attribute IsSheetInWorkbook.VB_Description = "Checks if the given sheet is part of the given or of the active one Workbook."
+Attribute IsSheetInWorkbook.VB_Description = "Checks if the given sheet is part of the given Workbook."
     With WBook
         On Error Resume Next
         IsSheetInWorkbook = (.Sheets(SheetName).Name = SheetName)
@@ -1072,10 +1038,9 @@ ErrHandler_OpenConnection:
 End Sub
 Private Sub ParseCriticalCSV(ByRef csvText As String, _
                                     Optional HeadersOmission As Boolean = False)
-Attribute ParseCriticalCSV.VB_Description = "Parses text strings CSV’s compliant with the RFC-4180 specs."
+Attribute ParseCriticalCSV.VB_Description = "Parses text strings CSV’s checking the RFC-4180 specs."
     Dim ASCIIcharw As Long
     Dim buffer() As String
-    Dim Counter1 As Long
     Dim CurrentBufferIndex As Long
     Dim CurrentRecordSize As Long
     Dim CurrenttmpTokenIndex As Long
@@ -1083,15 +1048,11 @@ Attribute ParseCriticalCSV.VB_Description = "Parses text strings CSV’s compliant
     Dim EscapedWFS As Boolean
     Dim EscapeAscW As Long
     Dim EscapeChr As String
-    Dim FieldsAmount As Long
-    Dim FieldsCount As Long
     Dim FDAscW As Long
     Dim HeaderSize As Long
     Dim index As Long, MaxIndex As Long
     Dim ImportDepth As Long
-    Dim JaggedDepth() As String
     Dim LenCurrentIndex As Long
-    Dim LenFile As Long
     Dim MaxBufferIndex As Long
     Dim MaxtmpTokenIndex As Long
     Dim OpenedToken As Boolean
@@ -1112,7 +1073,6 @@ Attribute ParseCriticalCSV.VB_Description = "Parses text strings CSV’s compliant
     '@----------------------------------------------------------------------------
     'Start variables
     SearchBeginningMark = 1&
-    FieldsCount = 0&
     RecordsCount = 0&
     P_MAX_JAGG_INDEX = 0&
     MaxBufferIndex = 127
@@ -1126,7 +1086,6 @@ Attribute ParseCriticalCSV.VB_Description = "Parses text strings CSV’s compliant
     '@----------------------------------------------------------------------------
     'Set variables
     OverStringPointer = SearchBeginningMark
-    LenFile = LenB(csvText)
     ASCIIcharw = AscW(csvText)
     '@----------------------------------------------------------------------------
     'Split the content using the records delimiter char
@@ -1374,19 +1333,16 @@ Attribute ParseCriticalCSV.VB_Description = "Parses text strings CSV’s compliant
                 OverStringPointer = 1&
             End If
         End If
-        FieldsCount = FieldsCount + 1&
     Loop
     '@----------------------------------------------------------------------------
     'Save the the first record to output array
     HeaderSize = CurrentBufferIndex
+    ReDim Preserve buffer(0 To HeaderSize)
     P_MAX_JAGG_INDEX = HeaderSize
     CurrentRecordSize = P_MAX_JAGG_INDEX
     Call CreateJagged(P_CSV_DATA, ImportDepth - 1&, HeaderSize)
-    For Counter1 = 0 To HeaderSize
-        P_CSV_DATA(0)(Counter1) = buffer(Counter1)
-    Next Counter1
+    P_CSV_DATA(0) = buffer()
     Erase buffer
-    If FieldsAmount = 0 Then FieldsAmount = FieldsCount
     RecordsCount = RecordsCount + 1&
     '@----------------------------------------------------------------------------
     'Skip lines if needed
@@ -1613,11 +1569,6 @@ ParseCriticalCSV_Error_Handler:
     P_ERROR_DESC = Err.description
     P_ERROR_SOURCE = Err.source
     Exit Sub
-ParseCriticalCSV_UnexpectedEnding:
-    Err.Raise number:=vbObjectError + 9001, _
-                    source:="CSVinterface Class [ParseCSV_RFC4180]", _
-                    description:="An unexpected CSV file ending reached."
-    Resume ParseCriticalCSV_Error_Handler
 ParseCriticalCSV_StartingIndexOutOfBound:
     Err.Raise number:=vbObjectError + 9002, _
                     source:="CSVinterface Class [ParseCSV_RFC4180]", _
@@ -1646,7 +1597,6 @@ Attribute ParseCSV.VB_Description = "Parses text strings CSV’s without check RFC
     Dim NextPos As Long
     Dim PrevPos As Long
     Dim Pointer As Long
-    Dim tmpDelimiter As String
     
     On Error GoTo ErrHandler_ParseCS
     '@----------------------------------------------------------------------------
@@ -1804,7 +1754,7 @@ Err_Hnd:
     Resume Exit_Proc
 End Function
 Public Sub ResetToDefault()
-Attribute ResetToDefault.VB_Description = "Resets the all the options to its default value."
+Attribute ResetToDefault.VB_Description = "Resets all the options to its default value."
     P_COMMENTSTOKEN = AscW("#")
     P_CONNECTED = False
     P_ENDING_RECORD = 1&
@@ -1882,7 +1832,6 @@ Attribute TwoDimToJaggedArray.VB_Description = "Deconstructs a 2D string array a
     Dim UBj2 As Long, LBj2 As Long
     Dim MaxDim1 As Long, MaxDim2 As Long
     Dim jgdCounter1 As Long, jgdCounter2 As Long
-    Dim tmpDimension As Long
     Dim tdimCounter As Long, tdimCounter2 As Long
     
     On Error GoTo TwoDimToJaggedArray_Err_Handler
