@@ -15,7 +15,7 @@ Exports an array's content to a CSV/TSV file.
 
 ## Syntax
 
-*expression*.`ExportToCSV`*(csvArray, {PassControlToOS:= `True`})*
+*expression*.`ExportToCSV`*(csvArray, \[PassControlToOS:= `True`\])*
 
 ### Parameters
 
