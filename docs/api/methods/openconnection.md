@@ -15,7 +15,7 @@ Loads a CSV/TSV file on memory for data Input/Output operations.
 
 ## Syntax
 
-*expression*.`OpenConnection`*(csvPathAndFilename, {DeleExistingFile:= `False`})*
+*expression*.`OpenConnection`*(csvPathAndFilename, \[DeleExistingFile:= `False`\])*
 
 ### Parameters
 
