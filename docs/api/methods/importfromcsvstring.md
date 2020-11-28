@@ -15,7 +15,7 @@ Parses a string and save its CSV/TSV data to the current instance.
 
 ## Syntax
 
-*expression*.`ImportFromCSVstring`*(CSVstring, {HeadersOmission:= `False`}, {PassControlToOS:= `False`})*
+*expression*.`ImportFromCSVstring`*(CSVstring, \[HeadersOmission:= `False`\], \[PassControlToOS:= `False`\])*
 
 ### Parameters
 
