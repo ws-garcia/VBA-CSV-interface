@@ -15,7 +15,7 @@ Imports a CSV/TSV file's content to the current instance.
 
 ## Syntax
 
-*expression*.`ImportFromCSV`*({HeadersOmission:= `False`}, {PassControlToOS:= `True`})*
+*expression*.`ImportFromCSV`*(\[HeadersOmission:= `False`\], \[PassControlToOS:= `True`\])*
 
 ### Parameters
 
