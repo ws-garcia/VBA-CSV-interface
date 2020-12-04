@@ -25,7 +25,7 @@ Sub ImportRecords_RFC4180()
 	Set CSVix = New CSVinterface 'Create new instance
 	Call CSVix.OpenConnection(filePath) 'Open a physical connection to the CSV file
 	Call CSVix.ImportFromCSV 'Import data
-	Call CSVix(MyArray) 'Dumps the data to array
+	Call CSVix.DumpToArray(MyArray) 'Dumps the data to array
 	Set CSVix = Nothing 'Terminate the current instance
 End Sub
 ```
@@ -51,7 +51,7 @@ Sub ImportTopTenRecords_RFC4180()
 	CSVix.EndingRecord = 10 'Sets the importation ending
 	Call CSVix.OpenConnection(filePath) 'Open a physical connection to the CSV file
 	Call CSVix.ImportFromCSV 'Import the range of records
-	Call CSVix(MyArray) 'Dumps the data to array
+	Call CSVix.DumpToArray(MyArray) 'Dumps the data to array
 	Set CSVix = Nothing 'Terminate the current instance
 End Sub
 ```
@@ -74,7 +74,7 @@ Sub ImportTopTenRecords_RFC4180()
 	tmpCSV = CSVix.GetDataFromCSV(filePath) 'Store CSV file's content.
 	CSVix.EndingRecord = 10 'Sets the importation ending
 	Call CSVix.ImportFromCSVString(tmpCSV, HeadersOmission:=True) 'Import the range of records omitting the headers
-	Call CSVix(MyArray) 'Dumps the data to array
+	Call CSVix.DumpToArray(MyArray) 'Dumps the data to array
 	Set CSVix = Nothing 'Terminate the current instance
 End Sub
 ```
@@ -100,7 +100,7 @@ Sub ImportTenMiddleRecords_RFC4180()
 	CSVix.StartingRecord = 11 'Sets the importation ending
 	CSVix.EndingRecord = 20 'Sets the importation ending
 	Call CSVix.ImportFromCSVString(tmpCSV, HeadersOmission:=True) 'Import the range of records omitting the headers
-	Call CSVix(MyArray) 'Dumps the data to array
+	Call CSVix.DumpToArray(MyArray) 'Dumps the data to array
 	Set CSVix = Nothing 'Terminate the current instance
 End Sub
 ```
@@ -131,7 +131,7 @@ Sub ImportRecords()
 	CSVix.QuotingMode = QuotationMode.All 'Alter behavior for escaped files
 	CSVix.EscapeToken = EscapeTokens.NullChar 'Specify that CSV file has neither field needing to be escaped.
 	Call CSVix.ImportFromCSV 'Import data
-	Call CSVix(MyArray) 'Dumps the data to array
+	Call CSVix.DumpToArray(MyArray) 'Dumps the data to array
 	Set CSVix = Nothing 'Terminate the current instance
 End Sub
 ```
@@ -141,7 +141,7 @@ The \[EXAMPLE6\] shows how you can dump the imported data to an Excel Worksheet.
 Sub ImportRecords_RFC4180()
 	Dim CSVix As CSVinterface
 	Dim filePath As String
-    
+	
 	filePath = "C:\Demo_Headed_400k_records.csv" 'Change this to suit your needs
 	Set CSVix = New CSVinterface 'Create new instance
 	Call CSVix.OpenConnection(filePath) 'Open a physical connection to the CSV file
@@ -172,7 +172,72 @@ Sub ImportRecords()
 	CSVix.QuotingMode = QuotationMode.All 'Alter behavior for escaped files
 	CSVix.EscapeToken = EscapeTokens.DoubleQuotes 'Specify that all fields need to be escaped.
 	Call CSVix.ImportFromCSV 'Import data
-	Call CSVix(MyArray) 'Dumps the data to array
+	Call CSVix.DumpToArray(MyArray) 'Dumps the data to array
+	Set CSVix = Nothing 'Terminate the current instance
+End Sub
+```
+
+The \[EXAMPLE8\] shows how you can loop through all the CSV imported data from the current VBA-CSV interface class instance.
+
+See also
+: [VectorsBound property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/vectorsbound.html), [RectangularResults property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/rectangularresults.html).
+
+```vb
+Sub LoopThroughImportedRecords()
+	Dim CSVix As CSVinterface
+	Dim MyArray() As String
+	Dim filePath As String
+	
+	filePath = "C:\Demo_Headed_400k_records.csv" 'Change this to suit your needs
+	Set CSVix = New CSVinterface 'Create new instance
+	Call CSVix.OpenConnection(filePath) 'Open a physical connection to the CSV file
+	Call CSVix.ImportFromCSV 'Import data
+	'@--------------------------------------------------------------------
+	' Loop through imported data. SAVE TO 2-DIMENSIONAL ARRAY.
+	Dim WGstrArray() As String, vCollection As Collection
+	Dim i As Long, j As Long, k As Long
+	Dim CurJaggedIndex As Long, CurJaggedSize As Long
+	Dim JaggedCounter As Long, WGvarArray() As Variant
+	
+	If CSVix.RectangularResults Then 'The internal array is rectangular
+		ReDim WGstrArray(0 To CSVix.Count - 1, 0 To CSVix.VectorsBound)
+	Else
+		ReDim WGstrArray(0 To CSVix.Count - 1, 0 To CSVix.VectorsMaxBound)
+		Set vCollection = CSVix.IrregularVectors
+		JaggedCounter = 1
+		CurJaggedIndex = vCollection.Item(JaggedCounter)(0)
+		CurJaggedSize = vCollection.Item(JaggedCounter)(1)
+	End If
+	'Access Items one by one
+	For i = 0 To UBound(WGstrArray)
+		For j = 0 To CSVix.VectorsBound
+			WGstrArray(i, j) = CSVix.Item(i, j)
+		Next j
+		If Not CSVix.RectangularResults Then
+			If i = CurJaggedIndex Then
+				k = j
+				Do
+					WGstrArray(i, k) = CSVix.Item(i, k)
+					k = k + 1
+				Loop While k <= CurJaggedSize
+				JaggedCounter = JaggedCounter + 1
+				If JaggedCounter <= vCollection.Count Then
+					CurJaggedIndex = vCollection.Item(JaggedCounter)(0)
+					CurJaggedSize = vCollection.Item(JaggedCounter)(1)
+				End If
+			End If
+		End If
+	Next i
+	If CSVix.ErrNumber <> 0 Then Debug.Print "#Error:"; CSVix.ErrNumber, "Desc.:"; CSVix.ErrDescription
+	'@--------------------------------------------------------------------
+	' Loop through imported data. SAVE TO JAGGED ARRAY.
+	'Redim the array
+	ReDim WGvarArray(0 To CSVix.Count - 1)
+	For i = 0 To UBound(WGvarArray)
+		For j = 0 To CSVix.VectorsBound
+			WGvarArray(i) = CSVix.Item(i)
+		Next j
+	Next i
 	Set CSVix = Nothing 'Terminate the current instance
 End Sub
 ```

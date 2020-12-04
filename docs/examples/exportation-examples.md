@@ -28,7 +28,7 @@ Sub ExportToCSV_RFC4180()
 	tmpCSV = CSVix.GetDataFromCSV(filePath) 'Store CSV file's content.
 	CSVix.EndingRecord = 10 'Sets the importation ending
 	Call CSVix.ImportFromCSVString(tmpCSV) 'Import the range of records
-	Call CSVix(MyArray) 'Dumps the data to array
+	Call CSVix.DumpToArray(MyArray) 'Dumps the data to array
 	'@---------------------------------------------------------------------------------
 	' Exportation code block start
 	Call CSVix.OpenConnection(outputFile, DeleExistingFile:=True) 'Open a physical connection to the CSV file
@@ -63,7 +63,7 @@ Sub ExportToCSV()
 	tmpCSV = CSVix.GetDataFromCSV(filePath) 'Store CSV file's content.
 	CSVix.EndingRecord = 10 'Sets the importation ending
 	Call CSVix.ImportFromCSVString(tmpCSV) 'Import the range of records
-	Call CSVix(MyArray) 'Dumps the data to array
+	Call CSVix.DumpToArray(MyArray) 'Dumps the data to array
 	'@---------------------------------------------------------------------------------
 	' Exportation code block start
 	Call CSVix.OpenConnection(outputFile, DeleExistingFile:=True) 'Open a physical connection to the CSV file
@@ -97,7 +97,7 @@ Sub ExportToCSV()
 	tmpCSV = CSVix.GetDataFromCSV(filePath) 'Store CSV file's content.
 	CSVix.EndingRecord = 10 'Sets the importation ending
 	Call CSVix.ImportFromCSVString(tmpCSV) 'Import the range of records
-	Call CSVix(MyArray) 'Dumps the data to array
+	Call CSVix.DumpToArray(MyArray) 'Dumps the data to array
 	'@---------------------------------------------------------------------------------
 	' Exportation code block start
 	Call CSVix.OpenConnection(outputFile, DeleExistingFile:=True) 'Open a physical connection to the CSV file
