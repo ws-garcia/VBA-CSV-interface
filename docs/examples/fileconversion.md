@@ -5,17 +5,6 @@ parent: Examples
 nav_order: 3
 ---
 
-{: .no_toc }
-
-<details open markdown="block">
-  <summary>
-    Table of contents
-  </summary>
-  {: .text-delta }
-1. TOC
-{:toc}
-</details>
-
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
 >All the examples uses the option `QuotationMode.Critical`, [learn more here](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html).
@@ -23,7 +12,7 @@ nav_order: 3
 
 ## Convert a CSV file to TSV
 
-The [EXAMPLE1] shows how you can turn a CSV file to TSV. 
+The \[EXAMPLE1\] shows how you can turn a CSV file to TSV. 
 
 #### [EXAMPLE1]
 
@@ -53,7 +42,7 @@ End Sub
 
 ## Convert a TSV file to CSV
 
-The [EXAMPLE2] shows how you can turn a TSV file to CSV. 
+The \[EXAMPLE2\] shows how you can turn a TSV file to CSV. 
 
 #### [EXAMPLE2]
 

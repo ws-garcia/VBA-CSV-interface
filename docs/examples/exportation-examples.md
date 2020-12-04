@@ -5,20 +5,9 @@ parent: Examples
 nav_order: 2
 ---
 
-{: .no_toc }
-
-<details open markdown="block">
-  <summary>
-    Table of contents
-  </summary>
-  {: .text-delta }
-1. TOC
-{:toc}
-</details>
-
 ## Export data to a CSV file
 
-The [EXAMPLE1] shows how you can export all the data in VBA array to a CSV file using the RFC-4180 specs as paramount. 
+The \[EXAMPLE1\] shows how you can export all the data in VBA array to a CSV file using the RFC-4180 specs as paramount. 
 
 #### [EXAMPLE1]
 >📝**Note**
@@ -50,7 +39,7 @@ End Sub
 
 ## Export to a CSV file without special syntax
 
-The [EXAMPLE2] shows how you can export all the data in VBA array to a CSV file without check the RFC-4180 specs rules. Be careful, use this only if the array doesn't hold especial chars (vbCrLf [vbCr, vbLf], comma [semicolon], double quotes[apostrophe]) in neither of its fields. The output CSV file has neither field needing to be escaped.
+The \[EXAMPLE2\] shows how you can export all the data in VBA array to a CSV file without check the RFC-4180 specs rules. Be careful, use this only if the array doesn't hold especial chars (vbCrLf [vbCr, vbLf], comma [semicolon], double quotes[apostrophe]) in neither of its fields. The output CSV file has neither field needing to be escaped.
 
 See also
 :[QuotationMode](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html), [EscapeTokens](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/escapetokens.html).
@@ -84,7 +73,7 @@ Sub ExportToCSV()
 	Set CSVix = Nothing 'Terminate the current instance
 End Sub
 ```
-The [EXAMPLE3] shows how you can export all the data in VBA array to a CSV file without check the RFC-4180 specs rules. Each field CSV of the output file need to be escaped by desired char. The procedure presented in the [EXAMPLE3] can be used in whatever circumstance.
+The \[EXAMPLE3\] shows how you can export all the data in VBA array to a CSV file without check the RFC-4180 specs rules. Each field CSV of the output file need to be escaped by desired char. The procedure presented in the [EXAMPLE3] can be used in whatever circumstance.
 
 See also
 :[QuotationMode](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html), [EscapeTokens](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/escapetokens.html).
