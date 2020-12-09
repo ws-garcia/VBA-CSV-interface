@@ -177,7 +177,7 @@ Sub ImportRecords()
 End Sub
 ```
 
-The \[EXAMPLE8\] shows how you can loop through all the CSV imported fields from the current VBA-CSV interface class instance.
+The \[EXAMPLE8\] shows how you can loop through all the CSV imported fields and records from the current VBA-CSV interface class instance.
 
 See also
 : [VectorsBound property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/vectorsbound.html), [RectangularResults property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/rectangularresults.html).
