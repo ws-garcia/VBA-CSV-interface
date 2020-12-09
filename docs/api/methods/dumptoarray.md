@@ -15,7 +15,7 @@ Dumps the data from the current instance to an array.
 
 ## Syntax
 
-*expression*.`DumpToArray`*(OutPutArray)* or *expression(OutPutArray)*
+*expression*.`DumpToArray`*(OutPutArray)*
 
 ### Parameters
 

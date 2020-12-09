@@ -6,10 +6,7 @@ nav_order: 9
 ---
 
 # IsJaggedArray
-{: .d-inline-block }
-
-New
-{: .label .label-purple }
+{: .fs-9 }
 
 Checks if the given array is an array of arrays.
 {: .fs-6 .fw-300 }

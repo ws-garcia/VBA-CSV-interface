@@ -6,10 +6,7 @@ nav_order: 1
 ---
 
 # CreateJagged
-{: .d-inline-block }
-
-New
-{: .label .label-purple }
+{: .fs-9 }
 
 Creates an empty array of vectors, each of which having a fixed custom size.
 {: .fs-6 .fw-300 }
