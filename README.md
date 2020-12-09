@@ -18,7 +18,7 @@ VBA CSV interface is a class module developed to accomplish the data exchange ta
 * Supports blanks lines and empty ones.
 
 <a id="1">[1]</a> 
-Power Query, and its legacy counterpart, was not able to handle fields’ embedded line breaks when the CSV's "Text qualifier" is a Single Quote or the Apostrophe char.
+Power Query, and its legacy counterpart, was not able to handle field’s embedded line breaks when the CSV's "Text qualifier" is a Single Quote or the Apostrophe char.
 
 ## Getting started
 
