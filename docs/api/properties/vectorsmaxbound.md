@@ -6,7 +6,10 @@ nav_order: 20
 ---
 
 # VectorsMaxBound
-{: .fs-9 }
+{: .d-inline-block }
+
+New
+{: .label .label-purple }
 
 Gets the maximum bound of the vectors in the result array on the current instance.
 {: .fs-6 .fw-300 }

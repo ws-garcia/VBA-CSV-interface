@@ -6,10 +6,7 @@ nav_order: 1
 ---
 
 # CommentsToken
-{: .d-inline-block }
-
-New
-{: .label .label-purple }
+{: .fs-9 }
 
 Gets or sets the char used for identify comments lines on the current instance.
 {: .fs-6 .fw-300 }

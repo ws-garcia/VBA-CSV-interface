@@ -6,7 +6,10 @@ nav_order: 13
 ---
 
 # IrregularVectors
-{: .fs-9 }
+{: .d-inline-block }
+
+New
+{: .label .label-purple }
 
 Gets a collection of arrays with INFO for irregular vectors on the current instance.
 {: .fs-6 .fw-300 }

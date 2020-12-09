@@ -6,10 +6,7 @@ nav_order: 10
 ---
 
 # JaggedToTwoDimArray
-{: .d-inline-block }
-
-New
-{: .label .label-purple }
+{: .fs-9 }
 
 Deconstructs a jagged array and puts its content into a 2D string array.
 {: .fs-6 .fw-300 }

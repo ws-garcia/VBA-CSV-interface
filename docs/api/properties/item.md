@@ -6,7 +6,10 @@ nav_order: 14
 ---
 
 # Item
-{: .fs-9 }
+{: .d-inline-block }
+
+New
+{: .label .label-purple }
 
 Gets a field, or an array with an entire record, from the result array on the current instance.
 {: .fs-6 .fw-300 }

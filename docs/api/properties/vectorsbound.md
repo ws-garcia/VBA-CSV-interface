@@ -6,7 +6,10 @@ nav_order: 19
 ---
 
 # VectorsBound
-{: .fs-9 }
+{: .d-inline-block }
+
+New
+{: .label .label-purple }
 
 Gets the regular bound of the vectors in the result array on the current instance.
 {: .fs-6 .fw-300 }

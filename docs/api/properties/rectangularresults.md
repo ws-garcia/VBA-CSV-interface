@@ -6,7 +6,10 @@ nav_order: 17
 ---
 
 # RectangularResults
-{: .fs-9 }
+{: .d-inline-block }
+
+New
+{: .label .label-purple }
 
 Gets the result array regularity status on the current instance.
 {: .fs-6 .fw-300 }

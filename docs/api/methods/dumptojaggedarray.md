@@ -6,10 +6,7 @@ nav_order: 3
 ---
 
 # DumpToJaggedArray
-{: .d-inline-block }
-
-New
-{: .label .label-purple }
+{: .fs-9 }
 
 Dumps the data from the current instance to a jagged array.
 {: .fs-6 .fw-300 }
