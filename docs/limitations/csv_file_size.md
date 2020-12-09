@@ -54,13 +54,12 @@ The above experimental results make smooth to arrive to the following conclusion
 
 * VBA-CSV interface is suitable to almost any Microsoft Office Excel user. It can handle considerably large CSV files without any problem.
 * As the size of the CSV increases, VBA-CSV interface has a performance drop.
-* With each available GB of RAM VBA-CSV interface can parse CSV files sized up to 107.61 MB, then, the max file size for a specific machine can be estimated with the formula \[107.61 * Available RAM\] (results in MB).
+* With each available GB of RAM, on the test machine, VBA-CSV interface can parse CSV files sized up to 107.61 MB.
 * VBA-CSV interface can work at high performance with files sized to almost \[75.45 * Available RAM\]  (results in MB).
-* Parse files sized over \[107.61 * Available RAM\]  (results in MB) makes the VBA-CSV interface a not reliable alternative.
 
 >⚠️**Caution**
 >{: .text-grey-lt-000 .bg-green-000 }
->Each the formulation presented here is experimental and can be wrong due the assumptions involved. There is a real chance to experiment unexpected behavior. User need to remember that parse a 2 GB sized CSV file can require up to 20 GB of Available RAM.
+>The formulation presented here is experimental and can be wrong due the assumptions involved. There is a real chance to experiment unexpected behavior. User need to remember that parse a 2 GB sized CSV file can require up to 20 GB of Available RAM.
 >
 >The target CSV can't have size greater than 2GB. This because VBA-CSV interface use `LONG` datatype when parsing. So, if you want to process files larger than 2GB, you'll need to use another solution instead.
 {: .text-grey-dk-300 .bg-yellow-000 }
