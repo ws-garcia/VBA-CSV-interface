@@ -34,7 +34,7 @@ The benchmark results for VBA-CSV Interface are available at [this site](https:/
 
 ## Limitations
 
-Visit [this site](https://ws-garcia.github.io/VBA-CSV-interface/limitations/csv_file_size.html) in order to known the around CSV file size considerations.
+Visit [this site](https://ws-garcia.github.io/VBA-CSV-interface/limitations/csv_file_size.html) in order to known around CSV file size considerations.
 
 ## Licence
 
