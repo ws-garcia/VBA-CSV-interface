@@ -23,7 +23,7 @@ The previous assumption conduces to the following affirmation: as the peak memor
 
 To accomplish the first step of this analysis, we’ll use two solutions developed in different programing language. The first one is [Papa Parse]( https://www.papaparse.com/), a hyper fast JavaScript solution developed by [Matt Holt]( https://github.com/mholt). The second one is [Fast-csv]( https://c2fo.io/fast-csv/), a TypeScript solution, with great reputation, developed by [Pollen, Inc]( https://c2fo.com/). At a glance, we can assume that the two contenders will easily beat CSV interface in performance by the fact VBA isn’t a modern programing language like its competitors. And, at this point, all of this is right. Papa Parse will be runed on Firefox Browser v83.0 64-bit using the demo page available at [this site](https://www.papaparse.com/demo), in the other hand, Fast-csv will be runed on the Node.js v14.15.1. console using the provided benchmark code, with a little tweak.
 
-The below graphs show the benchmark results for a set of CSV files with size ranked from almost 5 MB to almost 768 MB. Readers can download all the CSV used for this test [here.](/csv-data/assets.zip)
+The below graphs show the benchmark results for a set of CSV files with size ranked from almost 5 MB to almost 768 MB. Readers can download all the CSV used for this test [here.](https://raw.githubusercontent.com/ws-garcia/VBA-CSV-interface/master/csv-data/assets.zip)
 
 >⚠️**Caution**
 >{: .text-grey-lt-000 .bg-green-000 }
