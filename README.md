@@ -32,7 +32,7 @@ In order to contribute whit in this project, please see the [guidance for contri
 
 The benchmark results for VBA-CSV Interface are available at [this site](https://ws-garcia.github.io/VBA-CSV-interface/home/getting_started.html#benchmark).
 
-##Limitations
+## Limitations
 
 Visit [this site](https://ws-garcia.github.io/VBA-CSV-interface/limitations/csv_file_size.html) in order to known the around CSV file size considerations.
 
