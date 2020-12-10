@@ -15,10 +15,11 @@ VBA CSV interface is a class module developed to accomplish the data exchange ta
 ## Advantages
 * Writes and reads files at high speed.
 * Supports those CSV's that follows the RFC-4180 specs.
-* Supports [Tab Separated Values(TSV)](https://www.iana.org/assignments/media-types/text/tab-separated-values) files. Gracefully handles line-breaks inside TSV fields enclosed in quotes.
+* Supports Tab Separated Values (TSV) files. Gracefully handles line-breaks inside TSV fields enclosed in quotes.
+* Allows individual access to imported fields and records in the VBA array style.
 * Auto exclude any quote mark when data is imported.
-* Allows an user-defined escape token (option not available in _Power Query for Excel 2019_ and with some inconsistences when user launch the _From Text(Legacy)_ wizard).
-* Supports One-dimensional arrays, Two-dimensional arrays and [jagged arrays](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/arrays/jagged-arrays).
+* Allows an user-defined escape token (option not available in Power Query for Excel 2019 and with some inconsistences when user launch the From Text(Legacy) wizard). 
+* Supports One-dimensional arrays, Two-dimensional arrays and jagged arrays.
 * User has the option to import only certain range of records from given file.
-* Supports in-line comments (with a user-defined character). See [Papa Parse](https://www.papaparse.com/) project.
+* Supports in-line comments (with a user-defined character). See Papa Parse project.
 * Supports blanks lines and empty ones.
