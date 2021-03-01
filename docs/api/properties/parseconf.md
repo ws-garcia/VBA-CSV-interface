@@ -71,13 +71,13 @@ _Yes_
 <td style="text-align: left;">Returns a <code>parserConfig</code> object with a copy of the current configuration.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><em>defineTypingTemplate</em></td>
+<td style="text-align: left;"><em>DefineTypingTemplate</em></td>
 <td style="text-align: left;">Method</td>
 <td style="text-align: left;">This method is used to create the Dynamic Typing Template (DTT) through a <code>ParamArray</code>. User must specify a data conversion using the <code>TypeConversion</code> enumeration. Each DTT conversion needs to be linked to a field index.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><em>defineTypingTemplateLinks</em></td>
-<td style="text-align: left;">Metho.</td>
+<td style="text-align: left;"><em>DefineTypingTemplateLinks</em></td>
+<td style="text-align: left;">Method</td>
 <td style="text-align: left;">This method is used to link the Dynamic Typing Template (DTT), through a <code>ParamArray</code>, to specific fields. User must specify a column index (<code>Long</code>) for each data type conversion defined in the Typing Template.</td>
 </tr>
 <tr>
