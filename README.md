@@ -7,7 +7,7 @@ VBA CSV interface is the most complete, and open source, CSV/TSV VBA parser libr
 
 ## Advantages
 * Fast. Writes and reads files at the highest speed.
-* Memory-friendly. CSV/(TSV)](https://www.iana.org/assignments/media-types/text/tab-separated-values) files are processed using a custom stream technique, only 0.5MB are in memory at a time.
+* Memory-friendly. [CSV/TSV](https://www.iana.org/assignments/media-types/text/tab-separated-values) files are processed using a custom stream technique, only 0.5MB are in memory at a time.
 * Easy to use. A few lines of code can do the work!
 * Highly Configurable. User can configure the parser to work with a wide range of CSV files.
 * Automatic delimiter guesser. Don't worry if you forgot the file configuration!
