@@ -43,6 +43,7 @@ The data shows that the file size is controlling the performance of the old vers
 The above experimental results make smooth to arrive to the following conclusions:
 
 * VBA-CSV interface is suitable to almost any Microsoft Office Excel user. It can handle considerably large CSV files (383 MB) without any problem.
+* Work with files over 191 MB can slow down the VBA performance. Import all the records of this kind of files is not recommended.
 * The amount of data to be parsed controls the VBA-CSV interface performance, not the file size.
 
 >⚠️**Caution**
