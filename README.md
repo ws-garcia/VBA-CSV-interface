@@ -15,10 +15,6 @@ VBA CSV interface is the most complete, and open source, CSV/TSV VBA parser libr
 * __Dynamic Typing support__. Turn CSV data field to a desired VBA data type.
 * __Data sorting__. Sort CSV imported data using the hyper-fast [Yaroslavskiy Dual-Pivot Quicksort](https://web.archive.org/web/20151002230717/http://iaroslavski.narod.ru/quicksort/DualPivotQuicksort.pdf) like Java.
 * __RFC-4180 specs compliant__.
-* Auto skip blanks lines and empty ones.
-* Supports in-line comments (with a user-defined character). See [Papa Parse](https://www.papaparse.com/) project. 
-* Acces to the imported data in the VBA array style.
-* Supports One-dimensional arrays, Two-dimensional arrays and [jagged arrays](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/arrays/jagged-arrays).
 
 ## Getting started
 
