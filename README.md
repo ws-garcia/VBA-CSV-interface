@@ -3,22 +3,22 @@
 
 ## Introductory words
 
-VBA CSV interface is a class module developed to accomplish the data exchange task between VBA arrays and CSV files at high speed. Projects from [@sdkn104](https://github.com/sdkn104/VBA-CSV) and [@Senipah](https://github.com/Senipah/VBA-Better-Array), both on Github, were used for comparative performance purposes.
+VBA CSV interface is the most complete, and open source, CSV/TSV VBA parser library nowadays. The library is RFC-4180 compliant and enables users to manipulate CSV content at the highest speed. All the modules were developed to accomplish the data exchange with the task with the greatest performance and to grant an easy use.
 
 ## Advantages
-* Writes and reads files at high speed.
-* Supports those CSV's that follows the RFC-4180 specs.
-* Supports [Tab Separated Values (TSV)](https://www.iana.org/assignments/media-types/text/tab-separated-values) files. Gracefully handles line-breaks inside TSV fields enclosed in quotes.
-* Allows individual access to imported fields and records in the VBA array style.
-* Auto exclude any quote mark when data is imported.
-* Allows an user-defined escape token (option not available in _Power Query for Excel 2019_ and with some inconsistences when user launch the _From Text(Legacy)_ wizard)[[1]](#1).
+* Fast. Writes and reads files at the highest speed.
+* Memory-friendly. CSV/(TSV)](https://www.iana.org/assignments/media-types/text/tab-separated-values) files are processed using a custom stream technique, only 0.5MB are in memory at a time.
+* Easy to use. A few lines of code can do the work!
+* Highly Configurable. User can configure the parser to work with a wide range of CSV files.
+* Automatic delimiter guesser. Don't worry if you forgot the file configuration!
+* Flexible. Import only certain range of records from the given file, import fields (columns) by indexes or names.
+* Dynamic Typing support. Turn CSV data field to a desired VBA data type.
+* Data sorting. Sort CSV imported data using the hyper-fast [Yaroslavskiy Dual-Pivot Quicksort](https://web.archive.org/web/20151002230717/http://iaroslavski.narod.ru/quicksort/DualPivotQuicksort.pdf) like Java.
+* RFC-4180 specs compliant.
+* Auto skip blanks lines and empty ones.
+* Supports in-line comments (with a user-defined character). See [Papa Parse](https://www.papaparse.com/) project. 
+* Acces to the imported data in the VBA array style.
 * Supports One-dimensional arrays, Two-dimensional arrays and [jagged arrays](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/arrays/jagged-arrays).
-* User has the option to import only certain range of records from given file.
-* Supports in-line comments (with a user-defined character). See [Papa Parse](https://www.papaparse.com/) project.
-* Supports blanks lines and empty ones.
-
-<a id="1">[1]</a> 
-Power Query, and its legacy counterpart, was not able to handle field’s embedded line breaks when the CSV's "Text qualifier" is a Single Quote or the Apostrophe char.
 
 ## Getting started
 
@@ -32,13 +32,17 @@ In order to contribute whit in this project, please see the [guidance for contri
 
 The benchmark results for VBA-CSV Interface are available at [this site](https://ws-garcia.github.io/VBA-CSV-interface/home/getting_started.html#benchmark).
 
+## Dependencies
+
+The library depends on the [ECPTextStream class]( https://github.com/ws-garcia/ECPTextStream) in order to work with text files. In the same way, the class uses two external class modules: one for configuration sharing and the other for data storage. All dependencies are written in pure VBA.
+
 ## Limitations
 
 Visit [this site](https://ws-garcia.github.io/VBA-CSV-interface/limitations/csv_file_size.html) in order to known around CSV file size considerations.
 
 ## Licence
 
-Copyright (C) 2020  [W. García](https://github.com/ws-garcia/).
+Copyright (C) 2021  [W. García](https://github.com/ws-garcia/).
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 

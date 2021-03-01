@@ -7,103 +7,54 @@ nav_order: 2
 
 ## Export data to a CSV file
 
-The \[EXAMPLE1\] shows how you can export all the data in VBA array to a CSV file using the RFC-4180 specs as paramount. 
+The \[EXAMPLE1\] shows how you can import a CSV file, dump the data to a VBA array and export to a new TSV file.
 
 #### [EXAMPLE1]
->📝**Note**
->{: .text-grey-lt-000 .bg-green-000 }
->the example uses the option `QuotationMode.Critical`, [learn more here](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html).
-{: .text-grey-dk-300 .bg-grey-lt-000 }
 
 ```vb
-Sub ExportToCSV_RFC4180()
-	Dim CSVix As CSVinterface
-	Dim MyArray() As String
-	Dim filePath As String, tmpCSV As String
-	Dim outputFile As String
-	
-	filePath = "C:\Demo_400k_records.csv" 'Change this to suit your needs
-	outputFile = "C:\RFC-4180_exported.csv" 'Change this to suit your needs
-	Set CSVix = New CSVinterface 'Create new instance
-	tmpCSV = CSVix.GetDataFromCSV(filePath) 'Store CSV file's content.
-	CSVix.EndingRecord = 10 'Sets the importation ending
-	Call CSVix.ImportFromCSVString(tmpCSV) 'Import the range of records
-	Call CSVix.DumpToArray(MyArray) 'Dumps the data to array
-	'@---------------------------------------------------------------------------------
-	' Exportation code block start
-	Call CSVix.OpenConnection(outputFile, DeleExistingFile:=True) 'Open a physical connection to the CSV file
-	Call CSVix.ExportToCSV (MyArray) 'Export the array content
-	Set CSVix = Nothing 'Terminate the current instance
+Sub ExportToTSV()
+	Dim CSVint As CSVinterface
+	Dim conf As parserConfig
+	Dim Arr() As Variant
+
+	Set CSVint = New CSVinterface
+	Set conf = CSVint.ParseConfig
+	With conf
+	    .path = "C:\100000.quoted.csv"
+	    .dynamicTyping = False
+	End With
+	CSVint.GuessDelimiters conf 'Try to guess CSV file data delimiters
+	CSVint.ImportFromCSV(conf).DumpToArray Arr 'Import and dump the data to an array
+	With conf
+	    .path = Environ("USERPROFILE") & "\Desktop\100000.quoted.tsv"
+	    .fieldsDelimiter = vbTab
+	End With
+	CSVint.ExportToCSV Arr, conf
+	Set CSVint = Nothing 'Terminate the current instance
 End Sub
 ```
 
-## Export to a CSV file without special syntax
-
-The \[EXAMPLE2\] shows how you can export all the data in VBA array to a CSV file without check the RFC-4180 specs rules. Be careful, use this only if the array doesn't hold especial chars (vbCrLf [vbCr, vbLf], comma [semicolon], double quotes[apostrophe]) in neither of its fields. The output CSV file has neither field needing to be escaped.
-
-See also
-:[QuotationMode](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html), [EscapeTokens](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/escapetokens.html).
+The \[EXAMPLE2\] shows how you can import a CSV file, sort the data, dump to a VBA array and export to a new CSV file.
 
 #### [EXAMPLE2]
->📝**Note**
->{: .text-grey-lt-000 .bg-green-000 }
->the example uses the option `QuotationMode.All`, and `EscapeTokens.NullChar`.
-{: .text-grey-dk-300 .bg-grey-lt-000 }
 
 ```vb
-Sub ExportToCSV()
-	Dim CSVix As CSVinterface
-	Dim MyArray() As String
-	Dim filePath As String, tmpCSV As String
-	Dim outputFile As String
-	
-	filePath = "C:\Demo_400k_records.csv" 'Change this to suit your needs
-	outputFile = "C:\RFC-4180_exported.csv" 'Change this to suit your needs
-	Set CSVix = New CSVinterface 'Create new instance
-	tmpCSV = CSVix.GetDataFromCSV(filePath) 'Store CSV file's content.
-	CSVix.EndingRecord = 10 'Sets the importation ending
-	Call CSVix.ImportFromCSVString(tmpCSV) 'Import the range of records
-	Call CSVix.DumpToArray(MyArray) 'Dumps the data to array
-	'@---------------------------------------------------------------------------------
-	' Exportation code block start
-	Call CSVix.OpenConnection(outputFile, DeleExistingFile:=True) 'Open a physical connection to the CSV file
-	CSVix.QuotingMode = QuotationMode.All 'Alter behavior for escaped files
-	CSVix.EscapeToken = EscapeTokens.NullChar 'Specify that CSV file has neither field needing to be escaped.
-	Call CSVix.ExportToCSV (MyArray) 'Export the array content
-	Set CSVix = Nothing 'Terminate the current instance
-End Sub
-```
-The \[EXAMPLE3\] shows how you can export all the data in VBA array to a CSV file without check the RFC-4180 specs rules. Each field CSV of the output file need to be escaped by desired char. The procedure presented in the [EXAMPLE3] can be used in whatever circumstance.
+Sub SortAndExportToCSV()
+	Dim CSVint As CSVinterface
+	Dim conf As parserConfig
+	Dim Arr() As Variant
 
-See also
-:[QuotationMode](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/quotationmode.html), [EscapeTokens](https://ws-garcia.github.io/VBA-CSV-interface/api/enumerations/escapetokens.html).
-
-#### [EXAMPLE3]
->📝**Note**
->{: .text-grey-lt-000 .bg-green-000 }
->the example uses the option `QuotationMode.All`, and `EscapeTokens.Apostrophe`.
-{: .text-grey-dk-300 .bg-grey-lt-000 }
-
-```vb
-Sub ExportToCSV()
-	Dim CSVix As CSVinterface
-	Dim MyArray() As String
-	Dim filePath As String, tmpCSV As String
-	Dim outputFile As String
-	
-	filePath = "C:\Demo_400k_records.csv" 'Change this to suit your needs
-	outputFile = "C:\RFC-4180_exported.csv" 'Change this to suit your needs
-	Set CSVix = New CSVinterface 'Create new instance
-	tmpCSV = CSVix.GetDataFromCSV(filePath) 'Store CSV file's content.
-	CSVix.EndingRecord = 10 'Sets the importation ending
-	Call CSVix.ImportFromCSVString(tmpCSV) 'Import the range of records
-	Call CSVix.DumpToArray(MyArray) 'Dumps the data to array
-	'@---------------------------------------------------------------------------------
-	' Exportation code block start
-	Call CSVix.OpenConnection(outputFile, DeleExistingFile:=True) 'Open a physical connection to the CSV file
-	CSVix.QuotingMode = QuotationMode.All 'Alter behavior for escaped files
-	CSVix.EscapeToken = EscapeTokens.Apostrophe 'Each CSV’s field need to be escaped with this char.
-	Call CSVix.ExportToCSV (MyArray) 'Export the array content
-	Set CSVix = Nothing 'Terminate the current instance
+	Set CSVint = New CSVinterface
+	Set conf = CSVint.ParseConfig
+	With conf
+	    .path = "C:\100000.quoted.csv"
+		 .headers = True 'The header will not sorted
+	    .dynamicTyping = False
+	End With
+	CSVint.GuessDelimiters conf 'Try to guess CSV file data delimiters
+	CSVint.ImportFromCSV(conf).Sort(SortColumn:=1, Descending:=False).DumpToArray Arr 'Import, sort and dump the data to an array
+	conf.path = Environ("USERPROFILE") & "\Desktop\100000.quoted.tsv"
+	CSVint.ExportToCSV Arr, conf
+	Set CSVint = Nothing 'Terminate the current instance
 End Sub
 ```

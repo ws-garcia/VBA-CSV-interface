@@ -1,11 +1,11 @@
 ---
-title: ImportSuccess
+title: importSuccess
 parent: Properties
 grand_parent: API
-nav_order: 12
+nav_order: 7
 ---
 
-# ImportSuccess
+# importSuccess
 {: .fs-9 .fw-300 }
 
 Gets the import operation status for the current instance.
@@ -21,7 +21,7 @@ _ReadOnly_
 
 ## Syntax
 
-*expression*.`ImportSuccess`
+*expression*.`importSuccess`
 
 ### Parameters
 
@@ -33,7 +33,7 @@ _None_
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->A `False` value from `ImportSuccess` property indicates the last import operation wouldn't succeeded.
+>A `False` value from `importSuccess` property indicates the last import operation wouldn't succeeded.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)

@@ -2,7 +2,7 @@
 title: ExportToCSV
 parent: Methods
 grand_parent: API
-nav_order: 5
+nav_order: 6
 ---
 
 # ExportToCSV
@@ -15,7 +15,7 @@ Exports an array's content to a CSV/TSV file.
 
 ## Syntax
 
-*expression*.`ExportToCSV`*(csvArray, \[PassControlToOS:= `True`\])*
+*expression*.`ExportToCSV`*(csvArray, \[pconfig:= `Nothing`\], \[PassControlToOS:= `True`\])*
 
 ### Parameters
 
@@ -32,28 +32,32 @@ Exports an array's content to a CSV/TSV file.
 <td style="text-align: left;">Required. Identifier specifying a <code>Variant</code> Type variable.</td>
 </tr>
 <tr>
+<td style="text-align: left;"><em>pconfig</em></td>
+<td style="text-align: left;">Optional. Identifier specifying a <code>ParserConfig</code> object variable.</td>
+</tr>
+<tr>
 <td style="text-align: left;"><em>PassControlToOS</em></td>
 <td style="text-align: left;">Optional. Identifier specifying a <code>Boolean</code> Type variable.</td>
 </tr>
 </tbody>
 </table>
 
-### Return value
+### Returns value
 
 _None_
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->Before invoke the `ExportToCSV` method, the user must to open a connection to the file. Passing a variable that isn't an array will cause an error and the operation aborts. 
+>Passing a variable that isn't an array will cause an error and the operation aborts. 
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 See also
-: [OpenConnection method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/openconnection.html), [FieldsDelimiter property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/fieldsdelimiter.html), [RecordsDelimiter property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/recordsdelimiter.html), [EscapeToken property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/escapetoken.html).
+: [ParseConfig Property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/parseconf.html).
 
 ---
 
 ## Behavior
 
-The `FieldsDelimiter`, `RecordsDelimiter` and `EscapeToken` properties sets the method's behavior to the needs.
+If the `pconfig` parameter is omited, the parser will use the `ParseConfig` property as configuration object. If the file specified in the `.path` configuration property all ready exist and have some content on it the parser will try to guess delimiters and the data will be append to the file.
 
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)

@@ -2,7 +2,7 @@
 title: IsJaggedArray
 parent: Methods
 grand_parent: API
-nav_order: 9
+nav_order: 11
 ---
 
 # IsJaggedArray
@@ -21,7 +21,7 @@ Checks if the given array is an array of arrays.
 
 The required *Arr* argument is an identifier specifying a `Variant` Type variable.
 
-### Return value
+### Returns value
 
 *Type*: `Boolean`
 
