@@ -57,7 +57,7 @@ _Yes_
 </tr>
 <tr>
 <td style="text-align: left;"><em>catchMeaninglessRecords</em></td>
-<td style="text-align: left;">Property.</td>
+<td style="text-align: left;">Property</td>
 <td style="text-align: left;">Gets or sets the behavior of the parser when facing empty and comments lines. By default, this property is set to <code>True</code>. If the value is set to <code>False</code>, the blank, empty and comments lines will generate errors in the import procedures.</td>
 </tr>
 <tr>
