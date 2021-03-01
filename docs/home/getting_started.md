@@ -206,7 +206,7 @@ The benchmarks from the above charts are compared in the following chart:
 
 ![Quoted Vs NONquoted Benchmark](Quoted-vs-NONquoted.png)
 
-Finally, the below chart shows the overheat for the Sorting and Dynamic Typing. These features are available on the VBA CSV interface since its version 3.
+Finally, the below chart shows the overheat for the Sorting and Dynamic Typing operations. These features are available on the VBA CSV interface since its version 3.
 
 ![Overheat per functionality Benchmark](Overheat-per-functionality.png)
 
