@@ -2,7 +2,7 @@
 title: CreateJagged
 parent: Methods
 grand_parent: API
-nav_order: 1
+nav_order: 2
 ---
 
 # CreateJagged
@@ -47,7 +47,7 @@ Creates an empty array of vectors, each of which having a fixed custom size.
 >Setting the *ArraySize* or the *VectorSize* parameter to a value less than zero will generate a runtime error.
 {: .text-grey-dk-300 .bg-yellow-000 }
 
-### Return value
+### Returns value
 
 _None_
 

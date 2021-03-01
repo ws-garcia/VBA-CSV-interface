@@ -2,7 +2,7 @@
 title: TwoDimToJaggedArray
 parent: Methods
 grand_parent: API
-nav_order: 13
+nav_order: 15
 ---
 
 # TwoDimToJaggedArray
@@ -38,7 +38,7 @@ Deconstructs a 2D string array and puts its content into a jagged array.
 </tbody>
 </table>
 
-### Return value
+### Returns value
 
 _None_
 

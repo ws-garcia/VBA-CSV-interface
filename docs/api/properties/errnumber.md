@@ -1,11 +1,11 @@
 ---
-title: ErrNumber
+title: errNumber
 parent: Properties
 grand_parent: API
-nav_order: 5
+nav_order: 4
 ---
 
-# ErrNumber
+# errNumber
 {: .fs-9 }
 
 Gets the number for the last occurred error over the current instance.
@@ -21,7 +21,7 @@ _ReadOnly_
 
 ## Syntax
 
-*expression*.`ErrNumber`
+*expression*.`errNumber`
 
 ---
 
@@ -35,10 +35,10 @@ _None_
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->Use the `ErrNumber` property to check if the last requested operation succeed.
+>Use the `errNumber` property to check if the last requested operation succeed.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 See also
-: [ErrDescription property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/errdescription.html), [ErrSource property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/errsource.html).
+: [errDescription property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/errdescription.html), [errSource property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/errsource.html).
  
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)

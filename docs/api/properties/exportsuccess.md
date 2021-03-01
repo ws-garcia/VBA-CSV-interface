@@ -1,11 +1,11 @@
 ---
-title: ExportSuccess
+title: exportSuccess
 parent: Properties
 grand_parent: API
-nav_order: 8
+nav_order: 6
 ---
 
-# ExportSuccess
+# exportSuccess
 {: .fs-9 }
 
 Gets the export operation status for the current instance.
@@ -21,7 +21,7 @@ _ReadOnly_
 
 ## Syntax
 
-*expression*.`ExportSuccess`
+*expression*.`exportSuccess`
 
 ### Parameters
 
@@ -33,7 +33,7 @@ _None_
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->A `False` value from `ExportSuccess` property indicates the last export operation wouldn't succeeded.
+>A `False` value from `exportSuccess` property indicates the last export operation wouldn't succeeded.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)
