@@ -51,7 +51,7 @@ _Yes_
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><em style="color:blue">bufferSize</em></td>
+<td style="text-align: left; color:blue;"><em>bufferSize</em></td>
 <td style="text-align: left;">Property</td>
 <td style="text-align: left;">Gets or sets the buffer’s size, in MB, for the <code>ECPTextStream.cls</code> text stream operations. By default, this property is set to 0.5 for CSV/TSV file stream.</td>
 </tr>
