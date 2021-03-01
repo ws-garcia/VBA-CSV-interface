@@ -237,8 +237,8 @@ Attribute CopyConfig.VB_Description = "Returns a parserConfig object with a copy
     tmpResult.startingRecord = P_STARTINGRECORD
     Set CopyConfig = tmpResult
 End Function
-Public Sub defineTypingTemplate(ParamArray dType() As Variant)
-Attribute defineTypingTemplate.VB_Description = "Defines dynamic typing template."
+Public Sub DefineTypingTemplate(ParamArray dType() As Variant)
+Attribute DefineTypingTemplate.VB_Description = "Defines dynamic typing template."
     P_TEMPLATE() = dType
     Select Case UBound(P_TEMPLATE)
         Case -1
@@ -247,8 +247,8 @@ Attribute defineTypingTemplate.VB_Description = "Defines dynamic typing template
             P_TEMPLATE_DEFINED = True
     End Select
 End Sub
-Public Sub defineTypingTemplateLinks(ParamArray dTargets() As Variant)
-Attribute defineTypingTemplateLinks.VB_Description = "Defines dynamic typing template links to fields."
+Public Sub DefineTypingTemplateLinks(ParamArray dTargets() As Variant)
+Attribute DefineTypingTemplateLinks.VB_Description = "Defines dynamic typing template links to fields."
     P_TEMPLATE_TARGETS() = dTargets
     Select Case UBound(P_TEMPLATE_TARGETS)
         Case -1
@@ -274,6 +274,6 @@ Private Sub Class_Initialize()
     P_RECORDSDELIMITER = vbCrLf
     P_STARTINGRECORD = 1&
     P_CATCH_MEANINGLESS_RECORDS = True
-    defineTypingTemplate
-    defineTypingTemplateLinks
+    DefineTypingTemplate
+    DefineTypingTemplateLinks
 End Sub
