@@ -166,7 +166,7 @@ The class was tested against two solutions (the one from [@Senipah](https://gith
 <thead>
 <tr>
 <th style="text-align: left;"><strong>File name (ALL fields quoted)</strong></th>
-<th style="text-align: right;"><strong>File name (NON quoted fields)</strong></th>
+<th style="text-align: left;"><strong>File name (NON quoted fields)</strong></th>
 </tr>
 </thead>
 <tbody>
