@@ -8,7 +8,7 @@ nav_order: 8
 # item
 {: .fs-9 }
 
-Gets a field, or an array with an entire record, from the result array on the current instance.
+Gets a field, or an array with an entire record, from the result `ECPArrayList` on the current instance.
 {: .fs-6 .fw-300 }
 
 ---
