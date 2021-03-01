@@ -11,7 +11,7 @@ nav_order: 3
 New
 {: .label .label-purple }
 
-Provides a list of constants for use to configure the Dynamic Typing conversion behavior.
+Provides a list of constants to configure the Dynamic Typing conversion behavior.
 {: .fs-6 .fw-300 }
 
 ---
