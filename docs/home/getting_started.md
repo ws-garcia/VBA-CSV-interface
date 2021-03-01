@@ -172,14 +172,18 @@ The class was tested against two solutions (the one from [@Senipah](https://gith
 <tbody>
 <tr>
 <td style="text-align: left;"><em>100000.quoted.csv</em></td>
-<td style="text-align: left;"><em>400000.quoted.csv</em></td>
-<td style="text-align: left;"><em>800000.quoted.csv</em></td>
-<td style="text-align: left;"><em>1600000.quoted.csv</em></td>
+<td style="text-align: left;"><em>100000.NON-quoted.csv</em></td>
 </tr>
 <tr>
-<td style="text-align: left;"><em>100000.NON-quoted.csv</em></td>
+<td style="text-align: left;"><em>400000.quoted.csv</em></td>
 <td style="text-align: left;"><em>400000.NON-quoted.csv</em></td>
+</tr>
+<tr>
+<td style="text-align: left;"><em>800000.quoted.csv</em></td>
 <td style="text-align: left;"><em>800000.NON-quoted.csv</em></td>
+</tr>
+<tr>
+<td style="text-align: left;"><em>1600000.quoted.csv</em></td>
 <td style="text-align: left;"><em>1600000.NON-quoted.csv</em></td>
 </tr>
 </tbody>
