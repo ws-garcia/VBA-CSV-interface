@@ -109,7 +109,7 @@ Set conf = New parserConfig
 conf.delimitersToGuess = Delimiters
 ```
 
-Configure Dynamic Typing
+Configure Dynamic Typing:
 
 ```vb
 With conf
