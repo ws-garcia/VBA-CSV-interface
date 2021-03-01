@@ -33,7 +33,11 @@ Although many solutions has been developed for work with CSV files into VBA, inc
 The VBA CSVinterface class module is designed for gain advantage from the well-structured CSV/TSV files, this means, there isn't automatic syntax check, given the user decide how the class will works. This can be seen as a weakness, but the class get a speed-up on writing and reading procedures at time the user controls how the file is interpreted, keeping in mind that, in fact, VBA is a language with slow code execution speed. Under this idealization the developed solution complies with the RFC-4180 specs for user specified CSV/TSV document format.
 
 ## Usage
+<<<<<<< Updated upstream
 Import whole CSV file into an VBA array
+=======
+Import whole CSV/TSV file into a VBA array:
+>>>>>>> Stashed changes
 
 ```vb
 Dim CSVix As CSVinterface
@@ -45,7 +49,11 @@ Call CSVix(MyArray) 'Dumps the data to array
 Set CSVix = Nothing
 ```
 
+<<<<<<< Updated upstream
 Import a TSV file into an VBA array
+=======
+Sort CSV/TSV file's content and put it into a VBA array:
+>>>>>>> Stashed changes
 
 ```vb
 Dim CSVix As CSVinterface
@@ -58,7 +66,11 @@ Call CSVix(MyArray) 'Dumps the data to array
 Set CSVix = Nothing
 ```
 
+<<<<<<< Updated upstream
 Import a range of records from a CSV file into a VBA array
+=======
+Import a range of records from a CSV/TSV file into a VBA array:
+>>>>>>> Stashed changes
 
 ```vb
 Dim CSVix As CSVinterface
@@ -71,8 +83,19 @@ Call CSVix.ImportFromCSV
 Call CSVix(MyArray) 'Dumps the data to array
 Set CSVix = Nothing
 ```
+Access to the first field of the first record:
 
+<<<<<<< Updated upstream
 Create jagged array
+=======
+```vb
+Dim Element as Variant
+
+Element = CSVint(0, 0)
+```
+
+Set the delimiters characters pack used on guessing operations:
+>>>>>>> Stashed changes
 
 ```vb
 Dim CSVix As CSVinterface
@@ -90,7 +113,7 @@ CSVix.CreateJagged(MyJaggedArray, 5, 7)
 CSVix.JaggedToTwoDimArray(MyJaggedArray, My2Darray)
 ```
 
-Set the char to escape special fields
+Set the char to escape special fields:
 
 ```vb
 CSVix.EscapeChar = EscapeType.NullChar
@@ -98,7 +121,7 @@ CSVix.EscapeChar = EscapeType.Apostrophe
 CSVix.EscapeChar = EscapeType.DoubleQuotes
 ```
 
-Set fields and records delimiters
+Set fields and records delimiters:
 
 ```vb
 CSVix.FieldsDelimiter = ";"
