@@ -2,7 +2,7 @@
 title: GetDataFromCSV
 parent: Methods
 grand_parent: API
-nav_order: 6
+nav_order: 7
 ---
 
 # GetDataFromCSV
@@ -21,7 +21,7 @@ Dumps a CSV/TSV file content to a string variable
 
 The required *csvPathAndFilename* argument is an identifier specifying a `String` Type variable.
 
-### Return value
+### Returns value
 
 *Type*: `String`
 

@@ -1,11 +1,11 @@
 ---
-title: RectangularResults
+title: rectangularResults
 parent: Properties
 grand_parent: API
-nav_order: 17
+nav_order: 10
 ---
 
-# RectangularResults
+# rectangularResults
 {: .d-inline-block }
 
 New
@@ -24,7 +24,7 @@ _ReadOnly_
 
 ## Syntax
 
-*expression*.`RectangularResults`
+*expression*.`rectangularResults`
 
 ### Parameters
 
@@ -36,10 +36,10 @@ _None_
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->If the `RectangularResults` property is `True`, the internal array is not irregular. A `False` value indicates the presence of, at least, one vector with more fields than the header record.
+>If the `rectangularResults` property is `True`, the internal `ECPArrayList` is not irregular. A `False` value indicates the presence of, at least, one vector with more fields than the header record.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 See also
-: [VectorsBound property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/vectorsbound.html)
+: [vectorsBound property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/vectorsbound.html)
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)

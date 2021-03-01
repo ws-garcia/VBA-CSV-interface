@@ -2,13 +2,13 @@
 layout: default
 title: Rules
 parent: Home
-nav_order: 3
+nav_order: 4
 ---
 
 # RFC-4180 rules
 {: .fs-9 }
 
-The CSVinterface class is intended to be nearest as possible to the RFC-4180 specs for CSV files, despite this some tweaks are added to make the interface more robust and useful.
+The CSVinterface library is intended to be nearest as possible to the RFC-4180 specs for CSV files, despite this some tweaks are added to make the interface more robust and useful.
 
 In the table bellow all the rules of [RFC-4180](https://www.ietf.org/rfc/rfc4180.txt) specs and its counterparts on the `CSVinterface.cls` are listed. This topic is highly recommended for CSVinterface behavior knowledge.
 

@@ -1,11 +1,11 @@
 ---
-title: VectorsBound
+title: vectorsBound
 parent: Properties
 grand_parent: API
-nav_order: 19
+nav_order: 11
 ---
 
-# VectorsBound
+# vectorsBound
 {: .d-inline-block }
 
 New
@@ -24,7 +24,7 @@ _ReadOnly_
 
 ## Syntax
 
-*expression*.`VectorsBound`
+*expression*.`vectorsBound`
 
 ### Parameters
 
@@ -36,10 +36,10 @@ _None_
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->The `VectorsBound` property returns the number of fields the header record has. Is assumed to the most of the records in the result array has the same number of fields. In an irregular result array will exist at least one record with a number of fields greater than the value hold by this property.
+>The `vectorsBound` property returns the number of fields the header record has. Is assumed to the most of the records in the result array has the same number of fields. In an irregular result array will exist at least one record with a number of fields greater than the value hold by this property.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 See also
-: [Item property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/item.html), [RectangularResults property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/rectangularresults.html).
+: [item property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/item.html), [rectangularResults property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/rectangularresults.html).
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)

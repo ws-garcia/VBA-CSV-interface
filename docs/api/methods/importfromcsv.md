@@ -2,7 +2,7 @@
 title: ImportFromCSV
 parent: Methods
 grand_parent: API
-nav_order: 7
+nav_order: 9
 ---
 
 # ImportFromCSV
@@ -15,7 +15,7 @@ Imports a CSV/TSV file's content to the current instance.
 
 ## Syntax
 
-*expression*.`ImportFromCSV`*(\[HeadersOmission:= `False`\], \[PassControlToOS:= `True`\])*
+*expression*.`ImportFromCSV`*(configObj, \[FilterColumns\])*
 
 ### Parameters
 
@@ -28,38 +28,32 @@ Imports a CSV/TSV file's content to the current instance.
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><em>HeadersOmission</em></td>
-<td style="text-align: left;">Optional. Identifier specifying a <code>Boolean</code> Type variable.</td>
+<td style="text-align: left;"><em>configObj</em></td>
+<td style="text-align: left;">Required. Identifier specifying a <code>ParserConfig</code> object variable.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><em>PassControlToOS</em></td>
-<td style="text-align: left;">Optional. Identifier specifying a <code>Boolean</code> Type variable.</td>
+<td style="text-align: left;"><em>FilterColumns</em></td>
+<td style="text-align: left;">Optional. Identifier specifying a <code>ParamArray</code> of <code>Variant</code> Type variable.</td>
 </tr>
 </tbody>
 </table>
 
-### Return value
+### Returns value
 
-_None_
-
->📝**Note**
->{: .text-grey-lt-000 .bg-green-000 }
->If the *HeadersOmission* parameter is set to `True`, the file headers, first record, will be ignored by the parser only when the `StartingRecord` property is set to 1. 
->The *PassControlToOS* parameter allows user to pass control to the operating system. Control is returned after the operating system has finished processing the events in its queue.
-{: .text-grey-dk-300 .bg-grey-lt-000 }
+*Type*: `CSVinterface`
 
 See also
-: [OpenConnection method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/openconnection.html), [FieldsDelimiter property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/fieldsdelimiter.html), [RecordsDelimiter property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/recordsdelimiter.html), [EscapeToken property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/escapetoken.html), [StartingRecord property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/startingrecord.html), [EndingRecord property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/endingrecord.html), [CommentsToken property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/commentstoken.html).
+: [ParseConfig Property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/parseconf.html).
 
 ---
 
 ## Behavior
 
-User can set `CommentsToken` property for those files having a combination of empties lines, blanks lines or commented ones for parse the file ONLY when the parser is working on `QuotationMode.Critical` mode. In that mode, the cited lines are simply skipped, leaving no empty values between records separated by this kind of lines. In other words, if the file holds a record and then some special lines (blank, empty or commented) and then another record, the second record will be saved contiguous to the first record ignoring the lines between both.
+User can use the `FilterColumns` parameter for retrieve only certain fields from each CSV/TSV record. The filters can be strings representing the names of the fields determined with the header record, or numbers representing the position of the requested field. If not filters defined, all the fields of the requested records will be retrieved.
 
 >⚠️**Caution**
 >{: .text-grey-lt-000 .bg-green-000 }
->Before invoke the `ImportFromCSV` method, the user must to open a connection to the file. If the target file has no data (the file is an empty one) the `ImportFromCSV` method returns an empty array, that is, an array bounded from 0 to -1 and holding no elements and no data.
+>If the target file has no data (the file is an empty one) or an error occur when parsing, the `ImportFromCSV` method returns a non-initialized object.
 {: .text-grey-dk-300 .bg-yellow-000 }
 
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)
