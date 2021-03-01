@@ -12,6 +12,7 @@ New
 {: .label .label-purple }
 
 Sorts the imported CSV/TSV data.
+{: .fs-6 .fw-300 }
 
 ---
 
