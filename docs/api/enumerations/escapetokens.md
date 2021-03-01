@@ -8,7 +8,7 @@ nav_order: 2
 # EscapeTokens Enum
 {: .fs-9 }
 
-Provides a list of constants for use to configure the char used as escape one.
+Provides a list of constants to configure the char used as escape character.
 {: .fs-6 .fw-300 }
 
 ---
