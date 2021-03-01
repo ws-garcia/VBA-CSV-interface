@@ -87,7 +87,7 @@ CSVint.GuessDelimiters conf
 CSVint.ImportFromCSV(conf).DumpToArray Arr
 ```
 
-Access to the first field of the first record:
+Access to the first field of the first record from the imported data:
 
 ```vb
 Dim Element as Variant
