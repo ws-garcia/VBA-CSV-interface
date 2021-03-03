@@ -143,13 +143,17 @@ Attribute ReadText.VB_Description = "Reads a number of characters from the strea
                 InitialPos = Seek(FileHandled)
                 BufferMark = LenB(Buffer)
                 If P_ENDSTREAMONLINEBREAK Then
-                    BufferEnds = (MidB$(Buffer, BufferMark - 3, 4) = vbCrLf)
+                    Dim Last2Chrs As String
+                    Dim LastChr As String
+                    Last2Chrs = MidB$(Buffer, BufferMark - 3, 4)
+                    BufferEnds = (Last2Chrs = vbCrLf)
                     Select Case BufferEnds
                         Case False
-                            BufferEnds = (MidB$(Buffer, BufferMark - 1, 2) = vbCr)
+                            LastChr = MidB$(Last2Chrs, 3, 2)
+                            BufferEnds = (LastChr = vbCr)
                             Select Case BufferEnds
                                 Case False
-                                    BufferEnds = (MidB$(Buffer, BufferMark - 1, 2) = vbLf)
+                                    BufferEnds = (LastChr = vbLf)
                                     If BufferEnds Then
                                         P_LINEBREAK = vbLf
                                     End If
@@ -162,13 +166,15 @@ Attribute ReadText.VB_Description = "Reads a number of characters from the strea
                     Do While Not BufferEnds
                         BufferMark = BufferMark - 2
                         BufferDelta = BufferDelta + 1
-                        BufferEnds = (MidB$(Buffer, BufferMark - 3, 4) = vbCrLf)
+                        Last2Chrs = MidB$(Buffer, BufferMark - 3, 4)
+                        BufferEnds = (Last2Chrs = vbCrLf)
                         Select Case BufferEnds
                             Case False
-                                BufferEnds = (MidB$(Buffer, BufferMark - 1, 2) = vbCr)
+                                LastChr = MidB$(Last2Chrs, 3, 2)
+                                BufferEnds = (LastChr = vbCr)
                                 Select Case BufferEnds
                                     Case False
-                                        BufferEnds = (MidB$(Buffer, BufferMark - 1, 2) = vbLf)
+                                        BufferEnds = (LastChr = vbLf)
                                         If BufferEnds Then
                                             P_LINEBREAK = vbLf
                                         End If
