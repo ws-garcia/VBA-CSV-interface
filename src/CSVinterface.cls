@@ -51,6 +51,7 @@ Private dTTemplate() As Variant '----------Template
 Private TemplateDefined As Boolean
 Private TargetsDefined As Boolean
 Private RequestedFieldsArray() As Long
+Private StreamWithQuotes As Boolean
 '////////////////////////////////////////////////////////////////////////////////////////////
 '#
 '////////////////////////////////////////////////////////////////////////////////////////////
@@ -1612,6 +1613,7 @@ Private Sub StreamParseCSV(configObj As parserConfig, _
     '@----------------------------------------------------------------------------
     'Get CSV stream and populate a temp array
     CSVstream.ReadText
+    StreamWithQuotes = InStrB(1, CSVstream.bufferString, CHR_DOUBLE_QUOTES)
     StreamEnd = CSVstream.atEndOfStream
     tmpCSV() = Split(CSVstream.bufferString, RecordDelimiter)
     '@----------------------------------------------------------------------------
@@ -1620,6 +1622,7 @@ Private Sub StreamParseCSV(configObj As parserConfig, _
         CSVstream.bufferSize = 2 * configObj.bufferSize
         CSVstream.RestartPointer
         CSVstream.ReadText
+        StreamWithQuotes = InStrB(1, CSVstream.bufferString, CHR_DOUBLE_QUOTES)
         StreamEnd = CSVstream.atEndOfStream
         tmpCSV() = Split(CSVstream.bufferString, RecordDelimiter)
     Loop
@@ -1652,29 +1655,33 @@ Private Sub StreamParseCSV(configObj As parserConfig, _
             'Process the current Token
             TokenEndReached = False
             TokenBeginningPos = OverStringPointer
-            Select Case OverStringPointer
-                Case Is < LenCurrentIndex
-                    ASCIIcharw = AscW(MidB$(tmpCSV(Index), OverStringPointer, 2))
-                    '@----------------------------------------------------------------------------
-                    'Ignore spaces, tabs and remanents LF
-                    Select Case FDAscW
-                        Case Is <> 9
-                            Do While ASCIIcharw = 32 Or ASCIIcharw = 9 Or ASCIIcharw = 10
-                                OverStringPointer = OverStringPointer + 2&
-                                If OverStringPointer > LenCurrentIndex Then Exit Do
-                                ASCIIcharw = AscW(MidB$(tmpCSV(Index), OverStringPointer, 2))
-                            Loop
-                        Case Else
-                            Do While ASCIIcharw = 32 Or ASCIIcharw = 10
-                                OverStringPointer = OverStringPointer + 2&
-                                If OverStringPointer > LenCurrentIndex Then Exit Do
-                                ASCIIcharw = AscW(MidB$(tmpCSV(Index), OverStringPointer, 2))
-                            Loop
-                    End Select
-                    OpenedToken = (ASCIIcharw = EscapeAscW)
-                Case Else 'Avoid over runs
-                    OpenedToken = False
-            End Select
+            If StreamWithQuotes Then
+                Select Case OverStringPointer
+                    Case Is < LenCurrentIndex
+                        ASCIIcharw = AscW(MidB$(tmpCSV(Index), OverStringPointer, 2))
+                        '@----------------------------------------------------------------------------
+                        'Ignore spaces, tabs and remanents LF
+                        Select Case FDAscW
+                            Case Is <> 9
+                                Do While ASCIIcharw = 32 Or ASCIIcharw = 9 Or ASCIIcharw = 10
+                                    OverStringPointer = OverStringPointer + 2&
+                                    If OverStringPointer > LenCurrentIndex Then Exit Do
+                                    ASCIIcharw = AscW(MidB$(tmpCSV(Index), OverStringPointer, 2))
+                                Loop
+                            Case Else
+                                Do While ASCIIcharw = 32 Or ASCIIcharw = 10
+                                    OverStringPointer = OverStringPointer + 2&
+                                    If OverStringPointer > LenCurrentIndex Then Exit Do
+                                    ASCIIcharw = AscW(MidB$(tmpCSV(Index), OverStringPointer, 2))
+                                Loop
+                        End Select
+                        OpenedToken = (ASCIIcharw = EscapeAscW)
+                    Case Else 'Avoid over runs
+                        OpenedToken = False
+                End Select
+            Else
+                OpenedToken = False
+            End If
             If OpenedToken Then
                 '@----------------------------------------------------------------------------
                 'Try to escape the Token
@@ -1705,6 +1712,7 @@ Private Sub StreamParseCSV(configObj As parserConfig, _
                                 '@----------------------------------------------------------------------------
                                 'Load new stream
                                 CSVstream.ReadText
+                                StreamWithQuotes = InStrB(1, CSVstream.bufferString, CHR_DOUBLE_QUOTES)
                                 StreamEnd = CSVstream.atEndOfStream
                                 tmpCSV() = Split(CSVstream.bufferString, RecordDelimiter)
                                 Index = 0
@@ -1846,6 +1854,7 @@ Private Sub StreamParseCSV(configObj As parserConfig, _
                                 '@----------------------------------------------
                                 'Advance stream
                                 CSVstream.ReadText
+                                StreamWithQuotes = InStrB(1, CSVstream.bufferString, CHR_DOUBLE_QUOTES)
                                 StreamEnd = CSVstream.atEndOfStream
                                 tmpCSV() = Split(CSVstream.bufferString, RecordDelimiter)
                                 Index = 0
@@ -1924,6 +1933,7 @@ Private Sub StreamParseCSV(configObj As parserConfig, _
                         '@----------------------------------------------
                         'Advance stream
                         CSVstream.ReadText
+                        StreamWithQuotes = InStrB(1, CSVstream.bufferString, CHR_DOUBLE_QUOTES)
                         StreamEnd = CSVstream.atEndOfStream
                         tmpCSV() = Split(CSVstream.bufferString, RecordDelimiter)
                         Index = 0
@@ -1977,6 +1987,7 @@ Private Sub StreamParseCSV(configObj As parserConfig, _
             '@----------------------------------------------
             'Advance stream
             CSVstream.ReadText
+            StreamWithQuotes = InStrB(1, CSVstream.bufferString, CHR_DOUBLE_QUOTES)
             StreamEnd = CSVstream.atEndOfStream
             tmpCSV() = Split(CSVstream.bufferString, RecordDelimiter)
             Index = 0
@@ -2091,6 +2102,7 @@ AdvanceLine:
                         '@----------------------------------------------
                         'Advance stream
                         Ostream.ReadText
+                        StreamWithQuotes = InStrB(1, Ostream.bufferString, CHR_DOUBLE_QUOTES)
                         Arr() = Split(Ostream.bufferString, recDelimiter)
                         idx = 0
                         MaxIdx = UBound(Arr)
@@ -2106,6 +2118,7 @@ AdvanceLine:
             '@----------------------------------------------
             'Advance stream
             Ostream.ReadText
+            StreamWithQuotes = InStrB(1, Ostream.bufferString, CHR_DOUBLE_QUOTES)
             Arr() = Split(Ostream.bufferString, recDelimiter)
             idx = 0
             MaxIdx = UBound(Arr)

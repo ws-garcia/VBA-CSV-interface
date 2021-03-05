@@ -212,9 +212,9 @@ Finally, the below chart shows the overheat for the Sorting and Dynamic Typing o
 
 ### Conclusions
 
-- `ImportFromCSV` is the faster one import method when working with files with a great number of quoted fields. The performance of the @sdkn104 solution may be affected if the time to load the file content is not ignored, this because the solution doesn't have a method to pull out the content of CSV files.
+- `ImportFromCSV` is the faster one import method.
 - The CSV syntax slow-down the performance. When the number of escaped fields are increased, the performance decrease, this is especially noticeable for the @sdkn104 solution.
-- The Dynamic Typing causes more overheat than the Sort operation. This can be explained by the great performance of the Yaroslavskiy sorting algorithm used. 
+- The Dynamic Typing causes more overheat than the Sort operation. This can be explained by the great performance of the Yaroslavskiy sorting algorithm used.
 
 ## Licence
 Copyright (C) 2021  [W. García](https://github.com/ws-garcia/VBA-CSV-interface/).
