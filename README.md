@@ -14,6 +14,7 @@ VBA CSV interface is the most complete, and open source, CSV/TSV VBA parser libr
 * __Flexible__. Import only certain range of records from the given file, import fields (columns) by indexes or names.
 * __Dynamic Typing support__. Turn CSV data field to a desired VBA data type.
 * __Data sorting__. Sort CSV imported data using the hyper-fast [Yaroslavskiy Dual-Pivot Quicksort](https://web.archive.org/web/20151002230717/http://iaroslavski.narod.ru/quicksort/DualPivotQuicksort.pdf) like Java.
+* __Microsoft Access compatible__. The library has a version for those who feel in comfort working through DAO databases, [download from here](https://github.com/ws-garcia/VBA-CSV-interface/blob/master/src/Access_version.zip).
 * __RFC-4180 specs compliant__.
 
 ## Getting started
