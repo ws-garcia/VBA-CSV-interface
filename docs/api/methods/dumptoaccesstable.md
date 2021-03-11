@@ -18,7 +18,7 @@ Dumps the data from the current instance to a Microsoft Access Database (.accdb)
 
 >⚠️**Caution**
 >{: .text-grey-lt-000 .bg-green-000 }
->This method is only available in the [Access version of the CSVinterface.cls](https://github.com/ws-garcia/VBA-CSV-interface/blob/master/src/Access_version.zip) module.
+>This method is only available in the [Access version of the CSVinterface.cls](https://github.com/ws-garcia/VBA-CSV-interface/raw/master/src/Access_version.zip) module.
 {: .text-grey-dk-300 .bg-yellow-000 }
 
 ## Syntax
