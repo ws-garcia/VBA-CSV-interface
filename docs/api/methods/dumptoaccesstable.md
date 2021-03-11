@@ -68,4 +68,9 @@ See also
 
 If a table named *tableName* already exist in the database, the operation is aborted. User can specify the fields for create indexes by name or by absolute position through the *fieldsToIndexing* parameter. When the *fieldsToIndexing* parameter is not set, the data is dumped into the database table without indexing more fields than the record position.
 
+>⚠️**Caution**
+>{: .text-grey-lt-000 .bg-green-000 }
+>All the data is dumped as "Short Text". If the CSV file has some of the special chars listed in [this article](https://docs.microsoft.com/en-us/office/troubleshoot/access/error-using-special-characters) an error can occur.
+{: .text-grey-dk-300 .bg-yellow-000 }
+
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)
