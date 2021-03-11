@@ -822,7 +822,7 @@ Private Sub ParseCSVstring(ByRef csvText As String, _
     Dim TokenEndingPos As Long
     Dim TokenEndReached As Boolean
     
-    On Error GoTo ParseCriticalCSV_Error_Handler
+    On Error GoTo ParseCSVstring_Error_Handler
     '@----------------------------------------------------------------------------
     'Start variables
     SearchBeginningMark = 1&
@@ -1195,7 +1195,7 @@ Private Sub ParseCSVstring(ByRef csvText As String, _
     Set RecordToken = Nothing
     Set tmpToken = Nothing
     Exit Sub
-ParseCriticalCSV_Error_Handler:
+ParseCSVstring_Error_Handler:
     Set outputList = Nothing
     Set tmpToken = Nothing
     Erase tmpCSV
@@ -1210,12 +1210,12 @@ ParseCriticalCSV_StartingIndexOutOfBound:
     Err.Raise Number:=vbObjectError + 9002, _
                     Source:="CSVinterface Class [ParseCSV_RFC4180]", _
                     Description:="The index over which the operation starts is out of bounds. Try start the import on a lower index."
-    Resume ParseCriticalCSV_Error_Handler
+    Resume ParseCSVstring_Error_Handler
 ParseCriticalCSV_MissingEscapeChar:
     Err.Raise Number:=vbObjectError + 9003, _
                     Source:="CSVinterface Class [ParseCSV_RFC4180]", _
                     Description:="Missing some escape char. Check the data and try again."
-    Resume ParseCriticalCSV_Error_Handler
+    Resume ParseCSVstring_Error_Handler
 End Sub
 
 Private Sub Quicksort(leftt As Long, _
@@ -1536,7 +1536,7 @@ Private Sub StreamParseCSV(configObj As parserConfig, _
     Dim TokenEndingPos As Long
     Dim TokenEndReached As Boolean
     
-    On Error GoTo ParseCriticalCSV_Error_Handler
+    On Error GoTo StreamParseCSV_Error_Handler
     '@----------------------------------------------------------------------------
     'Start variables
     SearchBeginningMark = 1&
@@ -2017,7 +2017,7 @@ Private Sub StreamParseCSV(configObj As parserConfig, _
     Set RecordToken = Nothing
     Set tmpToken = Nothing
     Exit Sub
-ParseCriticalCSV_Error_Handler:
+StreamParseCSV_Error_Handler:
     Set outputList = Nothing
     Set tmpToken = Nothing
     Set CSVstream = Nothing
@@ -2033,12 +2033,12 @@ ParseCriticalCSV_StartingIndexOutOfBound:
     Err.Raise Number:=vbObjectError + 9002, _
                     Source:="CSVinterface Class [ParseCSV_RFC4180]", _
                     Description:="The index over which the operation starts is out of bounds. Try start the import on a lower index."
-    Resume ParseCriticalCSV_Error_Handler
+    Resume StreamParseCSV_Error_Handler
 ParseCriticalCSV_MissingEscapeChar:
     Err.Raise Number:=vbObjectError + 9003, _
                     Source:="CSVinterface Class [ParseCSV_RFC4180]", _
                     Description:="Missing some escape char. Check the data and try again."
-    Resume ParseCriticalCSV_Error_Handler
+    Resume StreamParseCSV_Error_Handler
 End Sub
 
 Private Sub StreamSkipUnwantedLines(ByRef idx As Long, _
