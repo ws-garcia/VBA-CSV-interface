@@ -3,7 +3,7 @@
 
 ## Introductory words
 
-VBA CSV interface is the most complete, and open source, CSV/TSV VBA parser library nowadays. The library is RFC-4180 compliant and enables users to manipulate CSV content at the highest speed. All the modules were developed to accomplish the data exchange with the task with the greatest performance and to grant an easy use.
+VBA CSV interface is the most complete, and open source, CSV/TSV VBA parser library nowadays. The library is RFC-4180 compliant and enables users to manipulate CSV content at the highest speed. All the modules were developed to accomplish the data exchange task with the greatest performance and to grant an easy use.
 
 ## Advantages
 * __Fast__. Writes and reads files at the highest speed.
