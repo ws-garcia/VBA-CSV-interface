@@ -2,7 +2,7 @@
 title: DumpToAccessTable
 parent: Methods
 grand_parent: API
-nav_order: 3
+nav_order: 4
 ---
 
 # DumpToAccessTable
@@ -66,7 +66,7 @@ See also
 
 ## Behavior
 
-If a table named *tableName* already exist in the database, the operation is aborted. User can specify the fields for create indexes by name or by absolute position through the *fieldsToIndexing* parameter. When the *fieldsToIndexing* parameter is not set, the data is dumped into the database table without indexing more fields than the record position.
+If a table named *tablename* already exists in the database, the method will attempt to append the data. User can specify the fields for create indexes by name or by absolute position through the *fieldsToIndexing* parameter. When the *fieldsToIndexing* parameter is not set, the data is dumped into the database table without indexing more fields than the record position.
 
 >⚠️**Caution**
 >{: .text-grey-lt-000 .bg-green-000 }
