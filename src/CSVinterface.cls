@@ -52,6 +52,54 @@ Private TemplateDefined As Boolean
 Private TargetsDefined As Boolean
 Private RequestedFieldsArray() As Long
 Private StreamWithQuotes As Boolean
+'@------------------------------------------------------
+' SEQUENTIAL READ VARIABLES
+Private static_ASCIIcharw As Long
+Private static_commToken As Long
+Private static_CSVstream As ECPTextStream
+Private static_dTTargets() As Variant
+Private static_dTTemplate() As Variant
+Private static_dynamicType As Boolean
+Private static_EndOF As Boolean
+Private static_EndOFStreamBuffer As Boolean
+Private static_EscapeAscW As Long
+Private static_EscapeChr As String
+Private static_EscapedWFS As Boolean
+Private static_FDAscW As Long
+Private static_FieldDelimiter As String
+Private static_FieldID As Long
+Private static_Headers As Boolean
+Private static_IgnoreLines As Boolean
+Private static_ImportDepth As Long
+Private static_ImportSwitch As Boolean
+Private static_Index As Long, static_MaxIndex As Long
+Private static_IsHeader As Boolean
+Private static_KnownEnding As Boolean
+Private static_LenCurrentIndex As Long
+Private static_MaxReqIndex As Long
+Private static_OpenedToken As Boolean
+Private static_outputList As ECPArrayList
+Private static_OverStringPointer As Long, static_hpointer As Long
+Private static_RecordDelimiter As String
+Private static_RecordEndReached As Boolean
+Private static_RecordsCount As Long
+Private static_RecordToken As ECPArrayList
+Private static_RequestedFieldsArray() As Long
+Private static_SearchBeginningMark As Long
+Private static_SeqReadStarted As Boolean
+Private static_SplittedToken As Boolean
+Private static_StreamEnd As Boolean
+Private static_StreamWithQuotes As Boolean
+Private static_TargetsDefined As Boolean
+Private static_TemplateDefined As Boolean
+Private static_tmpCSV() As String
+Private static_tmpRequested() As Variant
+Private static_tmpToken As ECPArrayList
+Private static_TokenBeginningPos As Long
+Private static_TokenEndingPos As Long
+Private static_TokenEndReached As Boolean
+Private static_vectorsBound As Long
+Private static_vectorsMaxBound As Long
 '////////////////////////////////////////////////////////////////////////////////////////////
 '#
 '////////////////////////////////////////////////////////////////////////////////////////////
@@ -94,6 +142,13 @@ Attribute item.VB_UserMemId = 0
             item = P_CSV_DATA(CLng(Index(0)))(CLng(Index(1)))
     End Select
 End Property
+Public Property Get items() As ECPArrayList
+Attribute items.VB_Description = "Gets or sets the result array over the current instance."
+    Set items = P_CSV_DATA
+End Property
+Public Property Set items(values As ECPArrayList)
+    Set P_CSV_DATA = values
+End Property
 Public Property Get parseConfig() As parserConfig
 Attribute parseConfig.VB_Description = "Gets or sets, the parser configuration object."
     Set parseConfig = config
@@ -130,6 +185,15 @@ Public Sub ClearData()
     Set P_CSV_HEADER = New ECPArrayList
 End Sub
 
+Public Sub CloseSeqReader()
+    static_SeqReadStarted = False
+    Erase static_tmpCSV
+    Set static_CSVstream = Nothing
+    Set static_RecordToken = Nothing
+    Set static_tmpToken = Nothing
+    Set static_outputList = Nothing
+End Sub
+
 Public Sub CreateJagged(ByRef ArrVar() As Variant, ArraySize As Long, VectorSize As Long)
     Dim Vector() As String
     Dim arrPointer As Long
@@ -143,46 +207,58 @@ Public Sub CreateJagged(ByRef ArrVar() As Variant, ArraySize As Long, VectorSize
     Erase Vector
 End Sub
 
-Public Sub DumpToArray(OutPutArray() As Variant)
+Public Sub DumpToArray(OutPutArray() As Variant, _
+                        Optional ByRef DataSource As ECPArrayList = Nothing)
     If P_SUCCESSFUL_IMPORT Then
         Dim UB1 As Long, ub2 As Long
         Dim Counter1 As Long, Counter2 As Long
         
-        UB1 = P_CSV_DATA.count - 1
+        If DataSource Is Nothing Then
+            Set DataSource = P_CSV_DATA
+        End If
+        UB1 = DataSource.count - 1
         ReDim OutPutArray(0 To UB1, 0 To P_VECTORS_MAX_BOUND)
         
         For Counter1 = 0 To UB1
-            ub2 = UBound(P_CSV_DATA(Counter1))
+            ub2 = UBound(DataSource(Counter1))
             For Counter2 = 0 To ub2
-                OutPutArray(Counter1, Counter2) = P_CSV_DATA(Counter1)(Counter2)
+                OutPutArray(Counter1, Counter2) = DataSource(Counter1)(Counter2)
             Next Counter2
         Next Counter1
     End If
 End Sub
 
-Public Sub DumpToJaggedArray(OutPutArray() As Variant)
+Public Sub DumpToJaggedArray(OutPutArray() As Variant, _
+                                Optional ByRef DataSource As ECPArrayList = Nothing)
     If P_SUCCESSFUL_IMPORT Then
         Dim UB1 As Long
         Dim Counter1 As Long
         
-        UB1 = P_CSV_DATA.count - 1
+        If DataSource Is Nothing Then
+            Set DataSource = P_CSV_DATA
+        End If
+        UB1 = DataSource.count - 1
         ReDim OutPutArray(0 To UB1)
         
         For Counter1 = 0 To UB1
-            OutPutArray(Counter1) = P_CSV_DATA(Counter1)
+            OutPutArray(Counter1) = DataSource(Counter1)
         Next Counter1
     End If
 End Sub
 
 Public Sub DumpToSheet(Optional WBookName As String, _
                         Optional SheetName As String, _
-                        Optional rngName As String = "A1")
-    Dim WBook As Workbook
-    Dim outputSheet As Worksheet
-    Dim OutputRange As Range
-    
+                        Optional rngName As String = "A1", _
+                        Optional ByRef DataSource As ECPArrayList = Nothing)
     On Error Resume Next
     If P_SUCCESSFUL_IMPORT Then
+        Dim WBook As Workbook
+        Dim outputSheet As Worksheet
+        Dim OutputRange As Range
+        
+        If DataSource Is Nothing Then
+            Set DataSource = P_CSV_DATA
+        End If
         EnableOptimization
         '@------------------------------------------------------
         'Set the target Workbook
@@ -206,13 +282,13 @@ Public Sub DumpToSheet(Optional WBookName As String, _
         Dim UB1 As Long, ub2 As Long
         Dim Counter1 As Long, Counter2 As Long
         
-        UB1 = P_CSV_DATA.count - 1
+        UB1 = DataSource.count - 1
         ReDim tmpOutputArray(0 To UB1, 0 To P_VECTORS_MAX_BOUND)
         
         For Counter1 = 0 To UB1
-            ub2 = UBound(P_CSV_DATA(Counter1))
+            ub2 = UBound(DataSource(Counter1))
             For Counter2 = 0 To ub2
-                tmpOutputArray(Counter1, Counter2) = P_CSV_DATA(Counter1)(Counter2)
+                tmpOutputArray(Counter1, Counter2) = DataSource(Counter1)(Counter2)
             Next Counter2
         Next Counter1
         '@------------------------------------------------------
@@ -369,6 +445,398 @@ Private Function GetLongFilters(ByRef tmpFilters() As Variant, _
         Err.Clear
         GetLongFilters = tmpResult
     End If
+End Function
+
+Public Function GetRecord() As ECPArrayList
+    
+    On Error GoTo GetRecord_Error_Handler
+    If Not static_SeqReadStarted Then Exit Function
+    '@----------------------------------------------------------------------------
+    'Get CSV record using streams
+    If Not static_ImportSwitch Then
+        '@----------------------------------------------------------------------------
+        'Start variables
+        dTTargets() = static_dTTargets
+        dTTemplate() = static_dTTemplate
+        RequestedFieldsArray() = static_RequestedFieldsArray
+        StreamWithQuotes = static_StreamWithQuotes
+        TargetsDefined = static_TargetsDefined
+        TemplateDefined = static_TemplateDefined
+        static_outputList.Reinitialize 1
+        static_IsHeader = (static_Headers And static_RecordsCount = 0)
+        If static_IgnoreLines Then
+            '@----------------------------------------------------------------------------
+            'Skip lines if needed
+            StreamSkipUnwantedLines static_Index, static_CSVstream, static_tmpCSV, static_MaxIndex, static_RecordDelimiter, static_commToken, static_FDAscW
+        End If
+        static_LenCurrentIndex = LenB(static_tmpCSV(static_Index))
+        '@----------------------------------------------------------------------------
+        'Restart pointers
+        static_RecordEndReached = False
+        static_FieldID = 0
+        Do
+            '@----------------------------------------------------------------------------
+            'Process the current Token
+            static_TokenEndReached = False
+            static_TokenBeginningPos = static_OverStringPointer
+            If StreamWithQuotes Then
+                Select Case static_OverStringPointer
+                    Case Is < static_LenCurrentIndex
+                        static_ASCIIcharw = AscW(MidB$(static_tmpCSV(static_Index), static_OverStringPointer, 2))
+                        '@----------------------------------------------------------------------------
+                        'Ignore spaces, tabs and remanents LF
+                        Select Case static_FDAscW
+                            Case Is <> 9
+                                Do While static_ASCIIcharw = 32 Or static_ASCIIcharw = 9 Or static_ASCIIcharw = 10
+                                    static_OverStringPointer = static_OverStringPointer + 2&
+                                    If static_OverStringPointer > static_LenCurrentIndex Then Exit Do
+                                    static_ASCIIcharw = AscW(MidB$(static_tmpCSV(static_Index), static_OverStringPointer, 2))
+                                Loop
+                            Case Else
+                                Do While static_ASCIIcharw = 32 Or static_ASCIIcharw = 10
+                                    static_OverStringPointer = static_OverStringPointer + 2&
+                                    If static_OverStringPointer > static_LenCurrentIndex Then Exit Do
+                                    static_ASCIIcharw = AscW(MidB$(static_tmpCSV(static_Index), static_OverStringPointer, 2))
+                                Loop
+                        End Select
+                        static_OpenedToken = (static_ASCIIcharw = static_EscapeAscW)
+                    Case Else 'Avoid over runs
+                        static_OpenedToken = False
+                End Select
+            Else
+                static_OpenedToken = False
+            End If
+            If static_OpenedToken Then
+                '@----------------------------------------------------------------------------
+                'Try to escape the Token
+                static_TokenBeginningPos = static_OverStringPointer + 2&
+                static_SearchBeginningMark = static_TokenBeginningPos
+                static_hpointer = InStrB(static_SearchBeginningMark, static_tmpCSV(static_Index), static_EscapeChr) 'EOFld marker
+                Do While (Not static_TokenEndReached And Not static_EndOF)
+                    '@----------------------------------------------------------------------------
+                    'Buffering if needed
+                    If Not static_SplittedToken Then static_SplittedToken = (static_hpointer = 0)
+                    Do While static_hpointer = 0& 'Escape char may be on subsequent static_Index
+                        Select Case static_SearchBeginningMark
+                            Case 1 'Store the full Token from the current static_Index
+                                static_tmpToken.Add static_tmpCSV(static_Index)
+                            Case Else 'Store the Right most Token portion from the current static_Index
+                                static_tmpToken.Add RightB$(static_tmpCSV(static_Index), static_LenCurrentIndex - static_SearchBeginningMark + 1)
+                        End Select
+                        static_Index = static_Index + 1&
+                        static_EndOFStreamBuffer = (static_Index > static_MaxIndex)
+                        If Not static_EndOFStreamBuffer Then
+                            static_LenCurrentIndex = LenB(static_tmpCSV(static_Index))
+                            static_SearchBeginningMark = 1
+                            static_hpointer = InStrB(static_SearchBeginningMark, static_tmpCSV(static_Index), static_EscapeChr) 'Find escape char
+                        Else
+                            If Not static_StreamEnd Then
+                                '@----------------------------------------------------------------------------
+                                'Load new stream
+                                static_CSVstream.ReadText
+                                StreamWithQuotes = InStrB(1, static_CSVstream.bufferString, static_EscapeChr)
+                                static_StreamEnd = static_CSVstream.atEndOfStream
+                                static_tmpCSV() = Split(static_CSVstream.bufferString, static_RecordDelimiter)
+                                static_Index = 0
+                                static_MaxIndex = UBound(static_tmpCSV)
+                                If static_tmpCSV(static_MaxIndex) = vbNullString Then 'Streams lefts empty value when splited
+                                    static_MaxIndex = static_MaxIndex - 1
+                                Else
+                                    If static_tmpCSV(static_MaxIndex) = vbLf Then 'vbCrLf splited as vbCr
+                                        static_MaxIndex = static_MaxIndex - 1
+                                    End If
+                                End If
+                                static_EndOFStreamBuffer = False
+                                static_LenCurrentIndex = LenB(static_tmpCSV(static_Index))
+                                static_SearchBeginningMark = 1
+                                static_hpointer = InStrB(static_SearchBeginningMark, static_tmpCSV(static_Index), static_EscapeChr) 'Find escape char
+                            Else
+                                static_hpointer = 0&
+                            End If
+                        End If
+                        static_EndOF = (static_StreamEnd And static_EndOFStreamBuffer)
+                    Loop
+                    If static_hpointer = 0& And static_EndOF Then GoTo GetRecord_MissingEscapeChar 'Missing escape char
+                    static_OverStringPointer = static_hpointer + 2&
+                    If static_OverStringPointer < static_LenCurrentIndex Then
+                        static_ASCIIcharw = AscW(MidB$(static_tmpCSV(static_Index), static_OverStringPointer, 2))
+                        '@----------------------------------------------------------------------------
+                        'Ignore spaces, tabs and remanents LF
+                        Select Case static_FDAscW
+                            Case Is <> 9
+                                Do While static_ASCIIcharw = 32 Or static_ASCIIcharw = 9 Or static_ASCIIcharw = 10
+                                    static_OverStringPointer = static_OverStringPointer + 2&
+                                    If static_OverStringPointer > static_LenCurrentIndex Then Exit Do
+                                    static_ASCIIcharw = AscW(MidB$(static_tmpCSV(static_Index), static_OverStringPointer, 2))
+                                Loop
+                            Case Else
+                                Do While static_ASCIIcharw = 32 Or static_ASCIIcharw = 10
+                                    static_OverStringPointer = static_OverStringPointer + 2&
+                                    If static_OverStringPointer > static_LenCurrentIndex Then Exit Do
+                                    static_ASCIIcharw = AscW(MidB$(static_tmpCSV(static_Index), static_OverStringPointer, 2))
+                                Loop
+                        End Select
+                        '@----------------------------------------------------------------------------
+                        'Check if we are at the end of the field
+                        static_EscapedWFS = (static_ASCIIcharw = static_FDAscW)
+                    Else
+                        static_EscapedWFS = False
+                    End If
+                    If static_EscapedWFS Then 'Escape char succeeded by fields separator char
+                        static_TokenEndingPos = static_hpointer - 1&
+                        static_TokenEndReached = True
+                        '@----------------------------------------------------------------------------
+                        'Save the Token
+                        Select Case static_SplittedToken
+                            Case False 'Just save Token
+                                If RequestedField(static_FieldID + 1&, static_MaxReqIndex) Then 'Filter fields
+                                    Select Case static_dynamicType
+                                        Case False
+                                            static_RecordToken.Add MidB$(static_tmpCSV(static_Index), static_TokenBeginningPos, _
+                                                                            static_TokenEndingPos - static_TokenBeginningPos + 1)
+                                        Case Else
+                                            static_RecordToken.Add TypeData(MidB$(static_tmpCSV(static_Index), static_TokenBeginningPos, _
+                                                                            static_TokenEndingPos - static_TokenBeginningPos + 1), _
+                                                                            static_FieldID, _
+                                                                            static_IsHeader)
+                                    End Select
+                                End If
+                            Case Else 'The Token is stored on static_tmpToken object
+                                static_tmpToken.Add LeftB$(static_tmpCSV(static_Index), static_TokenEndingPos)
+                                If RequestedField(static_FieldID + 1&, static_MaxReqIndex) Then 'Filter fields
+                                    Select Case static_dynamicType
+                                        Case False
+                                            static_RecordToken.Add Join$(static_tmpToken.items, static_RecordDelimiter) 'Save whole Token
+                                        Case Else
+                                            static_RecordToken.Add TypeData(Join$(static_tmpToken.items, _
+                                                                                static_RecordDelimiter), _
+                                                                                static_FieldID, _
+                                                                                static_IsHeader)
+                                    End Select
+                                    static_tmpToken.Clear 'Clear static_tmpToken content
+                                End If
+                        End Select
+                        static_SplittedToken = False 'Restart Token status
+                        static_OverStringPointer = static_OverStringPointer + 2& 'Advance over the field separator char
+                        static_RecordEndReached = False
+                    Else
+                        If static_OverStringPointer >= static_LenCurrentIndex Then  'Escape char succeeded
+                                                                      'by records separator char
+                            static_TokenEndingPos = static_hpointer - 1&
+                            static_TokenEndReached = True
+                            static_RecordEndReached = True 'EOR
+                            '@----------------------------------------------------------------------------
+                            'Save the Token
+                            Select Case static_SplittedToken
+                                Case False 'Just save Token
+                                    If RequestedField(static_FieldID + 1&, static_MaxReqIndex) Then 'Filter fields
+                                        Select Case static_dynamicType
+                                            Case False
+                                                static_RecordToken.Add MidB$(static_tmpCSV(static_Index), static_TokenBeginningPos, _
+                                                                            static_TokenEndingPos - static_TokenBeginningPos + 1)
+                                            Case Else
+                                                static_RecordToken.Add TypeData(MidB$(static_tmpCSV(static_Index), static_TokenBeginningPos, _
+                                                                                    static_TokenEndingPos - static_TokenBeginningPos + 1), _
+                                                                                static_FieldID, _
+                                                                                static_IsHeader)
+                                        End Select
+                                    End If
+                                Case Else 'The Token is stored on static_tmpToken array
+                                    static_tmpToken.Add LeftB$(static_tmpCSV(static_Index), static_OverStringPointer - 3)
+                                    If RequestedField(static_FieldID + 1&, static_MaxReqIndex) Then 'Filter fields
+                                        Select Case static_dynamicType
+                                            Case False
+                                                static_RecordToken.Add Join$(static_tmpToken.items, static_RecordDelimiter) 'Save whole Token
+                                            Case Else
+                                                static_RecordToken.Add TypeData(Join$(static_tmpToken.items, _
+                                                                                static_RecordDelimiter), _
+                                                                                static_FieldID, _
+                                                                                static_IsHeader)
+                                        End Select
+                                        static_tmpToken.Clear 'Clear static_tmpToken content
+                                    End If
+                            End Select
+                            static_SplittedToken = False 'Restart Token status
+                            static_Index = static_Index + 1&
+                            static_EndOFStreamBuffer = (static_Index > static_MaxIndex)
+                            static_EndOF = (static_StreamEnd And static_EndOFStreamBuffer)
+                            If static_EndOFStreamBuffer And Not static_EndOF Then
+                                '@----------------------------------------------
+                                'Advance stream
+                                static_CSVstream.ReadText
+                                StreamWithQuotes = InStrB(1, static_CSVstream.bufferString, static_EscapeChr)
+                                static_StreamEnd = static_CSVstream.atEndOfStream
+                                static_tmpCSV() = Split(static_CSVstream.bufferString, static_RecordDelimiter)
+                                static_Index = 0
+                                static_MaxIndex = UBound(static_tmpCSV)
+                                If static_tmpCSV(static_MaxIndex) = vbNullString Then 'Streams lefts empty value when splited
+                                    static_MaxIndex = static_MaxIndex - 1
+                                Else
+                                    If static_tmpCSV(static_MaxIndex) = vbLf Then 'vbCrLf splited as vbCr
+                                        static_MaxIndex = static_MaxIndex - 1
+                                    End If
+                                End If
+                                static_EndOFStreamBuffer = False
+                            End If
+                            static_OverStringPointer = 1&
+                        Else
+                            If static_SplittedToken Then 'Store the Left most Token portion from the current static_Index
+                                static_tmpToken.Add LeftB$(static_tmpCSV(static_Index), static_OverStringPointer - 1)
+                            End If
+                            static_SearchBeginningMark = static_OverStringPointer
+                            static_hpointer = InStrB(static_SearchBeginningMark, static_tmpCSV(static_Index), static_EscapeChr) 'Find escape char
+                            static_TokenEndReached = False
+                        End If
+                    End If
+                Loop
+            Else
+                static_SplittedToken = False
+                '@----------------------------------------------------------------------------
+                'Try to mark the Starting and Ending position for the field
+                static_hpointer = InStrB(static_OverStringPointer, static_tmpCSV(static_Index), static_FieldDelimiter)
+                If static_hpointer Then 'Found fields delimiter char
+                    static_TokenEndReached = True
+                    static_TokenEndingPos = static_hpointer - 1&
+                    static_OverStringPointer = static_hpointer + 2&
+                    static_RecordEndReached = False
+                    '@----------------------------------------------------------------------------
+                    'Save the Token
+                    If RequestedField(static_FieldID + 1&, static_MaxReqIndex) Then 'Filter fields
+                        Select Case static_dynamicType
+                            Case False
+                                static_RecordToken.Add MidB$(static_tmpCSV(static_Index), static_TokenBeginningPos, _
+                                                    static_TokenEndingPos - static_TokenBeginningPos + 1)
+                            Case Else
+                                static_RecordToken.Add TypeData(MidB$(static_tmpCSV(static_Index), static_TokenBeginningPos, _
+                                                            static_TokenEndingPos - static_TokenBeginningPos + 1), _
+                                                            static_FieldID, _
+                                                            static_IsHeader)
+                        End Select
+                    End If
+                Else 'Missing fields delimiter char
+                    static_TokenEndReached = True
+                    static_RecordEndReached = True
+                    '@----------------------------------------------------------------------------
+                    'Save the Token
+                    If RequestedField(static_FieldID + 1&, static_MaxReqIndex) Then 'Filter fields
+                        Select Case static_dynamicType
+                            Case False
+                                static_RecordToken.Add RightB$(static_tmpCSV(static_Index), static_LenCurrentIndex _
+                                                    - static_TokenBeginningPos + 1)
+                            Case Else
+                                static_RecordToken.Add TypeData(RightB$(static_tmpCSV(static_Index), static_LenCurrentIndex _
+                                                            - static_TokenBeginningPos + 1), _
+                                                                static_FieldID, _
+                                                                static_IsHeader)
+                        End Select
+                    End If
+                    static_Index = static_Index + 1&
+                    static_EndOFStreamBuffer = (static_Index > static_MaxIndex)
+                    static_EndOF = (static_StreamEnd And static_EndOFStreamBuffer)
+                    If static_EndOFStreamBuffer And Not static_EndOF Then
+                        '@----------------------------------------------
+                        'Advance stream
+                        static_CSVstream.ReadText
+                        StreamWithQuotes = InStrB(1, static_CSVstream.bufferString, static_EscapeChr)
+                        static_StreamEnd = static_CSVstream.atEndOfStream
+                        static_tmpCSV() = Split(static_CSVstream.bufferString, static_RecordDelimiter)
+                        static_Index = 0
+                        static_MaxIndex = UBound(static_tmpCSV)
+                        If static_tmpCSV(static_MaxIndex) = vbNullString Then 'Streams lefts empty value when splited
+                            static_MaxIndex = static_MaxIndex - 1
+                        Else
+                            If static_tmpCSV(static_MaxIndex) = vbLf Then 'vbCrLf splited as vbCr
+                                static_MaxIndex = static_MaxIndex - 1
+                            End If
+                        End If
+                        static_EndOFStreamBuffer = False
+                    End If
+                    static_OverStringPointer = 1&
+                End If
+            End If
+            static_FieldID = static_FieldID + 1&
+        Loop While (Not static_RecordEndReached And Not static_EndOF)
+        Select Case static_vectorsBound
+            Case Is > 0
+                If static_RecordToken.count - 1 > static_vectorsMaxBound Then
+                    static_vectorsMaxBound = static_RecordToken.count - 1
+                    static_RecordToken.ShrinkBuffer
+                End If
+            Case Else
+                Select Case static_RecordToken.count
+                    Case Is > 0
+                        static_vectorsBound = static_RecordToken.count - 1
+                        static_RecordToken.ShrinkBuffer
+                    Case Else
+                        static_vectorsBound = static_RecordToken.count
+                End Select
+                static_vectorsMaxBound = static_vectorsBound
+        End Select
+        static_RecordsCount = static_RecordsCount + 1&
+        '@----------------------------------------------------------------------------
+        'Save record
+        static_outputList.Add static_RecordToken.items
+        static_RecordToken.Reinitialize static_vectorsBound + 1
+        P_VARYING_LENGTHS = (static_vectorsBound <> static_vectorsMaxBound)
+        If static_IgnoreLines Then
+            '@----------------------------------------------------------------------------
+            'Skip lines if needed
+            StreamSkipUnwantedLines static_Index, static_CSVstream, static_tmpCSV, _
+                                    static_MaxIndex, static_RecordDelimiter, static_commToken, static_FDAscW
+        End If
+        static_EndOFStreamBuffer = (static_Index > static_MaxIndex)
+        static_EndOF = (static_StreamEnd And static_EndOFStreamBuffer)
+        If static_EndOFStreamBuffer And Not static_EndOF Then
+            '@----------------------------------------------
+            'Advance stream
+            static_CSVstream.ReadText
+            StreamWithQuotes = InStrB(1, static_CSVstream.bufferString, static_EscapeChr)
+            static_StreamEnd = static_CSVstream.atEndOfStream
+            static_tmpCSV() = Split(static_CSVstream.bufferString, static_RecordDelimiter)
+            static_Index = 0
+            static_MaxIndex = UBound(static_tmpCSV)
+            If static_tmpCSV(static_MaxIndex) = vbNullString Then 'Streams lefts empty value when splited
+                static_MaxIndex = static_MaxIndex - 1
+            Else
+                If static_tmpCSV(static_MaxIndex) = vbLf Then 'vbCrLf splited as vbCr
+                    static_MaxIndex = static_MaxIndex - 1
+                End If
+            End If
+            static_EndOFStreamBuffer = False
+        End If
+        If Not static_EndOFStreamBuffer Then static_LenCurrentIndex = LenB(static_tmpCSV(static_Index))
+        static_ImportSwitch = static_EndOF
+        P_VECTORS_REGULAR_BOUND = static_vectorsBound
+        P_VECTORS_MAX_BOUND = static_vectorsMaxBound
+        '@----------------------------------------------------------------------------
+        'Check if the array need to be shrinked at the output stage
+        static_outputList.ShrinkBuffer
+        Set GetRecord = static_outputList
+        P_SUCCESSFUL_IMPORT = True
+    Else
+        Set GetRecord = Nothing
+        CloseSeqReader
+    End If
+    Exit Function
+GetRecord_Error_Handler:
+    Set GetRecord = Nothing
+    P_SUCCESSFUL_IMPORT = False
+    P_ERROR_NUMBER = Err.Number
+    P_ERROR_DESC = Err.Description & " [Check the record #" & static_RecordsCount + 1 _
+                                  & ", field #" & static_RecordToken.count + 1 _
+                                   & " on the source CSV file]."
+    P_ERROR_SOURCE = Err.Source
+    Exit Function
+GetRecord_StartingIndexOutOfBound:
+    Err.Raise Number:=vbObjectError + 9002, _
+                    Source:="CSVinterface Class [ParseCSV_RFC4180]", _
+                    Description:="The static_Index over which the operation starts is out of bounds. Try start the import on a lower static_Index."
+    Resume GetRecord_Error_Handler
+GetRecord_MissingEscapeChar:
+    Err.Raise Number:=vbObjectError + 9003, _
+                    Source:="CSVinterface Class [ParseCSV_RFC4180]", _
+                    Description:="Missing some escape char. Check the data and try again."
+    Resume GetRecord_Error_Handler
 End Function
 
 Public Sub GuessDelimiters(ByRef confObj As parserConfig)
@@ -754,16 +1222,16 @@ JoinRecordsFields_Error:
     P_ERROR_SOURCE = Err.Source
 End Function
 
-Private Function MaxIndexVal(ByRef Values() As Long) As Long
+Private Function MaxIndexVal(ByRef values() As Long) As Long
     Dim tmpVal As Long, idx0 As Long, idx As Long
     
-    idx0 = LBound(Values)
+    idx0 = LBound(values)
     idx = idx0
-    tmpVal = Values(idx0)
-    For idx0 = idx0 + 1 To UBound(Values)
-        If Values(idx0) > tmpVal Then
+    tmpVal = values(idx0)
+    For idx0 = idx0 + 1 To UBound(values)
+        If values(idx0) > tmpVal Then
             idx = idx0
-            tmpVal = Values(idx0)
+            tmpVal = values(idx0)
         End If
     Next idx0
     MaxIndexVal = idx
@@ -779,6 +1247,101 @@ Private Function MultiDimensional(CheckArray As Variant) As Boolean
 ErrHandler_MultiDimensional:
     MultiDimensional = False '1 dimension
 End Function
+
+Public Sub OpenSeqReader(configObj As parserConfig, _
+                            ParamArray FilterColumns() As Variant)
+    On Error GoTo OpenSeqReader_Error_Handler
+    If configObj.headers Then
+        Dim tmpConf As parserConfig
+        Set tmpConf = configObj.CopyConfig
+        tmpConf.startingRecord = 1
+        tmpConf.endingRecord = 1
+        ImportFromCSV tmpConf
+        Set tmpConf = Nothing
+        static_tmpRequested() = FilterColumns
+        Select Case UBound(static_tmpRequested)
+            Case -1
+                ReDim static_RequestedFieldsArray(0)
+                static_RequestedFieldsArray(0) = -1
+            Case Else
+                static_RequestedFieldsArray() = GetLongFilters(static_tmpRequested, P_CSV_HEADER)
+        End Select
+    Else
+        ReDim static_RequestedFieldsArray(0)
+        static_RequestedFieldsArray(0) = -1
+    End If
+    '@----------------------------------------------------------------------------
+    'Start variables
+    static_SearchBeginningMark = 1&
+    static_RecordsCount = 0&
+    static_vectorsBound = 0&
+    static_vectorsMaxBound = 0&
+    Set static_tmpToken = New ECPArrayList
+    Set static_CSVstream = New ECPTextStream
+    With configObj
+        static_CSVstream.bufferSize = .bufferSize
+        static_CSVstream.endStreamOnLineBreak = True
+        static_CSVstream.OpenStream .path
+        static_commToken = AscW(.commentsToken)
+        static_dynamicType = .dynamicTyping
+        static_dTTemplate() = .dTypingTemplate
+        static_dTTargets() = .dTypingLinks
+        static_Headers = .headers
+        static_IgnoreLines = .catchMeaninglessRecords
+        static_TemplateDefined = .dTTemplateDefined
+        static_TargetsDefined = .dTTemplateLinksDefined
+        static_FieldDelimiter = .fieldsDelimiter
+        static_RecordDelimiter = .recordsDelimiter
+    End With
+    static_TokenEndReached = False
+    static_RecordEndReached = False
+    '@----------------------------------------------------------------------------
+    'Set variables
+    static_OverStringPointer = static_SearchBeginningMark
+    static_MaxReqIndex = UBound(static_RequestedFieldsArray)
+    '@----------------------------------------------------------------------------
+    'Set Coerce Type to fields
+    Select Case configObj.escapeToken
+        Case 1
+            static_EscapeChr = CHR_APOSTROPHE
+        Case Else
+            static_EscapeChr = CHR_DOUBLE_QUOTES
+    End Select
+    static_EscapeAscW = AscW(static_EscapeChr)
+    static_FDAscW = AscW(static_FieldDelimiter)
+    Set static_RecordToken = New ECPArrayList
+    Set static_outputList = New ECPArrayList
+    static_Index = 0
+    '@----------------------------------------------------------------------------
+    'Get CSV stream and populate a temp array
+    static_CSVstream.ReadText
+    static_StreamWithQuotes = InStrB(1, static_CSVstream.bufferString, static_EscapeChr)
+    static_StreamEnd = static_CSVstream.atEndOfStream
+    static_tmpCSV() = Split(static_CSVstream.bufferString, static_RecordDelimiter)
+    '@----------------------------------------------------------------------------
+    'Ensuring the stream is sufficient enough to hold at least one CSV line
+    Do While Not static_StreamEnd And UBound(static_tmpCSV) = 0
+        static_CSVstream.bufferSize = 2 * configObj.bufferSize
+        static_CSVstream.RestartPointer
+        static_CSVstream.ReadText
+        static_StreamWithQuotes = InStrB(1, static_CSVstream.bufferString, static_EscapeChr)
+        static_StreamEnd = static_CSVstream.atEndOfStream
+        static_tmpCSV() = Split(static_CSVstream.bufferString, static_RecordDelimiter)
+    Loop
+    static_MaxIndex = UBound(static_tmpCSV)
+    If static_tmpCSV(static_MaxIndex) = vbNullString Then 'Streams lefts empty value when splited
+        static_MaxIndex = static_MaxIndex - 1
+    Else
+        If static_tmpCSV(static_MaxIndex) = vbLf Then 'vbCrLf splited as vbCr
+            static_MaxIndex = static_MaxIndex - 1
+        End If
+    End If
+    static_EndOFStreamBuffer = (static_Index > static_MaxIndex)
+    static_SeqReadStarted = True
+    Exit Sub
+OpenSeqReader_Error_Handler:
+    static_SeqReadStarted = False
+End Sub
 
 Private Sub ParseCSVstring(ByRef csvText As String, _
                             configObj As parserConfig, _
@@ -1218,117 +1781,6 @@ ParseCriticalCSV_MissingEscapeChar:
     Resume ParseCSVstring_Error_Handler
 End Sub
 
-Private Sub Quicksort(leftt As Long, _
-                        rightt As Long, _
-                        div As Long, _
-                        SortColumn As Long, _
-                        Optional Descending As Boolean = False)
-                        
-    Dim Ulen As Long
-    Dim i As Long, j As Long
-
-    Static RecursionLevel As Long
-    RecursionLevel = RecursionLevel + 1
-    Ulen = rightt - leftt
-    If Ulen < 27 Then 'insertion sort for tiny array
-        i = leftt + 1
-        Do While i <= rightt
-            j = i
-            Do While j > leftt
-                If P_CSV_DATA(j)(SortColumn) < P_CSV_DATA(j - 1)(SortColumn) Then
-                    P_CSV_DATA.Swap j, j - 1
-                End If
-                j = j - 1
-            Loop
-            i = i + 1
-        Loop
-    Else
-        Dim Third As Long
-        Third = Ulen / div
-        '"medians"
-        Dim m1 As Long
-        Dim m2 As Long
-        m1 = leftt + Third
-        m2 = rightt - Third
-        If m1 <= leftt Then m1 = leftt + 1
-        If m2 >= rightt Then m2 = rightt - 1
-        If P_CSV_DATA(m1)(SortColumn) < P_CSV_DATA(m2)(SortColumn) Then
-            P_CSV_DATA.Swap m1, leftt
-            P_CSV_DATA.Swap m2, rightt
-        Else
-            P_CSV_DATA.Swap m1, rightt
-            P_CSV_DATA.Swap m2, leftt
-        End If
-        'pivots
-        Dim pivot1 As Variant
-        Dim pivot2 As Variant
-        pivot1 = P_CSV_DATA(leftt)(SortColumn)
-        pivot2 = P_CSV_DATA(rightt)(SortColumn)
-        'pointers
-        Dim less As Long
-        Dim great As Long
-        less = leftt + 1
-        great = rightt - 1
-        'sorting
-        Dim k As Long
-        k = less
-        Do While k <= great
-            If P_CSV_DATA(k)(SortColumn) < pivot1 Then
-                P_CSV_DATA.Swap k, less
-                less = less + 1
-            ElseIf P_CSV_DATA(k)(SortColumn) > pivot2 Then
-                Do While k < great And P_CSV_DATA(great)(SortColumn) > pivot2
-                    great = great - 1
-                Loop
-                P_CSV_DATA.Swap k, great
-                great = great - 1
-                If P_CSV_DATA(k)(SortColumn) < pivot1 Then
-                    P_CSV_DATA.Swap k, less
-                    less = less + 1
-                End If
-            End If
-            k = k + 1
-        Loop
-        'swaps
-        Dim dist As Long
-        dist = great - less
-        If dist < 13 Then div = div + 1
-        P_CSV_DATA.Swap less - 1, leftt
-        P_CSV_DATA.Swap great + 1, rightt
-        'subarrays
-        Quicksort leftt, less - 2, div, SortColumn, Descending
-        Quicksort great + 2, rightt, div, SortColumn, Descending
-        'equal elements
-        If (dist > Ulen - 13 And pivot1 <> pivot2) Then
-            k = less
-            Do While k <= great
-                If P_CSV_DATA(k)(SortColumn) = pivot1 Then
-                    P_CSV_DATA.Swap k, less
-                    less = less + 1
-                ElseIf P_CSV_DATA(k)(SortColumn) = pivot2 Then
-                    P_CSV_DATA.Swap k, great
-                    great = great - 1
-                    If P_CSV_DATA(k)(SortColumn) = pivot1 Then
-                        P_CSV_DATA.Swap k, less
-                        less = less + 1
-                    End If
-                End If
-                k = k + 1
-            Loop
-        End If
-        'subarray
-        If pivot1 < pivot2 Then
-            Quicksort less, great, div, SortColumn, Descending
-        End If
-    End If
-    If Descending = True Then
-        If RecursionLevel = 1 Then
-            ReverseOrder leftt, rightt
-        End If
-    End If
-    RecursionLevel = RecursionLevel - 1
-End Sub
-
 Private Function RequestedField(ByVal FieldIndex As Long, _
                                 ByVal mxReq As Long) As Boolean
     Select Case RequestedFieldsArray(0)
@@ -1356,30 +1808,6 @@ Public Sub ResetToDefault()
     P_SUCCESSFUL_IMPORT = False
     P_VARYING_LENGTHS = False
 End Sub
-
-Private Function ReverseOrder(Optional LB As Long = -1, _
-                                Optional UB As Long = -1) As Boolean
-                                
-    Dim i As Long, tmpVar As Variant
-    
-    On Error Resume Next
-    If LB < 0 Then
-        LB = 0
-    End If
-    If UB < 0 Then
-        UB = P_CSV_DATA.count - 1
-    End If
-    If UB > LB Then
-        For i = LB To (LB + ((UB - LB - 1) \ 2))
-            P_CSV_DATA.Swap i, UB - (i - LB)
-        Next i
-    End If
-    If Err.Number = 0 Then
-        ReverseOrder = True
-    Else
-        ReverseOrder = False
-    End If
-End Function
 
 Private Sub SkipUnwantedLines(ByRef idx As Long, _
                                 ByRef MaxIdx As Long, _
@@ -1446,47 +1874,23 @@ Public Function Sort(Optional ByVal fromIndex As Long = -1, _
 Attribute Sort.VB_Description = "Sorts the imported CSV data."
     
     On Error GoTo Sort_Error_Handler:
-    Dim ParametersWellFormed As Boolean
     
     If P_SUCCESSFUL_IMPORT Then
-        ParametersWellFormed = True
         If fromIndex = -1 Then
             If config.headers And Not config.headersOmission Then
+                fromIndex = 2
+            Else
                 fromIndex = 1
-            Else
-                fromIndex = 0
-            End If
-        Else
-            If fromIndex <= P_CSV_DATA.count And fromIndex > 0 Then
-                fromIndex = fromIndex - 1 'Zero based
-            Else
-                ParametersWellFormed = False
             End If
         End If
         If toIndex = -1 Then
-            toIndex = P_CSV_DATA.count - 1
-        Else
-            If toIndex <= P_CSV_DATA.count And toIndex > 0 Then
-                toIndex = toIndex - 1
-            Else
-                ParametersWellFormed = False
-            End If
-        End If
-        If fromIndex > toIndex Then
-            ParametersWellFormed = False
+            toIndex = P_CSV_DATA.count
         End If
         If SortColumn = -1 Then
-                SortColumn = 0 'Ensures a column to sort
-        ElseIf SortColumn < LBound(P_CSV_DATA(0)) + 1 Or _
-                SortColumn > UBound(P_CSV_DATA(0)) + 1 Then
-                ParametersWellFormed = False
-        Else
-            SortColumn = SortColumn - 1
+            SortColumn = 1 'Ensures a column to sort
         End If
-        If ParametersWellFormed Then
-            Quicksort fromIndex, toIndex, 3, SortColumn, Descending
-            Set Sort = Me
-        End If
+        P_CSV_DATA.Sort fromIndex, toIndex, SortColumn, Descending
+        Set Sort = Me
     End If
     Exit Function
 Sort_Error_Handler:
@@ -1613,7 +2017,7 @@ Private Sub StreamParseCSV(configObj As parserConfig, _
     '@----------------------------------------------------------------------------
     'Get CSV stream and populate a temp array
     CSVstream.ReadText
-    StreamWithQuotes = InStrB(1, CSVstream.bufferString, CHR_DOUBLE_QUOTES)
+    StreamWithQuotes = InStrB(1, CSVstream.bufferString, EscapeChr)
     StreamEnd = CSVstream.atEndOfStream
     tmpCSV() = Split(CSVstream.bufferString, RecordDelimiter)
     '@----------------------------------------------------------------------------
@@ -1622,7 +2026,7 @@ Private Sub StreamParseCSV(configObj As parserConfig, _
         CSVstream.bufferSize = 2 * configObj.bufferSize
         CSVstream.RestartPointer
         CSVstream.ReadText
-        StreamWithQuotes = InStrB(1, CSVstream.bufferString, CHR_DOUBLE_QUOTES)
+        StreamWithQuotes = InStrB(1, CSVstream.bufferString, EscapeChr)
         StreamEnd = CSVstream.atEndOfStream
         tmpCSV() = Split(CSVstream.bufferString, RecordDelimiter)
     Loop
@@ -1712,7 +2116,7 @@ Private Sub StreamParseCSV(configObj As parserConfig, _
                                 '@----------------------------------------------------------------------------
                                 'Load new stream
                                 CSVstream.ReadText
-                                StreamWithQuotes = InStrB(1, CSVstream.bufferString, CHR_DOUBLE_QUOTES)
+                                StreamWithQuotes = InStrB(1, CSVstream.bufferString, EscapeChr)
                                 StreamEnd = CSVstream.atEndOfStream
                                 tmpCSV() = Split(CSVstream.bufferString, RecordDelimiter)
                                 Index = 0
@@ -1854,7 +2258,7 @@ Private Sub StreamParseCSV(configObj As parserConfig, _
                                 '@----------------------------------------------
                                 'Advance stream
                                 CSVstream.ReadText
-                                StreamWithQuotes = InStrB(1, CSVstream.bufferString, CHR_DOUBLE_QUOTES)
+                                StreamWithQuotes = InStrB(1, CSVstream.bufferString, EscapeChr)
                                 StreamEnd = CSVstream.atEndOfStream
                                 tmpCSV() = Split(CSVstream.bufferString, RecordDelimiter)
                                 Index = 0
@@ -1933,7 +2337,7 @@ Private Sub StreamParseCSV(configObj As parserConfig, _
                         '@----------------------------------------------
                         'Advance stream
                         CSVstream.ReadText
-                        StreamWithQuotes = InStrB(1, CSVstream.bufferString, CHR_DOUBLE_QUOTES)
+                        StreamWithQuotes = InStrB(1, CSVstream.bufferString, EscapeChr)
                         StreamEnd = CSVstream.atEndOfStream
                         tmpCSV() = Split(CSVstream.bufferString, RecordDelimiter)
                         Index = 0
@@ -1987,7 +2391,7 @@ Private Sub StreamParseCSV(configObj As parserConfig, _
             '@----------------------------------------------
             'Advance stream
             CSVstream.ReadText
-            StreamWithQuotes = InStrB(1, CSVstream.bufferString, CHR_DOUBLE_QUOTES)
+            StreamWithQuotes = InStrB(1, CSVstream.bufferString, EscapeChr)
             StreamEnd = CSVstream.atEndOfStream
             tmpCSV() = Split(CSVstream.bufferString, RecordDelimiter)
             Index = 0
