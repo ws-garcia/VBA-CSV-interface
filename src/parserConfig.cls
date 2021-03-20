@@ -262,10 +262,11 @@ Private Sub Class_Initialize()
     P_BUFFERSISE = 0.5
     P_COMMENTSTOKEN = AscW("#")
     P_DELIMITERSGUESSING = False
-    ReDim P_DELIMITERSTOGUESS(0 To 3): P_DELIMITERSTOGUESS(0) = CHR_COMMA: _
+    ReDim P_DELIMITERSTOGUESS(0 To 4): P_DELIMITERSTOGUESS(0) = CHR_COMMA: _
                                         P_DELIMITERSTOGUESS(1) = CHR_SEMICOLON: _
                                         P_DELIMITERSTOGUESS(2) = vbTab: _
-                                        P_DELIMITERSTOGUESS(3) = CHR_VSLASH
+                                        P_DELIMITERSTOGUESS(3) = CHR_VSLASH: _
+                                        P_DELIMITERSTOGUESS(4) = CHR_COLON
     P_DYNAMIC_TYPING = False
     P_ENDINGRECORD = 0&
     P_ESCAPETOKEN = EscapeTokens.DoubleQuotes
