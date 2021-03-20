@@ -22,6 +22,7 @@ Option Explicit
 '#
 '////////////////////////////////////////////////////////////////////////////////////////////
 ' CONSTANTS:
+Private Const CHR_COLON As String = ":"
 Private Const CHR_COMMA As String = ","
 Private Const CHR_SEMICOLON As String = ";"
 Private Const CHR_VSLASH As String = "|"
@@ -158,7 +159,7 @@ Public Property Get fieldsDelimiter() As String
 End Property
 Public Property Let fieldsDelimiter(ByVal Delimiter As String)
     Select Case Delimiter
-        Case CHR_COMMA, CHR_SEMICOLON, vbTab, CHR_VSLASH
+        Case CHR_COLON, CHR_COMMA, CHR_SEMICOLON, vbTab, CHR_VSLASH
             P_FIELDSDELIMITER = Delimiter
         Case Else
             P_FIELDSDELIMITER = CHR_COMMA
