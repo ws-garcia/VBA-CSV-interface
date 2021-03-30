@@ -97,9 +97,9 @@ End Property
 Public Property Get isOpenStream() As Boolean
     isOpenStream = P_ISOPENSTREAM
 End Property
-Public Property Get lineBreak() As String
-Attribute lineBreak.VB_Description = "Returns the character used to end the last received stream. The value is vbNullString when the last stream is not forced to end on line break."
-    lineBreak = P_LINEBREAK
+Public Property Get LineBreak() As String
+Attribute LineBreak.VB_Description = "Returns the character used to end the last received stream. The value is vbNullString when the last stream is not forced to end on line break."
+    LineBreak = P_LINEBREAK
 End Property
 Public Property Get pointerPosition() As Long
 Attribute pointerPosition.VB_Description = "Gets the overall pointer position over the current text file."
@@ -124,10 +124,10 @@ Attribute CloseStream.VB_Description = "Closes the current text file stream."
         P_ISOPENSTREAM = False
     End If
 End Sub
-Public Sub OpenStream(FilePath As String)
+Public Sub OpenStream(filePath As String)
 Attribute OpenStream.VB_Description = "Opens a stream over a text file."
     FileHandled = FreeFile
-    Open FilePath For Binary As #FileHandled
+    Open filePath For Binary As #FileHandled
     P_ISOPENSTREAM = True
     P_STREAMLENGTH = LOF(FileHandled)
     StartVariables
@@ -238,20 +238,20 @@ End Sub
 Public Sub WriteBlankLines(Lines As Long, Optional EndLineMark As EndLineChar = 0)
 Attribute WriteBlankLines.VB_Description = "Inserts a specified number of blank lines into the current opened text file."
     If P_ISOPENSTREAM Then
-        Dim idx As Long
+        Dim Idx As Long
         Select Case EndLineMark
             Case 0
-                For idx = 1 To Lines
+                For Idx = 1 To Lines
                     Put #FileHandled, , vbCrLf
-                Next idx
+                Next Idx
             Case 1
-                For idx = 1 To Lines
+                For Idx = 1 To Lines
                     Put #FileHandled, , vbCr
-                Next idx
+                Next Idx
             Case 2
-                For idx = 1 To Lines
+                For Idx = 1 To Lines
                     Put #FileHandled, , vbLf
-                Next idx
+                Next Idx
         End Select
         P_STREAMLENGTH = LOF(FileHandled)
     End If
