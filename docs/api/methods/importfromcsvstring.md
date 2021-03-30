@@ -2,7 +2,7 @@
 title: ImportFromCSVstring
 parent: Methods
 grand_parent: API
-nav_order: 13
+nav_order: 16
 ---
 
 # ImportFromCSVstring

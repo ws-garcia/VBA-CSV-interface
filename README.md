@@ -10,6 +10,7 @@ VBA CSV interface is the most complete, and open source, CSV/TSV VBA parser libr
 * __Memory-friendly__. CSV/[TSV](https://www.iana.org/assignments/media-types/text/tab-separated-values) files are processed using a custom stream technique, only 0.5MB are in memory at a time.
 * __Easy to use__. A few lines of code can do the work!
 * __Highly Configurable__. User can configure the parser to work with a wide range of CSV files.
+* __CSV data subsetting__. Split CSV data into a set of files with related data.
 * __Like SQL queries on CSV files__. Add your own logic to mimic SQL queries and filter data by criteria (=, <>, >=, <=, AND, OR).
 * __Automatic delimiter guesser__. Don't worry if you forgot the file configuration!
 * __Flexible__. Import only certain range of records from the given file, import fields (columns) by indexes or names, read records in sequential mode. 

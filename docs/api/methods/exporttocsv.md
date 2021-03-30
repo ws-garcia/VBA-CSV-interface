@@ -2,7 +2,7 @@
 title: ExportToCSV
 parent: Methods
 grand_parent: API
-nav_order: 8
+nav_order: 9
 ---
 
 # ExportToCSV
@@ -15,7 +15,7 @@ Exports an array's content to a CSV/TSV file.
 
 ## Syntax
 
-*expression*.`ExportToCSV`*(csvArray, \[pconfig:= `Nothing`\], \[PassControlToOS:= `True`\])*
+*expression*.`ExportToCSV`*(csvArray, \[pconfig:= `Nothing`\], \[PassControlToOS:= `True`\], \[enableDelimiterGuessing:= `True`\])*
 
 ### Parameters
 
@@ -39,6 +39,10 @@ Exports an array's content to a CSV/TSV file.
 <td style="text-align: left;"><em>PassControlToOS</em></td>
 <td style="text-align: left;">Optional. Identifier specifying a <code>Boolean</code> Type variable.</td>
 </tr>
+<tr>
+<td style="text-align: left;"><em>enableDelimiterGuessing</em></td>
+<td style="text-align: left;">Optional. Identifier specifying a <code>Boolean</code> Type variable.</td>
+</tr>
 </tbody>
 </table>
 
@@ -48,7 +52,7 @@ _None_
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->Passing a variable that isn't an array will cause an error and the operation aborts. 
+>The *csvArray* parameter can be an `ECPArrayList` or an array variable, passing another type of variable will cause an error. 
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 See also
