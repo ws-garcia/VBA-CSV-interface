@@ -15,7 +15,6 @@ The \[EXAMPLE1\] shows how you can import a CSV file, dump the data to a VBA arr
 Sub ExportToTSV()
 	Dim CSVint As CSVinterface
 	Dim conf As parserConfig
-	Dim Arr() As Variant
 
 	Set CSVint = New CSVinterface
 	Set conf = CSVint.ParseConfig
@@ -24,12 +23,12 @@ Sub ExportToTSV()
 	    .dynamicTyping = False
 	End With
 	CSVint.GuessDelimiters conf 'Try to guess CSV file data delimiters
-	CSVint.ImportFromCSV(conf).DumpToArray Arr 'Import and dump the data to an array
+	CSVint.ImportFromCSV conf 'Import the data
 	With conf
 	    .path = Environ("USERPROFILE") & "\Desktop\100000.quoted.tsv"
 	    .fieldsDelimiter = vbTab
 	End With
-	CSVint.ExportToCSV Arr, conf
+	CSVint.ExportToCSV CSVint.items, conf 'Export internal items
 	Set CSVint = Nothing 'Terminate the current instance
 End Sub
 ```
@@ -42,7 +41,6 @@ The \[EXAMPLE2\] shows how you can import a CSV file, sort the data, dump to a V
 Sub SortAndExportToCSV()
 	Dim CSVint As CSVinterface
 	Dim conf As parserConfig
-	Dim Arr() As Variant
 
 	Set CSVint = New CSVinterface
 	Set conf = CSVint.ParseConfig
@@ -52,9 +50,9 @@ Sub SortAndExportToCSV()
 	    .dynamicTyping = False
 	End With
 	CSVint.GuessDelimiters conf 'Try to guess CSV file data delimiters
-	CSVint.ImportFromCSV(conf).Sort(SortColumn:=1, Descending:=False).DumpToArray Arr 'Import, sort and dump the data to an array
+	CSVint.ImportFromCSV(conf).Sort SortColumn:=1, Descending:=False 'Import and sort the data
 	conf.path = Environ("USERPROFILE") & "\Desktop\100000.quoted.tsv"
-	CSVint.ExportToCSV Arr, conf
+	CSVint.ExportToCSV CSVint.items, conf 'Export internal items
 	Set CSVint = Nothing 'Terminate the current instance
 End Sub
 ```
