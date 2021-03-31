@@ -5,7 +5,7 @@ parent: Examples
 nav_order: 3
 ---
 
-## Export data to a CSV file
+## Data subsetting
 
 The \[EXAMPLE1\] shows how you can execute a like SQL simple query over a CSV file and dump result to a worksheet.
 
