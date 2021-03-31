@@ -14,7 +14,7 @@ The \[EXAMPLE1\] shows how you can execute a like SQL simple query over a CSV fi
 ```vb
 Private Sub Query_CSV(path As String, ByVal keyIndex As Long, queryFilters As Variant)
     Dim CSVint As CSVinterface
-	 Dim CSVrecords As ECPArrayList
+    Dim CSVrecords As ECPArrayList
     Dim keyIndex As Long
     
     Set CSVint = New CSVinterface
@@ -27,7 +27,6 @@ Private Sub Query_CSV(path As String, ByVal keyIndex As Long, queryFilters As Va
         Set CSVrecords = Nothing
     End If
     Exit Sub
-err_handler:
 End Sub
 ```
 
