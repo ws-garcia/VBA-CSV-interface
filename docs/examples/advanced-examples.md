@@ -18,15 +18,12 @@ Private Sub Query_CSV(path As String, ByVal keyIndex As Long, queryFilters As Va
     Dim keyIndex As Long
     
     Set CSVint = New CSVinterface
-    
     If path <> vbNullString Then
-        On Error GoTo err_handler
         Set CSVrecords = CSVint.GetCSVsubset(path, queryFilters, keyIndex) 'data filtered on keyIndex th record
         CSVint.DumpToSheet DataSource:=CSVrecords 'dump result
         Set CSVint = Nothing
         Set CSVrecords = Nothing
     End If
-    Exit Sub
 End Sub
 ```
 
