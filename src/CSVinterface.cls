@@ -1518,7 +1518,7 @@ Private Function MeetsCriterion(value As Variant) As Boolean
     
     vCounter = LB
     Do While vCounter <= UB And tmpResult = False
-        tmpResult = (value = queryFilters(vCounter, 1))
+        tmpResult = (value = queryFilters(vCounter, LBound(queryFilters, 2)))
         vCounter = vCounter + 1
     Loop
     MeetsCriterion = tmpResult
