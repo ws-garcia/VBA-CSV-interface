@@ -45,7 +45,6 @@ Private P_TEXT As String '-------------------------Holds the current stream's te
 '#
 Private Buffer As String
 Private BufferDelta As Long
-Private BufferEnds As Boolean
 Private BufferMark As Long
 Private CorrectedPos As Long
 Private EndLineMark As EndLineChar
@@ -53,7 +52,7 @@ Private FileHandled As Integer
 Private InitialPos As Long
 Private LCS As Long
 Private NullChar As String
-Private NullCharPos As String
+Private NullCharPos As Long
 '////////////////////////////////////////////////////////////////////////////////////////////
 '#
 '////////////////////////////////////////////////////////////////////////////////////////////
@@ -124,6 +123,61 @@ Attribute CloseStream.VB_Description = "Closes the current text file stream."
         P_ISOPENSTREAM = False
     End If
 End Sub
+Private Sub FindEOLcharacter()
+    Dim LastCrLfPos As Long
+    Dim LastCrPos As Long
+    Dim LastLfPos As Long
+    Dim tmpResultPos As Long
+    Dim bufferReverse As String
+    Dim EOLchr As EndLineChar
+    Dim missingEOLchar As Boolean
+    Dim EOStream As Boolean
+    Dim tmpBuffer As String
+    
+    Do
+        bufferReverse = StrReverse(Buffer)
+        LastCrLfPos = InStrB(1, bufferReverse, vbCrLf)
+        LastCrPos = InStrB(1, bufferReverse, vbCr)
+        LastLfPos = InStrB(1, bufferReverse, vbLf)
+        missingEOLchar = (LastCrLfPos = 0 And LastCrPos = 0 And LastLfPos = 0)
+        If missingEOLchar Then
+            tmpBuffer = Buffer
+            Get #FileHandled, , Buffer
+            Buffer = tmpBuffer + Buffer
+            InitialPos = Seek(FileHandled)
+            BufferMark = LenB(Buffer)
+            EOStream = ((P_STREAMLENGTH - InitialPos) <= 0)
+            NullCharPos = InStrB(Buffer, NullChar)
+            If NullCharPos Then
+                Buffer = MidB$(Buffer, 1, NullCharPos)
+            End If
+        End If
+    Loop While missingEOLchar And Not EOStream
+    P_ATENDOFSTREAM = EOStream
+    If Not EOStream Then
+        tmpResultPos = LastCrLfPos
+        EOLchr = CRLF
+        If tmpResultPos < LastCrPos Then
+            tmpResultPos = LastCrPos
+            EOLchr = CR
+        End If
+        If tmpResultPos < LastLfPos Then
+            tmpResultPos = LastLfPos
+            EOLchr = LF
+        End If
+        Select Case EOLchr
+            Case 0
+                BufferDelta = (tmpResultPos - 3) / 2
+            Case Else
+                BufferDelta = (tmpResultPos - 1) / 2
+        End Select
+        BufferMark = BufferMark - BufferDelta
+        CorrectedPos = InitialPos - BufferDelta
+    Else
+        CorrectedPos = InitialPos
+    End If
+    Seek #FileHandled, CorrectedPos
+End Sub
 Public Sub OpenStream(filePath As String)
 Attribute OpenStream.VB_Description = "Opens a stream over a text file."
     FileHandled = FreeFile
@@ -138,57 +192,12 @@ Attribute ReadText.VB_Description = "Reads a number of characters from the strea
         Select Case P_BUFFERLENGTH
             Case Is < LCS
                 BufferDelta = 0
-                BufferEnds = False
                 Get #FileHandled, , Buffer
                 InitialPos = Seek(FileHandled)
                 BufferMark = LenB(Buffer)
                 If P_ENDSTREAMONLINEBREAK Then
-                    Dim Last2Chrs As String
-                    Dim LastChr As String
-                    Last2Chrs = MidB$(Buffer, BufferMark - 3, 4)
-                    BufferEnds = (Last2Chrs = vbCrLf)
-                    Select Case BufferEnds
-                        Case False
-                            LastChr = MidB$(Last2Chrs, 3, 2)
-                            BufferEnds = (LastChr = vbCr)
-                            Select Case BufferEnds
-                                Case False
-                                    BufferEnds = (LastChr = vbLf)
-                                    If BufferEnds Then
-                                        P_LINEBREAK = vbLf
-                                    End If
-                                Case Else
-                                    P_LINEBREAK = vbCr
-                            End Select
-                        Case Else
-                            P_LINEBREAK = vbCrLf
-                    End Select
-                    Do While Not BufferEnds
-                        BufferMark = BufferMark - 2
-                        BufferDelta = BufferDelta + 1
-                        Last2Chrs = MidB$(Buffer, BufferMark - 3, 4)
-                        BufferEnds = (Last2Chrs = vbCrLf)
-                        Select Case BufferEnds
-                            Case False
-                                LastChr = MidB$(Last2Chrs, 3, 2)
-                                BufferEnds = (LastChr = vbCr)
-                                Select Case BufferEnds
-                                    Case False
-                                        BufferEnds = (LastChr = vbLf)
-                                        If BufferEnds Then
-                                            P_LINEBREAK = vbLf
-                                        End If
-                                    Case Else
-                                        P_LINEBREAK = vbCr
-                                End Select
-                            Case Else
-                                P_LINEBREAK = vbCrLf
-                        End Select
-                    Loop
-                    CorrectedPos = InitialPos - BufferDelta
-                    Seek #FileHandled, CorrectedPos
+                    FindEOLcharacter
                     LCS = P_STREAMLENGTH - CorrectedPos
-                    P_ATENDOFSTREAM = False
                     P_TEXT = MidB$(Buffer, 1, BufferMark)
                 Else
                     P_LINEBREAK = vbNullString
