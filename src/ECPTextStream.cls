@@ -133,7 +133,7 @@ Private Sub FindEOLcharacter()
     Dim missingEOLchar As Boolean
     Dim EOStream As Boolean
     Dim tmpBuffer As String
-    
+
     Do
         bufferReverse = StrReverse(Buffer)
         LastCrLfPos = InStrB(1, bufferReverse, vbCrLf)
@@ -147,9 +147,11 @@ Private Sub FindEOLcharacter()
             InitialPos = Seek(FileHandled)
             BufferMark = LenB(Buffer)
             EOStream = ((P_STREAMLENGTH - InitialPos) <= 0)
-            NullCharPos = InStrB(Buffer, NullChar)
-            If NullCharPos Then
-                Buffer = MidB$(Buffer, 1, NullCharPos)
+            If EOStream Then
+                NullCharPos = InStrB(Buffer, NullChar)
+                If NullCharPos Then
+                    Buffer = MidB$(Buffer, 1, NullCharPos)
+                End If
             End If
         End If
     Loop While missingEOLchar And Not EOStream
@@ -167,12 +169,12 @@ Private Sub FindEOLcharacter()
         End If
         Select Case EOLchr
             Case 0
-                BufferDelta = (tmpResultPos - 3) / 2
+                BufferDelta = tmpResultPos - 3
             Case Else
-                BufferDelta = (tmpResultPos - 1) / 2
+                BufferDelta = tmpResultPos - 1
         End Select
         BufferMark = BufferMark - BufferDelta
-        CorrectedPos = InitialPos - BufferDelta
+        CorrectedPos = InitialPos - (BufferDelta / 2)
     Else
         CorrectedPos = InitialPos
     End If
