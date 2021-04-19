@@ -170,8 +170,14 @@ Private Sub FindEOLcharacter()
         Select Case EOLchr
             Case 0
                 BufferDelta = tmpResultPos - 3
+                P_LINEBREAK = vbCrLf
             Case Else
                 BufferDelta = tmpResultPos - 1
+                If EOLchr = 1 Then
+                    P_LINEBREAK = vbCr
+                Else
+                    P_LINEBREAK = vbLf
+                End If
         End Select
         BufferMark = BufferMark - BufferDelta
         CorrectedPos = InitialPos - (BufferDelta / 2)
