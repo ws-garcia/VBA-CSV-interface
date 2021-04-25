@@ -25,7 +25,7 @@ If you don't know how to get started with VBA-CSV Interface class, visit the [do
 
 ## Contributing
 
-In order to contribute whit in this project, please see the [guidance for contributing](https://ws-garcia.github.io/VBA-CSV-interface/contributing.html).
+In order to contribute within this project, please see the [guidance for contributing](https://ws-garcia.github.io/VBA-CSV-interface/contributing.html).
 
 ## Benchmark
 
