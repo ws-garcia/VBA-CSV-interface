@@ -52,7 +52,7 @@ Previous versions of VBA CSV interface appended additional empty fields to ALL r
 
 In addition, the jagged arrays make it easier to implement the [Yaroslavskiy Dual-Pivot Quicksort] algorithm (https://web.archive.org/web/20151002230717/http://iaroslavski.narod.ru/quicksort/DualPivotQuicksort.pdf), a feature that can be very useful in certain circumstances.
 
-### Is it feasible to sacrifice performance? 
+### Why sacrifice performance?
 
 A good piece of code is not only the one that runs in the shortest time, but also factors such as usability and the flexibility with which it can be used. Previous versions of the VBA CSV interface ran at surprising speed, but had certain limitations that made them look rigid or inflexible. Whereas recent versions seek that balance between power, performance, usability and flexibility. 
 
