@@ -58,7 +58,7 @@ A good piece of code is not only the one that runs in the shortest time, but als
 
 For example, instead of offering a single way to get things done, the VBA CSV interface user can use the library's modules to achieve the goal in a variety of ways:
 
-**Import CSV files**
+#### Import CSV files
 
 1. Built-in methods: [ImportFromCSV](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/importfromcsv.html) (import selected records or all records contained in the CSV file) and [GetRecord](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/getrecord.html) (read records sequentially, one after another, from the first to the last).
 2. Alternative method: use the [ECPTextStream](https://ws-garcia.github.io/ECPTextStream/) module, with the [endStreamOnLineBreak](https://ws-garcia.github.io/ECPTextStream/api/properties/endstreamonlinebreak.html) property set to True, read text streams sequentially with the [ReadText](https://ws-garcia.github.io/ECPTextStream/api/methods/readtext.html) method and parse the text string stored in the (bufferString)[https://ws-garcia.github.io/ECPTextStream/api/properties/bufferstring.html] using the [ImportFromCSVstring](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/importfromcsvstring.html) method.
