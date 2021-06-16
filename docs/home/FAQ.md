@@ -37,7 +37,7 @@ Yes, Please! VBA CSV interface is an open source project. I don't want to do thi
 
 ### Why do recent versions of VBA CSV interface have lower performance?
 
-Some users of the VBA CSV interface have complained that the library has inferior performance to the "Microsoft VBScript Regular Expressions" toolkit. It should be noted that, starting with version 3 of this library, the choice has been made to offer [greater usability at the cost of performance loss](https://ws-garcia.github.io/VBA-CSV-interface/home/getting_started.html#philosophy).
+Some users of the VBA CSV interface have complained that the library has inferior performance to the prior versions. It should be noted that, starting with version 3 of this library, the choice has been made to offer [greater usability at the cost of performance loss](https://ws-garcia.github.io/VBA-CSV-interface/home/getting_started.html#philosophy).
 
 For example, it has been decided to use jagged arrays and a specialized class module to store the information imported from CSV files. How does this decision impact performance? In the early versions of VBA CSV interface the data was stored in two-dimensional arrays of type `Strings`, since version 3 the `Variant` data type is used which [can be translated into performance loss](https://www.aivosto.com/articles/stringopt.html). In the same vein, the implementation of [jagged arrays results in a loss of performance in VBA](https://excelvirtuoso.wordpress.com/2018/08/13/jagged-arrays-vba/).
 
