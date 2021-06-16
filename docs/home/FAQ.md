@@ -50,7 +50,7 @@ Jagged arrays require the parent array to be of type `Variant` to contain anothe
 
 Previous versions of VBA CSV interface appended additional empty fields to ALL records, this happened when importing CSV files in which the records did not have the same amount of fields in the whole file. As a result, if the user decided to export the imported information from a file in which the first line (header) had 12 fields, with most of the records in this CSV only containing the first 5 or 7 fields, the file that was written (after exportation) contained several consecutive commas until the 12 fields per line were completed. This problem is solved with the implementation of jagged arrays.
 
-In addition, the jagged arrays make it easier to implement the [Yaroslavskiy Dual-Pivot Quicksort] algorithm (https://web.archive.org/web/20151002230717/http://iaroslavski.narod.ru/quicksort/DualPivotQuicksort.pdf), a feature that can be very useful in certain circumstances.
+In addition, the jagged arrays make it easier to implement the [Yaroslavskiy Dual-Pivot Quicksort algorithm](https://web.archive.org/web/20151002230717/http://iaroslavski.narod.ru/quicksort/DualPivotQuicksort.pdf), a feature that can be very useful in certain circumstances.
 
 ### Why sacrifice performance?
 
