@@ -19,7 +19,6 @@ However, using Power Query implies establishing a physical connection to each da
 
 Yes. The VBA CSV interface dependencies are:  
 
-* CSVinterface.cls
 * parserConfig.cls
 * ECPTextStream.cls
 * ECPArrayList.cls
