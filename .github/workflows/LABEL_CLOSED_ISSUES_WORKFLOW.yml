@@ -1,0 +1,17 @@
+name: Delete issues label
+on:
+  issues:
+    types:
+      - closed
+jobs:
+  label_issues:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Label issues
+        uses: andymckay/labeler@1.0.2
+        with:
+          remove-labels: "bug, confirmed"
+          add-labels: "fixed"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
