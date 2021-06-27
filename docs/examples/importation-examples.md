@@ -14,17 +14,16 @@ The \[EXAMPLE1\] shows how you can import all the data from a CSV file.
 ```vb
 Sub ImportRecords()
 	Dim CSVint As CSVinterface
-	Dim conf As parserConfig
 	Dim Arr() As Variant
 
 	Set CSVint = New CSVinterface
-	Set conf = CSVint.ParseConfig
-	With conf
+	With CSVint.parseConfig
 		.path = "C:\100000.quoted.csv"
-		.dynamicTyping = False
 	End With
-	CSVint.GuessDelimiters conf 'Try to guess CSV file data delimiters
-	CSVint.ImportFromCSV(conf).DumpToArray Arr 'Import and dump the data to an array
+	With CSVint
+		.GuessDelimiters .parseConfig 'Try to guess CSV file data delimiters
+		.ImportFromCSV(.parseConfig).DumpToArray Arr 'Import and dump the data to an array
+	End With
 	Set CSVint = Nothing 'Terminate the current instance
 End Sub
 ```
@@ -35,13 +34,11 @@ The \[EXAMPLE2\] shows how you can import all the data from a CSV file using Dyn
 
 ```vb
 Sub TEST_DynamicTyping()
-	Dim conf As parserConfig
 	Dim CSVstring As String
 	Dim Arr() As Variant
 	
 	Set CSVint = New CSVinterface
-	Set conf = New parserConfig
-	With conf
+	With CSVint.parseConfig
 		.recordsDelimiter = vbCrLf
 		.path = "C:\100000.quoted.csv"
 		.dynamicTyping = True
@@ -60,13 +57,16 @@ Sub TEST_DynamicTyping()
                                  11, _
                                  12
 	End With
-	CSVint.GuessDelimiters conf 'Try to guess CSV file data delimiters
-	CSVint.ImportFromCSV(conf).DumpToArray Arr 'Import and dump the data to an array
+	With CSVint
+		.GuessDelimiters .parseConfig 'Try to guess CSV file data delimiters
+		.ImportFromCSV(.parseConfig).DumpToArray Arr 'Import and dump the data to an array
+	End With
 	Set CSVint = Nothing
 End Sub
 ```
 
 The \[EXAMPLE3\] shows how you can dump the imported data to an Excel Worksheet.
+
 #### [EXAMPLE3]
 ```vb
 Sub ImportAndDumpToSheet()
@@ -74,13 +74,14 @@ Sub ImportAndDumpToSheet()
 	Dim conf As parserConfig
 
 	Set CSVint = New CSVinterface
-	Set conf = CSVint.ParseConfig
+	Set conf = CSVint.parseConfig
 	With conf
 	    .path = "C:\100000.quoted.csv"
-	    .dynamicTyping = False
 	End With
-	CSVint.GuessDelimiters conf 'Try to guess CSV file data delimiters
-	CSVint.ImportFromCSV(conf).DumpToSheet 'Import and dump the data to a new Worksheet
+	With CSVint
+	    .GuessDelimiters conf 'Try to guess CSV file data delimiters
+	    .ImportFromCSV(conf).DumpToSheet 'Import and dump the data to a new Worksheet
+	End With
 	Set CSVint = Nothing 'Terminate the current instance
 End Sub
 ```
@@ -96,20 +97,68 @@ The \[EXAMPLE4\] shows how you can dump the imported data to an Access Database.
 ```vb
 Sub ImportAndDumpToAccessDB()
 	Dim path As String
-	Dim conf As parserConfig
 	Dim dBase As DAO.Database
 	
 	Set CSVint = New CSVinterface
-	Set conf = CSVint.ParseConfig
-	With conf
+	With CSVint.parseConfig
 	    .path = "C:\100000.quoted.csv"
-	    .dynamicTyping = False
 	End With
-	CSVint.GuessDelimiters conf 'Try to guess CSV file data delimiters
-	Set dBase = CurrentDb
-	'Import and dump the data into a new database table. This will create indexes for the "Region" field and for the second field in the table.
-	CSVint.ImportFromCSV(conf).DumpToAccessTable dBase, "CSV_ImportedData", "Region", 2
+	With CSVint
+	    .GuessDelimiters .parseConfig 'Try to guess CSV file data delimiters
+	    Set dBase = CurrentDb
+	    'Import and dump the data into a new database table. This will create indexes for the "Region" field and for the second field in the table.
+	    .ImportFromCSV(.parseConfig).DumpToAccessTable dBase, "CSV_ImportedData", "Region", 2
+	End With
 	Set CSVint = Nothing
 	Set dBase = Nothing
+End Sub
+```
+
+The \[EXAMPLE5\] shows how you can loop, **one by one**, through all available records in a CSV file using the sequential reader.
+
+#### [EXAMPLE5]
+```vb
+Sub SequentialImport()
+    Dim CSVint As CSVinterface
+    Dim csvRecord As ECPArrayList
+            
+    Set CSVint = New CSVinterface
+    With CSVint.parseConfig
+        .path = "C:\100000.quoted.csv"
+    End With
+    With CSVint
+        .GuessDelimiters .parseConfig
+        .OpenSeqReader .parseConfig
+        Do
+            Set csvRecord = .GetRecord
+        Loop While Not csvRecord Is Nothing
+    End With
+    Set CSVint = Nothing
+End Sub
+```
+
+The \[EXAMPLE6\] shows how you can loop, **set by set**, through all available records in a CSV file using the [`ECPTextStream`](https://github.com/ws-garcia/ECPTextStream) class module.
+
+#### [EXAMPLE6]
+```vb
+Sub ImportCSVinChunks()
+    Dim CSVint As CSVinterface
+    Dim StreamReader As ECPTextStream
+            
+    Set CSVint = New CSVinterface
+    Set StreamReader = New ECPTextStream
+    With StreamReader
+        .endStreamOnLineBreak = True 'Instruct to find line breaks
+        .OpenStream "C:\100000.quoted.csv"
+        .ReadText 'Read a CSV chunk
+        CSVint.GuessDelimiters CSVint.parseConfig, .bufferString 'Try to guess delimiters
+        CSVint.ImportFromCSVString .bufferString, CSVint.parseConfig 'Import a set of fields
+        Do While Not .atEndOfStream 'Continue until reach the end of the CSV file.
+            .ReadText
+            CSVint.ImportFromCSVString .bufferString, CSVint.parseConfig
+        Loop
+    End With
+    Set CSVint = Nothing
+    Set StreamReader = Nothing
 End Sub
 ```
