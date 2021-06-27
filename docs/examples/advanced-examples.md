@@ -48,7 +48,7 @@ To demonstrate this problem, there is a file called *"Mixed Line Breaks.csv "* i
 
 ![Papa Parse results](Papa Parse results.png)
 
-Matt Holt's parser determines that the file has the `\n` character as a record delimiter, this is because the sample file has 14,999 records ending in the `\n` character as the start, followed by 14,999 records ending in the `\r` character and 12,356 records ending in `\r\n`. So the solution provided in the sum of `1 + 14,999 + 12,356 = 27,356` (see image below).
+Matt Holt's parser determines that the file has the `\n` character as a record delimiter, this is because the sample file has 14,999 records ending in the `\n` character as the start, followed by 14,999 records ending in the `\r` character and 12,356 records ending in `\r\n`. Thus, the number of records returned by Papa Parse is the sum of `1 + 14,999 + 12,356 = 27,356` (see image below).
 
 ![Notepad++ search](Notepad++ search.png)
 
