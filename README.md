@@ -24,6 +24,8 @@ VBA CSV interface is the most complete, and open source, CSV/TSV VBA parser libr
 
 If you don't know how to get started with VBA-CSV Interface class, visit the [documentation repo](https://ws-garcia.github.io/VBA-CSV-interface/). For code hints, basic and more in-depth use of the library, see [examples](https://ws-garcia.github.io/VBA-CSV-interface/examples/).
 
+Visit the [frequently asked questions section](https://ws-garcia.github.io/VBA-CSV-interface/home/FAQ.html) for the most common questions.
+
 ## Contributing
 
 In order to contribute within this project, please see the [guidance for contributing](https://ws-garcia.github.io/VBA-CSV-interface/contributing.html).

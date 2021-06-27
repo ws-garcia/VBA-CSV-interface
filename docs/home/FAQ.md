@@ -64,3 +64,6 @@ For example, instead of offering a single way to get things done, the VBA CSV in
 
 Another limitation that has been broken in the most recent versions of the VBA CSV interface is linked to the size of the parsed file. In versions prior to v3, the performance was subject to the size of the file, due to memory usage, even if the user only needed to access the first few records of the CSV file. Thus, importing the first 100 records from a 200 MB file took much longer than importing the same number of records from a 10 MB file. In recent versions the performance is strictly linked to the number of fields and records being processed, since the entire contents of the CSV are NOT loaded into RAM thanks to the [ECPTextStream](https://ws-garcia.github.io/ECPTextStream/) module.
 
+#### Where can I find the documentation for parser options?
+
+All available options reside in the `parseConfig` property of the parser and are fully documented in the [API documentation](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/parseconf.html). 
