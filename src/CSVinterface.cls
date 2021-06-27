@@ -597,7 +597,7 @@ Public Function GetCSVsubset(FilePath As String, _
                         keyIndex As Long, _
                         Optional configObj As parserConfig = Nothing) As ECPArrayList
                         
-    Dim streamReader As ECPTextStream
+    Dim StreamReader As ECPTextStream
     Dim curItems As ECPArrayList
     Dim filteredRecords As ECPArrayList
     Dim CSVparser As CSVinterface
@@ -605,7 +605,7 @@ Public Function GetCSVsubset(FilePath As String, _
     
     Set CSVparser = New CSVinterface
     Set filteredRecords = New ECPArrayList
-    Set streamReader = New ECPTextStream
+    Set StreamReader = New ECPTextStream
     On Error GoTo CSVsubset_ErrHandler
     If FilePath <> vbNullString Then
         '@----------------------------------------------------
@@ -628,7 +628,7 @@ Public Function GetCSVsubset(FilePath As String, _
             LB = LBound(queryFilters)
             '@----------------------------------------------------
             ' Sequential reading from file
-            With streamReader
+            With StreamReader
                 .endStreamOnLineBreak = True
                 .OpenStream FilePath
                 .ReadText
@@ -642,7 +642,7 @@ Public Function GetCSVsubset(FilePath As String, _
             CSVparser.GuessDelimiters configObj
             '@----------------------------------------------------
             ' Parse string
-            Set curItems = CSVparser.ImportFromCSVString(streamReader.bufferString, configObj).items
+            Set curItems = CSVparser.ImportFromCSVString(StreamReader.bufferString, configObj).items
             If configObj.headers Then
                 filteredRecords.Add curItems(0) 'Save the CSV header
                 gssCounter = gssCounter + 1
@@ -652,9 +652,9 @@ Public Function GetCSVsubset(FilePath As String, _
                     filteredRecords.Add curItems(gssCounter) 'Append data
                 End If
             Next gssCounter
-            Do While Not streamReader.atEndOfStream
-                streamReader.ReadText 'Read next CSV data chunk
-                Set curItems = CSVparser.ImportFromCSVString(streamReader.bufferString, configObj).items
+            Do While Not StreamReader.atEndOfStream
+                StreamReader.ReadText 'Read next CSV data chunk
+                Set curItems = CSVparser.ImportFromCSVString(StreamReader.bufferString, configObj).items
                 For gssCounter = 0 To curItems.count - 1
                     If MeetsCriterion(curItems(gssCounter)(keyIndex)) Then
                         filteredRecords.Add curItems(gssCounter) 'Append data
@@ -665,7 +665,7 @@ Public Function GetCSVsubset(FilePath As String, _
             Set filteredRecords = Nothing
             Set CSVparser = Nothing
             Set curItems = Nothing
-            Set streamReader = Nothing
+            Set StreamReader = Nothing
         End If
         P_SUCCESSFUL_IMPORT = True
     Else
@@ -674,7 +674,7 @@ Public Function GetCSVsubset(FilePath As String, _
     ResetAlerts
     Exit Function
 CSVsubset_ErrHandler:
-    Set streamReader = Nothing
+    Set StreamReader = Nothing
     Set CSVparser = Nothing
     Set curItems = Nothing
     Exit Function
@@ -1320,7 +1320,7 @@ Public Function ImportFromCSV(configObj As parserConfig, _
                 P_SUCCESSFUL_IMPORT = False
                 P_ERROR_DESC = "[CSV file Import]: the config object has an invalid Dynamic Typing Template (DTT). " _
                                 & "The number of Dynamic Typing Links (DTL) must be less or equal than the number of " _
-                                & "the Dynamic Typing Targets Fields(DTTF) fields defined."
+                                & "Dynamic Typing Targets Fields (DTTF) defined."
                 P_ERROR_NUMBER = vbObjectError + 9007
                 P_ERROR_SOURCE = "CSVinterface"
             End If
@@ -1391,7 +1391,7 @@ Public Function ImportFromCSVString(ByRef CSVstring As String, _
             P_SUCCESSFUL_IMPORT = False
             P_ERROR_DESC = "[CSV String Import]: the config object has an invalid Dynamic Typing Template (DTT). " _
                             & "The number of Dynamic Typing Links (DTL) must be less or equal than the number of " _
-                            & "the Dynamic Typing Targets Fields(DTTF) fields defined."
+                            & "Dynamic Typing Targets Fields(DTTF) defined."
             P_ERROR_NUMBER = vbObjectError + 9007
             P_ERROR_SOURCE = "CSVinterface"
         End If
@@ -1760,7 +1760,7 @@ Public Sub OpenSeqReader(configObj As parserConfig, _
                 P_SUCCESSFUL_IMPORT = False
                 P_ERROR_DESC = "the config object has an invalid Dynamic Typing Template (DTT). " _
                                 & "The number of Dynamic Typing Links (DTL) must be less or equal than the number of " _
-                                & "the Dynamic Typing Targets Fields(DTTF) fields defined."
+                                & "Dynamic Typing Targets Fields(DTTF) defined."
                 P_ERROR_NUMBER = vbObjectError + 9007
                 P_ERROR_SOURCE = "CSVinterface"
                 GoTo OpenSeqReader_Error_Handler
@@ -2320,8 +2320,8 @@ ParseCSVstring_MissingEscapeChar:
 ParseCSVstring_NoSignificantData:
     Err.Raise Number:=vbObjectError + 9010, _
                     Source:="CSVinterface Class [ParseCSVstring]", _
-                    Description:="The CSV file has no significant data. This can occur when " & _
-                                    "the file has only empty or commented lines that can be omitted."
+                    Description:="The String has no significant data. This can occur when " & _
+                                    "the String has only empty or commented lines that can be omitted."
     Resume ParseCSVstring_Error_Handler
 End Sub
 
