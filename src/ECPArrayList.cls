@@ -91,16 +91,16 @@ End Property
 ''' Appends a copy of the specified value to the current instance.
 ''' </summary>
 ''' <param name="aValue">The value to append.</param>
-Public Sub Add(aValue As Variant)
+Public Sub Add(AValue As Variant)
 Attribute Add.VB_Description = "Appends a copy of the specified value to the current instance."
     CurrentIndex = CurrentIndex + 1
     On Error GoTo Expand_Buffer
-    Buffer(CurrentIndex) = aValue
+    Buffer(CurrentIndex) = AValue
     Exit Sub
 Expand_Buffer:
     MaxIndex = 2 * (MaxIndex + 1) - 1
     ReDim Preserve Buffer(0 To MaxIndex)
-    Buffer(CurrentIndex) = aValue
+    Buffer(CurrentIndex) = AValue
 End Sub
 
 ''' <summary>
@@ -126,14 +126,14 @@ End Function
 ''' </summary>
 ''' <param name="Index">The index into which the Item'll be inserted.</param>
 ''' <param name="aValue">The value to be inserted.</param>
-Public Sub Insert(Index As Long, aValue As Variant)
+Public Sub Insert(Index As Long, AValue As Variant)
 Attribute Insert.VB_Description = "Inserts an Item, at the given Index, in the current instance of the class."
     Dim tmpCopy() As Variant
     Dim iCounter As Long
         
     Select Case Index
         Case 0 To CurrentIndex + 1 'Avoids to leave empty items
-            Me.Add aValue
+            Me.Add AValue
             'Checks if the item need to be placed on a previous Index
             If Index < CurrentIndex Then
                 tmpCopy() = Buffer

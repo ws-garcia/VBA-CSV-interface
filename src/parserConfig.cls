@@ -25,13 +25,13 @@ Option Explicit
 Private Const CHR_COLON As String = ":"
 Private Const CHR_COMMA As String = ","
 Private Const CHR_SEMICOLON As String = ";"
-Private Const CHR_VSLASH As String = "|"
+Private Const CHR_PIPE As String = "|"
 '////////////////////////////////////////////////////////////////////////////////////////////
 '#
 '////////////////////////////////////////////////////////////////////////////////////////////
 ' PROPERTIES VARIABLES:
 Private P_BUFFERSISE As Single
-Private P_CATCH_MEANINGLESS_RECORDS As Boolean
+'Private P_CATCH_MEANINGLESS_RECORDS As Boolean
 Private P_COMMENTSTOKEN As Long
 Private P_DELIMITERSGUESSING As Boolean
 Private P_DELIMITERSTOGUESS() As String
@@ -45,9 +45,12 @@ Private P_TEMPLATE_DEFINED As Boolean
 Private P_TEMPLATE_TARGETS_DEFINED As Boolean
 Private P_PATH As String
 Private P_RECORDSDELIMITER As String
+Private P_SKIP_COMMENTS As Boolean
+Private P_SKIP_EMPTYLINES As Boolean
 Private P_STARTINGRECORD As Long
 Private P_TEMPLATE_TARGETS() As Variant
 Private P_TEMPLATE() As Variant
+Private P_TURNSTREAMRECDELIMITERTOLF As Boolean
 '////////////////////////////////////////////////////////////////////////////////////////////
 '#
 '////////////////////////////////////////////////////////////////////////////////////////////
@@ -79,7 +82,14 @@ Public Property Get commentsToken() As String
     commentsToken = ChrW(P_COMMENTSTOKEN)
 End Property
 Public Property Let commentsToken(Token As String)
-    P_COMMENTSTOKEN = AscW(Token)
+    Dim ascWTkn As Long
+    ascWTkn = AscW(Token)
+    Select Case ascWTkn
+        Case Is = 33, 35, 36, 37, 38
+            P_COMMENTSTOKEN = ascWTkn
+        Case Else
+            P_COMMENTSTOKEN = 35 '# by default
+    End Select
 End Property
 Public Property Get delimitersGuessing() As Boolean
     delimitersGuessing = P_DELIMITERSGUESSING
@@ -159,7 +169,7 @@ Public Property Get fieldsDelimiter() As String
 End Property
 Public Property Let fieldsDelimiter(ByVal Delimiter As String)
     Select Case Delimiter
-        Case CHR_COLON, CHR_COMMA, CHR_SEMICOLON, vbTab, CHR_VSLASH
+        Case CHR_COLON, CHR_COMMA, CHR_SEMICOLON, vbTab, CHR_PIPE
             P_FIELDSDELIMITER = Delimiter
         Case Else
             P_FIELDSDELIMITER = CHR_COMMA
@@ -177,12 +187,17 @@ End Property
 Public Property Let headersOmission(value As Boolean)
     P_HEADEROMISSION = value
 End Property
-Public Property Get catchMeaninglessRecords() As Boolean
-Attribute catchMeaninglessRecords.VB_Description = "Gets or sets the behavior of the parser when facing empty and comments lines."
-    catchMeaninglessRecords = P_CATCH_MEANINGLESS_RECORDS
+Public Property Get skipCommentLines() As Boolean
+    skipCommentLines = P_SKIP_COMMENTS
 End Property
-Public Property Let catchMeaninglessRecords(value As Boolean)
-    P_CATCH_MEANINGLESS_RECORDS = value
+Public Property Let skipCommentLines(value As Boolean)
+    P_SKIP_COMMENTS = value
+End Property
+Public Property Get skipEmptyLines() As Boolean
+    skipEmptyLines = P_SKIP_EMPTYLINES
+End Property
+Public Property Let skipEmptyLines(value As Boolean)
+    P_SKIP_EMPTYLINES = value
 End Property
 Public Property Get path() As String
     path = P_PATH
@@ -212,6 +227,12 @@ Public Property Let startingRecord(ByVal RecNumber As Long)
             P_STARTINGRECORD = 1&
     End Select
 End Property
+Public Property Get turnStreamRecDelimiterToLF() As Boolean
+    turnStreamRecDelimiterToLF = P_TURNSTREAMRECDELIMITERTOLF
+End Property
+Public Property Let turnStreamRecDelimiterToLF(ByVal value As Boolean)
+    P_TURNSTREAMRECDELIMITERTOLF = value
+End Property
 '////////////////////////////////////////////////////////////////////////////////////////////
 '#
 
@@ -221,7 +242,8 @@ Attribute CopyConfig.VB_Description = "Returns a parserConfig object with a copy
     
     Set tmpResult = New parserConfig
     tmpResult.bufferSize = P_BUFFERSISE
-    tmpResult.catchMeaninglessRecords = P_CATCH_MEANINGLESS_RECORDS
+    tmpResult.skipCommentLines = P_SKIP_COMMENTS
+    tmpResult.skipEmptyLines = P_SKIP_EMPTYLINES
     tmpResult.commentsToken = ChrW(P_COMMENTSTOKEN)
     tmpResult.delimitersGuessing = P_DELIMITERSGUESSING
     tmpResult.delimitersToGuess = P_DELIMITERSTOGUESS
@@ -236,6 +258,7 @@ Attribute CopyConfig.VB_Description = "Returns a parserConfig object with a copy
     tmpResult.path = P_PATH
     tmpResult.recordsDelimiter = P_RECORDSDELIMITER
     tmpResult.startingRecord = P_STARTINGRECORD
+    tmpResult.turnStreamRecDelimiterToLF = P_TURNSTREAMRECDELIMITERTOLF
     Set CopyConfig = tmpResult
 End Function
 Public Sub DefineTypingTemplate(ParamArray dType() As Variant)
@@ -265,7 +288,7 @@ Private Sub Class_Initialize()
     ReDim P_DELIMITERSTOGUESS(0 To 4): P_DELIMITERSTOGUESS(0) = CHR_COMMA: _
                                         P_DELIMITERSTOGUESS(1) = CHR_SEMICOLON: _
                                         P_DELIMITERSTOGUESS(2) = vbTab: _
-                                        P_DELIMITERSTOGUESS(3) = CHR_VSLASH: _
+                                        P_DELIMITERSTOGUESS(3) = CHR_PIPE: _
                                         P_DELIMITERSTOGUESS(4) = CHR_COLON
     P_DYNAMIC_TYPING = False
     P_ENDINGRECORD = 0&
@@ -275,7 +298,9 @@ Private Sub Class_Initialize()
     P_HEADEROMISSION = False
     P_RECORDSDELIMITER = vbCrLf
     P_STARTINGRECORD = 1&
-    P_CATCH_MEANINGLESS_RECORDS = True
+    P_SKIP_COMMENTS = True
+    P_SKIP_EMPTYLINES = True
+    P_TURNSTREAMRECDELIMITERTOLF = False
     DefineTypingTemplate
     DefineTypingTemplateLinks
 End Sub
