@@ -77,6 +77,6 @@ End Sub
 >Converting delimiters to `vbLf` is an overheating operation. Use this functionality only after confirming that you cannot import your file using other methods.
 {: .text-grey-dk-300 .bg-yellow-000 }
 
-After executing the \[EXAMPLE3\] we obtain the correct number of fields, as shown in the following image.
+After executing the \[EXAMPLE3\] we obtain the correct number of records, as shown in the following image.
 
 ![CSV interface results](CSV interface results.png)
