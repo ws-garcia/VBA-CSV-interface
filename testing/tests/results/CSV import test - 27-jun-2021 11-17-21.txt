@@ -1,0 +1,153 @@
+=== StreamCSVimport ===
++ Bad comments value specified
++ Comment with non-default character
++ Commented line at beginning
++ Commented line at end
++ Commented line in middle
++ Entire file is comment lines
++ Input is just a string (a single field)
++ Input is just empty fields
++ Input is just the delimiter (2 empty fields)
++ Input with only a commented line and blank line after
++ Input with only a commented line, without comments enabled
++ Input without comments with line starting with whitespace
++ Line ends with quoted field
++ Line starts with quoted field
++ Misplaced quotes in data, not as opening quotes
++ Multiple consecutive empty fields
++ Multiple rows, one column (no delimiter found)
++ One column input with empty fields
++ One Row
++ Pipe delimiter
++ Quoted field at end of row (but not at EOF) has quotes
++ Quoted field has no closing quote
++ Quoted field with delimiter
++ Quoted field with escaped quotes at boundaries
++ Quoted field with escaped quotes
++ Quoted field with extra whitespace on edges
++ Quoted field with line break
++ Quoted field with quotes around delimiter
++ Quoted field with quotes on left side of delimiter
++ Quoted field with quotes on right side of delimiter
++ Quoted field with whitespace around quotes
++ Quoted field
++ Quoted fields at end of row with delimiter and line break
++ Quoted fields with line breaks
++ Quoted variable assignment
++ Row with enough fields but blank field at end
++ Row with too few fields
++ Row with too many fields
++ Skip empty lines, with empty input
++ Skip empty lines, with first line only whitespace
++ Skip empty lines, with newline at end of input
++ Tab delimiter
++ Three comment lines consecutively at beginning of file
++ Two comment lines consecutively at end of file
++ Two comment lines consecutively
++ Two rows
++ Unquoted field with quotes at end of field
++ Whitespace at edges of unquoted field
+= PASS (48 of 48 passed) = 27/6/2021 11:17:22 a. m. =
+
+=== StringCSVimport ===
++ Bad comments value specified
++ Comment with non-default character
++ Commented line at beginning
++ Commented line at end
++ Commented line in middle
++ Entire file is comment lines
++ Input is just a string (a single field)
++ Input is just empty fields
++ Input is just the delimiter (2 empty fields)
++ Input with only a commented line and blank line after
++ Input with only a commented line, without comments enabled
++ Input without comments with line starting with whitespace
++ Line ends with quoted field
++ Line starts with quoted field
++ Misplaced quotes in data, not as opening quotes
++ Multiple consecutive empty fields
++ Multiple rows, one column (no delimiter found)
++ One column input with empty fields
++ One Row
++ Pipe delimiter
++ Quoted field at end of row (but not at EOF) has quotes
++ Quoted field has no closing quote
++ Quoted field with delimiter
++ Quoted field with escaped quotes at boundaries
++ Quoted field with escaped quotes
++ Quoted field with extra whitespace on edges
++ Quoted field with line break
++ Quoted field with quotes around delimiter
++ Quoted field with quotes on left side of delimiter
++ Quoted field with quotes on right side of delimiter
++ Quoted field with whitespace around quotes
++ Quoted field
++ Quoted fields at end of row with delimiter and line break
++ Quoted fields with line breaks
++ Quoted variable assignment
++ Row with enough fields but blank field at end
++ Row with too few fields
++ Row with too many fields
++ Skip empty lines, with empty input
++ Skip empty lines, with first line only whitespace
++ Skip empty lines, with newline at end of input
++ Tab delimiter
++ Three comment lines consecutively at beginning of file
++ Two comment lines consecutively at end of file
++ Two comment lines consecutively
++ Two rows
++ Unquoted field with quotes at end of field
++ Whitespace at edges of unquoted field
+= PASS (48 of 48 passed) = 27/6/2021 11:17:22 a. m. =
+
+=== SequentialCSVimport ===
++ Bad comments value specified
++ Comment with non-default character
++ Commented line at beginning
++ Commented line at end
++ Commented line in middle
++ Entire file is comment lines
++ Input is just a string (a single field)
++ Input is just empty fields
++ Input is just the delimiter (2 empty fields)
++ Input with only a commented line and blank line after
++ Input with only a commented line, without comments enabled
++ Input without comments with line starting with whitespace
++ Line ends with quoted field
++ Line starts with quoted field
++ Misplaced quotes in data, not as opening quotes
++ Multiple consecutive empty fields
++ Multiple rows, one column (no delimiter found)
++ One column input with empty fields
++ One Row
++ Pipe delimiter
++ Quoted field at end of row (but not at EOF) has quotes
++ Quoted field has no closing quote
++ Quoted field with delimiter
++ Quoted field with escaped quotes at boundaries
++ Quoted field with escaped quotes
++ Quoted field with extra whitespace on edges
++ Quoted field with line break
++ Quoted field with quotes around delimiter
++ Quoted field with quotes on left side of delimiter
++ Quoted field with quotes on right side of delimiter
++ Quoted field with whitespace around quotes
++ Quoted field
++ Quoted fields at end of row with delimiter and line break
++ Quoted fields with line breaks
++ Quoted variable assignment
++ Row with enough fields but blank field at end
++ Row with too few fields
++ Row with too many fields
++ Skip empty lines, with empty input
++ Skip empty lines, with first line only whitespace
++ Skip empty lines, with newline at end of input
++ Tab delimiter
++ Three comment lines consecutively at beginning of file
++ Two comment lines consecutively at end of file
++ Two comment lines consecutively
++ Two rows
++ Unquoted field with quotes at end of field
++ Whitespace at edges of unquoted field
+= PASS (48 of 48 passed) = 27/6/2021 11:17:22 a. m. =
+
