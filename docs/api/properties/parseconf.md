@@ -53,17 +53,12 @@ _Yes_
 <tr>
 <td style="text-align: left; color:blue;"><em>bufferSize</em></td>
 <td style="text-align: left;">Property</td>
-<td style="text-align: left;">Gets or sets the buffer’s size, in MB, for the <code>ECPTextStream.cls</code> text stream operations. By default, this property is set to 0.5 for CSV/TSV file stream.</td>
-</tr>
-<tr>
-<td style="text-align: left; color:blue;"><em>catchMeaninglessRecords</em></td>
-<td style="text-align: left;">Property</td>
-<td style="text-align: left;">Gets or sets the behavior of the parser when facing empty and comments lines. By default, this property is set to <code>True</code>. If the value is set to <code>False</code>, the blank, empty and comments lines will generate errors in the import procedures.</td>
+<td style="text-align: left;">Gets or sets the buffer’s size, in MB, for the <code>ECPTextStream.cls</code> text stream operations. By default, this property is set to 0.5 MB for CSV/TSV file streams. When parsing a file with very long lines, it is necessary to adjust this property to avoid unexpected behavior.</td>
 </tr>
 <tr>
 <td style="text-align: left; color:blue;"><em>commentsToken</em></td>
 <td style="text-align: left;">Property</td>
-<td style="text-align: left;">Gets or sets the character used as commented line indicator. By default, the char <code>"#"</code> is used for indicate commented lines, but this property can be set to whatever single character. A line starting with the <code>commentsToken</code> char is ignored by the parser if the <code>catchMeaninglessRecords</code> is set to <code>True</code>. If the <code>commentsToken</code> has a length greater than 1, only the first char of it is used as indicator.</td>
+<td style="text-align: left;">Gets or sets the character used as commented line indicator. By default, the char <code>"#"</code> is used for indicate commented lines, but this property can be set to whatever single character. A line starting with the <code>commentsToken</code> char is ignored by the parser if the <code>skipCommentLines</code> is set to <code>True</code>. If the <code>commentsToken</code> has a length greater than 1, only the first char of it is used as indicator.</td>
 </tr>
 <tr>
 <td style="text-align: left; color:blue;"><em>CopyConfig</em></td>
@@ -88,7 +83,7 @@ _Yes_
 <tr>
 <td style="text-align: left; color:blue;"><em>delimitersToGuess</em></td>
 <td style="text-align: left;">Property</td>
-<td style="text-align: left;">Gets or sets the delimiters used on the <code>delimitersGuessing</code> operation. By default, the parser uses a <code>String</code> array with the chars ",", ";", <code>vbTab</code> and "|".</td>
+<td style="text-align: left;">Gets or sets the delimiters used on the <code>delimitersGuessing</code> operation. By default, the parser uses a <code>String</code> array with the chars comma (","), semicolon (";"), Tab (<code>vbTab</code>),  pipe ("|") and colon (":").</td>
 </tr>
 <tr>
 <td style="text-align: left; color:blue;"><em>dTTemplateDefined</em></td>
@@ -151,9 +146,24 @@ _Yes_
 <td style="text-align: left;">Gets or sets the char that will be used for delimit records in the target CSV/TSV file.</td>
 </tr>
 <tr>
+<td style="text-align: left; color:blue;"><em>skipCommentLines</em></td>
+<td style="text-align: left;">Property</td>
+<td style="text-align: left;">Gets or sets the behavior of the parser when facing comments lines. By default, this property is set to <code>True</code>. If the value is set to <code>False</code>, the comment lines will be parsed as a normal record.</td>
+</tr>
+<tr>
+<td style="text-align: left; color:blue;"><em>skipEmptyLines</em></td>
+<td style="text-align: left;">Property</td>
+<td style="text-align: left;">Gets or sets the behavior of the parser when facing empty lines. By default, this property is set to <code>True</code>. If the value is set to <code>False</code>, the empty lines will be parsed as a normal record.</td>
+</tr>
+<tr>
 <td style="text-align: left; color:blue;"><em>startingRecord</em></td>
 <td style="text-align: left;">Property</td>
 <td style="text-align: left;">This property must be used in combination with the <code>endingRecord</code> property for import a certain range of records from a CSV/TSV file.</td>
+</tr>
+<tr>
+<td style="text-align: left; color:blue;"><em>turnStreamRecDelimiterToLF</em></td>
+<td style="text-align: left;">Property</td>
+<td style="text-align: left;">Gets or sets the behavior of the parser when reading streams from text files. By default, this property is set to <code>False</code>. If the value is set to <code>True</code>, all line break characters in the loaded stream will be converted to <code>vbLf</code>. This option will affect performance, but may be useful when faced with CSV files with <code>vbCrLf</code>, <code>vbCr</code> and <code>vbLf</code> mixed in as line endings.</td>
 </tr>
 </tbody>
 </table>

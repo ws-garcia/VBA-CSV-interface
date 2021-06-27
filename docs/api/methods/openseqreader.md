@@ -46,13 +46,13 @@ Opens a sequential CSV reader for import records one at a time.
 _None_
 
 See also
-: [GetRecord Method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/getrecord.html), [CloseSeqReader Method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/closeseqreader.html).
+: [GetRecord Method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/getrecord.html), [CloseSeqReader Method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/closeseqreader.html), [ParseConfig Property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/parseconf.html).
 
 ---
 
 ## Behavior
 
-The `OpenSeqReader` method works in conjunction with the `GetRecord` method. The `FilterColumns` parameter is used to retrieve only certain fields from each CSV/TSV record. Filters can be strings representing the names of the fields determined with the header record, or numbers representing the position of the requested field. If no filters are defined, all fields of the requested records will be retrieved. Each call to the `OpenSeqReader` method will create a new conection to the CSV file.
+The `OpenSeqReader` method works in conjunction with the `GetRecord` method. The `configObj` parameter is an object with all the options considered by the parser during the import operation, see the [ParseConfig Property documentation](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/parseconf.html). The `FilterColumns` parameter is used to retrieve only certain fields from each CSV/TSV record. Filters can be strings representing the names of the fields determined with the header record, or numbers representing the position of the requested field. If no filters are defined, all fields of the requested records will be retrieved. Each call to the `OpenSeqReader` method will create a new conection to the CSV file.
 
 
 >📝**Note**

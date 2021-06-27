@@ -53,7 +53,7 @@ See also
 
 ## Behavior
 
-User can use the `FilterColumns` parameter for retrieve only certain fields from each CSV/TSV record. The filters can be strings representing the names of the fields determined with the header record, or numbers representing the position of the requested field. If not filters defined, all the fields of the requested records will be retrieved.
+The `configObj` parameter is an object with all the options considered by the parser during the import operation, see the [ParseConfig Property documentation](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/parseconf.html). User can use the `FilterColumns` parameter for retrieve only certain fields from each CSV/TSV record. The filters can be strings representing the names of the fields determined with the header record, or numbers representing the position of the requested field. If not filters defined, all the fields of the requested records will be retrieved.
 
 >⚠️**Caution**
 >{: .text-grey-lt-000 .bg-green-000 }

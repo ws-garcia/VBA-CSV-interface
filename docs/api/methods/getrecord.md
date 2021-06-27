@@ -29,7 +29,7 @@ _None_
 *Type*: `ECPArrayList`
 
 See also
-: [CloseSeqReader Method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/closeseqreader.html), [OpenSeqReader Method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/openseqreader.html).
+: [CloseSeqReader Method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/closeseqreader.html), [OpenSeqReader Method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/openseqreader.html), [ParseConfig Property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/parseconf.html).
 
 ---
 

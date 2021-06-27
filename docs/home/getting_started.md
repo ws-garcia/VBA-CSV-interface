@@ -57,17 +57,17 @@ Sort CSV/TSV file's content and put it into a VBA array:
 
 ```vb
 Dim CSVint As CSVinterface
-Dim conf As parserConfig
 Dim Arr() As Variant
 
 Set CSVint = New CSVinterface
-Set conf = CSVint.ParseConfig
-With conf
+With CSVint.ParseConfig
     .path = "C:\100000.quoted.csv"
     .dynamicTyping = False
 End With
-CSVint.GuessDelimiters conf
-CSVint.ImportFromCSV(conf).Sort(SortColumn:=1, Descending:=True).DumpToArray Arr
+With CSVint
+    .GuessDelimiters .ParseConfig
+    .ImportFromCSV(.ParseConfig).Sort(SortColumn:=1, Descending:=True).DumpToArray Arr
+End With
 ```
 
 Import a range of records from a CSV/TSV file into a VBA array:
