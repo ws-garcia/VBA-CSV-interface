@@ -1410,14 +1410,14 @@ ImportFromCSV_EmptyString:
     Resume ErrHandler_ImportFromString
 End Function
 
-Public Function IsJaggedArray(Arr As Variant) As Boolean
+Public Function IsJaggedArray(arr As Variant) As Boolean
     On Error GoTo IsJaggedArray_Err_Handler
-    If IsArray(Arr) Then
-        If MultiDimensional(Arr) Then
+    If IsArray(arr) Then
+        If MultiDimensional(arr) Then
             IsJaggedArray = False
         Else
             Dim BoundingTest As Variant
-            BoundingTest = Arr(LBound(Arr))
+            BoundingTest = arr(LBound(arr))
             BoundingTest = LBound(BoundingTest)
             IsJaggedArray = True
         End If
@@ -1485,11 +1485,14 @@ Private Function JoinRecordsFields(ByRef RecordsArray As Variant, _
     Dim CoerceChr As String
     Dim ConcatenatedArray() As String
     Dim EscapeT As EscapeTokens
+    Dim FieldDelimiterInField As Boolean
     Dim FldDelimiter As String
     Dim iLCounter As Long, jLCounter As Long
     Dim JoinBuffer(0 To 2) As String
     Dim LB1 As Long, UB1 As Long
     Dim LB2 As Long, ub2 As Long
+    Dim MultiLineField As Boolean
+    Dim QuotesInField As Boolean
     Dim recDelimiter As String
     
     On Error GoTo JoinRecordsFields_Error
@@ -1528,15 +1531,17 @@ Private Function JoinRecordsFields(ByRef RecordsArray As Variant, _
             ub2 = UBound(tmpBuffer)
             ReDim Buffer(LB2 To ub2)
             For jLCounter = LB2 To ub2
-                If InStrB(1, tmpBuffer(jLCounter), FldDelimiter) Then
+                FieldDelimiterInField = InStrB(1, tmpBuffer(jLCounter), FldDelimiter)
+                MultiLineField = InStrB(1, tmpBuffer(jLCounter), recDelimiter)
+                QuotesInField = InStrB(1, tmpBuffer(jLCounter), CoerceChr)
+                If FieldDelimiterInField Or MultiLineField Or QuotesInField Then
                     JoinBuffer(1) = tmpBuffer(jLCounter)
                     Buffer(jLCounter) = Join$(JoinBuffer, vbNullString)
-                ElseIf InStrB(1, tmpBuffer(jLCounter), CoerceChr) Then
-                    JoinBuffer(1) = tmpBuffer(jLCounter)
-                    Buffer(jLCounter) = Join$(JoinBuffer, vbNullString)
-                ElseIf InStrB(1, tmpBuffer(jLCounter), recDelimiter) Then
-                    JoinBuffer(1) = tmpBuffer(jLCounter)
-                    Buffer(jLCounter) = Join$(JoinBuffer, vbNullString)
+                    If QuotesInField Then
+                        If OddQuotes(Buffer(jLCounter), CoerceChr) Then
+                            Buffer(jLCounter) = Buffer(jLCounter) & CoerceChr
+                        End If
+                    End If
                 Else
                     Buffer(jLCounter) = tmpBuffer(jLCounter)
                 End If
@@ -1564,15 +1569,17 @@ Private Function JoinRecordsFields(ByRef RecordsArray As Variant, _
         'Concatenate fields
         For iLCounter = LB1 To UB1
             For jLCounter = LB2 To ub2
-                If InStrB(1, RecordsArray(iLCounter, jLCounter), FldDelimiter) Then
+                FieldDelimiterInField = InStrB(1, RecordsArray(iLCounter, jLCounter), FldDelimiter)
+                MultiLineField = InStrB(1, RecordsArray(iLCounter, jLCounter), recDelimiter)
+                QuotesInField = InStrB(1, RecordsArray(iLCounter, jLCounter), CoerceChr)
+                If FieldDelimiterInField Or MultiLineField Or QuotesInField Then
                     JoinBuffer(1) = RecordsArray(iLCounter, jLCounter)
                     Buffer(jLCounter) = Join$(JoinBuffer, vbNullString)
-                ElseIf InStrB(1, RecordsArray(iLCounter, jLCounter), CoerceChr) Then
-                    JoinBuffer(1) = RecordsArray(iLCounter, jLCounter)
-                    Buffer(jLCounter) = Join$(JoinBuffer, vbNullString)
-                ElseIf InStrB(1, RecordsArray(iLCounter, jLCounter), recDelimiter) Then
-                    JoinBuffer(1) = RecordsArray(iLCounter, jLCounter)
-                    Buffer(jLCounter) = Join$(JoinBuffer, vbNullString)
+                    If QuotesInField Then
+                        If OddQuotes(Buffer(jLCounter), CoerceChr) Then
+                            Buffer(jLCounter) = Buffer(jLCounter) & CoerceChr
+                        End If
+                    End If
                 Else
                     Buffer(jLCounter) = RecordsArray(iLCounter, jLCounter)
                 End If
@@ -1600,15 +1607,17 @@ Private Function JoinRecordsFields(ByRef RecordsArray As Variant, _
             '@----------------------------------------------------------------------------
             'Concatenate fields
             For iLCounter = LB1 To UB1
-                If InStrB(1, RecordsArray(iLCounter), FldDelimiter) Then
+                FieldDelimiterInField = InStrB(1, RecordsArray(iLCounter), FldDelimiter)
+                MultiLineField = InStrB(1, RecordsArray(iLCounter), CoerceChr)
+                QuotesInField = InStrB(1, RecordsArray(iLCounter), CoerceChr)
+                If FieldDelimiterInField Or MultiLineField Or QuotesInField Then
                     JoinBuffer(1) = RecordsArray(iLCounter)
                     Buffer(0) = Join$(JoinBuffer, vbNullString)
-                ElseIf InStrB(1, RecordsArray(iLCounter), CoerceChr) Then
-                    JoinBuffer(1) = RecordsArray(iLCounter)
-                    Buffer(0) = Join$(JoinBuffer, vbNullString)
-                ElseIf InStrB(1, RecordsArray(iLCounter), recDelimiter) Then
-                    JoinBuffer(1) = RecordsArray(iLCounter)
-                    Buffer(0) = Join$(JoinBuffer, vbNullString)
+                    If QuotesInField Then
+                        If OddQuotes(Buffer(0), CoerceChr) Then
+                            Buffer(0) = Buffer(0) & CoerceChr
+                        End If
+                    End If
                 Else
                     Buffer(0) = RecordsArray(iLCounter)
                 End If
@@ -1634,15 +1643,17 @@ Private Function JoinRecordsFields(ByRef RecordsArray As Variant, _
                 ub2 = UBound(tmpBuffer)
                 ReDim Buffer(LB2 To ub2)
                 For jLCounter = LB2 To ub2
-                    If InStrB(1, tmpBuffer(jLCounter), FldDelimiter) Then
+                    FieldDelimiterInField = InStrB(1, tmpBuffer(jLCounter), FldDelimiter)
+                    MultiLineField = InStrB(1, tmpBuffer(jLCounter), recDelimiter)
+                    QuotesInField = InStrB(1, tmpBuffer(jLCounter), CoerceChr)
+                    If FieldDelimiterInField Or MultiLineField Or QuotesInField Then
                         JoinBuffer(1) = tmpBuffer(jLCounter)
                         Buffer(jLCounter) = Join$(JoinBuffer, vbNullString)
-                    ElseIf InStrB(1, tmpBuffer(jLCounter), CoerceChr) Then
-                        JoinBuffer(1) = tmpBuffer(jLCounter)
-                        Buffer(jLCounter) = Join$(JoinBuffer, vbNullString)
-                    ElseIf InStrB(1, tmpBuffer(jLCounter), recDelimiter) Then
-                        JoinBuffer(1) = tmpBuffer(jLCounter)
-                        Buffer(jLCounter) = Join$(JoinBuffer, vbNullString)
+                        If QuotesInField Then
+                            If OddQuotes(Buffer(jLCounter), CoerceChr) Then
+                                Buffer(jLCounter) = Buffer(jLCounter) & CoerceChr
+                            End If
+                        End If
                     Else
                         Buffer(jLCounter) = tmpBuffer(jLCounter)
                     End If
@@ -1725,6 +1736,20 @@ Private Function MultiDimensional(CheckArray As Variant) As Boolean
     Exit Function
 ErrHandler_MultiDimensional:
     MultiDimensional = False '1 dimension
+End Function
+
+Private Function OddQuotes(ByRef FieldStr As String, ByRef quoteChar As String) As Boolean
+    Dim curQuotePos As Long
+    Dim matchCounter As Long
+    Dim res As Long
+    
+    matchCounter = 0
+    curQuotePos = InStrB(1, FieldStr, quoteChar)
+    Do While curQuotePos
+        matchCounter = matchCounter + 1
+        curQuotePos = InStrB(curQuotePos + 1, FieldStr, quoteChar)
+    Loop
+    OddQuotes = (matchCounter Mod 2)
 End Function
 
 Public Sub OpenSeqReader(configObj As parserConfig, _
@@ -2379,7 +2404,7 @@ End Sub
 
 Private Sub SkipUnwantedLines(ByRef idx As Long, _
                                 ByRef MaxIdx As Long, _
-                                ByRef Arr() As String, _
+                                ByRef arr() As String, _
                                 ByVal CommentToken As Long, _
                                 Optional SkipComments As Boolean = True, _
                                 Optional skipEmptyLines As Boolean = True)
@@ -2391,14 +2416,14 @@ Private Sub SkipUnwantedLines(ByRef idx As Long, _
     'Skip commented and empty lines if needed
     If idx <= MaxIdx Then
         Do
-            CurLength = LenB(Arr(idx))
+            CurLength = LenB(arr(idx))
             UnwantedLine = False
             If CurLength = 0 Then  'Empty line found
                 If skipEmptyLines Then
                     UnwantedLine = True
                 End If
             Else
-                CharCode = AscW(Arr(idx))
+                CharCode = AscW(arr(idx))
                 If CharCode = CommentToken Then 'Commented line found
                     If SkipComments Then
                         UnwantedLine = True
@@ -2960,7 +2985,7 @@ End Sub
 
 Private Sub StreamSkipUnwantedLines(ByRef idx As Long, _
                                     ByRef Ostream As ECPTextStream, _
-                                    ByRef Arr() As String, _
+                                    ByRef arr() As String, _
                                     ByRef MaxIdx As Long, _
                                     ByRef recDelimiter As String, _
                                     ByVal CommentToken As Long, _
@@ -2976,14 +3001,14 @@ start:
     'Skip commented and blank lines if needed
     If idx <= MaxIdx Then
         Do
-            CurLength = LenB(Arr(idx))
+            CurLength = LenB(arr(idx))
             UnwantedLine = False
             If CurLength = 0 Then  'Empty line found
                 If skipEmptyLines Then
                     UnwantedLine = True
                 End If
             Else
-                CharCode = AscW(Arr(idx))
+                CharCode = AscW(arr(idx))
                 If CharCode = CommentToken Then 'Commented line found
                     If SkipComments Then
                         UnwantedLine = True
@@ -2999,10 +3024,10 @@ AdvanceLine:
                         'Advance stream
                         Ostream.ReadText
                         QuotedStreamVariable = InStrB(1, Ostream.bufferString, CHR_DOUBLE_QUOTES)
-                        Arr() = Split(Ostream.bufferString, recDelimiter)
+                        arr() = Split(Ostream.bufferString, recDelimiter)
                         idx = 0
-                        MaxIdx = UBound(Arr)
-                        If Arr(MaxIdx) = vbNullString Then
+                        MaxIdx = UBound(arr)
+                        If arr(MaxIdx) = vbNullString Then
                             MaxIdx = MaxIdx - 1
                         End If
                     End If
@@ -3015,10 +3040,10 @@ AdvanceLine:
             'Advance stream
             Ostream.ReadText
             QuotedStreamVariable = InStrB(1, Ostream.bufferString, CHR_DOUBLE_QUOTES)
-            Arr() = Split(Ostream.bufferString, recDelimiter)
+            arr() = Split(Ostream.bufferString, recDelimiter)
             idx = 0
-            MaxIdx = UBound(Arr)
-            If Arr(MaxIdx) = vbNullString Then
+            MaxIdx = UBound(arr)
+            If arr(MaxIdx) = vbNullString Then
                 MaxIdx = MaxIdx - 1
             End If
             GoTo start
