@@ -408,6 +408,12 @@ Function ImportTests(FullFileName As String, _
         WhitespaceAtEdgesOfUnquotedField ReadMode
         .IsEqual ActualResult, ExpectedResult, "Expected 1 record with 3 fields"
     End With
+    '@--------------------------------------------------------------------------------
+    'Quoted field with 5 quotes in a row and a delimiter
+    With ImportTests.test("Quoted field with 5 quotes in a row and a delimiter")
+        QuotedFieldWith5QuotesInARowAndADelimiter ReadMode
+        .IsEqual ActualResult, ExpectedResult, "Expected 1 record with 3 fields"
+    End With
     Set ImportTests = Nothing
 End Function
 Sub GetActualAndExpectedResults(FileName As String, _
@@ -709,6 +715,11 @@ Sub WhitespaceAtEdgesOfUnquotedField(Optional ReadMode As ImportMode = ImportMod
     Set confObj = New parserConfig
 
     GetActualAndExpectedResults "Whitespace at edges of unquoted field.csv", "a,  b ,c", ReadMode
+End Sub
+Sub QuotedFieldWith5QuotesInARowAndADelimiter(Optional ReadMode As ImportMode = ImportMode.iStream)
+    Set confObj = New parserConfig
+
+    GetActualAndExpectedResults "Quoted field with 5 quotes in a row and a delimiter.csv", "1,cnonce=''''?nc='''',2", ReadMode
 End Sub
 '/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 '#
