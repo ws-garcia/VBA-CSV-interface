@@ -52,7 +52,7 @@ _None_
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->The *csvArray* parameter can be an `ECPArrayList` or an array variable, passing another type of variable will cause an error. 
+>The *csvArray* parameter can be an `ECPArrayList` or an array (one-dimensional, two-dimensional or jagged) variable, passing another type of variable will cause an error. 
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 See also
@@ -63,5 +63,10 @@ See also
 ## Behavior
 
 If the `pconfig` parameter is omited, the parser will use the `ParseConfig` property as configuration object. If the file specified in the `.path` configuration property all ready exist and have some content on it the parser will try to guess delimiters and the data will be append to the file.
+
+>⚠️**Caution**
+>{: .text-grey-lt-000 .bg-green-000 }
+>If there is an unescaped field, the `ExportToCSV` method will append the specified escape character to the end of the field. This is because if the data is written with this problem, the parser will not be able to import it on future occasions.
+{: .text-grey-dk-300 .bg-yellow-000 }
 
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)
