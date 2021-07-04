@@ -1744,19 +1744,6 @@ Private Function MultiDimensional(CheckArray As Variant) As Boolean
 ErrHandler_MultiDimensional:
     MultiDimensional = False '1 dimension
 End Function
-Private Function OddQuotes(ByRef FieldStr As String, ByRef quoteChar As String) As Boolean
-    Dim curQuotePos As Long
-    Dim matchCounter As Long
-    Dim res As Long
-    
-    matchCounter = 0
-    curQuotePos = InStrB(1, FieldStr, quoteChar)
-    Do While curQuotePos
-        matchCounter = matchCounter + 1
-        curQuotePos = InStrB(curQuotePos + 1, FieldStr, quoteChar)
-    Loop
-    OddQuotes = (matchCounter Mod 2)
-End Function
 Public Sub OpenSeqReader(configObj As parserConfig, _
                             ParamArray FilterColumns() As Variant)
     On Error GoTo OpenSeqReader_Error_Handler
@@ -3162,4 +3149,3 @@ Private Function UnixToStandardEscapeSeq(ByRef UnixEscapedString As String, _
         UnixToStandardEscapeSeq = UnixEscapedString
     End If
 End Function
-
