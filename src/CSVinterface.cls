@@ -401,13 +401,13 @@ CSVsubsetSplit_MissingCSVfile:
 End Function
 Public Sub DumpToArray(OutPutArray() As Variant, _
                         Optional ByRef DataSource As ECPArrayList = Nothing)
-    If P_SUCCESSFUL_IMPORT Then
+    If DataSource Is Nothing Then
+        Set DataSource = P_CSV_DATA
+    End If
+    If Not DataSource Is Nothing Then
         Dim UB1 As Long, ub2 As Long
         Dim Counter1 As Long, Counter2 As Long
         
-        If DataSource Is Nothing Then
-            Set DataSource = P_CSV_DATA
-        End If
         UB1 = DataSource.count - 1
         ReDim OutPutArray(0 To UB1, 0 To P_VECTORS_MAX_BOUND)
         
@@ -421,13 +421,13 @@ Public Sub DumpToArray(OutPutArray() As Variant, _
 End Sub
 Public Sub DumpToJaggedArray(OutPutArray() As Variant, _
                                 Optional ByRef DataSource As ECPArrayList = Nothing)
-    If P_SUCCESSFUL_IMPORT Then
+    If DataSource Is Nothing Then
+        Set DataSource = P_CSV_DATA
+    End If
+    If Not DataSource Is Nothing Then
         Dim UB1 As Long
         Dim Counter1 As Long
         
-        If DataSource Is Nothing Then
-            Set DataSource = P_CSV_DATA
-        End If
         UB1 = DataSource.count - 1
         ReDim OutPutArray(0 To UB1)
         
@@ -441,18 +441,19 @@ Public Sub DumpToSheet(Optional WBookName As String, _
                         Optional rngName As String = "A1", _
                         Optional ByRef DataSource As ECPArrayList = Nothing)
     On Error Resume Next
-    If P_SUCCESSFUL_IMPORT Then
+    Dim colNumber As Long
+    
+    If DataSource Is Nothing Then
+        Set DataSource = P_CSV_DATA
+        colNumber = P_VECTORS_MAX_BOUND
+    Else
+        colNumber = UBound(DataSource(0))
+    End If
+    If Not DataSource Is Nothing Then
         Dim WBook As Workbook
         Dim outputSheet As Worksheet
         Dim OutputRange As Range
-        Dim colNumber As Long
         
-        If DataSource Is Nothing Then
-            Set DataSource = P_CSV_DATA
-            colNumber = P_VECTORS_MAX_BOUND
-        Else
-            colNumber = UBound(DataSource(0))
-        End If
         EnableOptimization
         '@------------------------------------------------------
         'Set the target Workbook
@@ -3149,3 +3150,4 @@ Private Function UnixToStandardEscapeSeq(ByRef UnixEscapedString As String, _
         UnixToStandardEscapeSeq = UnixEscapedString
     End If
 End Function
+
