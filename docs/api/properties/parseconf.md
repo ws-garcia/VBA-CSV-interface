@@ -118,7 +118,7 @@ _Yes_
 <tr>
 <td style="text-align: left; color:blue;"><em>escapeToken</em></td>
 <td style="text-align: left;">Property</td>
-<td style="text-align: left;">Gets or sets the char that will be used for escape those fields containing some CSV/TSV syntax special char. The user must use the <code>EscapeTokens</code> enumeration to define this property.</td>
+<td style="text-align: left;">Gets or sets the char that will be used for quote those fields containing some CSV/TSV syntax special char. The user must use the <code>EscapeTokens</code> enumeration to define this property. The user can choose between double quotes ("), single quotes (') and tilde (~) as escapeToken.</td>
 </tr>
 <tr>
 <td style="text-align: left; color:blue;"><em>fieldsDelimiter</em></td>
@@ -164,6 +164,11 @@ _Yes_
 <td style="text-align: left; color:blue;"><em>turnStreamRecDelimiterToLF</em></td>
 <td style="text-align: left;">Property</td>
 <td style="text-align: left;">Gets or sets the behavior of the parser when reading streams from text files. By default, this property is set to <code>False</code>. If the value is set to <code>True</code>, all line break characters in the loaded stream will be converted to <code>vbLf</code>. This option will affect performance, but may be useful when faced with CSV files with <code>vbCrLf</code>, <code>vbCr</code> and <code>vbLf</code> mixed in as line endings.</td>
+</tr>
+<tr>
+<td style="text-align: left; color:blue;"><em>unixEscapeMechanism</em></td>
+<td style="text-align: left;">Property</td>
+<td style="text-align: left;">Gets or sets the behavior of the parser when escaping or unescaping quotes. By default, this property is set to <code>False</code>. If the value is set to <code>True</code>, the escape character must be escaped by preceding it with a unix-style backslash (<code>\"</code>).</td>
 </tr>
 </tbody>
 </table>

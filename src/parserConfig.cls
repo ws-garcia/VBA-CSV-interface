@@ -14,8 +14,7 @@ Attribute VB_Exposed = False
 ' https://ingwilfredogarcia.wordpress.com
 '#
 ' GENERAL INFO:
-' This module is part of a small RFC-4180 compliant VBA library to manipulate CSV files at
-' the highest speed.
+' This module is part of VBA CSV interface library.
 '////////////////////////////////////////////////////////////////////////////////////////////
 '#
 Option Explicit
@@ -31,7 +30,6 @@ Private Const CHR_PIPE As String = "|"
 '////////////////////////////////////////////////////////////////////////////////////////////
 ' PROPERTIES VARIABLES:
 Private P_BUFFERSISE As Single
-'Private P_CATCH_MEANINGLESS_RECORDS As Boolean
 Private P_COMMENTSTOKEN As Long
 Private P_DELIMITERSGUESSING As Boolean
 Private P_DELIMITERSTOGUESS() As String
@@ -51,6 +49,7 @@ Private P_STARTINGRECORD As Long
 Private P_TEMPLATE_TARGETS() As Variant
 Private P_TEMPLATE() As Variant
 Private P_TURNSTREAMRECDELIMITERTOLF As Boolean
+Private P_UNIXESCAPEMECHANISM As Boolean
 '////////////////////////////////////////////////////////////////////////////////////////////
 '#
 '////////////////////////////////////////////////////////////////////////////////////////////
@@ -58,7 +57,7 @@ Private P_TURNSTREAMRECDELIMITERTOLF As Boolean
 Public Enum EscapeTokens
     Apostrophe = 1
     DoubleQuotes = 2
-    NullChar = 0
+    Tilde = 3
 End Enum
 Public Enum TypeConversion
     None = -1
@@ -158,10 +157,10 @@ Public Property Let endingRecord(ByVal RecNumber As Long)
             P_ENDINGRECORD = 0&
     End Select
 End Property
-Public Property Get escapeToken() As EscapeTokens
-    escapeToken = P_ESCAPETOKEN
+Public Property Get EscapeToken() As EscapeTokens
+    EscapeToken = P_ESCAPETOKEN
 End Property
-Public Property Let escapeToken(ByVal Token As EscapeTokens)
+Public Property Let EscapeToken(ByVal Token As EscapeTokens)
     P_ESCAPETOKEN = Token
 End Property
 Public Property Get fieldsDelimiter() As String
@@ -233,6 +232,12 @@ End Property
 Public Property Let turnStreamRecDelimiterToLF(ByVal value As Boolean)
     P_TURNSTREAMRECDELIMITERTOLF = value
 End Property
+Public Property Get unixEscapeMechanism() As Boolean
+    unixEscapeMechanism = P_UNIXESCAPEMECHANISM
+End Property
+Public Property Let unixEscapeMechanism(value As Boolean)
+    P_UNIXESCAPEMECHANISM = value
+End Property
 '////////////////////////////////////////////////////////////////////////////////////////////
 '#
 
@@ -251,7 +256,8 @@ Attribute CopyConfig.VB_Description = "Returns a parserConfig object with a copy
     tmpResult.dTypingTemplate = P_TEMPLATE
     tmpResult.dynamicTyping = P_DYNAMIC_TYPING
     tmpResult.endingRecord = P_ENDINGRECORD
-    tmpResult.escapeToken = P_ESCAPETOKEN
+    tmpResult.EscapeToken = P_ESCAPETOKEN
+    tmpResult.unixEscapeMechanism = P_UNIXESCAPEMECHANISM
     tmpResult.fieldsDelimiter = P_FIELDSDELIMITER
     tmpResult.headers = P_HEADERS
     tmpResult.headersOmission = P_HEADEROMISSION
@@ -301,6 +307,7 @@ Private Sub Class_Initialize()
     P_SKIP_COMMENTS = True
     P_SKIP_EMPTYLINES = True
     P_TURNSTREAMRECDELIMITERTOLF = False
+    P_UNIXESCAPEMECHANISM = False
     DefineTypingTemplate
     DefineTypingTemplateLinks
 End Sub

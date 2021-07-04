@@ -248,10 +248,10 @@ Private Sub GoBackToLineBreak()
 End Sub
 Private Sub NormalizeLineBreaks()
     If InStrB(1, P_TEXT, vbCr, vbBinaryCompare) Then
-        P_TEXT = Replace(P_TEXT, vbCr, vbLf, 1)
+        P_TEXT = Join$(Split(P_TEXT, vbCr), vbLf)
     End If
     Do While InStrB(1, P_TEXT, DualLFchar, vbBinaryCompare)
-        P_TEXT = Replace(P_TEXT, DualLFchar, vbLf, 1)
+        P_TEXT = Join$(Split(P_TEXT, DualLFchar), vbLf)
     Loop
     P_LINEBREAK = vbLf
 End Sub
