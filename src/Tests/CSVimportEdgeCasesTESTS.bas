@@ -253,6 +253,12 @@ Function ImportTests(FullFileName As String, _
         .IsEqual ActualResult, ExpectedResult, "Expected Empty object"
     End With
     '@--------------------------------------------------------------------------------
+    'Quoted field with 5 quotes in a row and a delimiter
+    With ImportTests.test("Quoted field with 5 quotes in a row and a delimiter")
+        QuotedFieldWith5QuotesInARowAndADelimiter ReadMode
+        .IsEqual ActualResult, ExpectedResult, "Expected 1 record with 3 fields"
+    End With
+    '@--------------------------------------------------------------------------------
     'Quoted field with delimiter
     With ImportTests.test("Quoted field with delimiter")
         QuotedFieldWithDelimiter ReadMode
@@ -301,6 +307,12 @@ Function ImportTests(FullFileName As String, _
         .IsEqual ActualResult, ExpectedResult, "Expected 1 record with 3 fields"
     End With
     '@--------------------------------------------------------------------------------
+    'Quoted field with Unix escaped quotes at boundaries
+    With ImportTests.test("Quoted field with Unix escaped quotes at boundaries")
+        QuotedFieldWithUnixEscapedQuotesAtBoundaries ReadMode
+        .IsEqual ActualResult, ExpectedResult, "Expected 1 record with 3 fields"
+    End With
+    '@--------------------------------------------------------------------------------
     'Quoted field with whitespace around quotes
     With ImportTests.test("Quoted field with whitespace around quotes")
         QuotedFieldWithWhitespaceAroundQuotes ReadMode
@@ -323,12 +335,6 @@ Function ImportTests(FullFileName As String, _
     With ImportTests.test("Quoted fields with line breaks")
         QuotedFieldsWithLineBreaks
         .IsEqual ActualResult, ExpectedResult, "Expected 3 fields and 1 record"
-    End With
-    '@--------------------------------------------------------------------------------
-    'Quoted variable assignment
-    With ImportTests.test("Quoted variable assignment")
-        QuotedVariableAssignment ReadMode
-        .IsEqual ActualResult, ExpectedResult, "Expected 1 record with 3 fields"
     End With
     '@--------------------------------------------------------------------------------
     'Row with enough fields but blank field at end
@@ -408,12 +414,6 @@ Function ImportTests(FullFileName As String, _
         WhitespaceAtEdgesOfUnquotedField ReadMode
         .IsEqual ActualResult, ExpectedResult, "Expected 1 record with 3 fields"
     End With
-    '@--------------------------------------------------------------------------------
-    'Quoted field with 5 quotes in a row and a delimiter
-    With ImportTests.test("Quoted field with 5 quotes in a row and a delimiter")
-        QuotedFieldWith5QuotesInARowAndADelimiter ReadMode
-        .IsEqual ActualResult, ExpectedResult, "Expected 1 record with 3 fields"
-    End With
     Set ImportTests = Nothing
 End Function
 Sub GetActualAndExpectedResults(FileName As String, _
@@ -465,7 +465,7 @@ Sub GetActualAndExpectedResults(FileName As String, _
             End If
     End Select
     Set ExpectedResult = CreateExpectedCSVresult(ExpectedResultString)
-    DquotesAsEscapeToken = (confObj.escapeToken = EscapeTokens.DoubleQuotes)
+    DquotesAsEscapeToken = (confObj.EscapeToken = EscapeTokens.DoubleQuotes)
     EscapedFieldDelimiterReplacement = confObj.fieldsDelimiter
 End Sub
 '/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -584,7 +584,7 @@ End Sub
 Sub QuotedFieldAtEndOfRowButNotAtEOFhasQuotes(Optional ReadMode As ImportMode = ImportMode.iStream)
     Set confObj = New parserConfig
 
-    GetActualAndExpectedResults "Quoted field at end of row (but not at EOF) has quotes.csv", "a,b,c''c''|d,e,f", ReadMode
+    GetActualAndExpectedResults "Quoted field at end of row (but not at EOF) has quotes.csv", "a,b,c'c'|d,e,f", ReadMode
 End Sub
 Sub QuotedFieldHasNoClosingQuot(Optional ReadMode As ImportMode = ImportMode.iStream)
     Set confObj = New parserConfig
@@ -599,12 +599,12 @@ End Sub
 Sub QuotedFieldWithEscapedQuotesAtBoundaries(Optional ReadMode As ImportMode = ImportMode.iStream)
     Set confObj = New parserConfig
 
-    GetActualAndExpectedResults "Quoted field with escaped quotes at boundaries.csv", "A,''B'',C", ReadMode
+    GetActualAndExpectedResults "Quoted field with escaped quotes at boundaries.csv", "A,'B',C", ReadMode
 End Sub
 Sub QuotedFieldWithEscapedQuotes(Optional ReadMode As ImportMode = ImportMode.iStream)
     Set confObj = New parserConfig
 
-    GetActualAndExpectedResults "Quoted field with escaped quotes.csv", "A,B''B''B,C", ReadMode
+    GetActualAndExpectedResults "Quoted field with escaped quotes.csv", "A,B'B'B,C", ReadMode
 End Sub
 Sub QuotedFieldWithExtraWhitespaceOnEdges(Optional ReadMode As ImportMode = ImportMode.iStream)
     Set confObj = New parserConfig
@@ -619,17 +619,17 @@ End Sub
 Sub QuotedFieldWithQuotesAroundDelimiter(Optional ReadMode As ImportMode = ImportMode.iStream)
     Set confObj = New parserConfig
 
-    GetActualAndExpectedResults "Quoted field with quotes around delimiter.csv", "A,''?'',C", ReadMode
+    GetActualAndExpectedResults "Quoted field with quotes around delimiter.csv", "A,'?',C", ReadMode
 End Sub
 Sub QuotedFieldWithQuotesOnLeftSideOfDelimiter(Optional ReadMode As ImportMode = ImportMode.iStream)
     Set confObj = New parserConfig
 
-    GetActualAndExpectedResults "Quoted field with quotes on left side of delimiter.csv", "A,''?,C", ReadMode
+    GetActualAndExpectedResults "Quoted field with quotes on left side of delimiter.csv", "A,'?,C", ReadMode
 End Sub
 Sub QuotedFieldWithQuotesOnRightSideOfDelimiter(Optional ReadMode As ImportMode = ImportMode.iStream)
     Set confObj = New parserConfig
 
-    GetActualAndExpectedResults "Quoted field with quotes on right side of delimiter.csv", "A,?'',C", ReadMode
+    GetActualAndExpectedResults "Quoted field with quotes on right side of delimiter.csv", "A,?',C", ReadMode
 End Sub
 Sub QuotedFieldWithWhitespaceAroundQuotes(Optional ReadMode As ImportMode = ImportMode.iStream)
     Set confObj = New parserConfig
@@ -645,11 +645,6 @@ Sub QuotedFieldsAtEndOfRowWithDelimiterAndLinBreak(Optional ReadMode As ImportMo
     Set confObj = New parserConfig
 
     GetActualAndExpectedResults "Quoted fields at end of row with delimiter and line break.csv", "a,b,c?c\nc|d,e,f", ReadMode
-End Sub
-Sub QuotedVariableAssignment(Optional ReadMode As ImportMode = ImportMode.iStream)
-    Set confObj = New parserConfig
-
-    GetActualAndExpectedResults "Quoted variable assignment.csv", "1,cnonce=''?nc='',2", ReadMode
 End Sub
 Sub RowWithEnoughFieldsButBlankFieldAtEnd(Optional ReadMode As ImportMode = ImportMode.iStream)
     Set confObj = New parserConfig
@@ -719,7 +714,13 @@ End Sub
 Sub QuotedFieldWith5QuotesInARowAndADelimiter(Optional ReadMode As ImportMode = ImportMode.iStream)
     Set confObj = New parserConfig
 
-    GetActualAndExpectedResults "Quoted field with 5 quotes in a row and a delimiter.csv", "1,cnonce=''''?nc='''',2", ReadMode
+    GetActualAndExpectedResults "Quoted field with 5 quotes in a row and a delimiter.csv", "1,cnonce=''?nc='',2", ReadMode
+End Sub
+Sub QuotedFieldWithUnixEscapedQuotesAtBoundaries(Optional ReadMode As ImportMode = ImportMode.iStream)
+    Set confObj = New parserConfig
+    
+    confObj.unixEscapeMechanism = True 'Enable Unix escape mechanism
+    GetActualAndExpectedResults "Quoted field with unix escaped quotes at boundaries.csv", "A,'B',C", ReadMode
 End Sub
 '/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 '#
