@@ -414,6 +414,12 @@ Function ImportTests(FullFileName As String, _
         WhitespaceAtEdgesOfUnquotedField ReadMode
         .IsEqual ActualResult, ExpectedResult, "Expected 1 record with 3 fields"
     End With
+    '@--------------------------------------------------------------------------------
+    'Complex CSV syntax
+    With ImportTests.test("Complex CSV syntax")
+        ComplexCSVsyntax ReadMode
+        .IsEqual ActualResult, ExpectedResult, "Expected 2 record with 4 fields"
+    End With
     Set ImportTests = Nothing
 End Function
 Sub GetActualAndExpectedResults(FileName As String, _
@@ -721,6 +727,12 @@ Sub QuotedFieldWithUnixEscapedQuotesAtBoundaries(Optional ReadMode As ImportMode
     
     confObj.unixEscapeMechanism = True 'Enable Unix escape mechanism
     GetActualAndExpectedResults "Quoted field with unix escaped quotes at boundaries.csv", "A,'B',C", ReadMode
+End Sub
+Sub ComplexCSVsyntax(Optional ReadMode As ImportMode = ImportMode.iStream)
+    Set confObj = New parserConfig
+    
+    GetActualAndExpectedResults "Complex CSV syntax.csv", "rec1? fld1,,rec1'?'fld3.1\r\n'?\r\nfld3.2,rec1\r\nfld4" _
+                                                        & "|rec2? fld1.1\r\n\r\nfld1.2,rec2 fld2.1'fld2.2'fld2.3,,rec2 fld4", ReadMode
 End Sub
 '/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 '#
