@@ -21,6 +21,7 @@
 + Pipe delimiter
 + Quoted field at end of row (but not at EOF) has quotes
 + Quoted field has no closing quote
++ Quoted field with 5 quotes in a row and a delimiter
 + Quoted field with delimiter
 + Quoted field with escaped quotes at boundaries
 + Quoted field with escaped quotes
@@ -29,11 +30,11 @@
 + Quoted field with quotes around delimiter
 + Quoted field with quotes on left side of delimiter
 + Quoted field with quotes on right side of delimiter
++ Quoted field with Unix escaped quotes at boundaries
 + Quoted field with whitespace around quotes
 + Quoted field
 + Quoted fields at end of row with delimiter and line break
 + Quoted fields with line breaks
-+ Quoted variable assignment
 + Row with enough fields but blank field at end
 + Row with too few fields
 + Row with too many fields
@@ -47,7 +48,7 @@
 + Two rows
 + Unquoted field with quotes at end of field
 + Whitespace at edges of unquoted field
-= PASS (48 of 48 passed) = 27/6/2021 11:17:22 a. m. =
+= PASS (49 of 49 passed) = 3/7/2021 7:42:57 p. m. =
 
 === StringCSVimport ===
 + Bad comments value specified
@@ -72,6 +73,7 @@
 + Pipe delimiter
 + Quoted field at end of row (but not at EOF) has quotes
 + Quoted field has no closing quote
++ Quoted field with 5 quotes in a row and a delimiter
 + Quoted field with delimiter
 + Quoted field with escaped quotes at boundaries
 + Quoted field with escaped quotes
@@ -80,11 +82,11 @@
 + Quoted field with quotes around delimiter
 + Quoted field with quotes on left side of delimiter
 + Quoted field with quotes on right side of delimiter
++ Quoted field with Unix escaped quotes at boundaries
 + Quoted field with whitespace around quotes
 + Quoted field
 + Quoted fields at end of row with delimiter and line break
 + Quoted fields with line breaks
-+ Quoted variable assignment
 + Row with enough fields but blank field at end
 + Row with too few fields
 + Row with too many fields
@@ -98,7 +100,7 @@
 + Two rows
 + Unquoted field with quotes at end of field
 + Whitespace at edges of unquoted field
-= PASS (48 of 48 passed) = 27/6/2021 11:17:22 a. m. =
+= PASS (49 of 49 passed) = 3/7/2021 7:42:58 p. m. =
 
 === SequentialCSVimport ===
 + Bad comments value specified
@@ -123,6 +125,7 @@
 + Pipe delimiter
 + Quoted field at end of row (but not at EOF) has quotes
 + Quoted field has no closing quote
++ Quoted field with 5 quotes in a row and a delimiter
 + Quoted field with delimiter
 + Quoted field with escaped quotes at boundaries
 + Quoted field with escaped quotes
@@ -131,11 +134,11 @@
 + Quoted field with quotes around delimiter
 + Quoted field with quotes on left side of delimiter
 + Quoted field with quotes on right side of delimiter
++ Quoted field with Unix escaped quotes at boundaries
 + Quoted field with whitespace around quotes
 + Quoted field
 + Quoted fields at end of row with delimiter and line break
 + Quoted fields with line breaks
-+ Quoted variable assignment
 + Row with enough fields but blank field at end
 + Row with too few fields
 + Row with too many fields
@@ -149,5 +152,5 @@
 + Two rows
 + Unquoted field with quotes at end of field
 + Whitespace at edges of unquoted field
-= PASS (48 of 48 passed) = 27/6/2021 11:17:22 a. m. =
+= PASS (49 of 49 passed) = 3/7/2021 7:42:58 p. m. =
 
