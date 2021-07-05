@@ -2793,14 +2793,12 @@ Private Sub StreamParseCSV(configObj As parserConfig, _
                                             End Select
                                         End If
                                     Case Else 'The Token is stored on tmpToken array
-                                        If IncludeRecord Then
-                                            tmpToken.Add LeftB$(tmpCSV(Index), OverStringPointer - 3)
-                                            If RequestedField(FieldID + 1&, MaxReqIndex) Then 'Filter fields
-                                                RecordToken.Add UnescapeField(Join$(tmpToken.items, RecordDelimiter), _
+                                        tmpToken.Add LeftB$(tmpCSV(Index), OverStringPointer - 3)
+                                        If RequestedField(FieldID + 1&, MaxReqIndex) Then 'Filter fields
+                                            RecordToken.Add UnescapeField(Join$(tmpToken.items, RecordDelimiter), _
                                                                             EscapeChr, EscapeSequence) 'Save whole Token
-                                            End If
-                                            tmpToken.Clear 'Clear tmpToken content
                                         End If
+                                        tmpToken.Clear 'Clear tmpToken content
                                 End Select
                             End If
                             SplittedToken = False 'Restart Token status
