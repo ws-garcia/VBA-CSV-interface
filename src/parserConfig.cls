@@ -157,10 +157,10 @@ Public Property Let endingRecord(ByVal RecNumber As Long)
             P_ENDINGRECORD = 0&
     End Select
 End Property
-Public Property Get EscapeToken() As EscapeTokens
-    EscapeToken = P_ESCAPETOKEN
+Public Property Get escapeToken() As EscapeTokens
+    escapeToken = P_ESCAPETOKEN
 End Property
-Public Property Let EscapeToken(ByVal Token As EscapeTokens)
+Public Property Let escapeToken(ByVal Token As EscapeTokens)
     P_ESCAPETOKEN = Token
 End Property
 Public Property Get fieldsDelimiter() As String
@@ -256,7 +256,7 @@ Attribute CopyConfig.VB_Description = "Returns a parserConfig object with a copy
     tmpResult.dTypingTemplate = P_TEMPLATE
     tmpResult.dynamicTyping = P_DYNAMIC_TYPING
     tmpResult.endingRecord = P_ENDINGRECORD
-    tmpResult.EscapeToken = P_ESCAPETOKEN
+    tmpResult.escapeToken = P_ESCAPETOKEN
     tmpResult.unixEscapeMechanism = P_UNIXESCAPEMECHANISM
     tmpResult.fieldsDelimiter = P_FIELDSDELIMITER
     tmpResult.headers = P_HEADERS
