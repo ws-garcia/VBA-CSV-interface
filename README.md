@@ -6,7 +6,7 @@
 VBA CSV interface is the most complete, and open source, CSV/TSV VBA parser library nowadays. The library is RFC-4180 compliant and enables users to manipulate CSV content at the highest speed. All the modules were developed to accomplish the data exchange task with the greatest performance and to grant an easy use.
 
 ## Advantages
-* __Stable__. Fully Test Driven Developed (TDD) library, ([50/50 test passed](https://github.com/ws-garcia/VBA-CSV-interface/blob/master/testing/tests/results/)), that includes 500+ line of code for testing. See [VBA test library by Tim Hall](https://github.com/ws-garcia/vba-test).
+* __Stable__. Fully Test Driven Developed (TDD) library, ([55/55 test passed](https://github.com/ws-garcia/VBA-CSV-interface/blob/master/testing/tests/results/)), that includes 650+ line of code for testing. See [VBA test library by Tim Hall](https://github.com/ws-garcia/vba-test).
 * __Fast__. Writes and reads files at the highest speed.
 * __Memory-friendly__. CSV/[TSV](https://www.iana.org/assignments/media-types/text/tab-separated-values) files are processed using a custom stream technique, only 0.5MB are in memory at a time.
 * __Robust__. Parser and writer accept [Unix-style quotes escape sequences](https://www.loc.gov/preservation/digital/formats/fdd/fdd000323.shtml#notes). 
