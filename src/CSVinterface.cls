@@ -210,6 +210,35 @@ Private Sub Class_Terminate()
     Set P_CSV_DATA = Nothing
     Set P_CSV_HEADER = Nothing
 End Sub
+Private Function ArrayStrLenAVG(ByRef strArray As Variant) As Double
+    Dim L0 As Long
+    Dim tmpSUM As Double
+    
+    tmpSUM = 0
+    For L0 = LBound(strArray) To UBound(strArray)
+        tmpSUM = tmpSUM + LenB(strArray(L0))
+    Next L0
+    ArrayStrLenAVG = tmpSUM / (1 + UBound(strArray) - LBound(strArray))
+End Function
+Private Function ArrayStrStdDev(ByRef strArray As Variant) As Double
+    Dim arrLB As Long
+    Dim arrUB As Long
+    Dim L0 As Long
+    Dim LengthsAVG As Double
+    Dim CumulativeAVGsquaredDiff As Double
+    Dim LengthsSum As Double
+    
+    On Error GoTo ArrStrStdDev_ErrHandler
+    LengthsAVG = ArrayStrLenAVG(strArray)
+    CumulativeAVGsquaredDiff = 0
+    For L0 = LBound(strArray) To UBound(strArray)
+        CumulativeAVGsquaredDiff = CumulativeAVGsquaredDiff + (LenB(strArray(L0)) - LengthsAVG) ^ 2
+    Next L0
+    ArrayStrStdDev = (CumulativeAVGsquaredDiff / (UBound(strArray) - LBound(strArray))) ^ 0.5
+    Exit Function
+ArrStrStdDev_ErrHandler:
+    ArrayStrStdDev = 1.6E+308
+End Function
 Public Sub ClearData()
     Set P_CSV_DATA = New ECPArrayList
     Set P_CSV_HEADER = New ECPArrayList
@@ -922,7 +951,7 @@ Public Function GetRecord() As ECPArrayList
                             If static_hpointer = 0& And static_EndOF Then GoTo GetRecord_MissingEscapeChar 'Missing escape char
                         Loop
                         static_OverStringPointer = static_hpointer + 2&
-                        static_NotEvenEscapeChrNumber = (static_EscapeChrCount Mod 2)
+                        static_NotEvenEscapeChrNumber = (static_EscapeChrCount And 1)
                         If static_OverStringPointer < static_LenCurrentIndex Then
                             static_ASCIIcharw = AscW(MidB$(static_tmpCSV(static_Index), static_OverStringPointer, 2))
                             '@----------------------------------------------------------------------------
@@ -1236,86 +1265,144 @@ Public Sub GuessDelimiters(ByRef confObj As parserConfig, _
                             Optional ByRef CSVstring As String = vbNullString)
                             
     If Not (confObj.path = vbNullString And CSVstring = vbNullString) Then
-        '@--------------------------------------------------------------------------------
-        'Guess records delimiter
-        Dim StreamObj As ECPTextStream, tmpArr() As String
-        Dim UBlinesEnds() As Long, LinesEnds() As String
-        Dim parsedLines() As Long, delIdx As Long
-        Dim tmpDelimiters() As String, guessResults As ECPArrayList
-        Dim emptyParam() As Variant, StartRec As Long, EndRec As Long
-        
-        ReDim UBlinesEnds(0 To 2)
-        ReDim LinesEnds(0 To 2)
-        ReDim emptyParam(-1 To -1) 'To emule empty ParamArray parameter
-        tmpDelimiters() = config.delimitersToGuess
-        ReDim parsedLines(LBound(tmpDelimiters) To UBound(tmpDelimiters))
-        LinesEnds(0) = vbCrLf
-        LinesEnds(1) = vbCr
-        LinesEnds(2) = vbLf
         If CSVstring = vbNullString Then
+            Dim StreamObj As ECPTextStream
+            
             Set StreamObj = New ECPTextStream
-            StreamObj.endStreamOnLineBreak = True
-            StreamObj.OpenStream confObj.path
-            StreamObj.ReadText
-            tmpArr = Split(StreamObj.bufferString, LinesEnds(0))
-            UBlinesEnds(0) = UBound(tmpArr) 'vbCrLf
-            tmpArr = Split(StreamObj.bufferString, LinesEnds(1))
-            UBlinesEnds(1) = UBound(tmpArr) 'vbCr
-            tmpArr = Split(StreamObj.bufferString, LinesEnds(2))
-            UBlinesEnds(2) = UBound(tmpArr) 'vbLf
-            Set StreamObj = Nothing
-            StartRec = confObj.startingRecord
-            EndRec = confObj.endingRecord
-            '@--------------------------------------------------------------------------------
-            'Guess using 10 samples lines
-            confObj.startingRecord = 1
-            confObj.endingRecord = 10
-            confObj.recordsDelimiter = LinesEnds(MaxIndexVal(UBlinesEnds))
-            For delIdx = LBound(tmpDelimiters) To UBound(tmpDelimiters)
-                confObj.fieldsDelimiter = tmpDelimiters(delIdx)
-                Set guessResults = New ECPArrayList
-                StreamParseCSV confObj, guessResults, emptyParam
-                If Not guessResults Is Nothing Then
-                    parsedLines(delIdx) = UBound(guessResults(0))
-                Else
-                    parsedLines(delIdx) = 0
-                End If
-            Next delIdx
+            With StreamObj
+                .endStreamOnLineBreak = True
+                .OpenStream confObj.path
+                .ReadText
+                GuessInString confObj, .bufferString, True
+                Set StreamObj = Nothing
+            End With
         Else
-            tmpArr = Split(CSVstring, LinesEnds(0))
-            UBlinesEnds(0) = UBound(tmpArr) 'vbCrLf
-            tmpArr = Split(CSVstring, LinesEnds(1))
-            UBlinesEnds(1) = UBound(tmpArr) 'vbCr
-            tmpArr = Split(CSVstring, LinesEnds(2))
-            UBlinesEnds(2) = UBound(tmpArr) 'vbLf
-            Set StreamObj = Nothing
-            StartRec = confObj.startingRecord
-            EndRec = confObj.endingRecord
-            '@--------------------------------------------------------------------------------
-            'Guess using 10 samples lines
-            confObj.startingRecord = 1
-            confObj.endingRecord = 10
-            confObj.recordsDelimiter = LinesEnds(MaxIndexVal(UBlinesEnds))
-            For delIdx = LBound(tmpDelimiters) To UBound(tmpDelimiters)
-                confObj.fieldsDelimiter = tmpDelimiters(delIdx)
+            GuessInString confObj, CSVstring
+        End If
+        ResetAlerts
+    End If
+End Sub
+Private Sub GuessInString(ByRef confObj As parserConfig, _
+                            ByRef CSVstring As String, _
+                            Optional Buffered As Boolean = False)
+
+    Dim tmpCSVstr As String
+    Dim UBlinesEnds() As Long, LinesEnds() As String
+    Dim parsedFields() As Long, delIdx As Long
+    Dim tmpDelimiters() As String, guessResults As ECPArrayList
+    Dim emptyParam() As Variant, StartRec As Long, EndRec As Long
+    Dim FieldDelStandardDEV() As Double, QuoteChar() As EscapeTokens
+    Dim L0_FieldDelimiter As Long, L1_FieldDelimiter As Long
+    Dim UBquoteChar() As Long, Quote As String
+    
+    ReDim LinesEnds(0 To 2)
+    '@--------------------------------------------------------------------------------
+    'LinesEnds array
+    LinesEnds(0) = vbCrLf
+    LinesEnds(1) = vbCr
+    LinesEnds(2) = vbLf
+    ReDim UBlinesEnds(0 To 2)
+    '@--------------------------------------------------------------------------------
+    'Quotes array
+    ReDim QuoteChar(0 To 2)
+    QuoteChar(0) = DoubleQuotes
+    QuoteChar(1) = Apostrophe
+    QuoteChar(2) = Tilde
+    ReDim UBquoteChar(LBound(QuoteChar) To UBound(QuoteChar))
+    '@--------------------------------------------------------------------------------
+    'Parser config
+    ReDim emptyParam(-1 To -1) 'To emule empty ParamArray parameter
+    tmpDelimiters() = config.delimitersToGuess
+    '@--------------------------------------------------------------------------------
+    'Results array
+    ReDim parsedFields(LBound(tmpDelimiters) To UBound(tmpDelimiters))
+    ReDim FieldDelStandardDEV(LBound(tmpDelimiters) To UBound(tmpDelimiters))
+    '@--------------------------------------------------------------------------------
+    'String to guess
+    If Not Buffered Then
+        tmpCSVstr = MidB$(CSVstring, 1, 524288) 'Load 0.5 MB of data
+    Else
+        tmpCSVstr = CSVstring
+    End If
+    '@--------------------------------------------------------------------------------
+    'Guess records delimiter
+    For delIdx = LBound(LinesEnds) To UBound(LinesEnds)
+        UBlinesEnds(delIdx) = UBound(Split(tmpCSVstr, LinesEnds(delIdx)))
+    Next delIdx
+    '@--------------------------------------------------------------------------------
+    'Guess Quote char
+    For delIdx = LBound(QuoteChar) To UBound(QuoteChar)
+        Select Case QuoteChar(delIdx)
+            Case 1
+                Quote = CHR_APOSTROPHE
+            Case 2
+                Quote = CHR_DOUBLE_QUOTES
+            Case Else
+                Quote = CHR_TILDE
+        End Select
+        UBquoteChar(delIdx) = UBound(Split(tmpCSVstr, Quote))
+    Next delIdx
+    tmpCSVstr = vbNullString
+    With confObj
+        '@--------------------------------------------------------------------------------
+        'Set guessed chars
+        .recordsDelimiter = LinesEnds(MaxIndexVal(UBlinesEnds))
+        .escapeToken = QuoteChar(MaxIndexVal(UBquoteChar))
+        '@--------------------------------------------------------------------------------
+        'Guess fields delimiter using 10 samples lines
+        StartRec = .startingRecord
+        EndRec = .endingRecord
+        .startingRecord = 1
+        .endingRecord = 10
+        For delIdx = LBound(tmpDelimiters) To UBound(tmpDelimiters)
+            If InStrB(1, CSVstring, tmpDelimiters(delIdx)) Then
+                .fieldsDelimiter = tmpDelimiters(delIdx)
                 Set guessResults = New ECPArrayList
                 ParseCSVstring CSVstring, confObj, guessResults, emptyParam
                 If Not guessResults Is Nothing Then
-                    parsedLines(delIdx) = UBound(guessResults(0))
+                    parsedFields(delIdx) = UBound(guessResults(0))
+                    If .headers Then
+                        If guessResults.count > 1 Then  'Check the second data record
+                            FieldDelStandardDEV(delIdx) = ArrayStrStdDev(guessResults(1))
+                        Else
+                            FieldDelStandardDEV(delIdx) = ArrayStrStdDev(guessResults(0))
+                        End If
+                    Else
+                        FieldDelStandardDEV(delIdx) = ArrayStrStdDev(guessResults(0))
+                    End If
                 Else
-                    parsedLines(delIdx) = 0
+                    parsedFields(delIdx) = 0
+                    FieldDelStandardDEV(delIdx) = 1.6E+308
                 End If
-            Next delIdx
+            Else
+                parsedFields(delIdx) = 0
+                FieldDelStandardDEV(delIdx) = 1.6E+308
+            End If
+        Next delIdx
+        '@--------------------------------------------------------------------------------
+        'Delimiters discrimination
+        L0_FieldDelimiter = MaxIndexVal(parsedFields)
+        L1_FieldDelimiter = MinIndexVal(FieldDelStandardDEV)
+        If L0_FieldDelimiter <> L1_FieldDelimiter Then
+            If ((parsedFields(L1_FieldDelimiter) + 1) / (parsedFields(L0_FieldDelimiter) + 1)) >= 0.5 Then
+                .fieldsDelimiter = tmpDelimiters(L1_FieldDelimiter)
+            Else
+                .fieldsDelimiter = tmpDelimiters(L0_FieldDelimiter)
+            End If
+        Else
+            .fieldsDelimiter = tmpDelimiters(L0_FieldDelimiter)
         End If
-        Set guessResults = Nothing
-        confObj.fieldsDelimiter = tmpDelimiters(MaxIndexVal(parsedLines))
-        confObj.startingRecord = StartRec
-        confObj.endingRecord = EndRec
-        Erase UBlinesEnds
-        Erase LinesEnds
-        Erase tmpDelimiters
-        Erase tmpArr
-    End If
+        .startingRecord = StartRec
+        .endingRecord = EndRec
+    End With
+    Erase emptyParam
+    Erase FieldDelStandardDEV
+    Erase LinesEnds
+    Erase parsedFields
+    Erase QuoteChar
+    Erase tmpDelimiters
+    Erase UBlinesEnds
+    Erase UBquoteChar
 End Sub
 Public Function ImportFromCSV(configObj As parserConfig, _
                             ParamArray FilterColumns() As Variant) As CSVinterface
@@ -1333,7 +1420,6 @@ Public Function ImportFromCSV(configObj As parserConfig, _
         
                 If .delimitersGuessing Then
                     GuessDelimiters configObj
-                    ResetAlerts
                 End If
                 tmpRequested() = FilterColumns
                 If .headers Then
@@ -1402,7 +1488,6 @@ Public Function ImportFromCSVString(ByRef CSVstring As String, _
             
             If .delimitersGuessing Then
                 GuessDelimiters configObj, CSVstring
-                ResetAlerts
             End If
             tmpRequested() = FilterColumns
             If .headers Then
@@ -1531,7 +1616,7 @@ Private Function JoinRecordsFields(ByRef RecordsArray As Variant, _
     On Error GoTo JoinRecordsFields_Error
     '@----------------------------------------------------------------------------
     'Expand configuration object
-    EscapeT = pconfig.EscapeToken
+    EscapeT = pconfig.escapeToken
     FldDelimiter = pconfig.fieldsDelimiter
     recDelimiter = pconfig.recordsDelimiter
     '@----------------------------------------------------------------------------
@@ -1724,6 +1809,20 @@ Private Function MaxIndexVal(ByRef values() As Long) As Long
     Next idx0
     MaxIndexVal = idx
 End Function
+Private Function MinIndexVal(ByRef values() As Double) As Long
+    Dim tmpVal As Double, idx0 As Long, idx As Long
+    
+    idx0 = LBound(values)
+    idx = idx0
+    tmpVal = values(idx0)
+    For idx0 = idx0 + 1 To UBound(values)
+        If values(idx0) < tmpVal Then
+            idx = idx0
+            tmpVal = values(idx0)
+        End If
+    Next idx0
+    MinIndexVal = idx
+End Function
 Private Function MeetsCriterion(value As Variant) As Boolean
     Dim tmpResult As Boolean
     Dim vCounter As Long
@@ -1760,7 +1859,6 @@ Public Sub OpenSeqReader(configObj As parserConfig, _
                 
                 If .delimitersGuessing Then
                     GuessDelimiters configObj
-                    ResetAlerts
                 End If
                 static_tmpRequested() = FilterColumns
                 If .headers Then
@@ -1840,7 +1938,7 @@ Public Sub OpenSeqReader(configObj As parserConfig, _
     static_MaxReqIndex = UBound(static_RequestedFieldsArray)
     '@----------------------------------------------------------------------------
     'Set Coerce Type to fields
-    Select Case configObj.EscapeToken
+    Select Case configObj.escapeToken
         Case 1
             static_EscapeChr = CHR_APOSTROPHE
         Case 2
@@ -2015,7 +2113,7 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
     End If
     '@----------------------------------------------------------------------------
     'Set Coerce Type to fields
-    Select Case configObj.EscapeToken
+    Select Case configObj.escapeToken
         Case 1
             EscapeChr = CHR_APOSTROPHE
         Case 2
@@ -2126,7 +2224,7 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
                             If hpointer = 0& And EndOfString Then GoTo ParseCSVstring_MissingEscapeChar 'Missing escape char
                         Loop
                         OverStringPointer = hpointer + 2&
-                        NotEvenEscapeChrNumber = (EscapeChrCount Mod 2)
+                        NotEvenEscapeChrNumber = (EscapeChrCount And 1)
                         If OverStringPointer < LenCurrentIndex Then
                             ASCIIcharw = AscW(MidB$(tmpCSV(Index), OverStringPointer, 2))
                             '@----------------------------------------------------------------------------
@@ -2573,7 +2671,7 @@ Private Sub StreamParseCSV(configObj As parserConfig, _
     End If
     '@----------------------------------------------------------------------------
     'Set Coerce Type to fields
-    Select Case configObj.EscapeToken
+    Select Case configObj.escapeToken
         Case 1
             EscapeChr = CHR_APOSTROPHE
         Case 2
@@ -2714,7 +2812,7 @@ Private Sub StreamParseCSV(configObj As parserConfig, _
                             If hpointer = 0& And EndOF Then GoTo StreamParseCSV_MissingEscapeChar 'Missing escape char
                         Loop
                         OverStringPointer = hpointer + 2&
-                        NotEvenEscapeChrNumber = (EscapeChrCount Mod 2)
+                        NotEvenEscapeChrNumber = (EscapeChrCount And 1)
                         If OverStringPointer < LenCurrentIndex Then
                             ASCIIcharw = AscW(MidB$(tmpCSV(Index), OverStringPointer, 2))
                             '@----------------------------------------------------------------------------
