@@ -1,0 +1,8 @@
+=== Delimiters guessing test ===
++ Mixed comma and semicolon
++ File with multi-line field
++ Optional quoted fields
++ Mixed comma and semicolon - file B
++ Geometric CSV
+= PASS (5 of 5 passed) = 7/7/2021 3:48:18 p. m. =
+
