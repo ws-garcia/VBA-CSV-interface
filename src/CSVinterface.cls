@@ -210,6 +210,16 @@ Private Sub Class_Terminate()
     Set P_CSV_DATA = Nothing
     Set P_CSV_HEADER = Nothing
 End Sub
+Private Function ArrayListAVGStdDev(ByRef ArrayList As ECPArrayList) As Double
+    Dim L0 As Long
+    Dim StdDevSUM As Double
+    
+    StdDevSUM = 0
+    For L0 = 0 To ArrayList.count - 1
+        StdDevSUM = StdDevSUM + ArrayStrStdDev(ArrayList(L0))
+    Next L0
+    ArrayListAVGStdDev = StdDevSUM / ArrayList.count
+End Function
 Private Function ArrayStrLenAVG(ByRef strArray As Variant) As Double
     Dim L0 As Long
     Dim tmpSUM As Double
@@ -1261,28 +1271,28 @@ GetRecord_MissingEscapeChar:
                     Description:="Missing some escape char. Check the data and try again."
     Resume GetRecord_Error_Handler
 End Function
-Public Sub GuessDelimiters(ByRef confObj As parserConfig, _
+Public Sub GuessDelimiters(ByRef confObject As parserConfig, _
                             Optional ByRef CSVstring As String = vbNullString)
                             
-    If Not (confObj.path = vbNullString And CSVstring = vbNullString) Then
+    If Not (confObject.path = vbNullString And CSVstring = vbNullString) Then
         If CSVstring = vbNullString Then
             Dim StreamObj As ECPTextStream
             
             Set StreamObj = New ECPTextStream
             With StreamObj
                 .endStreamOnLineBreak = True
-                .OpenStream confObj.path
+                .OpenStream confObject.path
                 .ReadText
-                GuessInString confObj, .bufferString, True
+                GuessInString confObject, .bufferString, True
                 Set StreamObj = Nothing
             End With
         Else
-            GuessInString confObj, CSVstring
+            GuessInString confObject, CSVstring
         End If
         ResetAlerts
     End If
 End Sub
-Private Sub GuessInString(ByRef confObj As parserConfig, _
+Private Sub GuessInString(ByRef confObject As parserConfig, _
                             ByRef CSVstring As String, _
                             Optional Buffered As Boolean = False)
 
@@ -1312,7 +1322,7 @@ Private Sub GuessInString(ByRef confObj As parserConfig, _
     '@--------------------------------------------------------------------------------
     'Parser config
     ReDim emptyParam(-1 To -1) 'To emule empty ParamArray parameter
-    tmpDelimiters() = config.delimitersToGuess
+    tmpDelimiters() = confObject.DelimitersToGuess
     '@--------------------------------------------------------------------------------
     'Results array
     ReDim parsedFields(LBound(tmpDelimiters) To UBound(tmpDelimiters))
@@ -1343,7 +1353,7 @@ Private Sub GuessInString(ByRef confObj As parserConfig, _
         UBquoteChar(delIdx) = UBound(Split(tmpCSVstr, Quote))
     Next delIdx
     tmpCSVstr = vbNullString
-    With confObj
+    With confObject
         '@--------------------------------------------------------------------------------
         'Set guessed chars
         .recordsDelimiter = LinesEnds(MaxIndexVal(UBlinesEnds))
@@ -1358,18 +1368,10 @@ Private Sub GuessInString(ByRef confObj As parserConfig, _
             If InStrB(1, CSVstring, tmpDelimiters(delIdx)) Then
                 .fieldsDelimiter = tmpDelimiters(delIdx)
                 Set guessResults = New ECPArrayList
-                ParseCSVstring CSVstring, confObj, guessResults, emptyParam
+                ParseCSVstring CSVstring, confObject, guessResults, emptyParam
                 If Not guessResults Is Nothing Then
                     parsedFields(delIdx) = UBound(guessResults(0))
-                    If .headers Then
-                        If guessResults.count > 1 Then  'Check the second data record
-                            FieldDelStandardDEV(delIdx) = ArrayStrStdDev(guessResults(1))
-                        Else
-                            FieldDelStandardDEV(delIdx) = ArrayStrStdDev(guessResults(0))
-                        End If
-                    Else
-                        FieldDelStandardDEV(delIdx) = ArrayStrStdDev(guessResults(0))
-                    End If
+                    FieldDelStandardDEV(delIdx) = ArrayListAVGStdDev(guessResults)
                 Else
                     parsedFields(delIdx) = 0
                     FieldDelStandardDEV(delIdx) = 1.6E+308
@@ -1382,15 +1384,12 @@ Private Sub GuessInString(ByRef confObj As parserConfig, _
         '@--------------------------------------------------------------------------------
         'Delimiters discrimination
         L0_FieldDelimiter = MaxIndexVal(parsedFields)
+        .fieldsDelimiter = tmpDelimiters(L0_FieldDelimiter)
         L1_FieldDelimiter = MinIndexVal(FieldDelStandardDEV)
         If L0_FieldDelimiter <> L1_FieldDelimiter Then
             If ((parsedFields(L1_FieldDelimiter) + 1) / (parsedFields(L0_FieldDelimiter) + 1)) >= 0.5 Then
                 .fieldsDelimiter = tmpDelimiters(L1_FieldDelimiter)
-            Else
-                .fieldsDelimiter = tmpDelimiters(L0_FieldDelimiter)
             End If
-        Else
-            .fieldsDelimiter = tmpDelimiters(L0_FieldDelimiter)
         End If
         .startingRecord = StartRec
         .endingRecord = EndRec
@@ -3246,4 +3245,3 @@ Private Function UnixToStandardEscapeSeq(ByRef UnixEscapedString As String, _
         UnixToStandardEscapeSeq = UnixEscapedString
     End If
 End Function
-
