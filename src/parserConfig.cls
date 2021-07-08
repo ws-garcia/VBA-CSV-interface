@@ -25,6 +25,7 @@ Private Const CHR_COLON As String = ":"
 Private Const CHR_COMMA As String = ","
 Private Const CHR_SEMICOLON As String = ";"
 Private Const CHR_PIPE As String = "|"
+Private Const CHR_SPACE As String = " "
 '////////////////////////////////////////////////////////////////////////////////////////////
 '#
 '////////////////////////////////////////////////////////////////////////////////////////////
@@ -96,10 +97,10 @@ End Property
 Public Property Let delimitersGuessing(value As Boolean)
     P_DELIMITERSGUESSING = value
 End Property
-Public Property Get delimitersToGuess() As String()
-    delimitersToGuess = P_DELIMITERSTOGUESS
+Public Property Get DelimitersToGuess() As String()
+    DelimitersToGuess = P_DELIMITERSTOGUESS
 End Property
-Public Property Let delimitersToGuess(value() As String)
+Public Property Let DelimitersToGuess(value() As String)
     P_DELIMITERSTOGUESS = value
 End Property
 Public Property Get dTTemplateDefined() As Boolean
@@ -157,19 +158,23 @@ Public Property Let endingRecord(ByVal RecNumber As Long)
             P_ENDINGRECORD = 0&
     End Select
 End Property
-Public Property Get EscapeToken() As EscapeTokens
-    EscapeToken = P_ESCAPETOKEN
+Public Property Get escapeToken() As EscapeTokens
+    escapeToken = P_ESCAPETOKEN
 End Property
-Public Property Let EscapeToken(ByVal Token As EscapeTokens)
+Public Property Let escapeToken(ByVal Token As EscapeTokens)
     P_ESCAPETOKEN = Token
 End Property
 Public Property Get fieldsDelimiter() As String
     fieldsDelimiter = P_FIELDSDELIMITER
 End Property
 Public Property Let fieldsDelimiter(ByVal Delimiter As String)
-    Select Case Delimiter
-        Case CHR_COLON, CHR_COMMA, CHR_SEMICOLON, vbTab, CHR_PIPE
-            P_FIELDSDELIMITER = Delimiter
+    Select Case LenB(Delimiter)
+        Case 2
+            If Delimiter <> CHR_SPACE Then
+                P_FIELDSDELIMITER = Delimiter
+            Else
+                P_FIELDSDELIMITER = CHR_COMMA
+            End If
         Case Else
             P_FIELDSDELIMITER = CHR_COMMA
     End Select
@@ -251,12 +256,12 @@ Attribute CopyConfig.VB_Description = "Returns a parserConfig object with a copy
     tmpResult.skipEmptyLines = P_SKIP_EMPTYLINES
     tmpResult.commentsToken = ChrW(P_COMMENTSTOKEN)
     tmpResult.delimitersGuessing = P_DELIMITERSGUESSING
-    tmpResult.delimitersToGuess = P_DELIMITERSTOGUESS
+    tmpResult.DelimitersToGuess = P_DELIMITERSTOGUESS
     tmpResult.dTypingLinks = P_TEMPLATE_TARGETS
     tmpResult.dTypingTemplate = P_TEMPLATE
     tmpResult.dynamicTyping = P_DYNAMIC_TYPING
     tmpResult.endingRecord = P_ENDINGRECORD
-    tmpResult.EscapeToken = P_ESCAPETOKEN
+    tmpResult.escapeToken = P_ESCAPETOKEN
     tmpResult.unixEscapeMechanism = P_UNIXESCAPEMECHANISM
     tmpResult.fieldsDelimiter = P_FIELDSDELIMITER
     tmpResult.headers = P_HEADERS

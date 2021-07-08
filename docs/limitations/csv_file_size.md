@@ -15,7 +15,7 @@ VBA is the version of Visual Basic shipped with Microsoft Office. At this time, 
 
 At the same time, Microsoft aims the 32-bit version of Excel is [limited to 4GB of RAM](https://docs.microsoft.com/en-us/office/troubleshoot/excel/laa-capability-change), on x64 OS’s, for most recent versions and to 2GB for versions up to 2013. Again, VBA can’t avoid this limitation.
 
-By the fact CSV interface works, primarily, with strings and [VBA uses 10 bytes + string length](https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/data-type-summary) for store this data type, a huge working load can let application run out of memory. Then, it’s crucial to set some boundary over the file size users can work from the CSV interface library. 
+By the fact CSV interface works, primarily, with `Variant/Strings` and [VBA uses 10 bytes + string length](https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/data-type-summary) for store this data type, a huge working load can let application run out of memory. Then, it’s crucial to set some boundary over the file size users can work from the CSV interface library. 
 
 To achieve this, the first step is to study the performance of the VBA-CSV interface when parsing 5K records from the top and from the end of files with varying size, and then establish the recommended maximum amount of data that can be handled from the interface.
 

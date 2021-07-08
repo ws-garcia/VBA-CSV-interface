@@ -1,0 +1,13 @@
+=== Delimiters guessing test ===
++ Mixed comma and semicolon
++ File with multi-line field
++ Optional quoted fields
++ Mixed comma and semicolon - file B
++ Geometric CSV
++ Table embedded in the last record
++ Table embedded in the second record
++ Multiple commas in fields
++ Uncommon char as field delimiter
++ Wrong delimiters have been added to guessing operation
+= PASS (10 of 10 passed) = 8/7/2021 1:52:40 p. m. =
+

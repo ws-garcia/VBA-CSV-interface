@@ -162,7 +162,7 @@ conf.recordsDelimiter = vbCrLf
 
 The benchmark provided here is focused on the supposed most critical operation, this is the parse one for many authors.
 
-The class was tested against two solutions (the one from [@Senipah](https://github.com/Senipah/VBA-Better-Array) and the other from [@sdkn104](https://github.com/sdkn104/VBA-CSV)) using a laptop running `Win 10 Pro x64, Intel® Core™ i7-4500U CPU @1.80-2.40 GHz, 8 GB RAM, Excel 2019 x86`. We will call the import procedure over different files, increasing the file size, and the number of record per file, in each subsequent call. The CSV files are:
+The class was tested using a laptop running `Win 10 Pro x64, Intel® Core™ i7-4500U CPU @1.80-2.40 GHz, 8 GB RAM, Excel 2019 x86`. We will call the import procedure over different files, increasing the file size, and the number of record per file, in each subsequent call. The CSV files are:
 
 <table>
 <thead>
@@ -204,19 +204,9 @@ The images below shows the overall performance for the imports operations from t
 
 ![Quoted Benchmark](Quoted-performance.png)
 
-The benchmarks from the above charts are compared in the following chart:
+### Conclusion
 
-![Quoted Vs NONquoted Benchmark](Quoted-vs-NONquoted.png)
-
-Finally, the below chart shows the overheat for the Sorting and Dynamic Typing operations. These features are available on the VBA CSV interface since its version 3.
-
-![Overheat per functionality Benchmark](Overheat-per-functionality.png)
-
-### Conclusions
-
-- `ImportFromCSV` is the faster one import method.
-- The CSV syntax slow-down the performance. When the number of escaped fields are increased, the performance decrease, this is especially noticeable for the @sdkn104 solution.
-- The Dynamic Typing causes more overheat than the Sort operation. This can be explained by the great performance of the Yaroslavskiy sorting algorithm used.
+- The CSV syntax slow-down the performance. When the number of escaped fields are increased, the performance decrease.
 
 ## Licence
 Copyright (C) 2021  [W. García](https://github.com/ws-garcia/VBA-CSV-interface/).
