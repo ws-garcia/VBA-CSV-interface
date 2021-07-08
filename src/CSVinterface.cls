@@ -1297,13 +1297,20 @@ Private Sub GuessInString(ByRef confObject As parserConfig, _
                             Optional Buffered As Boolean = False)
 
     Dim tmpCSVstr As String
-    Dim UBlinesEnds() As Long, LinesEnds() As String
-    Dim parsedFields() As Long, delIdx As Long
-    Dim tmpDelimiters() As String, guessResults As ECPArrayList
-    Dim emptyParam() As Variant, StartRec As Long, EndRec As Long
-    Dim FieldDelStandardDEV() As Double, QuoteChar() As EscapeTokens
-    Dim L0_FieldDelimiter As Long, L1_FieldDelimiter As Long
-    Dim UBquoteChar() As Long, Quote As String
+    Dim UBlinesEnds() As Long
+    Dim LinesEnds() As String
+    Dim delIdx As Long
+    Dim tmpDelimiters() As String
+    Dim guessResults As ECPArrayList
+    Dim emptyParam() As Variant
+    Dim StartRec As Long
+    Dim EndRec As Long
+    Dim FieldDelStandardDEV() As Double
+    Dim QuoteChar() As EscapeTokens
+    Dim L0_FieldDelimiter As Long
+    Dim L1_FieldDelimiter As Long
+    Dim UBquoteChar() As Long
+    Dim Quote As String
     
     ReDim LinesEnds(0 To 2)
     '@--------------------------------------------------------------------------------
@@ -1324,8 +1331,7 @@ Private Sub GuessInString(ByRef confObject As parserConfig, _
     ReDim emptyParam(-1 To -1) 'To emule empty ParamArray parameter
     tmpDelimiters() = confObject.DelimitersToGuess
     '@--------------------------------------------------------------------------------
-    'Results array
-    ReDim parsedFields(LBound(tmpDelimiters) To UBound(tmpDelimiters))
+    'StdDev array
     ReDim FieldDelStandardDEV(LBound(tmpDelimiters) To UBound(tmpDelimiters))
     '@--------------------------------------------------------------------------------
     'String to guess
@@ -1370,34 +1376,24 @@ Private Sub GuessInString(ByRef confObject As parserConfig, _
                 Set guessResults = New ECPArrayList
                 ParseCSVstring CSVstring, confObject, guessResults, emptyParam
                 If Not guessResults Is Nothing Then
-                    parsedFields(delIdx) = UBound(guessResults(0))
                     FieldDelStandardDEV(delIdx) = ArrayListAVGStdDev(guessResults)
                 Else
-                    parsedFields(delIdx) = 0
                     FieldDelStandardDEV(delIdx) = 1.6E+308
                 End If
             Else
-                parsedFields(delIdx) = 0
                 FieldDelStandardDEV(delIdx) = 1.6E+308
             End If
         Next delIdx
         '@--------------------------------------------------------------------------------
         'Delimiters discrimination
-        L0_FieldDelimiter = MaxIndexVal(parsedFields)
-        .fieldsDelimiter = tmpDelimiters(L0_FieldDelimiter)
         L1_FieldDelimiter = MinIndexVal(FieldDelStandardDEV)
-        If L0_FieldDelimiter <> L1_FieldDelimiter Then
-            If ((parsedFields(L1_FieldDelimiter) + 1) / (parsedFields(L0_FieldDelimiter) + 1)) >= 0.5 Then
-                .fieldsDelimiter = tmpDelimiters(L1_FieldDelimiter)
-            End If
-        End If
+        .fieldsDelimiter = tmpDelimiters(L1_FieldDelimiter)
         .startingRecord = StartRec
         .endingRecord = EndRec
     End With
     Erase emptyParam
     Erase FieldDelStandardDEV
     Erase LinesEnds
-    Erase parsedFields
     Erase QuoteChar
     Erase tmpDelimiters
     Erase UBlinesEnds
@@ -3245,3 +3241,4 @@ Private Function UnixToStandardEscapeSeq(ByRef UnixEscapedString As String, _
         UnixToStandardEscapeSeq = UnixEscapedString
     End If
 End Function
+
