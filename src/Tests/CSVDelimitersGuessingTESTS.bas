@@ -29,18 +29,18 @@ End Sub
 Public Function CreateActualDelimitersArray(ByRef confObj As parserConfig) As Variant()
     Dim tmpResult() As Variant
     ReDim tmpResult(0 To 2)
-    tmpResult(0) = confObj.FieldsDelimiter
-    tmpResult(1) = confObj.RecordsDelimiter
-    tmpResult(2) = confObj.EscapeToken
+    tmpResult(0) = confObj.fieldsDelimiter
+    tmpResult(1) = confObj.recordsDelimiter
+    tmpResult(2) = confObj.escapeToken
     CreateActualDelimitersArray = tmpResult
 End Function
-Public Function CreateExpectedDelimitersArray(FieldsDelimiter As String, _
-                                                RecordsDelimiter As String, _
+Public Function CreateExpectedDelimitersArray(fieldsDelimiter As String, _
+                                                recordsDelimiter As String, _
                                                 EscapeChar As EscapeTokens) As Variant()
     Dim tmpResult() As Variant
     ReDim tmpResult(0 To 2)
-    tmpResult(0) = FieldsDelimiter
-    tmpResult(1) = RecordsDelimiter
+    tmpResult(0) = fieldsDelimiter
+    tmpResult(1) = recordsDelimiter
     tmpResult(2) = EscapeChar
     CreateExpectedDelimitersArray = tmpResult
 End Function
@@ -102,11 +102,43 @@ Function DelimitersGuessingTests(FullFileName As String) As TestSuite
                 "Expected: (" & "[" & ExpectedResult(0) & "]" & " & " & "[" & ExpectedResult(2) & "]" & ")" & _
                 "Actual: (" & "[" & ActualResult(0) & "]" & " & " & "[" & ActualResult(2) & "]" & ")"
     End With
+    '@--------------------------------------------------------------------------------
+    'Table embedded in the last record
+    With DelimitersGuessingTests.test("Table embedded in the last record")
+        TableEmbeddedInTheLastRecord
+        .IsEqual ActualResult, ExpectedResult, _
+                "Expected: (" & "[" & ExpectedResult(0) & "]" & " & " & "[" & ExpectedResult(2) & "]" & ")" & _
+                "Actual: (" & "[" & ActualResult(0) & "]" & " & " & "[" & ActualResult(2) & "]" & ")"
+    End With
+    '@--------------------------------------------------------------------------------
+    'Table embedded in the second record
+    With DelimitersGuessingTests.test("Table embedded in the second record")
+        TableEmbeddedInTheSecondRecord
+        .IsEqual ActualResult, ExpectedResult, _
+                "Expected: (" & "[" & ExpectedResult(0) & "]" & " & " & "[" & ExpectedResult(2) & "]" & ")" & _
+                "Actual: (" & "[" & ActualResult(0) & "]" & " & " & "[" & ActualResult(2) & "]" & ")"
+    End With
+    '@--------------------------------------------------------------------------------
+    'Multiple commas in fields
+    With DelimitersGuessingTests.test("Multiple commas in fields")
+        MultipleCommasInFields
+        .IsEqual ActualResult, ExpectedResult, _
+                "Expected: (" & "[" & ExpectedResult(0) & "]" & " & " & "[" & ExpectedResult(2) & "]" & ")" & _
+                "Actual: (" & "[" & ActualResult(0) & "]" & " & " & "[" & ActualResult(2) & "]" & ")"
+    End With
+    '@--------------------------------------------------------------------------------
+    'Uncommon char as field delimiter
+    With DelimitersGuessingTests.test("Uncommon char as field delimiter")
+        UncommonCharAsFieldDelimiter
+        .IsEqual ActualResult, ExpectedResult, _
+                "Expected: (" & "[" & ExpectedResult(0) & "]" & " & " & "[" & ExpectedResult(2) & "]" & ")" & _
+                "Actual: (" & "[" & ActualResult(0) & "]" & " & " & "[" & ActualResult(2) & "]" & ")"
+    End With
     Set DelimitersGuessingTests = Nothing
 End Function
 Sub GetActualAndExpectedResults(FileName As String, _
-                                FieldsDelimiter As String, _
-                                RecordsDelimiter As String, _
+                                fieldsDelimiter As String, _
+                                recordsDelimiter As String, _
                                 EscapeChar As EscapeTokens)
     Dim csv As CSVinterface
     
@@ -115,8 +147,8 @@ Sub GetActualAndExpectedResults(FileName As String, _
                 "delimiters-guessing" & Application.PathSeparator & FileName
     csv.GuessDelimiters confObj
     ActualResult() = CreateActualDelimitersArray(confObj)
-    ExpectedResult() = CreateExpectedDelimitersArray(FieldsDelimiter, _
-                                                        RecordsDelimiter, _
+    ExpectedResult() = CreateExpectedDelimitersArray(fieldsDelimiter, _
+                                                        recordsDelimiter, _
                                                         EscapeChar)
 End Sub
 '/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -147,6 +179,33 @@ Sub GeometricsCSV()
     Set confObj = New parserConfig
     
     GetActualAndExpectedResults "testGeometries.txt", ";", vbCrLf, DoubleQuotes
+End Sub
+Sub TableEmbeddedInTheLastRecord()
+    Set confObj = New parserConfig
+    
+    GetActualAndExpectedResults "Table embedded in the last record.csv", ",", vbLf, DoubleQuotes
+End Sub
+Sub TableEmbeddedInTheSecondRecord()
+    Set confObj = New parserConfig
+    
+    GetActualAndExpectedResults "Table embedded in the second record.csv", ",", vbLf, DoubleQuotes
+End Sub
+Sub MultipleCommasInFields()
+    Set confObj = New parserConfig
+    
+    GetActualAndExpectedResults "Multiple commas in fields.csv", ";", vbLf, DoubleQuotes
+End Sub
+Sub UncommonCharAsFieldDelimiter()
+    Dim DelimitersToGuess() As String
+    
+    Set confObj = New parserConfig
+    
+    DelimitersToGuess() = confObj.DelimitersToGuess
+    ReDim Preserve DelimitersToGuess(LBound(DelimitersToGuess) To UBound(DelimitersToGuess) + 1)
+    DelimitersToGuess(UBound(DelimitersToGuess)) = "q" 'Add a new delimiter to guessing list
+    confObj.DelimitersToGuess = DelimitersToGuess 'Save configuration
+    
+    GetActualAndExpectedResults "Uncommon char as field delimiter.csv", "q", vbLf, DoubleQuotes
 End Sub
 '/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 '#

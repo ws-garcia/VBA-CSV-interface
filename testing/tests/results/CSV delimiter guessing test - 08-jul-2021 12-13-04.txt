@@ -1,0 +1,12 @@
+=== Delimiters guessing test ===
++ Mixed comma and semicolon
++ File with multi-line field
++ Optional quoted fields
++ Mixed comma and semicolon - file B
++ Geometric CSV
++ Table embedded in the last record
++ Table embedded in the second record
++ Multiple commas in fields
++ Uncommon char as field delimiter
+= PASS (9 of 9 passed) = 8/7/2021 12:13:04 p. m. =
+

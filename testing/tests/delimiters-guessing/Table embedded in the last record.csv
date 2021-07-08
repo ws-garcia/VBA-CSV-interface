@@ -1,0 +1,10 @@
+id,comment
+1,hello
+2,goodybe
+3,"Some table like:
+id|key|value
+1|apple|10
+2|carrot|4
+3|potatoe|5
+4|crayon|9
+5|star|3"
