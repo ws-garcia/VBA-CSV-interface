@@ -134,6 +134,14 @@ Function DelimitersGuessingTests(FullFileName As String) As TestSuite
                 "Expected: (" & "[" & ExpectedResult(0) & "]" & " & " & "[" & ExpectedResult(2) & "]" & ")" & _
                 "Actual: (" & "[" & ActualResult(0) & "]" & " & " & "[" & ActualResult(2) & "]" & ")"
     End With
+    '@--------------------------------------------------------------------------------
+    'Wrong delimiters have been added to guessing operation
+    With DelimitersGuessingTests.test("Wrong delimiters have been added to guessing operation")
+        WrongDelimitersHaveBeenAddedToGuessingOperation
+        .IsEqual ActualResult, ExpectedResult, _
+                "Expected: (" & "[" & ExpectedResult(0) & "]" & " & " & "[" & ExpectedResult(2) & "]" & ")" & _
+                "Actual: (" & "[" & ActualResult(0) & "]" & " & " & "[" & ActualResult(2) & "]" & ")"
+    End With
     Set DelimitersGuessingTests = Nothing
 End Function
 Sub GetActualAndExpectedResults(FileName As String, _
@@ -206,6 +214,19 @@ Sub UncommonCharAsFieldDelimiter()
     confObj.DelimitersToGuess = DelimitersToGuess 'Save configuration
     
     GetActualAndExpectedResults "Uncommon char as field delimiter.csv", "q", vbLf, DoubleQuotes
+End Sub
+Sub WrongDelimitersHaveBeenAddedToGuessingOperation()
+    Dim DelimitersToGuess() As String
+    
+    Set confObj = New parserConfig
+    
+    DelimitersToGuess() = confObj.DelimitersToGuess
+    ReDim Preserve DelimitersToGuess(LBound(DelimitersToGuess) To UBound(DelimitersToGuess) + 2)
+    DelimitersToGuess(UBound(DelimitersToGuess) - 1) = "a" 'Add [a] as new delimiter to guessing list
+    DelimitersToGuess(UBound(DelimitersToGuess)) = "p" 'Add [p] as new delimiter to guessing list
+    confObj.DelimitersToGuess = DelimitersToGuess 'Save configuration
+    
+    GetActualAndExpectedResults "Wrong delimiters have been added to guessing operation.csv", ",", vbLf, DoubleQuotes
 End Sub
 '/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 '#
