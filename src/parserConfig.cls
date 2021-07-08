@@ -167,8 +167,8 @@ Public Property Get fieldsDelimiter() As String
     fieldsDelimiter = P_FIELDSDELIMITER
 End Property
 Public Property Let fieldsDelimiter(ByVal Delimiter As String)
-    Select Case Delimiter
-        Case CHR_COLON, CHR_COMMA, CHR_SEMICOLON, vbTab, CHR_PIPE
+    Select Case LenB(Delimiter)
+        Case 2
             P_FIELDSDELIMITER = Delimiter
         Case Else
             P_FIELDSDELIMITER = CHR_COMMA
