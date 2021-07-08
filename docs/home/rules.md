@@ -30,7 +30,7 @@ In the table bellow all the rules of [RFC-4180](https://www.ietf.org/rfc/rfc4180
 </tr>
 <tr>
 <td style="text-align: left;"><em>There maybe an optional header line appearing as<br> the first line of the file with the same format<br> as normal record lines.  This header will contain<br> names corresponding to the fields in the file and<br> should contain the same number of fields as the<br> records in the rest of the file.</em></td>
-<td style="text-align: left;">In the same way. The presence or absence of the<br> header line should be indicated via the optional<br> "HeadersOmission" parameter.</td>
+<td style="text-align: left;">In the same way. The presence or absence of the<br> header line should be indicated via the option<br> <code>headersOmission</code>.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><em>Within the header and each record, there may be<br> one or more fields, separated by commas.  Each<br> line should contain the same number of fields<br> throughout the file.  Spaces are considered part<br> of a field and should not be ignored.  The last<br> field in the record must not be followed by a<br> comma.</em></td>
@@ -38,7 +38,7 @@ In the table bellow all the rules of [RFC-4180](https://www.ietf.org/rfc/rfc4180
 </tr>
 <tr>
 <td style="text-align: left;"><em>Each field may or may not be enclosed in double<br> quotes (however some programs, such as Microsoft<br> Excel, do not use double quotes at all).  If<br> fields are not enclosed with double quotes, then<br> double quotes may not appear inside the fields</em></td>
-<td style="text-align: left;">In the same way. The class accepts also the<br> apostrophe char for indicate fields needing to<br> be escaped. It's important to notice that a<br> single CSV record may have fields enclosed and<br> not enclosed by the escape char.</td>
+<td style="text-align: left;">In the same way. The class accepts also the<br> apostrophe and tilde char for indicate fields needing to<br> be escaped. It's important to<br> notice that a single CSV record may have fields enclosed and<br> not enclosed by the escape char.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><em>Fields containing line breaks (CRLF), double<br> quotes, and commas should be enclosed in double<br> quotes</em></td>
@@ -46,7 +46,7 @@ In the table bellow all the rules of [RFC-4180](https://www.ietf.org/rfc/rfc4180
 </tr>
 <tr>
 <td style="text-align: left;"><em>If double-quotes are used to enclose fields, then<br> a double-quote appearing inside a field must be<br> escaped by preceding it with another double quote.</em></td>
-<td style="text-align: left;">Ignored rule. The class accepts the apostrophe<br> as escape char, and follow the specs claims<br> may cause conflict with some abbreviate US<br> slangs (e.g.: "<strong>isn't</strong>").</td>
+<td style="text-align: left;">In the same way. The class also accepts a Unix-style quote escape by preceding the quote with a<br> backslash (<strong>"\"</strong>").</td>
 </tr>
 </tbody>
 </table>
