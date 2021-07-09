@@ -2441,7 +2441,7 @@ Private Function RecordScore(ByRef strArray As Variant) As Double
         Next L0
         RecordScore = (CumulativeScore / (UBound(strArray) - LBound(strArray))) ^ 0.5
     Else
-        RecordScore = LenB(strArray(UBound(strArray)))
+        RecordScore = 1E+30
     End If
     Exit Function
 RecordScore_ErrHandler:
