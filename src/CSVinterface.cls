@@ -1267,21 +1267,23 @@ Private Sub GuessInString(ByRef confObject As parserConfig, _
                             ByRef CSVstring As String, _
                             Optional Buffered As Boolean = False)
 
-    Dim tmpCSVstr As String
-    Dim UBlinesEnds() As Long
-    Dim LinesEnds() As String
-    Dim delIdx As Long
-    Dim tmpDelimiters() As String
-    Dim guessResults As ECPArrayList
-    Dim emptyParam() As Variant
-    Dim StartRec As Long
-    Dim EndRec As Long
     Dim CtableScore() As Double
-    Dim QuoteChar() As EscapeTokens
+    Dim delIdx As Long
+    Dim emptyParam() As Variant
+    Dim EndRec As Long
+    Dim guessResults As ECPArrayList
     Dim L0_FieldDelimiter As Long
     Dim L1_FieldDelimiter As Long
-    Dim UBquoteChar() As Long
+    Dim LinesEnds() As String
     Dim Quote As String
+    Dim QuoteChar() As EscapeTokens
+    Dim skipEmpty As Boolean
+    Dim skipComments As Boolean
+    Dim StartRec As Long
+    Dim tmpCSVstr As String
+    Dim tmpDelimiters() As String
+    Dim UBlinesEnds() As Long
+    Dim UBquoteChar() As Long
     
     ReDim LinesEnds(0 To 2)
     '@--------------------------------------------------------------------------------
@@ -1339,8 +1341,12 @@ Private Sub GuessInString(ByRef confObject As parserConfig, _
         'Guess fields delimiter using 10 samples lines
         StartRec = .startingRecord
         EndRec = .endingRecord
+        skipComments = .skipCommentLines
+        skipEmpty = .skipEmptyLines
         .startingRecord = 1
         .endingRecord = 10
+        .skipCommentLines = True
+        .skipEmptyLines = True
         For delIdx = LBound(tmpDelimiters) To UBound(tmpDelimiters)
             If InStrB(1, CSVstring, tmpDelimiters(delIdx)) Then
                 .fieldsDelimiter = tmpDelimiters(delIdx)
@@ -1349,10 +1355,10 @@ Private Sub GuessInString(ByRef confObject As parserConfig, _
                 If Not guessResults Is Nothing Then
                     CtableScore(delIdx) = TableScore(guessResults)
                 Else
-                    CtableScore(delIdx) = 1.6E+308
+                    CtableScore(delIdx) = 1E+30
                 End If
             Else
-                CtableScore(delIdx) = 1.6E+308
+                CtableScore(delIdx) = 1E+30
             End If
         Next delIdx
         '@--------------------------------------------------------------------------------
@@ -1361,6 +1367,8 @@ Private Sub GuessInString(ByRef confObject As parserConfig, _
         .fieldsDelimiter = tmpDelimiters(L1_FieldDelimiter)
         .startingRecord = StartRec
         .endingRecord = EndRec
+        .skipCommentLines = skipComments
+        .skipEmptyLines = skipEmpty
     End With
     Erase emptyParam
     Erase CtableScore
@@ -2425,15 +2433,19 @@ Private Function RecordScore(ByRef strArray As Variant) As Double
     Dim CumulativeScore As Double
     
     On Error GoTo RecordScore_ErrHandler
-    CfieldScore = FieldScore(strArray)
-    CumulativeScore = 0
-    For L0 = LBound(strArray) To UBound(strArray)
-        CumulativeScore = CumulativeScore + (LenB(strArray(L0)) - CfieldScore) ^ 2
-    Next L0
-    RecordScore = (CumulativeScore / (UBound(strArray) - LBound(strArray))) ^ 0.5
+    If UBound(strArray) Then
+        CfieldScore = FieldScore(strArray)
+        CumulativeScore = 0
+        For L0 = LBound(strArray) To UBound(strArray)
+            CumulativeScore = CumulativeScore + (LenB(strArray(L0)) - CfieldScore) ^ 2
+        Next L0
+        RecordScore = (CumulativeScore / (UBound(strArray) - LBound(strArray))) ^ 0.5
+    Else
+        RecordScore = LenB(strArray(UBound(strArray)))
+    End If
     Exit Function
 RecordScore_ErrHandler:
-    RecordScore = 1.6E+308
+    RecordScore = 1E+30
 End Function
 Private Function RequestedField(ByVal FieldIndex As Long, _
                                 ByVal mxReq As Long) As Boolean
@@ -2488,7 +2500,7 @@ Private Sub SkipUnwantedLines(ByRef idx As Long, _
                                 ByRef MaxIdx As Long, _
                                 ByRef arr() As String, _
                                 ByVal CommentToken As Long, _
-                                Optional SkipComments As Boolean = True, _
+                                Optional skipComments As Boolean = True, _
                                 Optional skipEmptyLines As Boolean = True)
     Dim CurLength As Long
     Dim CharCode As Long
@@ -2507,7 +2519,7 @@ Private Sub SkipUnwantedLines(ByRef idx As Long, _
             Else
                 CharCode = AscW(arr(idx))
                 If CharCode = CommentToken Then 'Commented line found
-                    If SkipComments Then
+                    If skipComments Then
                         UnwantedLine = True
                     End If
                 End If
@@ -3050,7 +3062,7 @@ Private Sub StreamSkipUnwantedLines(ByRef idx As Long, _
                                     ByRef recDelimiter As String, _
                                     ByVal CommentToken As Long, _
                                     ByRef QuotedStreamVariable As Boolean, _
-                                    Optional SkipComments As Boolean = True, _
+                                    Optional skipComments As Boolean = True, _
                                     Optional skipEmptyLines As Boolean = True)
     Dim CurLength As Long
     Dim CharCode As Long
@@ -3070,7 +3082,7 @@ start:
             Else
                 CharCode = AscW(arr(idx))
                 If CharCode = CommentToken Then 'Commented line found
-                    If SkipComments Then
+                    If skipComments Then
                         UnwantedLine = True
                     End If
                 End If
@@ -3240,3 +3252,4 @@ Private Function UnixToStandardEscapeSeq(ByRef UnixEscapedString As String, _
         UnixToStandardEscapeSeq = UnixEscapedString
     End If
 End Function
+
