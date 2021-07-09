@@ -2433,15 +2433,15 @@ Private Function RecordScore(ByRef strArray As Variant) As Double
     Dim CumulativeScore As Double
     
     On Error GoTo RecordScore_ErrHandler
+    CfieldScore = FieldScore(strArray)
+    CumulativeScore = 0
+    For L0 = LBound(strArray) To UBound(strArray)
+        CumulativeScore = CumulativeScore + (LenB(strArray(L0)) - CfieldScore) ^ 2
+    Next L0
     If UBound(strArray) Then
-        CfieldScore = FieldScore(strArray)
-        CumulativeScore = 0
-        For L0 = LBound(strArray) To UBound(strArray)
-            CumulativeScore = CumulativeScore + (LenB(strArray(L0)) - CfieldScore) ^ 2
-        Next L0
         RecordScore = (CumulativeScore / (UBound(strArray) - LBound(strArray))) ^ 0.5
     Else
-        RecordScore = 1E+30
+        RecordScore = 10000000000#
     End If
     Exit Function
 RecordScore_ErrHandler:
@@ -3132,13 +3132,27 @@ AdvanceLine:
 End Sub
 Private Function TableScore(ByRef ArrayList As ECPArrayList) As Double
     Dim L0 As Long
-    Dim StdDevSUM As Double
+    Dim RecScores() As Double
+    Dim SumRecScores As Double
+    Dim AVGrecScores As Double
+    Dim CumulativeTblScore As Double
     
-    StdDevSUM = 0
+    ReDim RecScores(0 To ArrayList.count - 1)
+    SumRecScores = 0
     For L0 = 0 To ArrayList.count - 1
-        StdDevSUM = StdDevSUM + RecordScore(ArrayList(L0))
+        RecScores(L0) = RecordScore(ArrayList(L0))
+        SumRecScores = SumRecScores + RecScores(L0)
     Next L0
-    TableScore = StdDevSUM / ArrayList.count
+    AVGrecScores = SumRecScores / ArrayList.count
+    CumulativeTblScore = 0
+    For L0 = 0 To ArrayList.count - 1
+        CumulativeTblScore = CumulativeTblScore + (RecScores(L0) - AVGrecScores) ^ 2
+    Next L0
+    If ArrayList.count > 1 Then
+        TableScore = (CumulativeTblScore / (ArrayList.count - 1)) ^ 0.5
+    Else
+        TableScore = (CumulativeTblScore / ArrayList.count) ^ 0.5
+    End If
 End Function
 Public Sub TwoDimToJaggedArray(ByRef TwoDimArray() As Variant, ByRef JaggedArray() As Variant)
     Dim UBj1 As Long, LBj1 As Long
