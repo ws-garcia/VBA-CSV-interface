@@ -12,5 +12,6 @@
 + FEC data - [clevercsv issue #15]
 + Mixed comma and colon - [clevercsv issue #35]
 + Json data type - [clevercsv issue #37]
-= PASS (13 of 13 passed) = 9/7/2021 9:59:10 a. m. =
++ Undefined field delimiter
+= PASS (14 of 14 passed) = 9/7/2021 6:27:43 p. m. =
 

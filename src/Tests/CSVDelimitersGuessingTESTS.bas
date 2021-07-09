@@ -166,6 +166,14 @@ Function DelimitersGuessingTests(FullFileName As String) As TestSuite
                 "Expected: (" & "[" & ExpectedResult(0) & "]" & " & " & "[" & ExpectedResult(2) & "]" & ")" & _
                 "Actual: (" & "[" & ActualResult(0) & "]" & " & " & "[" & ActualResult(2) & "]" & ")"
     End With
+    '@--------------------------------------------------------------------------------
+    'Undefined field delimiter
+    With DelimitersGuessingTests.test("Undefined field delimiter")
+        UndefinedFieldDelimiter
+        .IsEqual ActualResult, ExpectedResult, _
+                "Expected: (" & "[" & ExpectedResult(0) & "]" & " & " & "[" & ExpectedResult(2) & "]" & ")" & _
+                "Actual: (" & "[" & ActualResult(0) & "]" & " & " & "[" & ActualResult(2) & "]" & ")"
+    End With
     Set DelimitersGuessingTests = Nothing
 End Function
 Sub GetActualAndExpectedResults(FileName As String, _
@@ -266,6 +274,11 @@ Sub JsonDataType_clevercsvIssue37()
     Set confObj = New parserConfig
     
     GetActualAndExpectedResults "Json data type - [clevercsv issue #37].csv", ",", vbLf, DoubleQuotes
+End Sub
+Sub UndefinedFieldDelimiter()
+    Set confObj = New parserConfig
+    
+    GetActualAndExpectedResults "Undefined field delimiter.csv", ",", vbLf, DoubleQuotes
 End Sub
 '/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 '#

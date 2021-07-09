@@ -1,0 +1,5 @@
+"This comma (,) need to be escaped"
+This CSV has only one column
+We will see if a semicolon (;) break the logic
+or a single colon (:) or pipe (|)
+Also include a Tab (	) for testing
