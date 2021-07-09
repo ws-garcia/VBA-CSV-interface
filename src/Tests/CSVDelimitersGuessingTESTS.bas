@@ -142,6 +142,30 @@ Function DelimitersGuessingTests(FullFileName As String) As TestSuite
                 "Expected: (" & "[" & ExpectedResult(0) & "]" & " & " & "[" & ExpectedResult(2) & "]" & ")" & _
                 "Actual: (" & "[" & ActualResult(0) & "]" & " & " & "[" & ActualResult(2) & "]" & ")"
     End With
+    '@--------------------------------------------------------------------------------
+    'FEC data - [clevercsv issue #15]
+    With DelimitersGuessingTests.test("FEC data - [clevercsv issue #15]")
+        FECdata_clevercsvIssue15
+        .IsEqual ActualResult, ExpectedResult, _
+                "Expected: (" & "[" & ExpectedResult(0) & "]" & " & " & "[" & ExpectedResult(2) & "]" & ")" & _
+                "Actual: (" & "[" & ActualResult(0) & "]" & " & " & "[" & ActualResult(2) & "]" & ")"
+    End With
+    '@--------------------------------------------------------------------------------
+    'Mixed comma and colon - [clevercsv issue #35]
+    With DelimitersGuessingTests.test("Mixed comma and colon - [clevercsv issue #35]")
+        MixedCommaAndColon_clevercsvIssue35
+        .IsEqual ActualResult, ExpectedResult, _
+                "Expected: (" & "[" & ExpectedResult(0) & "]" & " & " & "[" & ExpectedResult(2) & "]" & ")" & _
+                "Actual: (" & "[" & ActualResult(0) & "]" & " & " & "[" & ActualResult(2) & "]" & ")"
+    End With
+    '@--------------------------------------------------------------------------------
+    'Json data type - [clevercsv issue #37]
+    With DelimitersGuessingTests.test("Json data type - [clevercsv issue #37]")
+        JsonDataType_clevercsvIssue37
+        .IsEqual ActualResult, ExpectedResult, _
+                "Expected: (" & "[" & ExpectedResult(0) & "]" & " & " & "[" & ExpectedResult(2) & "]" & ")" & _
+                "Actual: (" & "[" & ActualResult(0) & "]" & " & " & "[" & ActualResult(2) & "]" & ")"
+    End With
     Set DelimitersGuessingTests = Nothing
 End Function
 Sub GetActualAndExpectedResults(FileName As String, _
@@ -227,6 +251,21 @@ Sub WrongDelimitersHaveBeenAddedToGuessingOperation()
     confObj.DelimitersToGuess = DelimitersToGuess 'Save configuration
     
     GetActualAndExpectedResults "Wrong delimiters have been added to guessing operation.csv", ",", vbLf, DoubleQuotes
+End Sub
+Sub FECdata_clevercsvIssue15()
+    Set confObj = New parserConfig
+    
+    GetActualAndExpectedResults "FEC data - [clevercsv issue #15].csv", "|", vbLf, DoubleQuotes
+End Sub
+Sub MixedCommaAndColon_clevercsvIssue35()
+    Set confObj = New parserConfig
+    
+    GetActualAndExpectedResults "Mixed comma and colon - [clevercsv issue #35].csv", ",", vbLf, Apostrophe
+End Sub
+Sub JsonDataType_clevercsvIssue37()
+    Set confObj = New parserConfig
+    
+    GetActualAndExpectedResults "Json data type - [clevercsv issue #37].csv", ",", vbLf, DoubleQuotes
 End Sub
 '/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 '#

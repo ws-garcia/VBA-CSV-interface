@@ -210,45 +210,6 @@ Private Sub Class_Terminate()
     Set P_CSV_DATA = Nothing
     Set P_CSV_HEADER = Nothing
 End Sub
-Private Function ArrayListAVGStdDev(ByRef ArrayList As ECPArrayList) As Double
-    Dim L0 As Long
-    Dim StdDevSUM As Double
-    
-    StdDevSUM = 0
-    For L0 = 0 To ArrayList.count - 1
-        StdDevSUM = StdDevSUM + ArrayStrStdDev(ArrayList(L0))
-    Next L0
-    ArrayListAVGStdDev = StdDevSUM / ArrayList.count
-End Function
-Private Function ArrayStrLenAVG(ByRef strArray As Variant) As Double
-    Dim L0 As Long
-    Dim tmpSUM As Double
-    
-    tmpSUM = 0
-    For L0 = LBound(strArray) To UBound(strArray)
-        tmpSUM = tmpSUM + LenB(strArray(L0))
-    Next L0
-    ArrayStrLenAVG = tmpSUM / (1 + UBound(strArray) - LBound(strArray))
-End Function
-Private Function ArrayStrStdDev(ByRef strArray As Variant) As Double
-    Dim arrLB As Long
-    Dim arrUB As Long
-    Dim L0 As Long
-    Dim LengthsAVG As Double
-    Dim CumulativeAVGsquaredDiff As Double
-    Dim LengthsSum As Double
-    
-    On Error GoTo ArrStrStdDev_ErrHandler
-    LengthsAVG = ArrayStrLenAVG(strArray)
-    CumulativeAVGsquaredDiff = 0
-    For L0 = LBound(strArray) To UBound(strArray)
-        CumulativeAVGsquaredDiff = CumulativeAVGsquaredDiff + (LenB(strArray(L0)) - LengthsAVG) ^ 2
-    Next L0
-    ArrayStrStdDev = (CumulativeAVGsquaredDiff / (UBound(strArray) - LBound(strArray))) ^ 0.5
-    Exit Function
-ArrStrStdDev_ErrHandler:
-    ArrayStrStdDev = 1.6E+308
-End Function
 Public Sub ClearData()
     Set P_CSV_DATA = New ECPArrayList
     Set P_CSV_HEADER = New ECPArrayList
@@ -661,6 +622,16 @@ ErrHandler_ExportToCSV:
     P_SUCCESSFUL_EXPORT = False
     P_ERROR_DESC = "[CSV file Export]: " & P_ERROR_DESC
 End Sub
+Private Function FieldScore(ByRef strArray As Variant) As Double
+    Dim L0 As Long
+    Dim tmpSUM As Double
+    
+    tmpSUM = 0
+    For L0 = LBound(strArray) To UBound(strArray)
+        tmpSUM = tmpSUM + LenB(strArray(L0))
+    Next L0
+    FieldScore = tmpSUM / (1 + UBound(strArray) - LBound(strArray))
+End Function
 Private Function FileExists(ByVal FilePath As String) As Boolean
     FileExists = CBool(LenB(Dir(FilePath, vbHidden + vbNormal + vbSystem + vbReadOnly + vbArchive)))
 End Function
@@ -1305,7 +1276,7 @@ Private Sub GuessInString(ByRef confObject As parserConfig, _
     Dim emptyParam() As Variant
     Dim StartRec As Long
     Dim EndRec As Long
-    Dim FieldDelStandardDEV() As Double
+    Dim CtableScore() As Double
     Dim QuoteChar() As EscapeTokens
     Dim L0_FieldDelimiter As Long
     Dim L1_FieldDelimiter As Long
@@ -1332,7 +1303,7 @@ Private Sub GuessInString(ByRef confObject As parserConfig, _
     tmpDelimiters() = confObject.DelimitersToGuess
     '@--------------------------------------------------------------------------------
     'StdDev array
-    ReDim FieldDelStandardDEV(LBound(tmpDelimiters) To UBound(tmpDelimiters))
+    ReDim CtableScore(LBound(tmpDelimiters) To UBound(tmpDelimiters))
     '@--------------------------------------------------------------------------------
     'String to guess
     If Not Buffered Then
@@ -1376,23 +1347,23 @@ Private Sub GuessInString(ByRef confObject As parserConfig, _
                 Set guessResults = New ECPArrayList
                 ParseCSVstring CSVstring, confObject, guessResults, emptyParam
                 If Not guessResults Is Nothing Then
-                    FieldDelStandardDEV(delIdx) = ArrayListAVGStdDev(guessResults)
+                    CtableScore(delIdx) = TableScore(guessResults)
                 Else
-                    FieldDelStandardDEV(delIdx) = 1.6E+308
+                    CtableScore(delIdx) = 1.6E+308
                 End If
             Else
-                FieldDelStandardDEV(delIdx) = 1.6E+308
+                CtableScore(delIdx) = 1.6E+308
             End If
         Next delIdx
         '@--------------------------------------------------------------------------------
         'Delimiters discrimination
-        L1_FieldDelimiter = MinIndexVal(FieldDelStandardDEV)
+        L1_FieldDelimiter = MinIndexVal(CtableScore)
         .fieldsDelimiter = tmpDelimiters(L1_FieldDelimiter)
         .startingRecord = StartRec
         .endingRecord = EndRec
     End With
     Erase emptyParam
-    Erase FieldDelStandardDEV
+    Erase CtableScore
     Erase LinesEnds
     Erase QuoteChar
     Erase tmpDelimiters
@@ -2446,6 +2417,24 @@ ParseCSVstring_NoSignificantData:
                                     "the String has only empty or commented lines that can be omitted."
     Resume ParseCSVstring_Error_Handler
 End Sub
+Private Function RecordScore(ByRef strArray As Variant) As Double
+    Dim arrLB As Long
+    Dim arrUB As Long
+    Dim L0 As Long
+    Dim CfieldScore As Double
+    Dim CumulativeScore As Double
+    
+    On Error GoTo RecordScore_ErrHandler
+    CfieldScore = FieldScore(strArray)
+    CumulativeScore = 0
+    For L0 = LBound(strArray) To UBound(strArray)
+        CumulativeScore = CumulativeScore + (LenB(strArray(L0)) - CfieldScore) ^ 2
+    Next L0
+    RecordScore = (CumulativeScore / (UBound(strArray) - LBound(strArray))) ^ 0.5
+    Exit Function
+RecordScore_ErrHandler:
+    RecordScore = 1.6E+308
+End Function
 Private Function RequestedField(ByVal FieldIndex As Long, _
                                 ByVal mxReq As Long) As Boolean
     Select Case RequestedFieldsArray(0)
@@ -3129,6 +3118,16 @@ AdvanceLine:
         End If
     End If
 End Sub
+Private Function TableScore(ByRef ArrayList As ECPArrayList) As Double
+    Dim L0 As Long
+    Dim StdDevSUM As Double
+    
+    StdDevSUM = 0
+    For L0 = 0 To ArrayList.count - 1
+        StdDevSUM = StdDevSUM + RecordScore(ArrayList(L0))
+    Next L0
+    TableScore = StdDevSUM / ArrayList.count
+End Function
 Public Sub TwoDimToJaggedArray(ByRef TwoDimArray() As Variant, ByRef JaggedArray() As Variant)
     Dim UBj1 As Long, LBj1 As Long
     Dim UBj2 As Long, LBj2 As Long
@@ -3241,4 +3240,3 @@ Private Function UnixToStandardEscapeSeq(ByRef UnixEscapedString As String, _
         UnixToStandardEscapeSeq = UnixEscapedString
     End If
 End Function
-
