@@ -146,9 +146,8 @@ Sub ImportCSVinChunks()
     Dim StreamReader As ECPTextStream
             
     Set CSVint = New CSVinterface
-    With CSVint.parseConfig
-        .fieldsDelimiter = ","                              ' Column delimiter
-        .recordsDelimiter = vbCrLf                          ' Rows delimiter
+    With CSVint
+        .GuessDelimiters .parseConfig                       ' Try to guess delimiters
     End With
     Set StreamReader = New ECPTextStream
     With StreamReader
