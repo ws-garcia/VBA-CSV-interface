@@ -138,7 +138,7 @@ Set the char to escape special fields:
 ```vb
 conf.escapeToken = EscapeTokens.DoubleQuotes
 conf.escapeToken = EscapeTokens.Apostrophe
-conf.escapeToken = EscapeTokens.NullChar
+conf.escapeToken = EscapeTokens.Tilde
 ```
 
 Set fields and records delimiters:
