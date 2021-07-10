@@ -14,7 +14,6 @@ The \[EXAMPLE1\] shows how you can execute a like SQL simple query over a CSV fi
 Private Sub Query_CSV(path As String, ByVal keyIndex As Long, queryFilters As Variant)
     Dim CSVint As CSVinterface
     Dim CSVrecords As ECPArrayList
-    Dim keyIndex As Long
     
     Set CSVint = New CSVinterface
     If path <> vbNullString Then
@@ -32,7 +31,6 @@ The \[EXAMPLE2\] shows how you can split CSV data into a set of files with relat
 ```vb
 Sub CSVsubSetting(path As String)
     Dim CSVint As CSVinterface
-    Dim path As String
     Dim subsets As Collection
 
     Set CSVint = New CSVinterface
