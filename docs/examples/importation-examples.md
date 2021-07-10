@@ -146,17 +146,19 @@ Sub ImportCSVinChunks()
     Dim StreamReader As ECPTextStream
             
     Set CSVint = New CSVinterface
+    With CSVint.parseConfig
+        .fieldsDelimiter = ","                              ' Column delimiter
+        .recordsDelimiter = vbCrLf                          ' Rows delimiter
+    End With
     Set StreamReader = New ECPTextStream
     With StreamReader
-        .endStreamOnLineBreak = True 'Instruct to find line breaks
-        .OpenStream "C:\100000.quoted.csv"
-        .ReadText 'Read a CSV chunk
-        CSVint.GuessDelimiters CSVint.parseConfig, .bufferString 'Try to guess delimiters
-        CSVint.ImportFromCSVString .bufferString, CSVint.parseConfig 'Import a set of fields
-        Do While Not .atEndOfStream 'Continue until reach the end of the CSV file.
-            .ReadText
-            CSVint.ImportFromCSVString .bufferString, CSVint.parseConfig
-        Loop
+        .endStreamOnLineBreak = True                        ' Instruct to find line breaks
+        .OpenStream "C:\100000.quoted.csv"                         ' Connect to CSV file
+        Do
+            .ReadText                                       ' Read a CSV chunk
+            CSVint.ImportFromCSVString .bufferString, _
+                                    CSVint.parseConfig      ' Import a set of records
+        Loop While Not .atEndOfStream                       ' Continue until reach the end of the CSV file.
     End With
     Set CSVint = Nothing
     Set StreamReader = Nothing
