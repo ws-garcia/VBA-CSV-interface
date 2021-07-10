@@ -147,12 +147,13 @@ Sub ImportCSVinChunks()
             
     Set CSVint = New CSVinterface
     With CSVint
+        .parseConfig.path = "C:\Sample.csv"
         .GuessDelimiters .parseConfig                       ' Try to guess delimiters
     End With
     Set StreamReader = New ECPTextStream
     With StreamReader
         .endStreamOnLineBreak = True                        ' Instruct to find line breaks
-        .OpenStream "C:\100000.quoted.csv"                         ' Connect to CSV file
+        .OpenStream CSVint.parseConfig.path                 ' Connect to CSV file
         Do
             .ReadText                                       ' Read a CSV chunk
             CSVint.ImportFromCSVString .bufferString, _
