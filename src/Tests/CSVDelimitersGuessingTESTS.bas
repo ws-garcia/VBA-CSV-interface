@@ -64,7 +64,7 @@ Function DelimitersGuessingTests(FullFileName As String) As TestSuite
     On Error Resume Next
     '@--------------------------------------------------------------------------------
     'Mixed comma and semicolon
-    With DelimitersGuessingTests.test("Mixed comma and semicolon")
+    With DelimitersGuessingTests.Test("Mixed comma and semicolon")
         MixedCommaAndSemicolon
         .IsEqual ActualResult, ExpectedResult, _
                 "Expected: (" & "[" & ExpectedResult(0) & "]" & " & " & "[" & ExpectedResult(2) & "]" & ")" & _
@@ -72,7 +72,7 @@ Function DelimitersGuessingTests(FullFileName As String) As TestSuite
     End With
     '@--------------------------------------------------------------------------------
     'File with multi-line field
-    With DelimitersGuessingTests.test("File with multi-line field")
+    With DelimitersGuessingTests.Test("File with multi-line field")
         FileWithMultiLineField
         .IsEqual ActualResult, ExpectedResult, _
                 "Expected: (" & "[" & ExpectedResult(0) & "]" & " & " & "[" & ExpectedResult(2) & "]" & ")" & _
@@ -80,7 +80,7 @@ Function DelimitersGuessingTests(FullFileName As String) As TestSuite
     End With
     '@--------------------------------------------------------------------------------
     'Optional quoted fields
-    With DelimitersGuessingTests.test("Optional quoted fields")
+    With DelimitersGuessingTests.Test("Optional quoted fields")
         OptionalQuotedFields
         .IsEqual ActualResult, ExpectedResult, _
                 "Expected: (" & "[" & ExpectedResult(0) & "]" & " & " & "[" & ExpectedResult(2) & "]" & ")" & _
@@ -88,7 +88,7 @@ Function DelimitersGuessingTests(FullFileName As String) As TestSuite
     End With
     '@--------------------------------------------------------------------------------
     'Mixed comma and semicolon - file B
-    With DelimitersGuessingTests.test("Mixed comma and semicolon - file B")
+    With DelimitersGuessingTests.Test("Mixed comma and semicolon - file B")
         MixedCommaAndSemicolonB
         .IsEqual ActualResult, ExpectedResult, _
                 "Expected: (" & "[" & ExpectedResult(0) & "]" & " & " & "[" & ExpectedResult(2) & "]" & ")" & _
@@ -96,7 +96,7 @@ Function DelimitersGuessingTests(FullFileName As String) As TestSuite
     End With
     '@--------------------------------------------------------------------------------
     'Geometric CSV
-    With DelimitersGuessingTests.test("Geometric CSV")
+    With DelimitersGuessingTests.Test("Geometric CSV")
         GeometricsCSV
         .IsEqual ActualResult, ExpectedResult, _
                 "Expected: (" & "[" & ExpectedResult(0) & "]" & " & " & "[" & ExpectedResult(2) & "]" & ")" & _
@@ -104,7 +104,7 @@ Function DelimitersGuessingTests(FullFileName As String) As TestSuite
     End With
     '@--------------------------------------------------------------------------------
     'Table embedded in the last record
-    With DelimitersGuessingTests.test("Table embedded in the last record")
+    With DelimitersGuessingTests.Test("Table embedded in the last record")
         TableEmbeddedInTheLastRecord
         .IsEqual ActualResult, ExpectedResult, _
                 "Expected: (" & "[" & ExpectedResult(0) & "]" & " & " & "[" & ExpectedResult(2) & "]" & ")" & _
@@ -112,7 +112,7 @@ Function DelimitersGuessingTests(FullFileName As String) As TestSuite
     End With
     '@--------------------------------------------------------------------------------
     'Table embedded in the second record
-    With DelimitersGuessingTests.test("Table embedded in the second record")
+    With DelimitersGuessingTests.Test("Table embedded in the second record")
         TableEmbeddedInTheSecondRecord
         .IsEqual ActualResult, ExpectedResult, _
                 "Expected: (" & "[" & ExpectedResult(0) & "]" & " & " & "[" & ExpectedResult(2) & "]" & ")" & _
@@ -120,7 +120,7 @@ Function DelimitersGuessingTests(FullFileName As String) As TestSuite
     End With
     '@--------------------------------------------------------------------------------
     'Multiple commas in fields
-    With DelimitersGuessingTests.test("Multiple commas in fields")
+    With DelimitersGuessingTests.Test("Multiple commas in fields")
         MultipleCommasInFields
         .IsEqual ActualResult, ExpectedResult, _
                 "Expected: (" & "[" & ExpectedResult(0) & "]" & " & " & "[" & ExpectedResult(2) & "]" & ")" & _
@@ -128,7 +128,7 @@ Function DelimitersGuessingTests(FullFileName As String) As TestSuite
     End With
     '@--------------------------------------------------------------------------------
     'Uncommon char as field delimiter
-    With DelimitersGuessingTests.test("Uncommon char as field delimiter")
+    With DelimitersGuessingTests.Test("Uncommon char as field delimiter")
         UncommonCharAsFieldDelimiter
         .IsEqual ActualResult, ExpectedResult, _
                 "Expected: (" & "[" & ExpectedResult(0) & "]" & " & " & "[" & ExpectedResult(2) & "]" & ")" & _
@@ -136,7 +136,7 @@ Function DelimitersGuessingTests(FullFileName As String) As TestSuite
     End With
     '@--------------------------------------------------------------------------------
     'Wrong delimiters have been added to guessing operation
-    With DelimitersGuessingTests.test("Wrong delimiters have been added to guessing operation")
+    With DelimitersGuessingTests.Test("Wrong delimiters have been added to guessing operation")
         WrongDelimitersHaveBeenAddedToGuessingOperation
         .IsEqual ActualResult, ExpectedResult, _
                 "Expected: (" & "[" & ExpectedResult(0) & "]" & " & " & "[" & ExpectedResult(2) & "]" & ")" & _
@@ -144,7 +144,7 @@ Function DelimitersGuessingTests(FullFileName As String) As TestSuite
     End With
     '@--------------------------------------------------------------------------------
     'FEC data - [clevercsv issue #15]
-    With DelimitersGuessingTests.test("FEC data - [clevercsv issue #15]")
+    With DelimitersGuessingTests.Test("FEC data - [clevercsv issue #15]")
         FECdata_clevercsvIssue15
         .IsEqual ActualResult, ExpectedResult, _
                 "Expected: (" & "[" & ExpectedResult(0) & "]" & " & " & "[" & ExpectedResult(2) & "]" & ")" & _
@@ -152,7 +152,7 @@ Function DelimitersGuessingTests(FullFileName As String) As TestSuite
     End With
     '@--------------------------------------------------------------------------------
     'Mixed comma and colon - [clevercsv issue #35]
-    With DelimitersGuessingTests.test("Mixed comma and colon - [clevercsv issue #35]")
+    With DelimitersGuessingTests.Test("Mixed comma and colon - [clevercsv issue #35]")
         MixedCommaAndColon_clevercsvIssue35
         .IsEqual ActualResult, ExpectedResult, _
                 "Expected: (" & "[" & ExpectedResult(0) & "]" & " & " & "[" & ExpectedResult(2) & "]" & ")" & _
@@ -160,7 +160,7 @@ Function DelimitersGuessingTests(FullFileName As String) As TestSuite
     End With
     '@--------------------------------------------------------------------------------
     'Json data type - [clevercsv issue #37]
-    With DelimitersGuessingTests.test("Json data type - [clevercsv issue #37]")
+    With DelimitersGuessingTests.Test("Json data type - [clevercsv issue #37]")
         JsonDataType_clevercsvIssue37
         .IsEqual ActualResult, ExpectedResult, _
                 "Expected: (" & "[" & ExpectedResult(0) & "]" & " & " & "[" & ExpectedResult(2) & "]" & ")" & _
@@ -168,8 +168,40 @@ Function DelimitersGuessingTests(FullFileName As String) As TestSuite
     End With
     '@--------------------------------------------------------------------------------
     'Undefined field delimiter
-    With DelimitersGuessingTests.test("Undefined field delimiter")
+    With DelimitersGuessingTests.Test("Undefined field delimiter")
         UndefinedFieldDelimiter
+        .IsEqual ActualResult, ExpectedResult, _
+                "Expected: (" & "[" & ExpectedResult(0) & "]" & " & " & "[" & ExpectedResult(2) & "]" & ")" & _
+                "Actual: (" & "[" & ActualResult(0) & "]" & " & " & "[" & ActualResult(2) & "]" & ")"
+    End With
+    '@--------------------------------------------------------------------------------
+    'Rainbow CSV [issue #92]
+    With DelimitersGuessingTests.Test("Rainbow CSV [issue #92]")
+        RainbowCSVissue92
+        .IsEqual ActualResult, ExpectedResult, _
+                "Expected: (" & "[" & ExpectedResult(0) & "]" & " & " & "[" & ExpectedResult(2) & "]" & ")" & _
+                "Actual: (" & "[" & ActualResult(0) & "]" & " & " & "[" & ActualResult(2) & "]" & ")"
+    End With
+    '@--------------------------------------------------------------------------------
+    'Pipe character is more frequent than the comma
+    With DelimitersGuessingTests.Test("Pipe character is more frequent than the comma")
+        PipeCharIsMoreFrequentThanTheComma
+        .IsEqual ActualResult, ExpectedResult, _
+                "Expected: (" & "[" & ExpectedResult(0) & "]" & " & " & "[" & ExpectedResult(2) & "]" & ")" & _
+                "Actual: (" & "[" & ActualResult(0) & "]" & " & " & "[" & ActualResult(2) & "]" & ")"
+    End With
+    '@--------------------------------------------------------------------------------
+    'Pipe character is more frequent than the semicolon
+    With DelimitersGuessingTests.Test("Pipe character is more frequent than the semicolon")
+        PipeCharIsMoreFrequentThanTheSemicolon
+        .IsEqual ActualResult, ExpectedResult, _
+                "Expected: (" & "[" & ExpectedResult(0) & "]" & " & " & "[" & ExpectedResult(2) & "]" & ")" & _
+                "Actual: (" & "[" & ActualResult(0) & "]" & " & " & "[" & ActualResult(2) & "]" & ")"
+    End With
+    '@--------------------------------------------------------------------------------
+    'Short pipe separated table embedded
+    With DelimitersGuessingTests.Test("Short pipe separated table embedded")
+        ShortPipeSeparatedTableEmbedded
         .IsEqual ActualResult, ExpectedResult, _
                 "Expected: (" & "[" & ExpectedResult(0) & "]" & " & " & "[" & ExpectedResult(2) & "]" & ")" & _
                 "Actual: (" & "[" & ActualResult(0) & "]" & " & " & "[" & ActualResult(2) & "]" & ")"
@@ -279,6 +311,26 @@ Sub UndefinedFieldDelimiter()
     Set confObj = New parserConfig
     
     GetActualAndExpectedResults "Undefined field delimiter.csv", ",", vbLf, DoubleQuotes
+End Sub
+Sub RainbowCSVissue92()
+    Set confObj = New parserConfig
+    
+    GetActualAndExpectedResults "Rainbow CSV [issue #92].csv", ",", vbLf, DoubleQuotes
+End Sub
+Sub PipeCharIsMoreFrequentThanTheComma()
+    Set confObj = New parserConfig
+    
+    GetActualAndExpectedResults "Pipe character is more frequent than the comma.csv", ",", vbCrLf, DoubleQuotes
+End Sub
+Sub PipeCharIsMoreFrequentThanTheSemicolon()
+    Set confObj = New parserConfig
+    
+    GetActualAndExpectedResults "Pipe character is more frequent than the semicolon.csv", ";", vbCrLf, DoubleQuotes
+End Sub
+Sub ShortPipeSeparatedTableEmbedded()
+    Set confObj = New parserConfig
+    
+    GetActualAndExpectedResults "Short pipe separated table embedded.csv", ",", vbLf, DoubleQuotes
 End Sub
 '/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 '#

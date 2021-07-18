@@ -1354,6 +1354,11 @@ Private Sub GuessInString(ByRef confObject As parserConfig, _
                 ParseCSVstring CSVstring, confObject, guessResults, emptyParam
                 If Not guessResults Is Nothing Then
                     CtableScore(delIdx) = TableScore(guessResults)
+                    If CtableScore(delIdx) = 0 Then 'Persistent structure table
+                        With confObject
+                            CtableScore(delIdx) = SubTablesScore(.DelimitersToGuess, .fieldsDelimiter, guessResults)
+                        End With
+                    End If
                 Else
                     CtableScore(delIdx) = 1E+30
                 End If
@@ -3130,6 +3135,45 @@ AdvanceLine:
         End If
     End If
 End Sub
+Private Function SubTablesScore(DelimitersArray() As String, _
+                                CurrentDelimiter As String, _
+                                ResultArrayList As ECPArrayList) As Double
+    Dim DelimiterID As Long
+    Dim FldID As Long
+    Dim MaxFieldLen As Long
+    Dim RecID As Long
+    Dim RegularFieldsCount As Long
+    Dim SubTableFactor As Long
+    Dim SubTablesCount As Long
+    Dim tmpFldLen As Long
+    Dim tmpRecord As Variant
+    Dim tmpTablesMatch As Long
+    
+    
+    SubTablesCount = 0
+    MaxFieldLen = 0
+    SubTableFactor = 0
+    For RecID = 0 To ResultArrayList.count - 1
+        tmpRecord = ResultArrayList(RecID)
+        For FldID = LBound(tmpRecord) To UBound(tmpRecord)
+            tmpFldLen = LenB(tmpRecord(FldID))
+            tmpTablesMatch = SubTablesCount
+            For DelimiterID = LBound(DelimitersArray) To UBound(DelimitersArray)
+                If DelimitersArray(DelimiterID) <> CurrentDelimiter Then
+                    If InStrB(1, tmpRecord(FldID), DelimitersArray(DelimiterID)) Then
+                        SubTablesCount = SubTablesCount + 1
+                        SubTableFactor = SubTableFactor + (tmpFldLen * FldID)
+                    End If
+                End If
+            Next DelimiterID
+            If tmpTablesMatch = SubTablesCount Then
+                RegularFieldsCount = RegularFieldsCount + 1
+                MaxFieldLen = MaxFieldLen + tmpFldLen
+            End If
+        Next FldID
+    Next RecID
+    SubTablesScore = ResultArrayList.count * (MaxFieldLen * RegularFieldsCount) / (SubTableFactor * SubTablesCount + 1)
+End Function
 Private Function TableScore(ByRef ArrayList As ECPArrayList) As Double
     Dim L0 As Long
     Dim RecScores() As Double
