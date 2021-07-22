@@ -1,5 +1,6 @@
 # ![VBA-CSV interface](/docs/assets/img/CSVinterface.png)
 [![GitHub](https://img.shields.io/github/license/ws-garcia/VBA-CSV-interface?style=plastic)](https://github.com/ws-garcia/VBA-CSV-interface/blob/master/LICENSE) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/ws-garcia/VBA-CSV-interface?style=plastic)](https://github.com/ws-garcia/VBA-CSV-interface/releases/latest)
+[![Github All Releases](https://img.shields.io/github/downloads/ws-garcia/VBA-CSV-interface/total.svg)]()
 
 ## Introductory words
 
