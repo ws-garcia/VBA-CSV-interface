@@ -45,7 +45,7 @@ Sub CSVimport()
         .fieldsDelimiter = &quot;,&quot;         &#39; Columns delimiter
         .recordsDelimiter = vbCrLf     &#39; Rows delimiter
     End With
-    With csvinf
+    With CSVint
         .ImportFromCSV .parseConfig    &#39; Import the CSV to internal object
     End With
 End Sub</pre>
@@ -64,7 +64,7 @@ Sub CSVimportRecordsRange()
         .startingRecord = 10           &#39; Start import on the tenth record
         .endingRecord = 20             &#39; End of importation in the 20th record
     End With
-    With csvinf
+    With CSVint
         .ImportFromCSV .parseConfig    &#39; Import the CSV to internal object
     End With
 End Sub</pre>
