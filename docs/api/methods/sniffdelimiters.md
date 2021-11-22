@@ -1,24 +1,24 @@
 ---
-title: GuessDelimiters
+title: SniffDelimiters
 parent: Methods
 grand_parent: API
-nav_order: 13
+nav_order: 16
 ---
 
-# GuessDelimiters
+# SniffDelimiters
 {: .d-inline-block }
 
 New
 {: .label .label-purple }
 
-Runs an analysis trying to guess delimiters used in a String variable or in the CSV/TSV file indicated in the `.path` property of the configuration object.
+Returns a CSV dialect after run an analysis over a String variable or in the CSV/TSV file indicated in the `.path` property of the configuration object.
 {: .fs-6 .fw-300 }
 
 ---
 
 ## Syntax
 
-*expression*.`GuessDelimiters`*(confObj, \[CSVstring\] = vbNullString)*
+*expression*.`SniffDelimiters`*(confObject, \[CSVstring\] = vbNullString)*
 
 ### Parameters
 
@@ -31,8 +31,8 @@ Runs an analysis trying to guess delimiters used in a String variable or in the 
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><em>configObj</em></td>
-<td style="text-align: left;">Required. Identifier specifying a <code>ParserConfig</code> object variable.</td>
+<td style="text-align: left;"><em>confObject</em></td>
+<td style="text-align: left;">Required. Identifier specifying a <code>CSVparserConfig</code> object variable.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><em>CSVstring</em></td>
@@ -43,12 +43,12 @@ Runs an analysis trying to guess delimiters used in a String variable or in the 
 
 ### Returns value
 
-_None_
+*Type*: `CSVdialect`
 
 ---
 
 See also
-: [ParseConfig Property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/parseconf.html).
+: [ParseConfig Property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/parseconf.html), [CSVSniffer class](https://ws-garcia.github.io/VBA-CSV-interface/api/csvsniffer.html).
 
 ## Behavior
 
@@ -56,7 +56,7 @@ The parser will guess the delimiters in the CSV file only when the `CSVstring` p
 
 >⚠️**Caution**
 >{: .text-grey-lt-000 .bg-green-000 }
->Only some records will be used to guess the delimiters. The results of the analysis are stored in the *confObj* parameter, this means that the properties of the *confObj* object will be modified.
+>Only some records will be used to guess the delimiters. The method is very accurate, but there is a risk of inaccuracy in some rare cases.
 {: .text-grey-dk-300 .bg-yellow-000 }
 
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)

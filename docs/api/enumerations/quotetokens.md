@@ -1,11 +1,11 @@
 ---
-title: EscapeTokens
+title: QuoteTokens
 parent: Enumerations
 grand_parent: API
-nav_order: 2
+nav_order: 3
 ---
 
-# EscapeTokens Enum
+# QuoteTokens Enum
 {: .fs-9 }
 
 Provides a list of constants to configure the char used as escape character.
@@ -25,11 +25,11 @@ Provides a list of constants to configure the char used as escape character.
 
 ## Syntax
 
-*variable* = `EscapeTokens`.*Constant*
+*variable* = `QuoteTokens`.*Constant*
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->The `EscapeTokens` enumeration is used to "escape" some CSV/TSV fields with embedded escape characters. The `parserConfig.unixEscapeMechanism` option will tell the parser to escape in the unix style, preceding the backslash (`\`), or in the classic way, preceding another escape character.
+>The `QuoteTokens` enumeration is used to "escape" some CSV/TSV fields with embedded special characters. The `parseConfig.dialect.escapeMode` option will tell the parser to escape in the unix style, preceding the backslash (`\`), or in the RFC-4180 way, preceding another escape character.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 See also

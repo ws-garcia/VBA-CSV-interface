@@ -2,7 +2,7 @@
 title: ImportFromCSVstring
 parent: Methods
 grand_parent: API
-nav_order: 16
+nav_order: 13
 ---
 
 # ImportFromCSVstring
@@ -33,7 +33,7 @@ Parses a string and save its CSV/TSV data to the current instance.
 </tr>
 <tr>
 <td style="text-align: left;"><em>configObj</em></td>
-<td style="text-align: left;">Required. Identifier specifying a <code>ParserConfig</code> object variable.</td>
+<td style="text-align: left;">Required. Identifier specifying a <code>CSVparserConfig</code> object variable.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><em>FilterColumns</em></td>
@@ -47,7 +47,7 @@ Parses a string and save its CSV/TSV data to the current instance.
 *Type*: `CSVinterface`
 
 See also
-: [ParseConfig Property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/parseconf.html).
+: [ParseConfig Property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/parseconf.html), [CSVTextStream class](https://ws-garcia.github.io/VBA-CSV-interface/api/csvtextstream.html).
 
 ---
 

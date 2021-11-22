@@ -2,16 +2,13 @@
 title: items
 parent: Properties
 grand_parent: API
-nav_order: 9
+nav_order: 11
 ---
 
 # items
-{: .d-inline-block }
+{: .fs-9 }
 
-New
-{: .label .label-purple }
-
-Gets or sets the result `ECPArrayList` on the current instance.
+Gets or sets the result `CSVArrayList` on the current instance.
 {: .fs-6 .fw-300 }
 
 ---
@@ -32,11 +29,11 @@ _Yes_
 |**_Accesor_**|**_Parameters_**|
 |:----------|:----------|
 |Get|_None_|
-|Set|*Name*: Value<br>*Type*: `ECPArrayList`<br>*Modifiers*: `ByRef`|
+|Set|*Name*: Value<br>*Type*: `CSVArrayList`<br>*Modifiers*: `ByRef`|
 
 |**_Accesor_**|**_Returns Type_**|
 |:----------|:----------|
-|Get|`ECPArrayList`|
+|Get|`CSVArrayList`|
 |Set|_None_|
 
 ### Parameters
@@ -54,6 +51,6 @@ _None_
 {: .text-grey-dk-300 .bg-yellow-000 }
 
 See also
-: [item property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/item.html).
+: [item property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/item.html), [CSVArrayList class](https://ws-garcia.github.io/VBA-CSV-interface/api/csvarraylist.html).
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)

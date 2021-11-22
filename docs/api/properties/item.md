@@ -2,13 +2,13 @@
 title: item
 parent: Properties
 grand_parent: API
-nav_order: 8
+nav_order: 10
 ---
 
 # item
 {: .fs-9 }
 
-Gets a field, or an array with an entire record, from the result `ECPArrayList` on the current instance.
+Gets a field, or an array with an entire record, from the result `CSVArrayList` on the current instance.
 {: .fs-6 .fw-300 }
 
 ---
@@ -50,17 +50,17 @@ _ReadOnly_
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->The `item` property can be used for check information from the class internals over certain range of the parsed CSV data.
+>The `item` property can be used for check information from the class internals over certain range of parsed CSV data.
 >
 >If user only provide the *Index1* as argument, an array with an entire record will be returned; if user provide more than one argument, the *Index2* will be used to return a field.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 >⚠️**Caution**
 >{: .text-grey-lt-000 .bg-green-000 }
->The user must check, through the `rectangularResults`, if the read CSV has records with varying number of fields. This step can prevent potential "subscript out of range" error.
+>The user must check, through the `uniformLengthRecords`, if the read CSV has records with varying number of fields. This step can prevent potential "subscript out of range" error.
 {: .text-grey-dk-300 .bg-yellow-000 }
 
 See also
-: [vectorsBound property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/vectorsbound.html), [rectangularResults property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/rectangularresults.html).
+: [vectorsBound property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/vectorsbound.html), [uniformLengthRecords property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/uniformlengthrecords.html).
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)

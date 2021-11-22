@@ -42,11 +42,11 @@ In the table bellow all the rules of [RFC-4180](https://www.ietf.org/rfc/rfc4180
 </tr>
 <tr>
 <td style="text-align: left;"><em>Fields containing line breaks (CRLF), double<br> quotes, and commas should be enclosed in double<br> quotes</em></td>
-<td style="text-align: left;">In the same way. Also accepts fields enclosed by<br> the apostrophe char.</td>
+<td style="text-align: left;">In the same way. Also accepts Unix-style escape<br> by preceding the quote with a<br> backslash (<strong>"\"</strong>").</td>
 </tr>
 <tr>
 <td style="text-align: left;"><em>If double-quotes are used to enclose fields, then<br> a double-quote appearing inside a field must be<br> escaped by preceding it with another double quote.</em></td>
-<td style="text-align: left;">In the same way. The class also accepts a Unix-style quote escape by preceding the quote with a<br> backslash (<strong>"\"</strong>").</td>
+<td style="text-align: left;">In the same way. Also accepts Unix-style escape.</td>
 </tr>
 </tbody>
 </table>

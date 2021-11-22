@@ -13,7 +13,7 @@ The \[EXAMPLE1\] shows how you can execute a like SQL simple query over a CSV fi
 ```vb
 Private Sub Query_CSV(path As String, ByVal keyIndex As Long, queryFilters As Variant)
     Dim CSVint As CSVinterface
-    Dim CSVrecords As ECPArrayList
+    Dim CSVrecords As CSVArrayList
     
     Set CSVint = New CSVinterface
     If path <> vbNullString Then
@@ -60,8 +60,8 @@ Sub ImportMixedLineEndCSV()
     Set CSVint = New CSVinterface
     With CSVint.parseConfig
         .path = "C:\Mixed Line Breaks.csv"
-        .recordsDelimiter = vbLf 'All delimiters will be turned into vbLf
-        .turnStreamRecDelimiterToLF = True
+        .dialect.recordsDelimiter = vbLf 'All delimiters will be turned into vbLf
+        .multiEndOfLineCSV = True
     End With
     With CSVint
         .ImportFromCSV .parseConfig

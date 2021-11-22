@@ -17,11 +17,14 @@ However, using Power Query implies establishing a physical connection to each da
 
 ### Does VBA CSV interface have any dependencies?
 
-Yes. The VBA CSV interface dependencies are:  
+Yes. The VBA CSV interface library is composed of the following class modules:  
 
-* parserConfig.cls
-* ECPTextStream.cls
-* ECPArrayList.cls
+* `CSVArrayList`
+* `CSVdialect`
+* `CSVinterface`
+* `CSVparserConfig`
+* `CSVSniffer`
+* `CSVTextStream`
 
 Please review the [instalation page](https://ws-garcia.github.io/VBA-CSV-interface/home/installation.html). 
 
@@ -49,7 +52,7 @@ Jagged arrays require the parent array to be of type `Variant` to contain anothe
 
 Previous versions of VBA CSV interface appended additional empty fields to ALL records, this happened when importing CSV files in which the records did not have the same amount of fields in the whole file. As a result, for example, if the user decided to export the imported information from a file in which the first line (header) had 12 fields, with most of the records in this CSV only containing the first 5 or 7 fields, the file that was written (after exportation) contained several consecutive commas until the 12 fields per line were completed. This problem is solved with the implementation of jagged arrays.
 
-In addition, the jagged arrays make it easier to implement the [Yaroslavskiy Dual-Pivot Quicksort algorithm](https://web.archive.org/web/20151002230717/http://iaroslavski.narod.ru/quicksort/DualPivotQuicksort.pdf), a feature that can be very useful in certain circumstances.
+In addition, the jagged arrays make it easier to implement sorting methods, a feature that can be very useful in certain circumstances.
 
 ### Why sacrifice performance?
 
@@ -60,10 +63,10 @@ For example, instead of offering a single way to get things done, the VBA CSV in
 #### Import CSV files
 
 1. Built-in methods: [ImportFromCSV](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/importfromcsv.html) (import selected records or all records contained in the CSV file) and [GetRecord](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/getrecord.html) (read records sequentially, one after another, from the first to the last).
-2. Alternative method: use the [ECPTextStream](https://ws-garcia.github.io/ECPTextStream/) module, with the [endStreamOnLineBreak](https://ws-garcia.github.io/ECPTextStream/api/properties/endstreamonlinebreak.html) property set to `True`, read text streams sequentially with the [ReadText](https://ws-garcia.github.io/ECPTextStream/api/methods/readtext.html) method and parse the text string stored in the [bufferString](https://ws-garcia.github.io/ECPTextStream/api/properties/bufferstring.html) using the [ImportFromCSVstring](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/importfromcsvstring.html) method.
+2. Alternative method: use the `CSVTextStream` module, with the `endStreamOnLineBreak` property set to `True`, read text streams sequentially with the [ReadText](https://ws-garcia.github.io/ECPTextStream/api/methods/readtext.html) method and parse the text string stored in the [bufferString](https://ws-garcia.github.io/ECPTextStream/api/properties/bufferstring.html) using the [ImportFromCSVstring](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/importfromcsvstring.html) method.
 
-Another limitation that has been broken in the most recent versions of the VBA CSV interface is linked to the size of the parsed file. In versions prior to v3, the performance was subject to the size of the file, due to memory usage, even if the user only needed to access the first few records of the CSV file. Thus, importing the first 100 records from a 200 MB file took much longer than importing the same number of records from a 10 MB file. In recent versions the performance is strictly linked to the number of fields and records being processed, since the entire contents of the CSV are NOT loaded into RAM thanks to the [ECPTextStream](https://ws-garcia.github.io/ECPTextStream/) module.
+Another limitation that has been broken in the most recent versions of the VBA CSV interface is linked to the size of the parsed file. In versions prior to v3, the performance was subject to the size of the file, due to memory usage, even if the user only needed to access the first few records of the CSV file. Thus, importing the first 100 records from a 200 MB file took much longer than importing the same number of records from a 10 MB file. In recent versions the performance is strictly linked to the number of fields and records being processed, since the entire contents of the CSV are NOT loaded into RAM thanks to the `CSVTextStream` module.
 
 ### Where can I find the documentation for parser options?
 
-All available options reside in the `parseConfig` property of the parser and are fully documented in the [API documentation](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/parseconf.html). 
+All available options reside in the `parseConfig` property of the parser and are fully documented in the [API documentation](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/csvparserconfig.html). 

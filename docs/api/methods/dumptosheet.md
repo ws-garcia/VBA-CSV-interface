@@ -2,7 +2,7 @@
 title: DumpToSheet
 parent: Methods
 grand_parent: API
-nav_order: 8
+nav_order: 7
 ---
 
 # DumpToSheet
@@ -41,7 +41,7 @@ Dumps data from a source, or from the current instance, to an Excel WorkSheet.
 </tr>
 <tr>
 <td style="text-align: left;"><em>DataSource</em></td>
-<td style="text-align: left;">Optional. Identifier specifying a <code>ECPArrayList</code> object variable representing the data to copy from.</td>
+<td style="text-align: left;">Optional. Identifier specifying a <code>CSVArrayList</code> object variable representing the data to copy from.</td>
 </tr>
 </tbody>
 </table>

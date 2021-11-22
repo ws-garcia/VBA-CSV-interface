@@ -13,10 +13,12 @@ description: "Install instructions for the VBA CSV interface class."
 
 In order to use the latest release of the CSV interface library within your VBA code, you must to download the provides `.zip` archive. Once downloaded, import the following files from the VBA IDE:
 
-- `CSVinterface.cls`
-- `parserConfig.cls`
-- `ECPTextStream.cls`
-- `ECPArrayList.cls`
+* `CSVArrayList`
+* `CSVdialect`
+* `CSVinterface`
+* `CSVparserConfig`
+* `CSVSniffer`
+* `CSVTextStream`
 
 >⚠️**Caution**
 >{: .text-grey-lt-000 .bg-green-000 }

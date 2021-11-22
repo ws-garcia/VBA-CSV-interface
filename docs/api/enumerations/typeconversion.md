@@ -2,14 +2,11 @@
 title: TypeConversion
 parent: Enumerations
 grand_parent: API
-nav_order: 3
+nav_order: 5
 ---
 
 # TypeConversion Enum
-{: .d-inline-block }
-
-New
-{: .label .label-purple }
+{: .fs-9 }
 
 Provides a list of constants to configure the Dynamic Typing conversion behavior.
 {: .fs-6 .fw-300 }

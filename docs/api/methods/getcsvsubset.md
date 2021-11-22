@@ -2,14 +2,11 @@
 title: GetCSVsubset
 parent: Methods
 grand_parent: API
-nav_order: 10
+nav_order: 9
 ---
 
 # GetCSVsubset
-{: .d-inline-block }
-
-New
-{: .label .label-purple }
+{: .fs-9 }
 
 Returns a set of records matching the criteria applied to a desired field from a CSV file.
 {: .fs-6 .fw-300 }
@@ -44,14 +41,17 @@ Returns a set of records matching the criteria applied to a desired field from a
 </tr>
 <tr>
 <td style="text-align: left;"><em>configObj</em></td>
-<td style="text-align: left;">Optional. Identifier specifying a <code>parserConfig</code> object variable holding the parser configuration.</td>
+<td style="text-align: left;">Optional. Identifier specifying a <code>CSVparserConfig</code> object variable holding the parser configuration.</td>
 </tr>
 </tbody>
 </table>
 
 ### Returns value
 
-*Type*: `ECPArrayList` object
+*Type*: `CSVArrayList` object
+
+See also
+: [CSVArrayList class](https://ws-garcia.github.io/VBA-CSV-interface/api/csvarraylist.html).
 
 ---
 

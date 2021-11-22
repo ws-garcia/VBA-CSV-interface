@@ -2,14 +2,11 @@
 title: DumpToAccessTable
 parent: Methods
 grand_parent: API
-nav_order: 5
+nav_order: 4
 ---
 
 # DumpToAccessTable
-{: .d-inline-block }
-
-New
-{: .label .label-purple }
+{: .fs-9 }
 
 Dumps the data from the current instance to a Microsoft Access Database (.accdb).
 {: .fs-6 .fw-300 }

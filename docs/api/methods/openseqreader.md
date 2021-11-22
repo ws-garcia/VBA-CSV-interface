@@ -2,14 +2,11 @@
 title: OpenSeqReader
 parent: Methods
 grand_parent: API
-nav_order: 18
+nav_order: 14
 ---
 
 # OpenSeqReader
-{: .d-inline-block }
-
-New
-{: .label .label-purple }
+{: .fs-9 }
 
 Opens a sequential CSV reader for import records one at a time.
 {: .fs-6 .fw-300 }
@@ -32,7 +29,7 @@ Opens a sequential CSV reader for import records one at a time.
 <tbody>
 <tr>
 <td style="text-align: left;"><em>configObj</em></td>
-<td style="text-align: left;">Required. Identifier specifying a <code>ParserConfig</code> object variable.</td>
+<td style="text-align: left;">Required. Identifier specifying a <code>CSVparserConfig</code> object variable.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><em>FilterColumns</em></td>
@@ -46,7 +43,7 @@ Opens a sequential CSV reader for import records one at a time.
 _None_
 
 See also
-: [GetRecord Method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/getrecord.html), [CloseSeqReader Method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/closeseqreader.html), [ParseConfig Property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/parseconf.html).
+: [GetRecord Method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/getrecord.html), [CloseSeqReader Method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/closeseqreader.html), [ParseConfig Property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/parseconf.html), [CSVTextStream class](https://ws-garcia.github.io/VBA-CSV-interface/api/csvtextstream.html).
 
 ---
 
