@@ -21,14 +21,12 @@ Sub ExportToTSV()
     With conf
         .path = "C:\100000.quoted.csv"
         .dynamicTyping = False
-    End With
-    CSVint.SniffDelimiters conf 'Try to guess CSV file data delimiters
-    CSVint.ImportFromCSV conf 'Import the data
-    With conf
+        Set .dialect = CSVint.SniffDelimiters(conf)   'Try to guess CSV file data delimiters\
+        CSVint.ImportFromCSV conf 'Import the data
         .path = Environ("USERPROFILE") & "\Desktop\100000.quoted.tsv"
         .dialect.fieldsDelimiter = vbTab
+        CSVint.ExportToCSV CSVint.items, conf 'Export internal items
     End With
-    CSVint.ExportToCSV CSVint.Items, conf 'Export internal items
     Set CSVint = Nothing 'Terminate the current instance
 End Sub
 ```
@@ -48,11 +46,11 @@ Sub SortAndExportToCSV()
         .path = "C:\100000.quoted.csv"
         .Headers = True 'The header will not sorted
         .dynamicTyping = False
+        Set .dialect = CSVint.SniffDelimiters(conf) 'Try to guess CSV file data delimiters
+        CSVint.ImportFromCSV(conf).Sort SortingKeys:=1 'Import and sort the data in ascending way
+        .path = Environ("USERPROFILE") & "\Desktop\100000.quoted.tsv"
+        CSVint.ExportToCSV CSVint.items, conf 'Export internal items
     End With
-    CSVint.SniffDelimiters conf 'Try to guess CSV file data delimiters
-    CSVint.ImportFromCSV(conf).Sort SortingKeys:=1 'Import and sort the data in ascending way
-    conf.path = Environ("USERPROFILE") & "\Desktop\100000.quoted.tsv"
-    CSVint.ExportToCSV CSVint.Items, conf 'Export internal items
     Set CSVint = Nothing 'Terminate the current instance
 End Sub
 ```
