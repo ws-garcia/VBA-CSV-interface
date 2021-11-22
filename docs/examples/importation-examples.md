@@ -17,11 +17,9 @@ Sub ImportRecords()
     Dim Arr() As Variant
 
     Set CSVint = New CSVinterface
-    With CSVint.parseConfig
-        .path = "C:\100000.quoted.csv"
-    End With
     With CSVint
-        .SniffDelimiters .parseConfig 'Try to guess CSV file data delimiters
+        .parseConfig.path = "C:\100000.quoted.csv"
+        Set .parseConfig.dialect = .SniffDelimiters(.parseConfig)  'Try to guess CSV file data delimiters
         .ImportFromCSV(.parseConfig).DumpToArray Arr 'Import and dump the data to an array
     End With
     Set CSVint = Nothing 'Terminate the current instance
@@ -59,7 +57,7 @@ Sub TEST_DynamicTyping()
                                  12
     End With
     With CSVint
-        .SniffDelimiters .parseConfig 'Try to guess CSV file data delimiters
+        Set .parseConfig.dialect = .SniffDelimiters(.parseConfig) 'Try to guess CSV file data delimiters
         .ImportFromCSV(.parseConfig).DumpToArray Arr 'Import and dump the data to an array
     End With
     Set CSVint = Nothing
@@ -76,11 +74,9 @@ Sub ImportAndDumpToSheet()
 
     Set CSVint = New CSVinterface
     Set conf = CSVint.parseConfig
-    With conf
-        .path = "C:\100000.quoted.csv"
-    End With
+    conf.path = "C:\100000.quoted.csv"
     With CSVint
-        .SniffDelimiters conf 'Try to guess CSV file data delimiters
+        Set .parseConfig.dialect = .SniffDelimiters(conf) 'Try to guess CSV file data delimiters
         .ImportFromCSV(conf).DumpToSheet 'Import and dump the data to a new Worksheet
     End With
     Set CSVint = Nothing 'Terminate the current instance
@@ -102,11 +98,9 @@ Sub ImportAndDumpToAccessDB()
     Dim dBase As DAO.Database
     
     Set CSVint = New CSVinterface
-    With CSVint.parseConfig
-        .path = "C:\100000.quoted.csv"
-    End With
     With CSVint
-        .SniffDelimiters .parseConfig 'Try to guess CSV file data delimiters
+        .parseConfig.path = "C:\100000.quoted.csv"
+        Set .parseConfig.dialect = .SniffDelimiters(.parseConfig) 'Try to guess CSV file data delimiters
         Set dBase = CurrentDb
         'Import and dump the data into a new database table. This will create indexes for the "Region" field and for the second field in the table.
         .ImportFromCSV(.parseConfig).DumpToAccessTable dBase, "CSV_ImportedData", "Region", 2
@@ -125,11 +119,9 @@ Sub SequentialImport()
     Dim csvRecord As CSVArrayList
             
     Set CSVint = New CSVinterface
-    With CSVint.parseConfig
-        .path = "C:\100000.quoted.csv"
-    End With
     With CSVint
-        .SniffDelimiters .parseConfig
+        .parseConfig.path = "C:\100000.quoted.csv"
+        Set .parseConfig.dialect = .SniffDelimiters(.parseConfig)
         .OpenSeqReader .parseConfig
         Do
             Set csvRecord = .GetRecord
@@ -150,17 +142,17 @@ Sub ImportCSVinChunks()
     Set CSVint = New CSVinterface
     With CSVint
         .parseConfig.path = "C:\Sample.csv"
-        .SniffDelimiters .parseConfig                       ' Try to guess delimiters
+        Set .parseConfig.dialect = .SniffDelimiters(.parseConfig)  ' Try to guess delimiters
     End With
     Set StreamReader = New CSVTextStream
     With StreamReader
-        .endStreamOnLineBreak = True                        ' Instruct to find line breaks
-        .OpenStream CSVint.parseConfig.path                 ' Connect to CSV file
+        .endStreamOnLineBreak = True                               ' Instruct to find line breaks
+        .OpenStream CSVint.parseConfig.path                        ' Connect to CSV file
         Do
-            .ReadText                                       ' Read a CSV chunk
+            .ReadText                                              ' Read a CSV chunk
             CSVint.ImportFromCSVString .bufferString, _
-                                    CSVint.parseConfig      ' Import a set of records
-        Loop While Not .atEndOfStream                       ' Continue until reach the end of the CSV file.
+                                    CSVint.parseConfig             ' Import a set of records
+        Loop While Not .atEndOfStream                              ' Continue until reach the end of the CSV file.
     End With
     Set CSVint = Nothing
     Set StreamReader = Nothing
