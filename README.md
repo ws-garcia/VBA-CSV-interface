@@ -31,291 +31,322 @@ Visit the [frequently asked questions section](https://ws-garcia.github.io/VBA-C
 
 ### Using the Code
 
-<p>This section will attempt to analyze all the capabilities of the CSV interface.</p>
+This section will attempt to analyze all the capabilities of the CSV interface
 
-<p>Import whole CSV file:</p>
+Import whole CSV file:
 
-<pre lang="vbscript">
+```
 Sub CSVimport()
     Dim CSVint As CSVinterface
 
     Set CSVint = New CSVinterface
     With CSVint.parseConfig
-        .path = &quot;C:\Sample.csv&quot;        &#39; Full path to the file, including its extension.
-        .fieldsDelimiter = &quot;,&quot;         &#39; Columns delimiter
-        .recordsDelimiter = vbCrLf     &#39; Rows delimiter
+        .path = "C:\Sample.csv"                ' Full path to the file, including its extension.
+        .dialect.fieldsDelimiter = ","         ' Columns delimiter
+        .dialect.recordsDelimiter = vbCrLf     ' Rows delimiter
     End With
     With CSVint
-        .ImportFromCSV .parseConfig    &#39; Import the CSV to internal object
+        .ImportFromCSV .parseConfig             ' Import the CSV to internal object
     End With
-End Sub</pre>
+End Sub
+```
 
-<p>Now suppose from the file &quot;<em>Sample.csv</em>&quot; the user only requires to import a specific range of records. It is possible to write a code like the one shown below:</p>
+Now suppose from the file *"Sample.csv"* the user only requires to import a specific range of records. It is possible to write a code like the one shown below:
 
-<pre lang="vbscript">
+```
 Sub CSVimportRecordsRange()
     Dim CSVint As CSVinterface
 
     Set CSVint = New CSVinterface
     With CSVint.parseConfig
-        .path = &quot;C:\Sample.csv&quot;        &#39; Full path to the file, including its extension.
-        .fieldsDelimiter = &quot;,&quot;         &#39; Columns delimiter
-        .recordsDelimiter = vbCrLf     &#39; Rows delimiter
-        .startingRecord = 10           &#39; Start import on the tenth record
-        .endingRecord = 20             &#39; End of importation in the 20th record
+        .path = "C:\Sample.csv"                ' Full path to the file, including its extension.
+        .dialect.fieldsDelimiter = ","         ' Columns delimiter
+        .dialect.recordsDelimiter = vbCrLf     ' Rows delimiter
+        .startingRecord = 10                   ' Start import on the tenth record
+        .endingRecord = 20                     ' End of importation in the 20th record
     End With
     With CSVint
-        .ImportFromCSV .parseConfig    &#39; Import the CSV to internal object
+        .ImportFromCSV .parseConfig             ' Import the CSV to internal object
     End With
-End Sub</pre>
+End Sub
+```
 
-<p>If the user wants to sort the imported data, a code like the following can be written:</p>
+If the user wants to sort the imported data, a code like the following can be written:
 
-<pre lang="vbscript">
+```
 Sub CSVimportAndSort()
     Dim CSVint As CSVinterface
 
     Set CSVint = New CSVinterface
     With CSVint.parseConfig
-        .path = &quot;C:\Sample.csv&quot;               &#39; Full path to the file, including its extension.
-        .fieldsDelimiter = &quot;,&quot;                &#39; Columns delimiter
-        .recordsDelimiter = vbCrLf            &#39; Rows delimiter
+        .path = "C:\Sample.csv"               ' Full path to the file, including its extension.
+        .dialect.fieldsDelimiter = ","                ' Columns delimiter
+        .dialect.recordsDelimiter = vbCrLf            ' Rows delimiter
     End With
     With CSVint
-        .ImportFromCSV .parseConfig           &#39; Import the CSV to internal object
-        .Sort SortColumn:=1, Descending:=True &#39; Sort imported data on first column
+        .ImportFromCSV .parseConfig           ' Import the CSV to internal object
+        .Sort SortingKeys:=-1                 ' Sort imported data on first column is descending order
     End With
-End Sub</pre>
+End Sub
+```
 
-<p>CSV data are mainly treated as text strings, what if the user wants to do some calculations on the data obtained from a given file? In this situation, the user can change the behavior of the parser to work in dynamic typing mode. Here&#39;s an example:</p>
+CSV data are mainly treated as text strings, what if the user wants to do some calculations on the data obtained from a given file? In this situation, the user can change the behavior of the parser to work in dynamic typing mode. Here's an example:
 
-<pre lang="vbscript">
+```
 Sub CSVimportAndTypeData()
     Dim CSVint As CSVinterface
 
     Set CSVint = New CSVinterface
     With CSVint.parseConfig
-        .path = &quot;C:\Sample.csv&quot;               &#39; Full path to the file, including its extension.
-        .fieldsDelimiter = &quot;,&quot;                &#39; Columns delimiter
-        .recordsDelimiter = vbCrLf            &#39; Rows delimiter
-        .dynamicTyping = True                 &#39; Enable dynamic typing mode
-        &#39;@---------------------------------------------------------
-        &#39; Configure dynamic typing
+        .path = "C:\Sample.csv"                       ' Full path to the file, including its extension.
+        .dialect.fieldsDelimiter = ","                ' Columns delimiter
+        .dialect.recordsDelimiter = vbCrLf            ' Rows delimiter
+        .dynamicTyping = True                         ' Enable dynamic typing mode
+        '@---------------------------------------------------------
+        ' Configure dynamic typing
         .DefineTypingTemplate TypeConversion.ToDate, _
                                 TypeConversion.ToLong, _
                                 TypeConversion.ToDouble
         .DefineTypingTemplateLinks 6, _
                                     7, _
                                     10
-        &#39; The dynamic typing mode will perform the following:
-        &#39;      * Over column 6 ---&gt; String To Date data Type conversion
-        &#39;      * Over column 7 ---&gt; String To Long data Type conversion
-        &#39;      * Over column 10 ---&gt; String To Double data Type conversion
+        ' The dynamic typing mode will perform the following:
+        '      * Over column 6 ---> String To Date data Type conversion
+        '      * Over column 7 ---> String To Long data Type conversion
+        '      * Over column 10 ---> String To Double data Type conversion
     End With
     With CSVint
-        .ImportFromCSV .parseConfig             &#39; Import the CSV to internal object
+        .ImportFromCSV .parseConfig             ' Import the CSV to internal object
     End With
-End Sub</pre>
+End Sub
+```
 
-<p>The escape character can be defined as one of them, according to an enumeration:</p>
+The quote character, used for escape fields, can be defined as one of them, according to an enumeration:
 
-<pre lang="vbscript">
-Sub SetEscapeChar()
+```
+Sub SetQuoteChar()
     Dim CSVint As CSVinterface
 
     Set CSVint = New CSVinterface
-    With CSVint.parseConfig
-        .escapeToken = EscapeTokens.DoubleQuotes  &#39; 2 = [&quot;] (Default)
-        &#39;.escapeToken = EscapeTokens.Apostrophe   &#39; 1 = [&#39;]
-        &#39;.escapeToken = EscapeTokens.Tilde        &#39; 3 = [~]
+    With CSVint.parseConfig.dialect
+        .quoteToken = QuoteTokens.DoubleQuotes  ' 2 = ["] (Default)
+        '.quoteToken = QuoteTokens.Apostrophe   ' 1 = [']
+        '.quoteToken = QuoteTokens.Tilde        ' 3 = [~]
     End With
-End Sub</pre>
+End Sub
+```
 
-<p>Once the data is imported and saved to the internal object, the user can access it in the same way as a standard VBA array. An example would be:</p>
+Once the data is imported and saved to the internal object, the user can access it in the same way as a standard VBA array. An example would be:
 
-<pre lang="vbscript">
+```
 Sub LoopData(ByRef CSVint As CSVinterface)
     With CSVint
         Dim iCounter As Long
-        Dim cRecord() As Variant              &#39; Records are stored as a one-dimensional array.
+        Dim cRecord() As Variant              ' Records are stored as a one-dimensional array.
         Dim cField As Variant
         
         For iCounter = 0 To CSVint.count - 1
-            cRecord() = .item(iCounter)       &#39; Retrieves a record
-            cField = .item(iCounter, 2)       &#39; Retrieves the 2nd field of the current record
+            cRecord() = .item(iCounter)       ' Retrieves a record
+            cField = .item(iCounter, 1)       ' Retrieves the 2nd field of the current record
         Next
     End With
-End Sub</pre>
+End Sub
+```
 
-<p>However, it is sometimes disadvantageous to store data in containers other than VBA arrays. This becomes especially noticeable when it is required to write the information stored in Excel&#39;s own objects, such as spreadsheets, or VBA user forms, the case of list boxes, which allow to be filled in a single instruction using arrays. Then, the user can copy the information from the internal object using code like this:</p>
+In addition, the user can use the [`CSVArrayList`](https://ws-garcia.github.io/VBA-CSV-interface/api/csvarraylist.html) class to access the contents using code like this:
 
-<pre lang="vbscript">
+```
+Sub LoopData2(ByRef CSVint As CSVinterface)
+    With CSVint
+        Dim iCounter As Long
+        Dim cRecord() As Variant                    ' Records are stored as a one-dimensional array.
+        Dim cField As Variant
+        
+        For iCounter = 0 To CSVint.count - 1
+            cRecord() = .items.item(iCounter)       ' Retrieves a record
+            cField = .items.item(iCounter)(1)       ' Retrieves the 2nd field of the current record
+        Next
+    End With
+End Sub
+```
+
+However, it is sometimes disadvantageous to store data in containers other than VBA arrays. This becomes especially noticeable when it is required to write the information stored in Excel's own objects, such as spreadsheets, or VBA user forms, the case of list boxes, which allow to be filled in a single instruction using arrays. Then, the user can copy the information from the internal object using code like this:
+
+```
 Sub DumpData(ByRef CSVint As CSVinterface)
     Dim oArray() As Variant
     With CSVint
-        .DumpToArray oArray            &#39; Dump the internal data into a two-dimensional array
-        .DumpToJaggedArray oArray      &#39; Dump the internal data into a jagged array
-        .DumpToSheet                   &#39; Dump the internal data into a new sheet 
-                                       &#39; using ThisWorkbook
-        &#39;@-------------------------------------------------------------------
-        &#39; *NOTE: ONLY AVAILABLE FOR THE ACCESS VERSION OF THE CSV INTERFACE
-        &#39; Dump the internal data into the Table1 in oAccessDB database.
-        &#39; The method would create indexes in the 2nd and 3th fields.
+        .DumpToArray oArray            ' Dump the internal data into a two-dimensional array
+        .DumpToJaggedArray oArray      ' Dump the internal data into a jagged array
+        oArray = .items.items          ' Dump the internal data into a jagged array
+        .DumpToSheet                   ' Dump the internal data into a new sheet
+                                       ' using ThisWorkbook
+        '@-------------------------------------------------------------------
+        ' *NOTE: ONLY AVAILABLE FOR THE ACCESS VERSION OF THE CSV INTERFACE
+        ' Dump the internal data into the Table1 in oAccessDB database.
+        ' The method would create indexes in the 2nd and 3th fields.
         .DumpToAccessTable oAccessDB, _
-                           &quot;Table1&quot;, _
+                           "Table1", _
                             2, 3
     End With
-End Sub</pre>
+End Sub
+```
 
-<p>So far, in the examples addressed, the user has been allowed to choose between two actions:</p>
+So far, in the examples addressed, the user has been allowed to choose between two actions:
 
 <ol>
 	<li>Import <em>ALL records</em> contained in a CSV file.</li>
 	<li>Import a <em>recordset</em>, starting at record X and ending at record Y.</li>
 </ol>
 
-<p>In both options, the user is obliged to import all fields (columns) present in the file. Most CSV file parsers only offer the first option, but what if the user wants to save only the information that is relevant to them? and what happens is intended to store in memory only the registers that meet a certain set of requirements?</p>
+In both options, the user is forced to import all fields (columns) present in the file. Most CSV file parsers only offer the first option, but what if the user wants to save only the information that is relevant for a particular purpose, and what if user wants to store in memory only the records that meet a certain set of requirements?
 
-<p>An user may need to import 2 of 12 columns from a CSV file, in this case, the user can use something like:</p>
+An user may need to import 2 of X columns from a CSV file, in this case, the user can use something like:
 
-<pre lang="vbscript">
+```
 Sub CSVimportDesiredColumns()
     Dim CSVint As CSVinterface
 
     Set CSVint = New CSVinterface
     With CSVint.parseConfig
-        .path = &quot;C:\Sample.csv&quot;              &#39; Full path to the file, including its extension.
-        .fieldsDelimiter = &quot;,&quot;               &#39; Columns delimiter
-        .recordsDelimiter = vbCrLf           &#39; Rows delimiter
+        .path = "C:\Sample.csv"              ' Full path to the file, including its extension.
+        .dialect.fieldsDelimiter = ","       ' Columns delimiter
+        .dialect.recordsDelimiter = vbCrLf   ' Rows delimiter
     End With
     With CSVint
         .ImportFromCSV .parseConfig, _
-                        1, &quot;Revenue&quot;         &#39; Import 1st and &quot;Revenue&quot; fields ONLY
+                        1, "Revenue"         ' Import 1st and "Revenue" fields ONLY
     End With
-End Sub</pre>
+End Sub
+```
 
-<p>So, OK, let&#39;s imagine now that an user wants to apply some logic before saving the data, in which case they can step through the records in the CSV file one by one, using the sequential reader, as shown in the following example:</p>
+So, OK, let's imagine now that an user wants to apply some logic before saving the data, in which case they can step through the records in the CSV file one by one, using the sequential reader, as shown in the following example:
 
-<pre lang="vbscript">
+```
 Sub CSVsequentialImport()
     Dim CSVint As CSVinterface
-    Dim csvRecord As ECPArrayList
+    Dim csvRecord As CSVArrayList
     
     Set CSVint = New CSVinterface
     With CSVint.parseConfig
-        .path = &quot;C:\Sample.csv&quot;             &#39; Full path to the file, including its extension.
-        .fieldsDelimiter = &quot;,&quot;              &#39; Columns delimiter
-        .recordsDelimiter = vbCrLf          &#39; Rows delimiter
+        .path = "C:\Sample.csv"             ' Full path to the file, including its extension.
+        .dialect.fieldsDelimiter = ","      ' Columns delimiter
+        .dialect.recordsDelimiter = vbCrLf  ' Rows delimiter
     End With
     With CSVint
         .OpenSeqReader .parseConfig, _
-                        1, &quot;Revenue&quot;        &#39; Import the 1st and &quot;Revenue&quot; fields using 
-                                            &#39; seq. reader
+                        1, "Revenue"        ' Import the 1st and "Revenue" fields using
+                                            ' seq. reader
         Do
             Set csvRecord = .GetRecord
-            &#39;//////////////////////////////////////////////
-            &#39;Implement your logic here
-            &#39;//////////////////////////////////////////////
-        Loop While Not csvRecord Is Nothing   &#39; Loop until the end of the file is reached
+            '//////////////////////////////////////////////
+            'Implement your logic here
+            '//////////////////////////////////////////////
+        Loop While Not csvRecord Is Nothing   ' Loop until the end of the file is reached
     End With
-End Sub</pre>
+End Sub
+```
 
-<p>Is there a way to sequentially fetch a set of records at a time instead of a single record? Currently, there is no built-in method to do that with a single instruction, as in the examples above, but with a few extra lines of code and the tools provided by the library, it is possible to achieve that goal. This is illustrated in the following example where the CSV file is streamed:</p>
+Is there a way to sequentially fetch a set of records at a time instead of a single record? Currently, there is no built-in method to do that with a single instruction, as in the examples above, but with a few extra lines of code and the tools provided by the library, it is possible to achieve that goal. This is illustrated in the following example where the CSV file is streamed:
 
-<pre lang="vbscript">
+```
 Sub CSVimportChunks()
     Dim CSVint As CSVinterface
-    Dim StreamReader As ECPTextStream
+    Dim StreamReader As CSVTextStream
             
     Set CSVint = New CSVinterface
     With CSVint.parseConfig
-        .fieldsDelimiter = &quot;,&quot;                              &#39; Columns delimiter
-        .recordsDelimiter = vbCrLf                          &#39; Rows delimiter
+        .dialect.fieldsDelimiter = ","                      ' Columns delimiter
+        .dialect.recordsDelimiter = vbCrLf                  ' Rows delimiter
     End With
-    Set StreamReader = New ECPTextStream
+    Set StreamReader = New CSVTextStream
     With StreamReader
-        .endStreamOnLineBreak = True                        &#39; Instruct to find line breaks
-        .OpenStream &quot;C:\Sample.csv&quot;                         &#39; Connect to CSV file
+        .endStreamOnLineBreak = True                        ' Instruct to find line breaks
+        .OpenStream "C:\Sample.csv"                         ' Connect to CSV file
         Do
-            .ReadText                                       &#39; Read a CSV chunk
+            .ReadText                                       ' Read a CSV chunk
             CSVint.ImportFromCSVString .bufferString, _
                                     CSVint.parseConfig, _
-                                    1, &quot;Revenue&quot;            &#39; Import a set of records
-            &#39;//////////////////////////////////////
-            &#39;Implement your logic here
-            &#39;//////////////////////////////////////
-        Loop While Not .atEndOfStream                       &#39; Continue until reach 
-                                                            &#39; the end of the CSV file.
+                                    1, "Revenue"            ' Import a set of records
+            '//////////////////////////////////////
+            'Implement your logic here
+            '//////////////////////////////////////
+        Loop While Not .atEndOfStream                       ' Continue until reach
+                                                            ' the end of the CSV file.
     End With
     Set CSVint = Nothing
     Set StreamReader = Nothing
-End Sub</pre>
+End Sub
+```
 
-<p>So far, it has been outlined the way in which you can import the records from a CSV file sequentially, the following example shows how to filter the records, in a like SQL way, according to whether they meet a criterion set by the user:</p>
+So far, it has been outlined the way in which you can import the records from a CSV file sequentially, the following example shows how to filter the records, in a like SQL way, according to whether they meet a criterion set by the user:
 
-<pre lang="vbscript">
+```
 Sub QueryCSV(path As String, ByVal keyIndex As Long, queryFilters As Variant)
     Dim CSVint As CSVinterface
     Dim CSVrecords As ECPArrayList
     
     Set CSVint = New CSVinterface
     With CSVint.parseConfig
-        .path = &quot;C:\Sample.csv&quot;
-        .fieldsDelimiter = &quot;,&quot;                              &#39; Columns delimiter
-        .recordsDelimiter = vbCrLf                          &#39; Rows delimiter
+        .path = "C:\Sample.csv"
+        .dialect.fieldsDelimiter = ","                      ' Columns delimiter
+        .dialect.recordsDelimiter = vbCrLf                  ' Rows delimiter
     End With
-    If path &lt;&gt; vbNullString Then
-        &#39;@-----------------------------------------------
-        &#39; The following instruction will filter the data
-        &#39; on the keyIndex(th) field.
+    If path <> vbNullString Then
+        '@-----------------------------------------------
+        ' The following instruction will filter the data
+        ' on the keyIndex(th) field.
         Set CSVrecords = CSVint.GetCSVsubset(path, _
                                             queryFilters, _
                                             keyIndex)
-        CSVint.DumpToSheet DataSource:=CSVrecords           &#39; Dump result to new WorkSheet
+        CSVint.DumpToSheet DataSource:=CSVrecords           ' Dump result to new WorkSheet
         Set CSVint = Nothing
         Set CSVrecords = Nothing
     End If
-End Sub</pre>
+End Sub
+```
 
-<p>In some situations, we may encounter a CSV file with a combination of <code>vbCrLf</code>, <code>vbCr</code> and <code>vbLf</code> as record delimiters. This can happen for many reasons, but the most common is by adding data to an existing CSV file without checking the configuration of the previously stored information. These cases will break the logic of many robust CSV parsers, including the demo of the 737K weekly downloaded <a href="https://www.papaparse.com/demo">Papa Parse</a>. The next example shows how an user can import CSV files with mixed line break as record delimiter, an option that uses the <code>turnStreamRecDelimiterToLF</code> property of the <a href="https://ws-garcia.github.io/VBA-CSV-interface/api/properties/parseconf.html"><code>parseConfig</code></a> object to work with these special CSV files.</p>
+In some situations, we may encounter a CSV file with a combination of `vbCrLf`, `vbCr` and `vbLf` as record delimiters. This can happen for many reasons, but the most common is by adding data to an existing CSV file without checking the configuration of the previously stored information. These cases will break the logic of many robust CSV parsers, including the demo of the 737K weekly downloaded [Papa Parse](https://www.papaparse.com/demo). The next example shows how an user can import CSV files with mixed line break as record delimiter, an option that uses the `multiEndOfLineCSV` property of the [`parseConfig`](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/parseconf.html) object to work with these special CSV files.
 
-<pre lang="vbscript">
+```
 Sub ImportMixedLineEndCSV()
     Dim CSVint As CSVinterface
             
     Set CSVint = New CSVinterface
     With CSVint.parseConfig
-        .path = &quot;C:\Mixed Line Breaks.csv&quot;
-        .fieldsDelimiter = &quot;,&quot;                &#39; Columns delimiter 
-        .recordsDelimiter = vbCrLf            &#39; Rows delimiter
-        .turnStreamRecDelimiterToLF = True    &#39; All delimiters will be turned into vbLf
+        .path = "C:\Mixed Line Breaks.csv"
+        .dialect.fieldsDelimiter = ","        ' Columns delimiter
+        .dialect.recordsDelimiter = vbCrLf    ' Rows delimiter
+        .multiEndOfLineCSV = True             ' All delimiters will be turned into vbLf
     End With
     With CSVint
         .ImportFromCSV .parseConfig
     End With
     Set CSVint = Nothing
-End Sub</pre>
+End Sub
+```
 
-<p>In all the above examples, an implicit assumption has been made, and that is that the user knows the configuration of the CSV file to be imported, so the question arises: can it be possible that the user does not know the configuration of the file to be imported? It is certainly possible, so how can the CSV interface help in these cases?</p>
+In all the above examples, an implicit assumption has been made, and that is that the user knows the configuration of the CSV file to be imported, so the question arises: can it be possible that the user does not know the configuration of the file to be imported? It is certainly possible, so how can the CSV interface help in these cases?
 
-<p>The tool includes a utility to guess field delimiters, record delimiters and escape character. This can be done with code like the following:</p>
+The tool includes a utility to sniff/guess field delimiters, record delimiters and quote character. This can be done with code like the following:
 
-<pre lang="vbscript">
+```
 Sub DelimitersGuessing()
     Dim CSVint As CSVinterface
 
     Set CSVint = New CSVinterface
     With CSVint.parseConfig
-        .path = &quot;C:\Sample.csv&quot;           &#39; Full path to the file, including its extension.
+        .path = "C:\Sample.csv"           ' Full path to the file, including its extension.
     End With
     With CSVint
-        .GuessDelimiters .parseConfig     &#39; Try to guess delimiters and save to internal
-                                          &#39; parser configuration object.
-        &#39;@--------------------------------------------------------------
-        &#39; *NOTE: the user can also create a custom configuration object
-        &#39;        and try to guess the delimiter with it.
+        Set .parseConfig.dialect = .SniffDelimiters(.parseConfig)    ' Try to guess delimiters and save to internal
+                                                                     ' parser configuration object.
+        '@--------------------------------------------------------------
+        ' *NOTE: the user can also create a custom configuration object
+        '        and try to guess the delimiter with it.
     End With
-End Sub</pre>
+End Sub
+```
 
 ## Contributing
 
