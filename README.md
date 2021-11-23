@@ -359,7 +359,15 @@ The benchmark results for VBA-CSV Interface are available at [this site](https:/
 
 ## Dependencies
 
-The library depends on the [ECPTextStream class]( https://github.com/ws-garcia/ECPTextStream) in order to work with text files. In the same way, the class uses two external class modules: one for configuration sharing and the other for data storage. All dependencies are written in pure VBA.
+The library is composed of the following class modules:
+* `CSVArrayList`
+* `CSVdialect`
+* `CSVinterface`
+* `CSVparserConfig`
+* `CSVSniffer`
+* `CSVTextStream`
+
+All dependencies are written in pure VBA.
 
 ## Limitations
 
