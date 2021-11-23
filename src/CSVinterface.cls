@@ -1104,18 +1104,20 @@ Public Function GetRecord() As CSVArrayList
                         Select Case static_dynamicType
                             Case False
                                 If static_UseUnixEscapeSeq Then
-                                    static_RecordToken.Add UnescapeField(MidB$(static_tmpCSV(static_Index), static_TokenBeginningPos, _
+                                    static_RecordToken.Add UnescapeField(UnescapeField(MidB$(static_tmpCSV(static_Index), static_TokenBeginningPos, _
                                                                             static_TokenEndingPos - static_TokenBeginningPos + 1), _
-                                                                static_FieldDelimiter, static_EscapeSequence_Delim)
+                                                                        static_FieldDelimiter, static_EscapeSequence_Delim), _
+                                                                    static_QuoteChar, static_EscapeSequence)
                                 Else
                                     static_RecordToken.Add MidB$(static_tmpCSV(static_Index), static_TokenBeginningPos, _
                                                                 static_TokenEndingPos - static_TokenBeginningPos + 1)
                                 End If
                             Case Else
                                 If static_UseUnixEscapeSeq Then
-                                    static_RecordToken.Add TypeData(UnescapeField(MidB$(static_tmpCSV(static_Index), static_TokenBeginningPos, _
+                                    static_RecordToken.Add TypeData(UnescapeField(UnescapeField(MidB$(static_tmpCSV(static_Index), static_TokenBeginningPos, _
                                                                                     static_TokenEndingPos - static_TokenBeginningPos + 1), _
                                                                             static_FieldDelimiter, static_EscapeSequence_Delim), _
+                                                                        static_QuoteChar, static_EscapeSequence), _
                                                                     static_FieldID, static_IsHeader)
                                 Else
                                     static_RecordToken.Add TypeData(MidB$(static_tmpCSV(static_Index), static_TokenBeginningPos, _
@@ -1235,18 +1237,20 @@ Public Function GetRecord() As CSVArrayList
                                 Select Case static_dynamicType
                                     Case False
                                         If static_UseUnixEscapeSeq Then
-                                            static_RecordToken.Add UnescapeField(RightB$(static_tmpCSV(static_Index), static_LenCurrentIndex _
+                                            static_RecordToken.Add UnescapeField(UnescapeField(RightB$(static_tmpCSV(static_Index), static_LenCurrentIndex _
                                                                                     - static_TokenBeginningPos + 1), _
-                                                                        static_FieldDelimiter, static_EscapeSequence_Delim)
+                                                                                static_FieldDelimiter, static_EscapeSequence_Delim), _
+                                                                        static_QuoteChar, static_EscapeSequence)
                                         Else
                                             static_RecordToken.Add RightB$(static_tmpCSV(static_Index), static_LenCurrentIndex _
                                                                     - static_TokenBeginningPos + 1)
                                         End If
                                     Case Else
                                         If static_UseUnixEscapeSeq Then
-                                            static_RecordToken.Add TypeData(UnescapeField(RightB$(static_tmpCSV(static_Index), static_LenCurrentIndex _
+                                            static_RecordToken.Add TypeData(UnescapeField(UnescapeField(RightB$(static_tmpCSV(static_Index), static_LenCurrentIndex _
                                                                                         - static_TokenBeginningPos + 1), _
                                                                                 static_FieldDelimiter, static_EscapeSequence_Delim), _
+                                                                            static_QuoteChar, static_EscapeSequence), _
                                                                         static_FieldID, static_IsHeader)
                                         Else
                                             static_RecordToken.Add TypeData(RightB$(static_tmpCSV(static_Index), static_LenCurrentIndex _
@@ -1258,8 +1262,9 @@ Public Function GetRecord() As CSVArrayList
                         Case Else
                             If RequestedField(static_FieldID + 1&, static_MaxReqIndex) Then 'Filter fields
                                 If static_UseUnixEscapeSeq Then
-                                    static_RecordToken.Add UnescapeField(Join$(static_tmpToken.items, static_RecordDelimiter), _
-                                                                static_FieldDelimiter, static_EscapeSequence_Delim) 'Save whole Token
+                                    static_RecordToken.Add UnescapeField(UnescapeField(Join$(static_tmpToken.items, static_RecordDelimiter), _
+                                                                            static_FieldDelimiter, static_EscapeSequence_Delim), _
+                                                                        static_QuoteChar, static_EscapeSequence) 'Save whole Token
                                 Else
                                     static_RecordToken.Add Join$(static_tmpToken.items, static_RecordDelimiter)
                                 End If
@@ -2305,18 +2310,20 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
                             Select Case dynamicType
                                 Case False
                                     If UseUnixEscapeSeq Then
-                                        RecordToken.Add UnescapeField(MidB$(tmpCSV(Index), TokenBeginningPos, _
+                                        RecordToken.Add UnescapeField(UnescapeField(MidB$(tmpCSV(Index), TokenBeginningPos, _
                                                                         TokenEndingPos - TokenBeginningPos + 1), _
-                                                                FieldDelimiter, EscapeSequence_Delim)
+                                                                    FieldDelimiter, EscapeSequence_Delim), _
+                                                                QuoteChar, EscapeSequence)
                                     Else
                                         RecordToken.Add MidB$(tmpCSV(Index), TokenBeginningPos, _
                                                             TokenEndingPos - TokenBeginningPos + 1)
                                     End If
                                 Case Else
                                     If UseUnixEscapeSeq Then
-                                        RecordToken.Add TypeData(UnescapeField(MidB$(tmpCSV(Index), TokenBeginningPos, _
+                                        RecordToken.Add TypeData(UnescapeField(UnescapeField(MidB$(tmpCSV(Index), TokenBeginningPos, _
                                                                                 TokenEndingPos - TokenBeginningPos + 1), _
-                                                                        FieldDelimiter, EscapeSequence_Delim), _
+                                                                            FieldDelimiter, EscapeSequence_Delim), _
+                                                                    QuoteChar, EscapeSequence), _
                                                             FieldID, IsHeader)
                                     Else
                                         RecordToken.Add TypeData(MidB$(tmpCSV(Index), TokenBeginningPos, _
@@ -2398,18 +2405,20 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
                                     Select Case dynamicType
                                         Case False
                                             If UseUnixEscapeSeq Then
-                                                RecordToken.Add UnescapeField(RightB$(tmpCSV(Index), LenCurrentIndex _
+                                                RecordToken.Add UnescapeField(UnescapeField(RightB$(tmpCSV(Index), LenCurrentIndex _
                                                                                 - TokenBeginningPos + 1), _
-                                                                        FieldDelimiter, EscapeSequence_Delim)
+                                                                            FieldDelimiter, EscapeSequence_Delim), _
+                                                                        QuoteChar, EscapeSequence)
                                             Else
                                                 RecordToken.Add RightB$(tmpCSV(Index), LenCurrentIndex _
                                                                     - TokenBeginningPos + 1)
                                             End If
                                         Case Else
                                             If UseUnixEscapeSeq Then
-                                                RecordToken.Add TypeData(UnescapeField(RightB$(tmpCSV(Index), LenCurrentIndex _
+                                                RecordToken.Add TypeData(UnescapeField(UnescapeField(RightB$(tmpCSV(Index), LenCurrentIndex _
                                                                             - TokenBeginningPos + 1), _
                                                                             FieldDelimiter, EscapeSequence_Delim), _
+                                                                        QuoteChar, EscapeSequence), _
                                                                     FieldID, IsHeader)
                                             Else
                                                 RecordToken.Add TypeData(RightB$(tmpCSV(Index), LenCurrentIndex _
@@ -2421,8 +2430,9 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
                             Case Else 'The Token is stored on tmpToken array
                                 If RequestedField(FieldID + 1&, MaxReqIndex) Then 'Filter fields
                                     If UseUnixEscapeSeq Then
-                                        RecordToken.Add UnescapeField(Join$(tmpToken.items, RecordDelimiter), _
-                                                                FieldDelimiter, EscapeSequence_Delim) 'Save whole Token
+                                        RecordToken.Add UnescapeField(UnescapeField(Join$(tmpToken.items, RecordDelimiter), _
+                                                                        FieldDelimiter, EscapeSequence_Delim), _
+                                                                    QuoteChar, EscapeSequence) 'Save whole Token
                                     Else
                                         RecordToken.Add Join$(tmpToken.items, RecordDelimiter)
                                     End If
@@ -3144,18 +3154,20 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
                             Select Case dynamicType
                                 Case False
                                     If UseUnixEscapeSeq Then
-                                        RecordToken.Add UnescapeField(MidB$(tmpCSV(Index), TokenBeginningPos, _
+                                        RecordToken.Add UnescapeField(UnescapeField(MidB$(tmpCSV(Index), TokenBeginningPos, _
                                                                         TokenEndingPos - TokenBeginningPos + 1), _
-                                                                FieldDelimiter, EscapeSequence_Delim)
+                                                                FieldDelimiter, EscapeSequence_Delim), _
+                                                                        QuoteChar, EscapeSequence)
                                     Else
                                         RecordToken.Add MidB$(tmpCSV(Index), TokenBeginningPos, _
                                                                 TokenEndingPos - TokenBeginningPos + 1)
                                     End If
                                 Case Else
                                     If UseUnixEscapeSeq Then
-                                        RecordToken.Add TypeData(UnescapeField(MidB$(tmpCSV(Index), TokenBeginningPos, _
+                                        RecordToken.Add TypeData(UnescapeField(UnescapeField(MidB$(tmpCSV(Index), TokenBeginningPos, _
                                                                             TokenEndingPos - TokenBeginningPos + 1), _
-                                                                    FieldDelimiter, EscapeSequence_Delim), _
+                                                                        FieldDelimiter, EscapeSequence_Delim), _
+                                                                    QuoteChar, EscapeSequence), _
                                                             FieldID, IsHeader)
                                     Else
                                         RecordToken.Add TypeData(MidB$(tmpCSV(Index), TokenBeginningPos, _
@@ -3257,18 +3269,20 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
                                     Select Case dynamicType
                                         Case False
                                             If UseUnixEscapeSeq Then
-                                                RecordToken.Add UnescapeField(RightB$(tmpCSV(Index), LenCurrentIndex _
+                                                RecordToken.Add UnescapeField(UnescapeField(RightB$(tmpCSV(Index), LenCurrentIndex _
                                                                             - TokenBeginningPos + 1), _
-                                                                        FieldDelimiter, EscapeSequence_Delim)
+                                                                        FieldDelimiter, EscapeSequence_Delim), _
+                                                                        QuoteChar, EscapeSequence)
                                             Else
                                                 RecordToken.Add RightB$(tmpCSV(Index), LenCurrentIndex _
                                                                         - TokenBeginningPos + 1)
                                             End If
                                         Case Else
                                             If UseUnixEscapeSeq Then
-                                                RecordToken.Add TypeData(UnescapeField(RightB$(tmpCSV(Index), LenCurrentIndex _
+                                                RecordToken.Add TypeData(UnescapeField(UnescapeField(RightB$(tmpCSV(Index), LenCurrentIndex _
                                                                                     - TokenBeginningPos + 1), _
-                                                                            FieldDelimiter, EscapeSequence_Delim), _
+                                                                                    FieldDelimiter, EscapeSequence_Delim), _
+                                                                                QuoteChar, EscapeSequence), _
                                                                         FieldID, IsHeader)
                                             Else
                                                 RecordToken.Add TypeData(RightB$(tmpCSV(Index), LenCurrentIndex _
@@ -3280,8 +3294,9 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
                             Case Else 'The Token is stored on tmpToken array
                                 If RequestedField(FieldID + 1&, MaxReqIndex) Then 'Filter fields
                                     If UseUnixEscapeSeq Then
-                                        RecordToken.Add UnescapeField(Join$(tmpToken.items, RecordDelimiter), _
-                                                                FieldDelimiter, EscapeSequence_Delim) 'Save whole Token
+                                        RecordToken.Add UnescapeField(UnescapeField(Join$(tmpToken.items, RecordDelimiter), _
+                                                                FieldDelimiter, EscapeSequence_Delim), _
+                                                                        QuoteChar, EscapeSequence) 'Save whole Token
                                     Else
                                         RecordToken.Add Join$(tmpToken.items, RecordDelimiter)
                                     End If
