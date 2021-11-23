@@ -9,7 +9,7 @@ description: "VBA CSV interface is a set of class modules that allows users exch
 # Introductory things
 {: .fs-9 }
 
-The most powerful, robust and versatile VBA library for high speed CSV parsing with support for RFC-4180 specs and some others variants.
+The most powerful and comprehensive RFC-4180 compliant and unix style CSV parser library for VBA. 
 {: .fs-6 .fw-300 }
 
 ## Advantages
