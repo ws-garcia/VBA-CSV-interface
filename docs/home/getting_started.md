@@ -48,8 +48,8 @@ Set conf = CSVint.parseConfig
 With conf
     .path = "C:\100000.quoted.csv"
     .dynamicTyping = False
+    Set .dialect = CSVint.SniffDelimiters(conf)
 End With
-CSVint.SniffDelimiters conf
 CSVint.ImportFromCSV(conf).DumpToArray Arr
 ```
 
@@ -63,9 +63,9 @@ Set CSVint = New CSVinterface
 With CSVint.parseConfig
     .path = "C:\100000.quoted.csv"
     .dynamicTyping = False
+    Set .dialect = CSVint.SniffDelimiters(CSVint.parseConfig)
 End With
 With CSVint
-    .SniffDelimiters .parseConfig
     .ImportFromCSV(.parseConfig).Sort(SortingKeys:=-1).DumpToArray Arr
 End With
 ```
@@ -84,8 +84,8 @@ With conf
     .endingRecord = 20
     .path = "C:\100000.quoted.csv"
     .dynamicTyping = False
+    Set .dialect = CSVint.SniffDelimiters(conf)
 End With
-CSVint.SniffDelimiters conf
 CSVint.ImportFromCSV(conf).DumpToArray Arr
 ```
 
@@ -209,7 +209,7 @@ The images below shows the overall performance for the imports operations from t
 - The CSV syntax slow-down the performance. When the number of escaped fields are increased, the performance decrease.
 
 ## Licence
-Copyright (C) 2021  [W. García](https://github.com/ws-garcia/VBA-CSV-interface/).
+Copyright (C) 2022  [W. García](https://github.com/ws-garcia/).
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
