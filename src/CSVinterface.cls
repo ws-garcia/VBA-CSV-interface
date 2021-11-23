@@ -1204,6 +1204,7 @@ Public Function GetRecord() As CSVArrayList
                                 static_TokenEndReached = True
                                 static_TokenEndingPos = static_hpointer - 1&
                                 static_OverStringPointer = static_hpointer + 2&
+                                static_SearchBeginningMark = static_OverStringPointer
                                 static_RecordEndReached = False
                                 static_tmpToken.Add LeftB$(static_tmpCSV(static_Index), static_TokenEndingPos) 'Store the Left most Token portion from the current static_Index
                                 Exit Do
@@ -2362,6 +2363,7 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
                                 TokenEndReached = True
                                 TokenEndingPos = hpointer - 1&
                                 OverStringPointer = hpointer + 2&
+                                SearchBeginningMark = OverStringPointer
                                 RecordEndReached = False
                                 tmpToken.Add LeftB$(tmpCSV(Index), TokenEndingPos) 'Store the Left most Token portion from the current Index
                                 Exit Do
@@ -3222,6 +3224,7 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
                                 TokenEndReached = True
                                 TokenEndingPos = hpointer - 1&
                                 OverStringPointer = hpointer + 2&
+                                SearchBeginningMark = OverStringPointer
                                 RecordEndReached = False
                                 tmpToken.Add LeftB$(tmpCSV(Index), TokenEndingPos) 'Store the Left most Token portion from the current Index
                                 Exit Do
