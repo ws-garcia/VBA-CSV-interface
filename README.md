@@ -5,14 +5,15 @@
 
 ## Introductory words
 
-VBA CSV interface is the most complete, and open source, CSV/TSV VBA parser library nowadays. The library is RFC-4180 compliant and enables users to manipulate CSV content at the highest speed. All the modules were developed to accomplish the data exchange task with the greatest performance and to grant an easy use.
+VBA CSV interface is the most powerful, robust, versatile and comprehensive CSV/TSV VBA parser library nowadays. The library is RFC-4180 compliant, supporting unix-style CSV files, and allows users to manipulate CSV content in an intuitive way. CSV? Your solution is right here!
 
 ## Advantages
 * __RFC-4180 specs compliant__.
 * __Stable__. Fully Test Driven Developed (TDD) library, ([68/68 test passed](https://github.com/ws-garcia/VBA-CSV-interface/blob/master/testing/tests/results/)), that includes 650+ line of code for testing. See [VBA test library by Tim Hall](https://github.com/ws-garcia/vba-test).
 * __Fast__. Writes and reads files at the highest speed.
 * __Memory-friendly__. CSV/[TSV](https://www.iana.org/assignments/media-types/text/tab-separated-values) files are processed using a custom stream technique, only 0.5MB are in memory at a time.
-* __Robust__. Parser and writer accept [Unix-style quotes escape sequences](https://www.loc.gov/preservation/digital/formats/fdd/fdd000323.shtml#notes). 
+* __Robust__. Parser and writer accept [Unix-style escape sequences](https://www.loc.gov/preservation/digital/formats/fdd/fdd000323.shtml#notes). 
+* __[UTF-8](https://www.unicode.org/faq/utf_bom.html#UTF8) encoding support__. Do you have a CSV file, perhaps in chinese or some other foreign cyrillic language, downloaded from the Internet? This library is made to help you deal with it! You will be able to read and write UTF-8 encoded files in an easy way. 
 * __Easy to use__. A few lines of code can do the work!
 * __Automatic delimiter guesser__. Don't worry if you forgot the file configuration. The interface has a solid strategy for guessing delimiters!
 * __Highly Configurable__. User can configure the parser to work with a wide range of CSV files.
@@ -20,7 +21,7 @@ VBA CSV interface is the most complete, and open source, CSV/TSV VBA parser libr
 * __Like SQL queries on CSV files__. Add your own logic to mimic SQL queries and filter data by criteria (=, <>, >=, <=, AND, OR).
 * __Flexible__. Import only certain range of records from the given file, import fields (columns) by indexes or names, read records in sequential mode. 
 * __Dynamic Typing support__. Turn CSV data field to a desired VBA data type.
-* __Data sorting__. Sort CSV imported data using the hyper-fast(100k records per second) [Yaroslavskiy Dual-Pivot Quicksort](https://web.archive.org/web/20151002230717/http://iaroslavski.narod.ru/quicksort/DualPivotQuicksort.pdf) like Java.
+* __Multi-level data sorting__. Sort CSV imported data over multiple columns using the hyper-fast(100k records per second) [Yaroslavskiy Dual-Pivot Quicksort](https://web.archive.org/web/20151002230717/http://iaroslavski.narod.ru/quicksort/DualPivotQuicksort.pdf) like Java and also other methods like: IntroSort, HeapSort and Merge sort.
 * __Microsoft Access compatible__. The library has a version for those who feel in comfort working through DAO databases, [download from here](https://github.com/ws-garcia/VBA-CSV-interface/raw/master/src/Access_version.zip).
 
 ## Getting started
