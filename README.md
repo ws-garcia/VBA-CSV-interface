@@ -349,7 +349,7 @@ Sub DelimitersGuessing()
 End Sub
 ```
 
-With a CSV file parser you can do many things, for example, a user can parse the contents of the Windows clipboard and dump its contents to an excel Worksheet with a procedure like the following (thanks to @OlimilO1402 [for the `CBGetText` function code](https://github.com/OlimilO1402/XL_ClipboardReader/blob/main/Modules/MClipboard.bas)):
+With a CSV file parser you can do many things, for example, an user can parse the contents of the Windows clipboard and dump it to an Excel Worksheet with a procedure like the following (thanks to @OlimilO1402 [for the `CBGetText` function code](https://github.com/OlimilO1402/XL_ClipboardReader/blob/main/Modules/MClipboard.bas)):
 
 ```
 Sub ImportFromClipBoard()
