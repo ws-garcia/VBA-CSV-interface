@@ -349,6 +349,28 @@ Sub DelimitersGuessing()
 End Sub
 ```
 
+With a CSV file parser you can do many things, for example, a user can parse the contents of the Windows clipboard and dump its contents to an excel text sheet with a function like the following (thanks to @OlimilO1402 [for the `CBGetText` function code](https://github.com/OlimilO1402/XL_ClipboardReader/blob/main/Modules/MClipboard.bas)):
+
+```
+Sub ImportFromClipBoard()
+    Dim CSVint As CSVinterface
+    Dim CSVstring As String
+    Dim SPACE_CHR As String
+    
+    SPACE_CHR = " "
+    CSVstring = Join$(Split(CBGetText, SPACE_CHR), vbTab)   ' Replace all space char with Tab char
+    Set CSVint = New CSVinterface
+    With CSVint.parseConfig
+        .dialect.fieldsDelimiter = vbTab                    ' Columns delimiter
+        .dialect.recordsDelimiter = vbCrLf                  ' Rows delimiter
+    End With
+    With CSVint
+        .ImportFromCSVString CSVstring, .parseConfig        ' Import the CSV to internal object
+        .DumpToSheet
+    End With
+End Sub
+```
+
 ## Contributing
 
 In order to contribute within this project, please see the [guidance for contributing](https://ws-garcia.github.io/VBA-CSV-interface/contributing.html).
