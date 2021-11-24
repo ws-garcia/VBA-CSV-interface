@@ -17,7 +17,7 @@ The most powerful and comprehensive RFC-4180 compliant and unix style CSV parser
 * __Stable__. Fully Test Driven Developed (TDD) library, ([69/69 test passed](https://github.com/ws-garcia/VBA-CSV-interface/blob/master/testing/tests/results/)), that includes 650+ line of code for testing. See [VBA test library by Tim Hall](https://github.com/ws-garcia/vba-test).
 * __Fast__. Writes and reads files at the highest speed.
 * __Memory-friendly__. CSV/[TSV](https://www.iana.org/assignments/media-types/text/tab-separated-values) files are processed using a custom stream technique, only 0.5MB are in memory at a time.
-* __Robust__. Parser and writer accept [Unix-style escape sequences](https://www.loc.gov/preservation/digital/formats/fdd/fdd000323.shtml#notes). 
+* __Robust__. Parser and writer accept [Unix DSV files](https://www.linuxtopia.org/online_books/programming_books/art_of_unix_programming/ch05s02.html). 
 * __[UTF-8](https://www.unicode.org/faq/utf_bom.html#UTF8) encoding support__. Do you have a CSV file, perhaps in chinese or some other foreign cyrillic language, downloaded from the Internet? This library is made to help you deal with it! You will be able to read and write UTF-8 encoded files in an easy way. 
 * __Easy to use__. A few lines of code can do the work!
 * __Automatic delimiter guesser__. Don't worry if you forgot the file configuration. The interface has a solid strategy for guessing delimiters!
