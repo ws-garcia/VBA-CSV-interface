@@ -107,7 +107,7 @@ Attribute bufferString.VB_Description = "Gets the text data stored in the buffer
     If Not P_UTF8ENCODED Then
         bufferString = P_TEXT
     Else
-        bufferString = UTF8_Decode(P_TEXT)
+        bufferString = UTF8Decode(P_TEXT)
     End If
 End Property
 Public Property Get endStreamOnLineBreak() As Boolean
@@ -337,31 +337,34 @@ Private Sub StartVariables()
     LCS = P_STREAMLENGTH
     P_ATENDOFSTREAM = False
 End Sub
-Public Function UTF8_Decode(ByVal sStr As String) As String
-    Dim l As Long, sUTF8 As CSVArrayList, iChar As Long, iChar2 As Long
+Public Function UTF8Decode(ByVal sStr As String) As String
+    Dim L As Long, sUTF8 As CSVArrayList, iChar As Long, iChar2 As Long
     
+    On Error GoTo UTF8_Decode_error
     Set sUTF8 = New CSVArrayList
-    For l = 1 To Len(sStr)
-        iChar = Asc(Mid(sStr, l, 1))
+    For L = 1 To LenB(sStr) Step 2
+        iChar = Asc(MidB$(sStr, L, 2))
         If iChar > 127 Then
             If Not iChar And 32 Then ' 2 chars
-                iChar2 = Asc(Mid(sStr, l + 1, 1))
+                iChar2 = Asc(MidB$(sStr, L + 2, 2))
                 sUTF8.Add ChrW$(((31 And iChar) * 64 + (63 And iChar2)))
-                l = l + 1
+                L = L + 2
             Else
                 Dim iChar3 As Integer
-                iChar2 = Asc(Mid(sStr, l + 1, 1))
-                iChar3 = Asc(Mid(sStr, l + 2, 1))
+                iChar2 = Asc(MidB$(sStr, L + 2, 2))
+                iChar3 = Asc(MidB$(sStr, L + 4, 2))
                 sUTF8.Add ChrW$(((iChar And 15) * 16 * 256) + ((iChar2 And 63) * 64) + (iChar3 And 63))
-                l = l + 2
+                L = L + 4
             End If
         Else
-            sUTF8.Add CHR$(iChar)
+            sUTF8.Add ChrW$(iChar)
         End If
-    Next l
-    UTF8_Decode = Join$(sUTF8.Items, vbNullString)
+    Next L
+    UTF8Decode = Join$(sUTF8.items, vbNullString)
+    Exit Function
+UTF8_Decode_error:
+    UTF8Decode = vbNullString
 End Function
-
 Public Sub WriteBlankLines(Lines As Long, Optional EndLineMark As EndLineChar = 0)
 Attribute WriteBlankLines.VB_Description = "Inserts a specified number of blank lines into the current opened text file."
     If P_ISOPENSTREAM Then
