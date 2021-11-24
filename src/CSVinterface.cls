@@ -15,7 +15,7 @@ Attribute VB_Exposed = False
 '#
 ' GENERAL INFO:
 ' The most powerful, robust and versatile VBA library for high speed CSV parsing with support
-' for RFC-4180 specs and some others variants.
+' for RFC-4180 specs and Unix DSV files.
 '////////////////////////////////////////////////////////////////////////////////////////////
 '#
 Option Explicit
