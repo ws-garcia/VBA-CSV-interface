@@ -361,8 +361,10 @@ Public Function UTF8Decode(ByVal sStr As String) As String
         End If
     Next L
     UTF8Decode = Join$(sUTF8.items, vbNullString)
+    Set sUTF8 = Nothing
     Exit Function
 UTF8_Decode_error:
+    Set sUTF8 = Nothing
     UTF8Decode = vbNullString
 End Function
 Public Sub WriteBlankLines(Lines As Long, Optional EndLineMark As EndLineChar = 0)
