@@ -79,15 +79,29 @@ Attribute count.VB_Description = "Gets the amount of items stored in the current
 End Property
 
 ''' <summary>
-''' Gets the Item, by its index, from the current instance.
+''' Gets or sets the Item, by its index, from the current instance.
 ''' </summary>
 ''' <param name="Index">Item's position in this instance.</param>
-Public Property Get item(Index As Long) As Variant
+Public Property Get item(index As Long) As Variant
 Attribute item.VB_Description = "Gets the Item, by its index, from the current instance."
 Attribute item.VB_UserMemId = 0
-    Select Case Index
+    Select Case index
         Case 0 To CurrentIndex
-            item = Buffer(Index)
+            item = Buffer(index)
+        Case Else
+            Err.Raise 9
+    End Select
+End Property
+
+''' <summary>
+''' Gets or sets the Item, by its index, from the current instance.
+''' </summary>
+''' <param name="Index">Item's position in this instance.</param>
+''' <param name="aValue">The value to overwrite the element.</param>
+Public Property Let item(index As Long, aValue As Variant)
+    Select Case index
+        Case 0 To CurrentIndex
+            Buffer(index) = aValue
         Case Else
             Err.Raise 9
     End Select
@@ -111,34 +125,34 @@ End Property
 ''' <summary>
 ''' Gets or sets the current instance's array.
 ''' </summary>
-Public Property Let items(AValue As Variant)
+Public Property Let items(aValue As Variant)
     Clear
-    If IsArray(AValue) Then
+    If IsArray(aValue) Then
         Dim Dim1Pointer As Long
         Dim Dim2Pointer As Long
         Dim tmpRow() As Variant
         
-        If MultiDimensional(AValue) Then '2D array expected
-            ReDim tmpRow(LBound(AValue, 2) To UBound(AValue, 2))
-            For Dim1Pointer = LBound(AValue) To UBound(AValue)
-                For Dim2Pointer = LBound(AValue, 2) To UBound(AValue, 2)
-                    tmpRow(Dim2Pointer) = AValue(Dim1Pointer, Dim2Pointer)
+        If MultiDimensional(aValue) Then '2D array expected
+            ReDim tmpRow(LBound(aValue, 2) To UBound(aValue, 2))
+            For Dim1Pointer = LBound(aValue) To UBound(aValue)
+                For Dim2Pointer = LBound(aValue, 2) To UBound(aValue, 2)
+                    tmpRow(Dim2Pointer) = aValue(Dim1Pointer, Dim2Pointer)
                 Next Dim2Pointer
                 Add tmpRow
             Next Dim1Pointer
         Else 'Jagged or 1D array expected
-            If IsJaggedArray(AValue) Then
-                For Dim1Pointer = LBound(AValue) To UBound(AValue)
-                    Add AValue(Dim1Pointer)
+            If IsJaggedArray(aValue) Then
+                For Dim1Pointer = LBound(aValue) To UBound(aValue)
+                    Add aValue(Dim1Pointer)
                 Next Dim1Pointer
             Else
-                For Dim1Pointer = LBound(AValue) To UBound(AValue)
-                    Add2 AValue
+                For Dim1Pointer = LBound(aValue) To UBound(aValue)
+                    Add2 aValue
                 Next Dim1Pointer
             End If
         End If
     Else
-        Add2 AValue
+        Add2 aValue
     End If
 End Property
 '////////////////////////////////////////////////////////////////////////////////////////////
@@ -151,16 +165,16 @@ End Property
 ''' Appends a copy of the specified value to the current instance.
 ''' </summary>
 ''' <param name="aValue">The value to append.</param>
-Public Sub Add(AValue As Variant)
+Public Sub Add(aValue As Variant)
 Attribute Add.VB_Description = "Appends a copy of the specified value to the current instance."
     CurrentIndex = CurrentIndex + 1
     On Error GoTo Expand_Buffer
-    Buffer(CurrentIndex) = AValue
+    Buffer(CurrentIndex) = aValue
     Exit Sub
 Expand_Buffer:
     MaxIndex = 2 * (MaxIndex + 1) - 1
     ReDim Preserve Buffer(0 To MaxIndex)
-    Buffer(CurrentIndex) = AValue
+    Buffer(CurrentIndex) = aValue
 End Sub
 ''' <summary>
 ''' Appends a copy, in jagged array fashion, of the specified
@@ -487,25 +501,25 @@ End Sub
 ''' </summary>
 ''' <param name="Index">The index into which the Item'll be inserted.</param>
 ''' <param name="aValue">The value to be inserted.</param>
-Public Sub Insert(Index As Long, AValue As Variant)
+Public Sub Insert(index As Long, aValue As Variant)
 Attribute Insert.VB_Description = "Inserts an Item, at the given Index, in the current instance of the class."
     Dim tmpCopy() As Variant
     Dim iCounter As Long
         
-    Select Case Index
+    Select Case index
         Case 0 To CurrentIndex + 1 'Avoids to leave empty items
-            Me.Add AValue
+            Me.Add aValue
             'Checks if the item need to be placed on a previous Index
-            If Index < CurrentIndex Then
+            If index < CurrentIndex Then
                 tmpCopy() = Buffer
                 Erase Buffer
                 ReDim Buffer(0 To MaxIndex)
-                For iCounter = 0 To Index - 1
+                For iCounter = 0 To index - 1
                     Buffer(iCounter) = tmpCopy(iCounter)
                     tmpCopy(iCounter) = Null
                 Next iCounter
-                Buffer(Index) = tmpCopy(CurrentIndex)
-                For iCounter = Index To CurrentIndex - 1
+                Buffer(index) = tmpCopy(CurrentIndex)
+                For iCounter = index To CurrentIndex - 1
                     Buffer(iCounter + 1) = tmpCopy(iCounter)
                     tmpCopy(iCounter) = Null
                 Next iCounter
@@ -623,15 +637,15 @@ Private Sub max_heapify(i As Long, _
                         SortingKey As Long, _
                         HeapSize As Long)
     Dim largest As Long
-    Dim l As Long
+    Dim L As Long
     Dim R As Long
     
-    l = 2 * i                                   'LEFT
+    L = 2 * i                                   'LEFT
     R = 2 * i + 1                               'RIGHT
     largest = i
-    If l <= HeapSize Then
-        If Buffer(leftt + l - 1)(SortingKey) > Buffer(leftt + i - 1)(SortingKey) Then
-            largest = l
+    If L <= HeapSize Then
+        If Buffer(leftt + L - 1)(SortingKey) > Buffer(leftt + i - 1)(SortingKey) Then
+            largest = L
         End If
     End If
     If R <= HeapSize Then
@@ -653,7 +667,7 @@ End Sub
 ''' <param name="R">The index of the last item to be merged.</param>
 ''' <param name="SortingKey">The column/key for the logical comparisons.</param>
 ''' <param name="Descending">Sort order.</param>
-Private Sub merge(l As Long, m As Long, R As Long, SortingKey As Long, Descending As Boolean)
+Private Sub merge(L As Long, m As Long, R As Long, SortingKey As Long, Descending As Boolean)
     
     If Descending Then
         If Buffer(m)(SortingKey) >= Buffer(m + 1)(SortingKey) Then
@@ -672,19 +686,19 @@ Private Sub merge(l As Long, m As Long, R As Long, SortingKey As Long, Descendin
     Dim j As Long
     Dim k As Long
     
-    len1 = m - l + 1
+    len1 = m - L + 1
     len2 = R - m
     ReDim leftt(len1 - 1)
     ReDim rightt(len2 - 1)
     For i = 0 To len1 - 1
-        leftt(i) = Buffer(l + i)
+        leftt(i) = Buffer(L + i)
     Next i
     For i = 0 To len2 - 1
         rightt(i) = Buffer(m + 1 + i)
     Next i
     i = 0
     j = 0
-    k = l
+    k = L
     If Descending Then
         Do While i < len1 And j < len2
             If leftt(i)(SortingKey) >= rightt(j)(SortingKey) Then
@@ -755,7 +769,7 @@ Private Sub MergeSort_Asc(leftt As Long, _
                             SortingKey As Long, _
                             pvarMirror As Variant)
     Dim Ulen As Long
-    Dim l As Long
+    Dim L As Long
     Dim R As Long
     Dim O As Long
     Dim BoolSwitch As Boolean
@@ -770,25 +784,25 @@ Private Sub MergeSort_Asc(leftt As Long, _
             MergeSort_Asc leftt, Ulen, SortingKey, pvarMirror
             MergeSort_Asc Ulen + 1, rightt, SortingKey, pvarMirror
             ' Merge the resulting halves
-            l = leftt ' start of first (left) half
+            L = leftt ' start of first (left) half
             R = Ulen + 1 ' start of second (right) half
             O = leftt ' start of output (mirror array)
             Do
-                BoolSwitch = Buffer(R)(SortingKey) < Buffer(l)(SortingKey)
+                BoolSwitch = Buffer(R)(SortingKey) < Buffer(L)(SortingKey)
                 If BoolSwitch Then
                     pvarMirror(O) = Buffer(R)
                     R = R + 1
                     If R > rightt Then
-                        For l = l To Ulen
+                        For L = L To Ulen
                             O = O + 1
-                            pvarMirror(O) = Buffer(l)
+                            pvarMirror(O) = Buffer(L)
                         Next
                         Exit Do
                     End If
                 Else
-                    pvarMirror(O) = Buffer(l)
-                    l = l + 1
-                    If l > Ulen Then
+                    pvarMirror(O) = Buffer(L)
+                    L = L + 1
+                    If L > Ulen Then
                         For R = R To rightt
                             O = O + 1
                             pvarMirror(O) = Buffer(R)
@@ -812,7 +826,7 @@ Private Sub MergeSort_Desc(leftt As Long, _
                             SortingKey As Long, _
                             pvarMirror As Variant)
     Dim Ulen As Long
-    Dim l As Long
+    Dim L As Long
     Dim R As Long
     Dim O As Long
     Dim BoolSwitch As Boolean
@@ -827,25 +841,25 @@ Private Sub MergeSort_Desc(leftt As Long, _
             MergeSort_Desc leftt, Ulen, SortingKey, pvarMirror
             MergeSort_Desc Ulen + 1, rightt, SortingKey, pvarMirror
             ' Merge the resulting halves
-            l = leftt ' start of first (left) half
+            L = leftt ' start of first (left) half
             R = Ulen + 1 ' start of second (right) half
             O = leftt ' start of output (mirror array)
             Do
-                BoolSwitch = Buffer(R)(SortingKey) > Buffer(l)(SortingKey)
+                BoolSwitch = Buffer(R)(SortingKey) > Buffer(L)(SortingKey)
                 If BoolSwitch Then
                     pvarMirror(O) = Buffer(R)
                     R = R + 1
                     If R > rightt Then
-                        For l = l To Ulen
+                        For L = L To Ulen
                             O = O + 1
-                            pvarMirror(O) = Buffer(l)
+                            pvarMirror(O) = Buffer(L)
                         Next
                         Exit Do
                     End If
                 Else
-                    pvarMirror(O) = Buffer(l)
-                    l = l + 1
-                    If l > Ulen Then
+                    pvarMirror(O) = Buffer(L)
+                    L = L + 1
+                    If L > Ulen Then
                         For R = R To rightt
                             O = O + 1
                             pvarMirror(O) = Buffer(R)
@@ -885,15 +899,15 @@ Private Sub min_heapify(i As Long, _
                         SortingKey As Long, _
                         HeapSize As Long)
     Dim smallest As Long
-    Dim l As Long
+    Dim L As Long
     Dim R As Long
     
-    l = 2 * i                                   'LEFT
+    L = 2 * i                                   'LEFT
     R = 2 * i + 1                               'RIGHT
     smallest = i
-    If l <= HeapSize Then
-        If Buffer(leftt + l - 1)(SortingKey) < Buffer(leftt + i - 1)(SortingKey) Then
-            smallest = l
+    If L <= HeapSize Then
+        If Buffer(leftt + L - 1)(SortingKey) < Buffer(leftt + i - 1)(SortingKey) Then
+            smallest = L
         End If
     End If
     If R <= HeapSize Then
@@ -1172,21 +1186,21 @@ End Sub
 ''' Removes the Item at specified Index.
 ''' </summary>
 ''' <param name="Index">The index of the Item'll be deleted.</param>
-Public Sub RemoveAt(Index As Long)
+Public Sub RemoveAt(index As Long)
 Attribute RemoveAt.VB_Description = "Removes an Item at specified Index."
     Dim tmpCopy() As Variant
     Dim iCounter As Long
         
-    Select Case Index
+    Select Case index
         Case 0 To CurrentIndex
             tmpCopy() = Buffer
             Erase Buffer
             ReDim Buffer(0 To MaxIndex)
-            For iCounter = 0 To Index - 1
+            For iCounter = 0 To index - 1
                 Buffer(iCounter) = tmpCopy(iCounter)
                 tmpCopy(iCounter) = Null
             Next iCounter
-            For iCounter = Index + 1 To CurrentIndex
+            For iCounter = index + 1 To CurrentIndex
                 Buffer(iCounter - 1) = tmpCopy(iCounter)
                 tmpCopy(iCounter) = Null
             Next iCounter
@@ -1202,23 +1216,23 @@ End Sub
 ''' </summary>
 ''' <param name="Index">The index of the first item to be deleted.</param>
 ''' <param name="Count">The number of item to be deleted.</param>
-Public Sub RemoveRange(Index As Long, count As Long)
+Public Sub RemoveRange(index As Long, count As Long)
 Attribute RemoveRange.VB_Description = "Removes a range of Items starting at specified Index."
     Dim tmpCopy() As Variant
     Dim iCounter As Long
     Dim EndIndex As Long
         
-    Select Case Index
+    Select Case index
         Case 0 To CurrentIndex
-            EndIndex = Index + count - 1
+            EndIndex = index + count - 1
             If EndIndex > CurrentIndex Then
                 EndIndex = CurrentIndex
-                count = EndIndex - Index + 1
+                count = EndIndex - index + 1
             End If
             tmpCopy() = Buffer
             Erase Buffer
             ReDim Buffer(0 To MaxIndex)
-            For iCounter = 0 To Index - 1
+            For iCounter = 0 To index - 1
                 Buffer(iCounter) = tmpCopy(iCounter)
                 tmpCopy(iCounter) = Null
             Next iCounter
@@ -1471,7 +1485,7 @@ End Sub
 ''' <param name="Descending">Sort order.</param>
 Private Sub TimSort(leftt As Long, rightt As Long, SortingKey As Long, Descending As Boolean)
     Dim Size As Long
-    Dim l As Long
+    Dim L As Long
     Dim midd As Long
     Dim R As Long
     Dim i As Long
@@ -1484,15 +1498,15 @@ Private Sub TimSort(leftt As Long, rightt As Long, SortingKey As Long, Descendin
     ' to form size 32, then 64, 128...
     Size = RUN
     Do While Size - 1 < rightt
-        For l = leftt To rightt Step 2 * Size
-            midd = min(l + Size - 1, rightt)
-            R = min(l + 2 * Size - 1, rightt)
+        For L = leftt To rightt Step 2 * Size
+            midd = min(L + Size - 1, rightt)
+            R = min(L + 2 * Size - 1, rightt)
             ' merge sub array arr[L.....midd] &
             ' arr[midd+1....R]
             If midd < R Then
-                merge l, midd, R, SortingKey, Descending
+                merge L, midd, R, SortingKey, Descending
             End If
-        Next l
+        Next L
         Size = 2 * Size
     Loop
 End Sub
