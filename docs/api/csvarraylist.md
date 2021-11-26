@@ -84,7 +84,7 @@ Class module developed to emulate some functionalities from the `ArrayList` pres
 <tr>
 <td style="text-align: left; color:blue;"><em>item</em></td>
 <td style="text-align: left;">Property</td>
-<td style="text-align: left;">Gets an Item, by its index, from the current instance. This is the default property, so the user can use abbreviated expressions such as <code>expression(i)</code> to access the Item <code>i</code>, where <code>expression</code> represents a <code>CSVArrayList</code> object.</td>
+<td style="text-align: left;">Gets or sets an Item, by its index, from the current instance. This is the default property, so the user can use abbreviated expressions such as <code>expression(i)</code> to access the Item <code>i</code>, where <code>expression</code> represents a <code>CSVArrayList</code> object.</td>
 </tr>
 <tr>
 <td style="text-align: left; color:blue;"><em>items</em></td>
