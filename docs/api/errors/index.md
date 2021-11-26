@@ -46,7 +46,7 @@ This section describes the custom errors whose components are returned by the pa
 </tr>
 <tr>
 <td style="text-align: left;"><em>-2147212492</em></td>
-<td style="text-align: left;">[CSV file Export]: The passed argument isn't an array or a ECPArrayList object.</td>
+<td style="text-align: left;">[CSV file Export]: The passed argument isn't an array or a CSVArrayList object.</td>
 <td style="text-align: left;">CSVinterface Class.</td>
 </tr>
 <tr>
@@ -57,6 +57,40 @@ This section describes the custom errors whose components are returned by the pa
 <tr>
 <td style="text-align: left;"><em>-2147212490</em></td>
 <td style="text-align: left;">[CSV file subset]: The given path name is an empty string or the specified CSV file does not exist in the supplied path.</td>
+<td style="text-align: left;">CSVinterface Class.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><em>-2147212489</em></td>
+<td style="text-align: left;">[CSV Field Insert]: Cannot insert a field in the current instance. This is because there is no imported data or the records do not have the same number of fields.</td>
+<td style="text-align: left;">CSVinterface Class.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><em>-2147212488</em></td>
+<td style="text-align: left;">The specified index is out of bounds. Please check and try again.</td>
+<td style="text-align: left;">CSVinterface Class.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><em>-2147212487</em></td>
+<td style="text-align: left;">[CSV Field Remove]: Cannot remove the field in the current instance. This is because there is no imported data or the records do not have the same number of fields.</td>
+<td style="text-align: left;">CSVinterface Class.</td>
+</tr>
+<td style="text-align: left;"><em>-2147212486</em></td>
+<td style="text-align: left;">[CSV Record Insert]: Cannot insert the record in the current instance. This is because there is no imported data or the records do not have the same number of fields.</td>
+<td style="text-align: left;">CSVinterface Class.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><em>-2147212485</em></td>
+<td style="text-align: left;">[CSV Records Remove]: Cannot remove the records in the current instance. This is because there is no imported data or the records do not have the same number of fields.</td>
+<td style="text-align: left;">CSVinterface Class.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><em>-2147212484</em></td>
+<td style="text-align: left;">[CSV Fields Rearrange]: Cannot rearrange the fields in the current instance. This is because there is no imported data or the records do not have the same number of fields.</td>
+<td style="text-align: left;">CSVinterface Class.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><em>-2147212483</em></td>
+<td style="text-align: left;">[CSV Fields Rearrange]: The order specified for the fields is incomplete. Please enter all field indexes before continuing.</td>
 <td style="text-align: left;">CSVinterface Class.</td>
 </tr>
 </tbody>
