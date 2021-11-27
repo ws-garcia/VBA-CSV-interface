@@ -105,5 +105,9 @@ This section describes the custom errors whose components are returned by the pa
 <td style="text-align: left;"><em>-2147212480</em></td>
 <td style="text-align: left;">[CSV Field Shift: Cannot shift the field in the current instance. This is because there is no imported data or the records do not have the same number of fields.</td>
 </tr>
+<tr>
+<td style="text-align: left;"><em>-2147212479</em></td>
+<td style="text-align: left;">[CSV Field Shift: Cannot shift the record in the current instance. This is because there is no imported data or the records do not have the same number of fields.</td>
+</tr>
 </tbody>
 </table>
