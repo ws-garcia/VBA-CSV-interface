@@ -93,5 +93,17 @@ This section describes the custom errors whose components are returned by the pa
 <td style="text-align: left;">[CSV Fields Rearrange]: The order specified for the fields is incomplete. Please enter all field indexes before continuing.</td>
 <td style="text-align: left;">CSVinterface Class.</td>
 </tr>
+<tr>
+<td style="text-align: left;"><em>-2147212482</em></td>
+<td style="text-align: left;">[CSV Fields Merge]: Cannot merge the fields in the current instance. This is because there is no imported data or the records do not have the same number of fields.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><em>-2147212481</em></td>
+<td style="text-align: left;">[CSV Field Split]: Cannot split the field in the current instance. This is because there is no imported data or the records do not have the same number of fields.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><em>-2147212480</em></td>
+<td style="text-align: left;">[CSV Field Shift: Cannot shift the field in the current instance. This is because there is no imported data or the records do not have the same number of fields.</td>
+</tr>
 </tbody>
 </table>
