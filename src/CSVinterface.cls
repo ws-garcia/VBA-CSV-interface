@@ -1559,10 +1559,10 @@ ImportFromCSV_EmptyString:
                     Description:="The specified source String is empty. Please check and try again."
     Resume ErrHandler_ImportFromString
 End Function
-Public Function InsertField(index As Long, Optional FieldName As String = vbNullString) As CSVinterface
+Public Function InsertField(aIndex As Long, Optional FieldName As String = vbNullString) As CSVinterface
     On Error GoTo ErrHandler_InsertField
     If P_SUCCESSFUL_IMPORT And Not P_VARYING_LENGTHS Then
-        Select Case index
+        Select Case aIndex
             Case 0 To P_VECTORS_REGULAR_BOUND + 1
                 Dim curRecord() As Variant
                 Dim cpRecord() As Variant
@@ -1581,22 +1581,22 @@ Public Function InsertField(index As Long, Optional FieldName As String = vbNull
                                 If rCounter = 0 Then
                                     '@--------------------------------------------------------------------------------
                                     'Add header name
-                                    cpRecord(index) = FieldName
+                                    cpRecord(aIndex) = FieldName
                                 Else
                                     If rCounter = 1 Then
-                                        cpRecord(index) = Empty
+                                        cpRecord(aIndex) = Empty
                                     End If
                                 End If
                             End If
                         End If
                         For fCounter = 0 To P_VECTORS_REGULAR_BOUND
-                            If fCounter < index Then
+                            If fCounter < aIndex Then
                                 cpRecord(fCounter) = curRecord(fCounter)
-                            ElseIf fCounter >= index Then
+                            ElseIf fCounter >= aIndex Then
                                 cpRecord(fCounter + 1) = curRecord(fCounter)
                             End If
-                            .item(rCounter) = cpRecord
                         Next fCounter
+                        .item(rCounter) = cpRecord
                     Next rCounter
                 End With
             Case Else
@@ -1624,17 +1624,17 @@ OutOfBounds_InsertField:
                     Description:="The specified index is out of bounds. Please check and try again."
     Resume ErrHandler_InsertField
 End Function
-Public Function InsertRecord(index As Long) As CSVinterface
+Public Function InsertRecord(aIndex As Long) As CSVinterface
     On Error GoTo ErrHandler_InsertRecord
     If P_SUCCESSFUL_IMPORT And Not P_VARYING_LENGTHS Then
-        Select Case index
+        Select Case aIndex
             Case 0 To P_CSV_DATA.count
                 Dim cpRecord() As Variant
                 Dim rCounter As Long
                 
                 ReDim cpRecord(0 To P_VECTORS_REGULAR_BOUND)
                 With P_CSV_DATA
-                    .Insert index, cpRecord
+                    .Insert aIndex, cpRecord
                 End With
             Case Else
                 GoTo OutOfBounds_InsertRecord
@@ -1888,6 +1888,136 @@ Private Function MaxIndexVal(ByRef values As Variant) As Long
         End If
     Next idx0
     MaxIndexVal = idx
+End Function
+Public Function MergeFields(CharToMergeWith As String, ParamArray indexes() As Variant) As CSVinterface
+    Dim cpIndexes() As Variant
+    
+    cpIndexes() = indexes
+    If CheckForDupIndexes(cpIndexes) Then
+        Set MergeFields = MergeFlds(CharToMergeWith, cpIndexes)
+    Else
+        Set MergeFields = Me
+    End If
+End Function
+Private Function CheckForDupIndexes(aIndexes() As Variant) As Boolean
+    Dim aLB As Long
+    Dim tmpCol As Collection
+    
+    Set tmpCol = New Collection
+    On Error GoTo err_handler
+    For aLB = LBound(aIndexes) To UBound(aIndexes)
+        tmpCol.Add aIndexes(aLB), CStr(aIndexes(aLB))
+    Next aLB
+    CheckForDupIndexes = True
+    Exit Function
+err_handler:
+    CheckForDupIndexes = False
+End Function
+Private Function MergeFlds(CharToMergeWith As String, cpIndexes() As Variant) As CSVinterface
+    On Error GoTo ErrHandler_MergeFields
+    If P_SUCCESSFUL_IMPORT And Not P_VARYING_LENGTHS Then
+        Select Case FielsToMergeAreValid(cpIndexes)
+            Case True
+                Dim curRecord() As Variant
+                Dim cpRecord() As Variant
+                Dim fCounter As Long
+                Dim rCounter As Long
+                Dim tmpMergeRec As CSVArrayList
+                Dim LB As Long
+                Dim UB As Long
+                Dim storedIndexes As Long
+                Dim IndexToSaveIn As Long
+                Dim tmpIndex As Long
+                
+                LB = LBound(cpIndexes)
+                UB = UBound(cpIndexes)
+                '@--------------------------------------------------------------------------------
+                'Shrink storage
+                ReDim cpRecord(0 To P_VECTORS_REGULAR_BOUND - UB + LB)
+                '@--------------------------------------------------------------------------------
+                'Reserve storage
+                Set tmpMergeRec = New CSVArrayList
+                tmpMergeRec.Reinitialize UB - LB
+                With P_CSV_DATA
+                    For rCounter = 0 To .count - 1
+                        curRecord() = .item(rCounter)
+                        storedIndexes = 0
+                        For fCounter = 0 To P_VECTORS_REGULAR_BOUND
+                            If FiedlInMergeList(fCounter, cpIndexes) Then
+                                tmpMergeRec.Add curRecord(cpIndexes(storedIndexes))
+                                storedIndexes = storedIndexes + 1
+                            Else
+                                '@--------------------------------------------------------------------------------
+                                'Check field position
+                                tmpIndex = fCounter - storedIndexes
+                                Select Case tmpIndex
+                                    Case Is < cpIndexes(LB)
+                                        cpRecord(tmpIndex) = curRecord(fCounter)
+                                    Case Else
+                                        cpRecord(tmpIndex + 1) = curRecord(fCounter)
+                                End Select
+                            End If
+                        Next fCounter
+                        Select Case cpIndexes(LB)
+                            '@--------------------------------------------------------------------------------
+                            'Take care of bounds
+                            Case Is > UBound(cpRecord)
+                                IndexToSaveIn = P_VECTORS_REGULAR_BOUND - UB + LB
+                            Case Else
+                                IndexToSaveIn = cpIndexes(LB)
+                        End Select
+                        cpRecord(IndexToSaveIn) = Join$(tmpMergeRec.items, CharToMergeWith)
+                        .item(rCounter) = cpRecord
+                        tmpMergeRec.Clear
+                    Next rCounter
+                End With
+            Case Else
+                GoTo OutOfBounds_MergeFields
+        End Select
+    Else
+        P_ERROR_DESC = "[CSV Fields Merge]: Cannot merge the fields in the current instance." _
+                        & " This is because there is no imported data or the records do not " _
+                        & "have the same number of fields."
+        P_ERROR_NUMBER = vbObjectError + 9022
+        P_ERROR_SOURCE = "CSVinterface"
+    End If
+    P_VECTORS_REGULAR_BOUND = P_VECTORS_REGULAR_BOUND - UB + LB
+    P_VECTORS_MAX_BOUND = P_VECTORS_MAX_BOUND - UB + LB
+    Set MergeFlds = Me
+    Set tmpMergeRec = Nothing
+    Exit Function
+ErrHandler_MergeFields:
+    P_ERROR_DESC = "[CSV Fields Merge]: " & Err.Description
+    P_ERROR_NUMBER = Err.Number
+    P_ERROR_SOURCE = "CSVinterface"
+    Exit Function
+OutOfBounds_MergeFields:
+    Err.Raise Number:=vbObjectError + 9016, _
+                    Source:="CSVinterface Class", _
+                    Description:="The specified index is out of bounds. Please check and try again."
+    Resume ErrHandler_MergeFields
+End Function
+Private Function FielsToMergeAreValid(indexes() As Variant) As Boolean
+    Dim iDxFld As Long
+    Dim tmpBool As Boolean
+    
+    iDxFld = LBound(indexes)
+    Do
+        tmpBool = indexes(iDxFld) >= 0 And indexes(iDxFld) <= P_VECTORS_REGULAR_BOUND
+        iDxFld = iDxFld + 1
+    Loop While iDxFld <= UBound(indexes) And tmpBool
+    FielsToMergeAreValid = tmpBool
+End Function
+Private Function FiedlInMergeList(aIndex As Long, indexes() As Variant) As Boolean
+    Dim iDxFld As Long
+    Dim tmpBool As Boolean
+    
+    iDxFld = LBound(indexes)
+    Do
+        tmpBool = indexes(iDxFld) = aIndex
+        iDxFld = iDxFld + 1
+    Loop While iDxFld <= UBound(indexes) And Not tmpBool
+    FiedlInMergeList = tmpBool
 End Function
 Private Function MinIndexVal(ByRef values As Variant) As Long
     Dim tmpVal As Double, idx0 As Long, idx As Long
@@ -2711,10 +2841,10 @@ Undefined_RearrangeFields:
                     & "Please enter all field indexes before continuing."
     Resume ErrHandler_RearrangeFields
 End Function
-Public Function RemoveField(index As Long) As CSVinterface
+Public Function RemoveField(aIndex As Long) As CSVinterface
     On Error GoTo ErrHandler_RemoveField
     If P_SUCCESSFUL_IMPORT And Not P_VARYING_LENGTHS Then
-        Select Case index
+        Select Case aIndex
             Case 0 To P_VECTORS_REGULAR_BOUND
                 Dim curRecord() As Variant
                 Dim cpRecord() As Variant
@@ -2727,13 +2857,13 @@ Public Function RemoveField(index As Long) As CSVinterface
                     For rCounter = 0 To .count - 1
                         curRecord() = .item(rCounter)
                         For fCounter = 0 To P_VECTORS_REGULAR_BOUND
-                            If fCounter < index Then
+                            If fCounter < aIndex Then
                                 cpRecord(fCounter) = curRecord(fCounter)
-                            ElseIf fCounter > index Then
+                            ElseIf fCounter > aIndex Then
                                 cpRecord(fCounter - 1) = curRecord(fCounter)
                             End If
-                            .item(rCounter) = cpRecord
                         Next fCounter
+                        .item(rCounter) = cpRecord
                     Next rCounter
                 End With
             Case Else
@@ -2761,17 +2891,17 @@ OutOfBounds_RemoveField:
                     Description:="The specified index is out of bounds. Please check and try again."
     Resume ErrHandler_RemoveField
 End Function
-Public Function RemoveRecords(index As Long, count As Long) As CSVinterface
+Public Function RemoveRecords(aIndex As Long, count As Long) As CSVinterface
     On Error GoTo ErrHandler_RemoveRecords
     If P_SUCCESSFUL_IMPORT And Not P_VARYING_LENGTHS Then
-        Select Case index
+        Select Case aIndex
             Case 0 To P_CSV_DATA.count - 1
                 Dim cpRecord() As Variant
                 Dim rCounter As Long
                 
                 ReDim cpRecord(0 To P_VECTORS_REGULAR_BOUND)
                 With P_CSV_DATA
-                    .RemoveRange index, count
+                    .RemoveRange aIndex, count
                 End With
             Case Else
                 GoTo OutOfBounds_RemoveRecords
@@ -2879,6 +3009,64 @@ Private Sub SkipUnwantedLines(ByRef idx As Long, _
         Loop While UnwantedLine And idx <= MaxIdx
     End If
 End Sub
+Public Function ShiftField(aIndex As Long, Shift As Long) As CSVinterface
+On Error GoTo ErrHandler_ShiftField
+    If P_SUCCESSFUL_IMPORT And Not P_VARYING_LENGTHS Then
+        Select Case aIndex + Shift
+            Case 0 To P_VECTORS_REGULAR_BOUND
+                Dim curRecord() As Variant
+                Dim cpRecord() As Variant
+                Dim rCounter As Long
+                Dim ShiftLB As Long
+                Dim ShiftUB As Long
+                Dim fCounter As Long
+                Dim ShiftFactor As Long
+                
+                ShiftFactor = 1 * Sgn(Shift)
+                If ShiftFactor < 0 Then 'Shift to left
+                    ShiftLB = aIndex + Shift + 1
+                    ShiftUB = aIndex
+                Else
+                    ShiftLB = aIndex
+                    ShiftUB = aIndex + Shift - 1
+                End If
+                ReDim cpRecord(0 To P_VECTORS_REGULAR_BOUND)
+                With P_CSV_DATA
+                    For rCounter = 0 To .count - 1
+                        curRecord() = .item(rCounter)
+                        cpRecord() = curRecord
+                        cpRecord(aIndex + Shift) = curRecord(aIndex)
+                        For fCounter = ShiftLB To ShiftUB
+                            cpRecord(fCounter) = curRecord(fCounter + (1 * ShiftFactor))
+                        Next fCounter
+                        .item(rCounter) = cpRecord
+                    Next rCounter
+                End With
+            Case Else
+                GoTo OutOfBounds_ShiftField
+        End Select
+    Else
+        P_ERROR_DESC = "[CSV Field Shift]: Cannot shift the field in the current instance." _
+                        & " This is because there is no imported data or the records do not " _
+                        & "have the same number of fields."
+        P_ERROR_NUMBER = vbObjectError + 9024
+        P_ERROR_SOURCE = "CSVinterface"
+    End If
+    P_VECTORS_REGULAR_BOUND = P_VECTORS_REGULAR_BOUND - 1
+    P_VECTORS_MAX_BOUND = P_VECTORS_MAX_BOUND - 1
+    Set ShiftField = Me
+    Exit Function
+ErrHandler_ShiftField:
+    P_ERROR_DESC = "[CSV Field Shift]: " & Err.Description
+    P_ERROR_NUMBER = Err.Number
+    P_ERROR_SOURCE = "CSVinterface"
+    Exit Function
+OutOfBounds_ShiftField:
+    Err.Raise Number:=vbObjectError + 9016, _
+                    Source:="CSVinterface Class", _
+                    Description:="The specified index is out of bounds. Please check and try again."
+    Resume ErrHandler_ShiftField
+End Function
 Public Function SniffDelimiters(ByRef confObject As CSVparserConfig, _
                             Optional ByRef CSVstring As String = vbNullString) As CSVdialect
                             
@@ -3036,6 +3224,64 @@ Sort_Error_Handler:
     P_ERROR_NUMBER = Err.Number
     P_ERROR_DESC = "[Sort] " & Err.Description
     P_ERROR_SOURCE = Err.Source
+End Function
+Public Function SplitField(CharToSplitWith As String, aIndex As Long) As CSVinterface
+    On Error GoTo ErrHandler_SplitField
+    If P_SUCCESSFUL_IMPORT And Not P_VARYING_LENGTHS Then
+        Select Case aIndex
+            Case 0 To P_VECTORS_REGULAR_BOUND
+                Dim curRecord() As Variant
+                Dim cpRecord() As String
+                Dim tmpRecord() As Variant
+                Dim fCounter As Long
+                Dim rCounter As Long
+                Dim sfldIndex As Long
+                Dim sfldCPindex As Long
+                Dim FldDiff As Long
+                
+                With P_CSV_DATA
+                    For rCounter = 0 To .count - 1
+                        curRecord() = .item(rCounter)
+                        cpRecord() = Split(curRecord(aIndex), CharToSplitWith)
+                        FldDiff = UBound(cpRecord) - LBound(cpRecord)
+                        ReDim tmpRecord(0 To P_VECTORS_REGULAR_BOUND + FldDiff)
+                        For sfldIndex = 0 To aIndex - 1
+                            tmpRecord(sfldIndex) = curRecord(sfldIndex)
+                        Next sfldIndex
+                        For sfldCPindex = LBound(cpRecord) To UBound(cpRecord)
+                            tmpRecord(sfldIndex) = cpRecord(sfldCPindex)
+                            sfldIndex = sfldIndex + 1
+                        Next sfldCPindex
+                        For sfldIndex = aIndex + FldDiff + 1 To UBound(curRecord) + FldDiff
+                            tmpRecord(sfldIndex) = curRecord(sfldIndex - FldDiff)
+                        Next sfldIndex
+                        .item(rCounter) = tmpRecord
+                    Next rCounter
+                End With
+            Case Else
+                GoTo OutOfBounds_SplitField
+        End Select
+    Else
+        P_ERROR_DESC = "[CSV Field Split]: Cannot split the field in the current instance." _
+                        & " This is because there is no imported data or the records do not " _
+                        & "have the same number of fields."
+        P_ERROR_NUMBER = vbObjectError + 9023
+        P_ERROR_SOURCE = "CSVinterface"
+    End If
+    P_VECTORS_REGULAR_BOUND = P_VECTORS_REGULAR_BOUND + FldDiff
+    P_VECTORS_MAX_BOUND = P_VECTORS_MAX_BOUND + FldDiff
+    Set SplitField = Me
+    Exit Function
+ErrHandler_SplitField:
+    P_ERROR_DESC = "[CSV Field Split]: " & Err.Description
+    P_ERROR_NUMBER = Err.Number
+    P_ERROR_SOURCE = "CSVinterface"
+    Exit Function
+OutOfBounds_SplitField:
+    Err.Raise Number:=vbObjectError + 9016, _
+                    Source:="CSVinterface Class", _
+                    Description:="The specified index is out of bounds. Please check and try again."
+    Resume ErrHandler_SplitField
 End Function
 Private Sub StreamParseCSV(configObj As CSVparserConfig, _
                             outputList As CSVArrayList, _
