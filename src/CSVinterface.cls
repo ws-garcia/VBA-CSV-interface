@@ -3026,11 +3026,10 @@ On Error GoTo ErrHandler_ShiftField
                 If ShiftFactor < 0 Then 'Shift to left
                     ShiftLB = aIndex + Shift + 1
                     ShiftUB = aIndex
-                Else
+                Else 'Shift to right
                     ShiftLB = aIndex
                     ShiftUB = aIndex + Shift - 1
                 End If
-                ReDim cpRecord(0 To P_VECTORS_REGULAR_BOUND)
                 With P_CSV_DATA
                     For rCounter = 0 To .count - 1
                         curRecord() = .item(rCounter)
@@ -3066,6 +3065,58 @@ OutOfBounds_ShiftField:
                     Source:="CSVinterface Class", _
                     Description:="The specified index is out of bounds. Please check and try again."
     Resume ErrHandler_ShiftField
+End Function
+Public Function ShiftRecord(aIndex As Long, Shift As Long) As CSVinterface
+On Error GoTo ErrHandler_ShiftRecord
+    If P_SUCCESSFUL_IMPORT And Not P_VARYING_LENGTHS Then
+        Select Case aIndex + Shift
+            Case 0 To P_CSV_DATA.count - 1
+                Dim cpRecord() As Variant
+                Dim rCounter As Long
+                Dim ShiftLB As Long
+                Dim ShiftUB As Long
+                Dim fCounter As Long
+                Dim ShiftFactor As Long
+                
+                ShiftFactor = Sgn(Shift)
+                If ShiftFactor < 0 Then 'Shift up
+                    ShiftLB = aIndex
+                    ShiftUB = aIndex + Shift + 1
+                Else 'Shift down
+                    ShiftLB = aIndex
+                    ShiftUB = aIndex + Shift - 1
+                End If
+                With P_CSV_DATA
+                    cpRecord() = .item(aIndex)
+                    For rCounter = ShiftLB To ShiftUB Step ShiftFactor
+                        .item(rCounter) = .item(rCounter + (1 * ShiftFactor))
+                    Next rCounter
+                    .item(aIndex + Shift) = cpRecord
+                End With
+            Case Else
+                GoTo OutOfBounds_ShiftRecord
+        End Select
+    Else
+        P_ERROR_DESC = "[CSV Record Shift]: Cannot shift the record in the current instance." _
+                        & " This is because there is no imported data or the records do not " _
+                        & "have the same number of fields."
+        P_ERROR_NUMBER = vbObjectError + 9025
+        P_ERROR_SOURCE = "CSVinterface"
+    End If
+    P_VECTORS_REGULAR_BOUND = P_VECTORS_REGULAR_BOUND - 1
+    P_VECTORS_MAX_BOUND = P_VECTORS_MAX_BOUND - 1
+    Set ShiftRecord = Me
+    Exit Function
+ErrHandler_ShiftRecord:
+    P_ERROR_DESC = "[CSV Record Shift]: " & Err.Description
+    P_ERROR_NUMBER = Err.Number
+    P_ERROR_SOURCE = "CSVinterface"
+    Exit Function
+OutOfBounds_ShiftRecord:
+    Err.Raise Number:=vbObjectError + 9016, _
+                    Source:="CSVinterface Class", _
+                    Description:="The specified index is out of bounds. Please check and try again."
+    Resume ErrHandler_ShiftRecord
 End Function
 Public Function SniffDelimiters(ByRef confObject As CSVparserConfig, _
                             Optional ByRef CSVstring As String = vbNullString) As CSVdialect
