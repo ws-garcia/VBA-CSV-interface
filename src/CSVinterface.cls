@@ -402,23 +402,7 @@ Public Function Dedupe(keys As String) As CSVArrayList
     On Error GoTo ErrHandler_Dedupe
     If P_SUCCESSFUL_IMPORT Then
         Dim aIndexes() As String
-        If keys Like "*-*" Then
-            Dim tmpKeys() As String
-            Dim oLB As Long
-            Dim oUB As Long
-            Dim oIdxC As Long
-            
-            tmpKeys() = Split(keys, "-")
-            
-            oLB = CLng(tmpKeys(LBound(tmpKeys)))
-            oUB = CLng(tmpKeys(UBound(tmpKeys)))
-            ReDim aIndexes(oLB To oUB)
-            For oIdxC = oLB To oUB
-                aIndexes(oIdxC) = oIdxC
-            Next oIdxC
-        Else
-            aIndexes() = Split(keys, ",")
-        End If
+        aIndexes() = FieldsToOperate(keys)
         If CheckForDupIndexes(aIndexes) Then
             Dim IndexesCollection As Collection
             Dim dRecCounter As Long
