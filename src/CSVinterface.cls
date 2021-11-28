@@ -2840,10 +2840,6 @@ End Sub
 Public Function RearrangeFields(FieldsOrder As String) As CSVinterface
     If P_SUCCESSFUL_IMPORT And Not P_VARYING_LENGTHS Then
         Dim tmpFldOrder() As String
-        Dim fldOcount As Long
-        Dim jkl As Long
-        Dim definedIdx As Long
-        Dim tmpBool As Boolean
         Dim cpRecord() As Variant
         Dim tmpRecord() As Variant
         Dim fCounter As Long
@@ -2852,18 +2848,8 @@ Public Function RearrangeFields(FieldsOrder As String) As CSVinterface
         
         '@----------------------------------------------------------------------------
         'Check given fields arrange
-        tmpFldOrder() = Split(FieldsOrder, ",")
-        For fldOcount = LBound(tmpFldOrder) To UBound(tmpFldOrder)
-            jkl = 0
-            Do
-                tmpBool = CLng(tmpFldOrder(fldOcount)) = jkl
-                jkl = jkl + 1
-            Loop While jkl <= P_VECTORS_REGULAR_BOUND And Not tmpBool
-            If tmpBool Then
-                definedIdx = definedIdx + 1
-            End If
-        Next fldOcount
-        If P_VECTORS_REGULAR_BOUND <> definedIdx - 1 Then
+        tmpFldOrder() = RearrangeFieldsToOperate(FieldsOrder)
+        If Not RearrangeCheckFieldsToOperate(tmpFldOrder) Then
             GoTo Undefined_RearrangeFields
         End If
         With P_CSV_DATA
@@ -2874,7 +2860,7 @@ Public Function RearrangeFields(FieldsOrder As String) As CSVinterface
                 tmpRecord() = .item(rCounter)
                 iRecCnt = 0
                 For fCounter = LBound(tmpFldOrder) To UBound(tmpFldOrder)
-                    cpRecord(iRecCnt) = tmpRecord(tmpFldOrder(fCounter))
+                    cpRecord(iRecCnt) = tmpRecord(CDbl(tmpFldOrder(fCounter)))
                     iRecCnt = iRecCnt + 1
                 Next fCounter
                 .item(rCounter) = cpRecord
@@ -2900,6 +2886,65 @@ Undefined_RearrangeFields:
                     Description:="The order specified for the fields is incomplete. " _
                     & "Please enter all field indexes before continuing."
     Resume ErrHandler_RearrangeFields
+End Function
+Private Function RearrangeFieldsToOperate(fieldsString As String) As String()
+    Dim tmpOrder() As String
+    
+    If fieldsString Like "*-*" Then
+        Dim tmpResult As CSVArrayList
+        Dim tmpPreResult() As String
+        Dim rfICounter As Long
+        Dim rfJCounter As Long
+        Dim ROFields() As String
+        Dim ROFlb As Long
+        Dim ROFub As Long
+        Dim stepIdx As Long
+        
+        Set tmpResult = New CSVArrayList
+        tmpPreResult() = Split(fieldsString, ",")
+        For rfICounter = LBound(tmpPreResult) To UBound(tmpPreResult)
+            If InStrB(1, tmpPreResult(rfICounter), "-") Then
+                ROFields() = Split(tmpPreResult(rfICounter), "-")
+                ROFlb = CDbl(ROFields(LBound(ROFields)))
+                ROFub = CDbl(ROFields(LBound(ROFields) + 1))
+                If ROFlb < ROFub Then
+                    stepIdx = 1
+                Else
+                    stepIdx = -1
+                End If
+                For rfJCounter = ROFlb To ROFub Step stepIdx
+                    tmpResult.Add CStr(rfJCounter)
+                Next rfJCounter
+            Else
+                tmpResult.Add tmpPreResult(rfICounter)
+            End If
+        Next rfICounter
+        ReDim tmpOrder(0 To tmpResult.count - 1)
+        For rfICounter = 0 To tmpResult.count - 1
+            tmpOrder(rfICounter) = tmpResult.item(rfICounter)
+        Next rfICounter
+    Else
+        tmpOrder() = Split(fieldsString, ",")
+    End If
+    RearrangeFieldsToOperate = tmpOrder
+End Function
+Private Function RearrangeCheckFieldsToOperate(fieldsToRearrange() As String) As Boolean
+    Dim fldOcount As Long
+    Dim jkl As Long
+    Dim tmpBool As Boolean
+    Dim definedIdx As Long
+    
+    For fldOcount = LBound(fieldsToRearrange) To UBound(fieldsToRearrange)
+        jkl = 0
+        Do
+            tmpBool = CLng(fieldsToRearrange(fldOcount)) = jkl
+            jkl = jkl + 1
+        Loop While jkl <= P_VECTORS_REGULAR_BOUND And Not tmpBool
+        If tmpBool Then
+            definedIdx = definedIdx + 1
+        End If
+    Next fldOcount
+    RearrangeCheckFieldsToOperate = (P_VECTORS_REGULAR_BOUND = definedIdx - 1)
 End Function
 Public Function RemoveField(aIndex As Long) As CSVinterface
     On Error GoTo ErrHandler_RemoveField
