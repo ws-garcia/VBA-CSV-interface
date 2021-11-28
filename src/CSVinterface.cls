@@ -398,6 +398,50 @@ CSVsubsetSplit_MissingCSVfile:
     P_ERROR_SOURCE = "CSVinterface"
     GoTo CSVsubsetSplit_ErrHandler
 End Function
+Public Function Dedupe(ParamArray keys() As Variant) As CSVArrayList
+    On Error GoTo ErrHandler_Dedupe
+    If P_SUCCESSFUL_IMPORT Then
+        Dim aIndexes() As Variant
+        aIndexes() = keys
+        If CheckForDupIndexes(aIndexes) Then
+            Dim IndexesCollection As Collection
+            Dim dRecCounter As Long
+            
+            Set IndexesCollection = New Collection
+            For dRecCounter = 0 To P_CSV_DATA.count - 1
+                On Error Resume Next
+                IndexesCollection.Add dRecCounter, DedupeKeysMerge(dRecCounter, aIndexes)
+            Next dRecCounter
+            Dim colItem As Variant
+            Set Dedupe = New CSVArrayList
+            For Each colItem In IndexesCollection
+                Dedupe.Add P_CSV_DATA.item(CLng(colItem))
+            Next
+        End If
+    End If
+    Exit Function
+ErrHandler_Dedupe:
+    Set Dedupe = Nothing
+    P_ERROR_DESC = "[CSV Dedupe]: " & Err.Description
+    P_ERROR_NUMBER = Err.Number
+    P_ERROR_SOURCE = "CSVinterface"
+End Function
+Private Function DedupeKeysMerge(aIndex As Long, keys() As Variant) As String
+    Dim tmpResult() As Variant
+    Dim kLB As Long
+    Dim kUb As Long
+    Dim keyCounter As Long
+    Dim tgRecord() As Variant
+    
+    kLB = LBound(keys)
+    kUb = UBound(keys)
+    ReDim tmpResult(kLB To kUb)
+    tgRecord() = P_CSV_DATA.item(aIndex)
+    For keyCounter = kLB To kUb
+        tmpResult(keyCounter) = tgRecord(keys(keyCounter))
+    Next keyCounter
+    DedupeKeysMerge = Join$(tmpResult, "|")
+End Function
 Public Sub DumpToArray(OutPutArray() As Variant, _
                         Optional ByRef DataSource As CSVArrayList = Nothing)
     If DataSource Is Nothing Then
