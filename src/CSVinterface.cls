@@ -1067,7 +1067,7 @@ Public Function GetRecord() As CSVArrayList
                         'Save the Token
                         Select Case static_SplittedToken
                             Case False 'Just save Token
-                                If RequestedField(static_FieldID + 1&, static_MaxReqIndex) Then 'Filter fields
+                                If RequestedField2(static_FieldID + 1&, static_MaxReqIndex) Then  'Filter fields
                                     Select Case static_dynamicType
                                         Case False
                                             static_RecordToken.Add UnescapeField(MidB$(static_tmpCSV(static_Index), static_TokenBeginningPos, _
@@ -1082,7 +1082,7 @@ Public Function GetRecord() As CSVArrayList
                                 End If
                             Case Else 'The Token is stored on static_tmpToken object
                                 static_tmpToken.Add LeftB$(static_tmpCSV(static_Index), static_TokenEndingPos)
-                                If RequestedField(static_FieldID + 1&, static_MaxReqIndex) Then 'Filter fields
+                                If RequestedField2(static_FieldID + 1&, static_MaxReqIndex) Then 'Filter fields
                                     static_RecordToken.Add UnescapeField(Join$(static_tmpToken.items, static_RecordDelimiter), _
                                                                     static_QuoteChar, static_EscapeSequence) 'Save whole Token
                                     static_tmpToken.Clear 'Clear static_tmpToken content
@@ -1102,7 +1102,7 @@ Public Function GetRecord() As CSVArrayList
                             'Save the Token
                             Select Case static_SplittedToken
                                 Case False 'Just save Token
-                                    If RequestedField(static_FieldID + 1&, static_MaxReqIndex) Then 'Filter fields
+                                    If RequestedField2(static_FieldID + 1&, static_MaxReqIndex) Then 'Filter fields
                                         Select Case static_dynamicType
                                             Case False
                                                 static_RecordToken.Add UnescapeField(MidB$(static_tmpCSV(static_Index), static_TokenBeginningPos, _
@@ -1117,7 +1117,7 @@ Public Function GetRecord() As CSVArrayList
                                     End If
                                 Case Else 'The Token is stored on static_tmpToken object
                                     static_tmpToken.Add LeftB$(static_tmpCSV(static_Index), static_OverStringPointer - 3)
-                                    If RequestedField(static_FieldID + 1&, static_MaxReqIndex) Then 'Filter fields
+                                    If RequestedField2(static_FieldID + 1&, static_MaxReqIndex) Then 'Filter fields
                                         static_RecordToken.Add UnescapeField(Join$(static_tmpToken.items, static_RecordDelimiter), _
                                                                             static_QuoteChar, static_EscapeSequence) 'Save whole Token
                                         static_tmpToken.Clear 'Clear static_tmpToken content
@@ -1191,7 +1191,7 @@ Public Function GetRecord() As CSVArrayList
                     static_RecordEndReached = False
                     '@----------------------------------------------------------------------------
                     'Save the Token
-                    If RequestedField(static_FieldID + 1&, static_MaxReqIndex) Then 'Filter fields
+                    If RequestedField2(static_FieldID + 1&, static_MaxReqIndex) Then 'Filter fields
                         Select Case static_dynamicType
                             Case False
                                 If static_UseUnixEscapeSeq Then
@@ -1324,7 +1324,7 @@ Public Function GetRecord() As CSVArrayList
                     'Save the Token
                     Select Case static_SplittedToken
                         Case False 'Just save Token
-                            If RequestedField(static_FieldID + 1&, static_MaxReqIndex) Then 'Filter fields
+                            If RequestedField2(static_FieldID + 1&, static_MaxReqIndex) Then 'Filter fields
                                 Select Case static_dynamicType
                                     Case False
                                         If static_UseUnixEscapeSeq Then
@@ -1351,7 +1351,7 @@ Public Function GetRecord() As CSVArrayList
                                 End Select
                             End If
                         Case Else
-                            If RequestedField(static_FieldID + 1&, static_MaxReqIndex) Then 'Filter fields
+                            If RequestedField2(static_FieldID + 1&, static_MaxReqIndex) Then 'Filter fields
                                 If static_UseUnixEscapeSeq Then
                                     static_RecordToken.Add UnescapeField(UnescapeField(Join$(static_tmpToken.items, static_RecordDelimiter), _
                                                                             static_FieldDelimiter, static_EscapeSequence_Delim), _
@@ -1954,7 +1954,7 @@ Private Function MaxIndexVal(ByRef values As Variant) As Long
     Next idx0
     MaxIndexVal = idx
 End Function
-Public Function MergeFields(CharToMergeWith As String, indexes As String) As CSVinterface
+Public Function MergeFields(indexes As String, CharToMergeWith As String) As CSVinterface
     Dim cpIndexes() As String
     
     cpIndexes() = FieldsToOperate(indexes)
@@ -3051,6 +3051,23 @@ Private Function RequestedField(ByVal fieldIndex As Long, _
                 idx = idx + 1
             Loop While Not tmpBool And idx <= mxReq
             RequestedField = tmpBool
+    End Select
+End Function
+Private Function RequestedField2(ByVal fieldIndex As Long, _
+                                ByVal mxReq As Long) As Boolean
+    Select Case static_RequestedFieldsArray(0)
+        Case -1
+            RequestedField2 = True
+        Case Else
+            Dim idx As Long
+            Dim tmpBool As Boolean
+            
+            idx = 0
+            Do
+                tmpBool = (fieldIndex = static_RequestedFieldsArray(idx))
+                idx = idx + 1
+            Loop While Not tmpBool And idx <= mxReq
+            RequestedField2 = tmpBool
     End Select
 End Function
 Public Sub ResetToDefault()
