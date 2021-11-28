@@ -735,7 +735,7 @@ End Function
 Private Function FilterAchievement(aValue As Variant, pattern As Variant) As Boolean
     FilterAchievement = aValue Like pattern
 End Function
-Public Function GetCSVsubset(FilePath As String, _
+Public Function GetCSVSubSet(FilePath As String, _
                         ByRef filters As Variant, _
                         keyIndex As Long, _
                         Optional configObj As CSVparserConfig = Nothing) As CSVArrayList
@@ -807,7 +807,7 @@ Public Function GetCSVsubset(FilePath As String, _
                     End If
                 Next gssCounter
             Loop
-            Set GetCSVsubset = filteredRecords
+            Set GetCSVSubSet = filteredRecords
             Set filteredRecords = Nothing
             Set CSVparser = Nothing
             Set curItems = Nothing
@@ -2120,7 +2120,7 @@ Private Function MeetsCriterion(Value As Variant) As Boolean
     
     vCounter = LB
     Do While vCounter <= UB And tmpResult = False
-        tmpResult = (Value = queryFilters(vCounter, LBound(queryFilters, 2)))
+        tmpResult = (Value = queryFilters(vCounter))
         vCounter = vCounter + 1
     Loop
     MeetsCriterion = tmpResult
