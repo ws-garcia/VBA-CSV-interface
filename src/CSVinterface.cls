@@ -1970,10 +1970,10 @@ Private Function MaxIndexVal(ByRef values As Variant) As Long
     Next idx0
     MaxIndexVal = idx
 End Function
-Public Function MergeFields(CharToMergeWith As String, ParamArray indexes() As Variant) As CSVinterface
-    Dim cpIndexes() As Variant
+Public Function MergeFields(CharToMergeWith As String, indexes As String) As CSVinterface
+    Dim cpIndexes() As String
     
-    cpIndexes() = indexes
+    cpIndexes() = FieldsToOperate(indexes)
     If CheckForDupIndexes(cpIndexes) Then
         Set MergeFields = MergeFlds(CharToMergeWith, cpIndexes)
     Else
@@ -1994,7 +1994,7 @@ Private Function CheckForDupIndexes(aIndexes As Variant) As Boolean
 err_handler:
     CheckForDupIndexes = False
 End Function
-Private Function MergeFlds(CharToMergeWith As String, cpIndexes() As Variant) As CSVinterface
+Private Function MergeFlds(CharToMergeWith As String, cpIndexes() As String) As CSVinterface
     On Error GoTo ErrHandler_MergeFields
     If P_SUCCESSFUL_IMPORT And Not P_VARYING_LENGTHS Then
         Select Case FielsToMergeAreValid(cpIndexes)
@@ -2078,24 +2078,24 @@ OutOfBounds_MergeFields:
                     Description:="The specified index is out of bounds. Please check and try again."
     Resume ErrHandler_MergeFields
 End Function
-Private Function FielsToMergeAreValid(indexes() As Variant) As Boolean
+Private Function FielsToMergeAreValid(indexes() As String) As Boolean
     Dim iDxFld As Long
     Dim tmpBool As Boolean
     
     iDxFld = LBound(indexes)
     Do
-        tmpBool = indexes(iDxFld) >= 0 And indexes(iDxFld) <= P_VECTORS_REGULAR_BOUND
+        tmpBool = CDbl(indexes(iDxFld)) >= 0 And CDbl(indexes(iDxFld)) <= P_VECTORS_REGULAR_BOUND
         iDxFld = iDxFld + 1
     Loop While iDxFld <= UBound(indexes) And tmpBool
     FielsToMergeAreValid = tmpBool
 End Function
-Private Function FiedlInMergeList(aIndex As Long, indexes() As Variant) As Boolean
+Private Function FiedlInMergeList(aIndex As Long, indexes() As String) As Boolean
     Dim iDxFld As Long
     Dim tmpBool As Boolean
     
     iDxFld = LBound(indexes)
     Do
-        tmpBool = indexes(iDxFld) = aIndex
+        tmpBool = CDbl(indexes(iDxFld)) = aIndex
         iDxFld = iDxFld + 1
     Loop While iDxFld <= UBound(indexes) And Not tmpBool
     FiedlInMergeList = tmpBool
@@ -2869,7 +2869,7 @@ Public Function RearrangeFields(FieldsOrder As String) As CSVinterface
         
         '@----------------------------------------------------------------------------
         'Check given fields arrange
-        tmpFldOrder() = RearrangeFieldsToOperate(FieldsOrder)
+        tmpFldOrder() = FieldsToOperate(FieldsOrder)
         If Not RearrangeCheckFieldsToOperate(tmpFldOrder) Then
             GoTo Undefined_RearrangeFields
         End If
@@ -2908,8 +2908,8 @@ Undefined_RearrangeFields:
                     & "Please enter all field indexes before continuing."
     Resume ErrHandler_RearrangeFields
 End Function
-Private Function RearrangeFieldsToOperate(fieldsString As String) As String()
-    Dim tmpOrder() As String
+Private Function FieldsToOperate(fieldsString As String) As String()
+    Dim tmpFields() As String
     
     If fieldsString Like "*-*" Then
         Dim tmpResult As CSVArrayList
@@ -2940,14 +2940,14 @@ Private Function RearrangeFieldsToOperate(fieldsString As String) As String()
                 tmpResult.Add tmpPreResult(rfICounter)
             End If
         Next rfICounter
-        ReDim tmpOrder(0 To tmpResult.count - 1)
+        ReDim tmpFields(0 To tmpResult.count - 1)
         For rfICounter = 0 To tmpResult.count - 1
-            tmpOrder(rfICounter) = tmpResult.item(rfICounter)
+            tmpFields(rfICounter) = tmpResult.item(rfICounter)
         Next rfICounter
     Else
-        tmpOrder() = Split(fieldsString, ",")
+        tmpFields() = Split(fieldsString, ",")
     End If
-    RearrangeFieldsToOperate = tmpOrder
+    FieldsToOperate = tmpFields
 End Function
 Private Function RearrangeCheckFieldsToOperate(fieldsToRearrange() As String) As Boolean
     Dim fldOcount As Long
