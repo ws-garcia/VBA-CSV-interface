@@ -710,6 +710,8 @@ Public Function Filter(fieldIndex As Long, ParamArray patterns() As Variant) As 
                     Filter.Add P_CSV_DATA(rCount)
                 End If
             Next rCount
+        Else
+            Set Filter = P_CSV_DATA
         End If
     End If
 End Function
