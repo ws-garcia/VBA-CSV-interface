@@ -696,19 +696,21 @@ Public Function Filter(fieldIndex As Long, ParamArray patterns() As Variant) As 
     Dim mettsPattern As Boolean
     
     If P_SUCCESSFUL_IMPORT Then
-        Set Filter = New CSVArrayList
-        LB = LBound(patterns)
         UB = UBound(patterns)
-        For rCount = 0 To P_CSV_DATA.count - 1
-            cIndex = LB
-            Do
-                mettsPattern = FilterAchievement(P_CSV_DATA(rCount)(fieldIndex), patterns(cIndex))
-                cIndex = cIndex + 1
-            Loop While Not mettsPattern And cIndex <= UB
-            If mettsPattern Then
-                Filter.Add P_CSV_DATA(rCount)
-            End If
-        Next rCount
+        If UB >= 0 Then
+            Set Filter = New CSVArrayList
+            LB = LBound(patterns)
+            For rCount = 0 To P_CSV_DATA.count - 1
+                cIndex = LB
+                Do
+                    mettsPattern = FilterAchievement(P_CSV_DATA(rCount)(fieldIndex), patterns(cIndex))
+                    cIndex = cIndex + 1
+                Loop While Not mettsPattern And cIndex <= UB
+                If mettsPattern Then
+                    Filter.Add P_CSV_DATA(rCount)
+                End If
+            Next rCount
+        End If
     End If
 End Function
 Private Function FilterAchievement(aValue As Variant, pattern As Variant) As Boolean
