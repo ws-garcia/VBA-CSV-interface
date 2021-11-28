@@ -612,7 +612,7 @@ End Sub
 Public Sub ExportToCSV(ByRef csvArray As Variant, _
                         Optional pconfig As CSVparserConfig = Nothing, _
                         Optional PassControlToOS As Boolean = True, _
-                        Optional enableDelimiterGuessing As Boolean = True, _
+                        Optional enableDelimitersSniffing As Boolean = True, _
                         Optional EnforcedQuotation As Boolean = False)
     On Error GoTo ErrHandler_ExportToCSV
     If PassControlToOS Then DoEvents 'Pass the control to the Operative System
@@ -629,7 +629,7 @@ Public Sub ExportToCSV(ByRef csvArray As Variant, _
         Dim EOLB As EndLineChar
         Set CSVstream = New CSVTextStream
         If FileExists(curConfig.path) Then
-            If enableDelimiterGuessing Then
+            If enableDelimitersSniffing Then
                 Set curConfig.dialect = SniffDelimiters(curConfig)
             End If
             With CSVstream
