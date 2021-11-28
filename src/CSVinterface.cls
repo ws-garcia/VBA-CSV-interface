@@ -398,11 +398,27 @@ CSVsubsetSplit_MissingCSVfile:
     P_ERROR_SOURCE = "CSVinterface"
     GoTo CSVsubsetSplit_ErrHandler
 End Function
-Public Function Dedupe(ParamArray keys() As Variant) As CSVArrayList
+Public Function Dedupe(keys As String) As CSVArrayList
     On Error GoTo ErrHandler_Dedupe
     If P_SUCCESSFUL_IMPORT Then
-        Dim aIndexes() As Variant
-        aIndexes() = keys
+        Dim aIndexes() As String
+        If keys Like "*-*" Then
+            Dim tmpKeys() As String
+            Dim oLB As Long
+            Dim oUB As Long
+            Dim oIdxC As Long
+            
+            tmpKeys() = Split(keys, "-")
+            
+            oLB = CLng(tmpKeys(LBound(tmpKeys)))
+            oUB = CLng(tmpKeys(UBound(tmpKeys)))
+            ReDim aIndexes(oLB To oUB)
+            For oIdxC = oLB To oUB
+                aIndexes(oIdxC) = oIdxC
+            Next oIdxC
+        Else
+            aIndexes() = Split(keys, ",")
+        End If
         If CheckForDupIndexes(aIndexes) Then
             Dim IndexesCollection As Collection
             Dim dRecCounter As Long
@@ -426,7 +442,7 @@ ErrHandler_Dedupe:
     P_ERROR_NUMBER = Err.Number
     P_ERROR_SOURCE = "CSVinterface"
 End Function
-Private Function DedupeKeysMerge(aIndex As Long, keys() As Variant) As String
+Private Function DedupeKeysMerge(aIndex As Long, keys As Variant) As String
     Dim tmpResult() As Variant
     Dim kLB As Long
     Dim kUb As Long
@@ -438,7 +454,7 @@ Private Function DedupeKeysMerge(aIndex As Long, keys() As Variant) As String
     ReDim tmpResult(kLB To kUb)
     tgRecord() = P_CSV_DATA.item(aIndex)
     For keyCounter = kLB To kUb
-        tmpResult(keyCounter) = tgRecord(keys(keyCounter))
+        tmpResult(keyCounter) = tgRecord(CLng(keys(keyCounter)))
     Next keyCounter
     DedupeKeysMerge = Join$(tmpResult, "|")
 End Function
@@ -1943,7 +1959,7 @@ Public Function MergeFields(CharToMergeWith As String, ParamArray indexes() As V
         Set MergeFields = Me
     End If
 End Function
-Private Function CheckForDupIndexes(aIndexes() As Variant) As Boolean
+Private Function CheckForDupIndexes(aIndexes As Variant) As Boolean
     Dim aLB As Long
     Dim tmpCol As Collection
     
