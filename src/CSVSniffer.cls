@@ -24,17 +24,17 @@ Public Enum FieldDataType
     UnKnown = 0
 End Enum
 Private Function LikeCompare(ByRef Value As Variant, _
-                                        ParamArray Pattern() As Variant) As Boolean
+                                        ParamArray pattern() As Variant) As Boolean
     Dim iCounter As Long
     Dim ParamLB As Long
     Dim ParamUB As Long
     Dim tmpBool As Boolean
     
-    ParamLB = LBound(Pattern)
-    ParamUB = UBound(Pattern)
+    ParamLB = LBound(pattern)
+    ParamUB = UBound(pattern)
     iCounter = ParamLB
     Do
-        tmpBool = Value Like Pattern(iCounter)
+        tmpBool = Value Like pattern(iCounter)
         iCounter = iCounter + 1
     Loop While iCounter <= ParamUB And Not tmpBool
     LikeCompare = tmpBool
