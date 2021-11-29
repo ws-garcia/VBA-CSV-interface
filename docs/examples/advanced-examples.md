@@ -2,10 +2,8 @@
 layout: default
 title: Advanced Examples
 parent: Examples
-nav_order: 3
+nav_order: 1
 ---
-
-## Data subsetting
 
 The \[EXAMPLE1\] shows how you can execute a like SQL simple query over a CSV file and dump result to a worksheet. The `queryFilters` is an array of the requirements that the `keyIndex` field must meet to be retrieved from the file.
 
@@ -40,6 +38,43 @@ Sub CSVsubSetting(path As String)
 End Sub
 ```
 
+The \[EXAMPLE3\] shows how you can import all the data from a CSV file using Dynamic Typing. 
+
+#### [EXAMPLE3]
+```vb
+Sub TEST_DynamicTyping()
+    Dim CSVint As CSVinterface
+    Dim CSVstring As String
+    Dim Arr() As Variant
+    
+    Set CSVint = New CSVinterface
+    With CSVint.parseConfig
+        .dialect.recordsDelimiter = vbCrLf
+        .path = "C:\100000.quoted.csv"
+        .dynamicTyping = True
+        .DefineTypingTemplate TypeConversion.ToDate, _
+                            TypeConversion.ToLong, _
+                            TypeConversion.ToDate, _
+                            TypeConversion.ToLong, _
+                            TypeConversion.ToDouble, _
+                            TypeConversion.ToDouble, _
+                            TypeConversion.ToDouble
+        .DefineTypingTemplateLinks 6, _
+                                 7, _
+                                 8, _
+                                 9, _
+                                 10, _
+                                 11, _
+                                 12
+    End With
+    With CSVint
+        Set .parseConfig.dialect = .SniffDelimiters(.parseConfig) 'Try to guess CSV file data delimiters
+        .ImportFromCSV(.parseConfig).DumpToArray Arr 'Import and dump the data to an array
+    End With
+    Set CSVint = Nothing
+End Sub
+```
+
 In some situations we may encounter a CSV file with a combination of `vbCrLf`, `vbCr` and `vbLf` as record delimiters. This can happen for many reasons, but the most common is by adding data to an existing CSV file without checking the configuration of the previously stored information. These cases will break the logic of many robust CSV parsers, including the 737K weekly downloaded [Papa Parse](https://www.papaparse.com/). 
 
 To demonstrate this problem, there is a file called *"Mixed Line Breaks.csv "* included in the [CSV assets](https://github.com/ws-garcia/VBA-CSV-interface/raw/master/csv-data/assets.zip) that mimics a CSV with mixed record delimiters. Opening the example file in [Notepad++](https://notepad-plus-plus.org/), we can see that it contains 42,355 records and when we try to parse it with Papa Parse we get a data object with 27,356 records. 
@@ -50,9 +85,9 @@ Matt Holt's parser determines that the file has the `\n` character as a record d
 
 ![Notepad++ search](Notepad++ search.png)
 
- The \[EXAMPLE3\] shows how you can import CSV files with mixed line break as record delimiter, a new option that uses the `turnStreamRecDelimiterToLF` property of the [`parseConfig`](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/parseconf.html) object to work with these special CSV files.
+ The \[EXAMPLE4\] shows how you can import CSV files with mixed line break as record delimiter, a new option that uses the `turnStreamRecDelimiterToLF` property of the [`parseConfig`](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/parseconf.html) object to work with these special CSV files.
  
- #### [EXAMPLE3]
+ #### [EXAMPLE4]
 ```vb
 Sub ImportMixedLineEndCSV()
     Dim CSVint As CSVinterface

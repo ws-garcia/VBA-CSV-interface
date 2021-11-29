@@ -2,7 +2,7 @@
 title: SniffDelimiters
 parent: Methods
 grand_parent: API
-nav_order: 16
+nav_order: 26
 ---
 
 # SniffDelimiters
@@ -58,5 +58,34 @@ The parser will guess the delimiters in the CSV file only when the `CSVstring` p
 >{: .text-grey-lt-000 .bg-green-000 }
 >Only some records will be used to guess the delimiters. The method is very accurate, but there is a risk of inaccuracy in some rare cases.
 {: .text-grey-dk-300 .bg-yellow-000 }
+
+### ☕Example
+
+```vb
+Sub SniffInString()
+    Dim CSVint As CSVinterface
+    Dim CSVdata As String
+    Dim fPath As String
+    
+    Set CSVint = New CSVinterface
+    fPath = Environ("USERPROFILE") & "\Desktop\Demo_100000records.csv"
+    With CSVint
+        CSVdata = .GetDataFromCSV(fPath)
+        Set .parseConfig.dialect = .SniffDelimiters(.parseConfig, CSVdata)      'Sniff delimiters and save to config object
+    End With
+    Set CSVint = Nothing
+End Sub
+Private Sub SniffInFile()
+    Dim CSVint As CSVinterface
+    Dim csvRecord As CSVArrayList
+            
+    Set CSVint = New CSVinterface
+    With CSVint
+        .parseConfig.path = Environ("USERPROFILE") & "\Desktop\Demo_100000records.csv"
+        Set .parseConfig.dialect = .SniffDelimiters(.parseConfig)                           'Sniff delimiters and save to config object
+    End With
+    Set CSVint = Nothing
+End Sub
+```
 
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)

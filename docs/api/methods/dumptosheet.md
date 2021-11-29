@@ -2,7 +2,7 @@
 title: DumpToSheet
 parent: Methods
 grand_parent: API
-nav_order: 7
+nav_order: 8
 ---
 
 # DumpToSheet
@@ -68,5 +68,24 @@ When the *WBookName* parameter is omitted the data is dumped into the Workbook t
 >{: .text-grey-lt-000 .bg-green-000 }
 >When the *DataSource* parameter is omitted the `DumpToSheet` method dumps all data stored in the current instance. If the user specified a data source, its data will be dumped.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
+
+### ☕Example
+
+```vb
+Sub DumpToSheet()
+    Dim CSVint As CSVinterface
+    
+    Set CSVint = New CSVinterface
+    With CSVint.parseConfig
+        .path = Environ("USERPROFILE") & "\Desktop\Demo_100000records.csv"
+    End With
+    With CSVint
+        .ImportFromCSV .parseConfig                              'Import CSV data
+        .DumpToSheet SheetName:="Dump demo", rngName:="C6"       'Dump the internal data to the 
+                                                                 '"Dump demo" sheet starting on the range "C6".
+    End With
+    Set CSVint = Nothing
+End Sub
+```
 
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)

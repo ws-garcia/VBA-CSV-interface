@@ -2,7 +2,7 @@
 title: DumpToJaggedArray
 parent: Methods
 grand_parent: API
-nav_order: 6
+nav_order: 7
 ---
 
 # DumpToJaggedArray
@@ -60,5 +60,25 @@ When the *DataSource* parameter is omitted the `DumpToJaggedArray` method makes 
 >{: .text-grey-lt-000 .bg-green-000 }
 >The *OutPutArray* argument will contain a set of `Variant` type arrays. To access to an individual element user must use something like **_expression(i)(j)_**, where **_i_** denotes an index in the main array and **_j_** denotes an index in the child array.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
+
+### ☕Example
+
+```vb
+Sub DumpToJaggedArrray()
+    Dim CSVint As CSVinterface
+    Dim MyArray() As Variant
+    
+    Set CSVint = New CSVinterface
+    With CSVint.parseConfig
+        .path = Environ("USERPROFILE") & "\Desktop\Demo_100000records.csv"
+    End With
+    With CSVint
+        .ImportFromCSV .parseConfig       'Import CSV data
+        .DumpToJaggedArray MyArray        'Dump the data to a jagged array
+    End With
+    Erase MyArray
+    Set CSVint = Nothing
+End Sub
+```
 
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)

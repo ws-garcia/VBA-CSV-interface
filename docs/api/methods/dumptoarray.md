@@ -2,7 +2,7 @@
 title: DumpToArray
 parent: Methods
 grand_parent: API
-nav_order: 5
+nav_order: 6
 ---
 
 # DumpToArray
@@ -60,5 +60,25 @@ When the *DataSource* parameter is omitted the `DumpToArray` method makes a copy
 >{: .text-grey-lt-000 .bg-green-000 }
 >The data is always returned in a Two-dimensional array, even when the imported file only contain a field per record.
 {: .text-grey-dk-300 .bg-yellow-000 }
+
+### ☕Example
+
+```vb
+Sub DumpToArrray()
+    Dim CSVint As CSVinterface
+    Dim MyArray() As Variant
+    
+    Set CSVint = New CSVinterface
+    With CSVint.parseConfig
+        .path = Environ("USERPROFILE") & "\Desktop\Demo_100000records.csv"
+    End With
+    With CSVint
+        .ImportFromCSV .parseConfig       'Import CSV data
+        .DumpToArray MyArray              'Dump the data to an array
+    End With
+    Erase MyArray
+    Set CSVint = Nothing
+End Sub
+```
 
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)

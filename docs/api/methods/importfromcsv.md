@@ -2,7 +2,7 @@
 title: ImportFromCSV
 parent: Methods
 grand_parent: API
-nav_order: 12
+nav_order: 14
 ---
 
 # ImportFromCSV
@@ -55,5 +55,23 @@ The `configObj` parameter is an object with all the options considered by the pa
 >{: .text-grey-lt-000 .bg-green-000 }
 >If the target file has no data (the file is an empty one) or an error occur when parsing, the `ImportFromCSV` method returns a non-initialized object.
 {: .text-grey-dk-300 .bg-yellow-000 }
+
+### ☕Example
+
+```vb
+Sub ImportFromCSV()
+    Dim CSVint As CSVinterface
+    
+    Set CSVint = New CSVinterface
+    With CSVint.parseConfig
+        .path = Environ("USERPROFILE") & "\Desktop\Demo_100000records.csv"
+        Set .dialect = CSVint.SniffDelimiters(CSVint.parseConfig)               'Sniff delimiters and save the result in the config object
+    End With
+    With CSVint
+        .ImportFromCSV .parseConfig                                             'Import CSV data
+    End With
+    Set CSVint = Nothing
+End Sub
+```
 
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)

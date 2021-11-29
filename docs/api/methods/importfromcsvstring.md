@@ -2,7 +2,7 @@
 title: ImportFromCSVstring
 parent: Methods
 grand_parent: API
-nav_order: 13
+nav_order: 15
 ---
 
 # ImportFromCSVstring
@@ -29,7 +29,7 @@ Parses a string and save its CSV/TSV data to the current instance.
 <tbody>
 <tr>
 <td style="text-align: left;"><em>CSVstring</em></td>
-<td style="text-align: left;">Required. Identifier specifying a <code>String</code> Type variable to be parsed.</td>
+<td style="text-align: left;">Required. Identifier specifying a <code>String</code> Type variable representing the data to be parsed.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><em>configObj</em></td>
@@ -59,5 +59,24 @@ The `configObj` parameter is an object with all the options considered by the pa
 >{: .text-grey-lt-000 .bg-green-000 }
 >If the target file has no data (the file is an empty one) or an error occur when parsing, the `ImportFromCSVstring` method returns a non-initialized object.
 {: .text-grey-dk-300 .bg-yellow-000 }
+
+### ☕Example
+
+```vb
+Sub ImportFromString()
+    Dim CSVint As CSVinterface
+    Dim CSVdata As String
+    Dim fPath As String
+    
+    Set CSVint = New CSVinterface
+    fPath = Environ("USERPROFILE") & "\Desktop\Demo_100000records.csv"
+    With CSVint
+        CSVdata = .GetDataFromCSV(fPath)
+        Set .parseConfig.dialect = .SniffDelimiters(.parseConfig, CSVdata)      'Sniff delimiters and save to config object
+        .ImportFromCSVString CSVdata, .parseConfig                              'Import CSV data
+    End With
+    Set CSVint = Nothing
+End Sub
+```
 
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)

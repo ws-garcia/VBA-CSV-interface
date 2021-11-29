@@ -9,18 +9,18 @@ description: "VBA CSV interface is a set of class modules that allows users exch
 # Introductory things
 {: .fs-9 }
 
-The most powerful and comprehensive RFC-4180 compliant and unix style CSV parser library for VBA. 
+The most powerful and comprehensive CSV/[TSV](https://www.iana.org/assignments/media-types/text/tab-separated-values)/[DSV](https://www.linuxtopia.org/online_books/programming_books/art_of_unix_programming/ch05s02.html) data management library for VBA, providing parsing/writing capabilities compliant with RFC-4180 specifications and a complete set of tools for manipulating records and fields: [dedupe](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/dedupe.html), [sort](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/sort.html) and [filter](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/filter.html) records, [rearrange](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/rearrangefields.html), [shift](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/shiftfield.html), [merge](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/mergefields.html) and [split](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/splitfield.html) fields, and much more!
 {: .fs-6 .fw-300 }
 
 ## Advantages
 * __RFC-4180 specs compliant__.
 * __Stable__. Fully Test Driven Developed (TDD) library, ([69/69 test passed](https://github.com/ws-garcia/VBA-CSV-interface/blob/master/testing/tests/results/)), that includes 650+ line of code for testing. See [VBA test library by Tim Hall](https://github.com/ws-garcia/vba-test).
 * __Fast__. Writes and reads files at the highest speed.
-* __Memory-friendly__. CSV/[TSV](https://www.iana.org/assignments/media-types/text/tab-separated-values) files are processed using a custom stream technique, only 0.5MB are in memory at a time.
-* __Robust__. Parser and writer accept [Unix DSV files](https://www.linuxtopia.org/online_books/programming_books/art_of_unix_programming/ch05s02.html). 
+* __Memory-friendly__. Files are processed using a custom stream technique, only 0.5MB are in memory at a time.
+* __Robust__. The library is not a simple parser and writer, is also a CSV data editor/manager. 
 * __[UTF-8](https://www.unicode.org/faq/utf_bom.html#UTF8) encoding support__. Do you have a CSV file, perhaps in chinese or some other foreign cyrillic language, downloaded from the Internet? This library is made to help you deal with it! You will be able to read and write UTF-8 encoded files in an easy way. 
 * __Easy to use__. A few lines of code can do the work!
-* __Automatic delimiter guesser__. Don't worry if you forgot the file configuration. The interface has a solid strategy for guessing delimiters!
+* __Automatic delimiter sniffer__. Don't worry if you forgot the file configuration. The interface has a solid strategy for sniff delimiters!
 * __Highly Configurable__. User can configure the parser to work with a wide range of CSV files.
 * __CSV data subsetting__. Split CSV data into a set of files with related data.
 * __Like SQL queries on CSV files__. Add your own logic to mimic SQL queries and filter data by criteria (=, <>, >=, <=, AND, OR).

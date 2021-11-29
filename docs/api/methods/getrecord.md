@@ -2,7 +2,7 @@
 title: GetRecord
 parent: Methods
 grand_parent: API
-nav_order: 11
+nav_order: 13
 ---
 
 # GetRecord
@@ -33,5 +33,26 @@ See also
 ## Behavior
 
 The `GetRecord` method returns an `CSVArrayList` object containing the data of a CSV record. If an error occurs or the end of file (EOF) is reached, the method returns `Nothing`.
+
+### ☕Example
+
+```vb
+Private Sub OpenSeqReaderAndGetRecord()
+    Dim CSVint As CSVinterface
+    Dim csvRecord As CSVArrayList
+            
+    Set CSVint = New CSVinterface
+    With CSVint
+        .parseConfig.path = Environ("USERPROFILE") & "\Desktop\Demo_100000records.csv"
+        Set .parseConfig.dialect = .SniffDelimiters(.parseConfig)
+        .OpenSeqReader .parseConfig, 1, 2                                                  'Start sequential reader
+                                                                                           'Import only 1st and 2nd fields
+        Do
+            Set csvRecord = .GetRecord                                                      'Get a record from CSV file
+        Loop While Not csvRecord Is Nothing                                                 'Loop trhonght all records in file
+    End With
+    Set CSVint = Nothing
+End Sub
+```
 
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)

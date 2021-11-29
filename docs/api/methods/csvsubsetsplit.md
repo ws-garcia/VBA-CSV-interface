@@ -57,4 +57,20 @@ The `CSVsubsetSplit` method will create a file for each different value (data gr
 >The result subsets will be saved in a folder named [\*-subsets], where (\*) denotes the name of the source CSV file.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
+### ☕Example
+
+```vb
+Sub SplitCSV()
+    Dim CSVint As CSVinterface
+    Dim path As String
+    
+    Set CSVint = New CSVinterface
+    path = Environ("USERPROFILE") & "\Desktop\Demo_100000records.csv"
+    CSVint.CSVsubsetSplit path, 3, True   ' Split the CSV and rank the resulting files by
+                                          ' the contents of the third column. Header is
+                                          ' assumed to be present on the file.
+    Set CSVint = Nothing
+End Sub
+```
+
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)
