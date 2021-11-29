@@ -3403,7 +3403,7 @@ Sort_Error_Handler:
     P_ERROR_DESC = "[Sort] " & Err.Description
     P_ERROR_SOURCE = Err.Source
 End Function
-Public Function SplitField(CharToSplitWith As String, aIndex As Long) As CSVinterface
+Public Function SplitField(aIndex As Long, CharToSplitWith As String) As CSVinterface
     On Error GoTo ErrHandler_SplitField
     If P_SUCCESSFUL_IMPORT And Not P_VARYING_LENGTHS Then
         Select Case aIndex
