@@ -3001,7 +3001,7 @@ OutOfBounds_RemoveField:
                     Description:="The specified index is out of bounds. Please check and try again."
     Resume ErrHandler_RemoveField
 End Function
-Public Function RemoveRecords(aIndex As Long, count As Long) As CSVinterface
+Public Function RemoveRecords(aIndex As Long, Optional count As Long = 1) As CSVinterface
     On Error GoTo ErrHandler_RemoveRecords
     If P_SUCCESSFUL_IMPORT And Not P_VARYING_LENGTHS Then
         Select Case aIndex
