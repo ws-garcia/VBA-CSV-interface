@@ -11,7 +11,7 @@ New
 {: .label .label-purple }
 
 Easy-to-use class module developed to enable I/O operations over "big" text files, at high speed, from VBA. The module hasn’t reference to any external API library and has the ability to read and write UTF-8 encoded files.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 

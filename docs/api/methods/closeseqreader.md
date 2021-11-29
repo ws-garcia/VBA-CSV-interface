@@ -6,10 +6,10 @@ nav_order: 2
 ---
 
 # CloseSeqReader
-{: .fs-9 }
+{: .fs-6 }
 
 Closes an open sequential reader.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 

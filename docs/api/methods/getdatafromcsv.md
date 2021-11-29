@@ -6,10 +6,10 @@ nav_order: 12
 ---
 
 # GetDataFromCSV
-{: .fs-9 }
+{: .fs-6 }
 
 Dumps a CSV/TSV file content to a string variable
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 

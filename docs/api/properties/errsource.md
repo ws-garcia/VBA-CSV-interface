@@ -6,10 +6,10 @@ nav_order: 5
 ---
 
 # errSource
-{: .fs-9 }
+{: .fs-6 }
 
 Gets the source for the last occurred error over the current instance.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 

@@ -6,10 +6,10 @@ nav_order: 11
 ---
 
 # GetCSVsubset
-{: .fs-9 }
+{: .fs-6 }
 
 Returns a set of records matching the criteria applied to a desired field from a CSV file.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 

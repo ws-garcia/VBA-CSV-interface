@@ -6,10 +6,10 @@ nav_order: 11
 ---
 
 # items
-{: .fs-9 }
+{: .fs-6 }
 
 Gets or sets the result `CSVArrayList` on the current instance.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 

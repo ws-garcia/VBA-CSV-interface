@@ -12,7 +12,7 @@ New
 {: .label .label-purple }
 
 Rearranges the fields of the imported CSV data.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 

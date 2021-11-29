@@ -6,10 +6,10 @@ nav_order: 3
 ---
 
 # errDescription
-{: .fs-9 }
+{: .fs-6 }
 
 Gets the description for the last occurred error over the current instance.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 

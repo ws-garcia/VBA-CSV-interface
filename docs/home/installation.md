@@ -7,7 +7,7 @@ description: "Install instructions for the VBA CSV interface class."
 ---
 
 # Installation
-{: .fs-9 }
+{: .fs-6 }
 
 ---
 

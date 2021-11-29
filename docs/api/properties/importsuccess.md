@@ -9,7 +9,7 @@ nav_order: 9
 {: .fs-9 .fw-300 }
 
 Gets the import operation status for the current instance.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 

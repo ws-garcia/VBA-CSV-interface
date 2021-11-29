@@ -6,10 +6,10 @@ nav_order: 8
 ---
 
 # DumpToSheet
-{: .fs-9 }
+{: .fs-6 }
 
 Dumps data from a source, or from the current instance, to an Excel WorkSheet.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 

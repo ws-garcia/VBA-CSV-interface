@@ -6,4 +6,4 @@ nav_order: 1
 ---
 
 # Properties
-{: .fs-9 }
+{: .fs-6 }

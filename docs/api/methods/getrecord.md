@@ -6,10 +6,10 @@ nav_order: 13
 ---
 
 # GetRecord
-{: .fs-9 }
+{: .fs-6 }
 
 Reads a new record from the CSV sequentially forward.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 

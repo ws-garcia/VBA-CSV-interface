@@ -12,7 +12,7 @@ New
 {: .label .label-purple }
 
 Returns a list of records as a result of the deduplication of the imported CSV data.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 

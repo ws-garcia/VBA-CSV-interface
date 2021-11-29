@@ -6,4 +6,4 @@ nav_order: 3
 ---
 
 # Methods
-{: .fs-9 }
+{: .fs-6 }

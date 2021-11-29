@@ -12,7 +12,7 @@ New
 {: .label .label-purple }
 
 Removes a field, at the specified position, from the imported CSV data.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 

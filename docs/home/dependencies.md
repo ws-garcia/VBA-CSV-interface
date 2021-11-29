@@ -6,7 +6,7 @@ nav_order: 3
 ---
 
 # Dependencies
-{: .fs-9 }
+{: .fs-6 }
 
 The CSV interface library is composed of the following class modules:
 

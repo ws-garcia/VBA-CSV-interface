@@ -11,7 +11,7 @@ New
 {: .label .label-purple }
 
 Class module developed to emulate some functionalities from the `ArrayList` present in some most modern languages. The `CSVArrayList` serve as a container for all the data read from CSV files and can be used to manipulate the stored items, or to store data that does not come from a CSV file, according to the user's request.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 

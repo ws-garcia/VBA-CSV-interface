@@ -6,10 +6,10 @@ nav_order: 5
 ---
 
 # DumpToAccessTable
-{: .fs-9 }
+{: .fs-6 }
 
 Dumps the data from the current instance to a Microsoft Access Database (.accdb).
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 

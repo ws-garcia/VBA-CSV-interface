@@ -6,10 +6,10 @@ nav_order: 6
 ---
 
 # exportSuccess
-{: .fs-9 }
+{: .fs-6 }
 
 Gets the export operation status for the current instance.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 

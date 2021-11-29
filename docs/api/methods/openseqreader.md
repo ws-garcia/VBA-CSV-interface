@@ -6,10 +6,10 @@ nav_order: 19
 ---
 
 # OpenSeqReader
-{: .fs-9 }
+{: .fs-6 }
 
 Opens a sequential CSV reader for import records one at a time.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 

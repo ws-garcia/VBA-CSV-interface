@@ -12,7 +12,7 @@ New
 {: .label .label-purple }
 
 Returns a CSV dialect after run an analysis over a String variable or in the CSV/TSV file indicated in the `.path` property of the configuration object.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 

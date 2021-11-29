@@ -6,10 +6,10 @@ nav_order: 14
 ---
 
 # ImportFromCSV
-{: .fs-9 }
+{: .fs-6 }
 
 Imports a CSV/TSV file's content to the current instance.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 

@@ -11,7 +11,7 @@ New
 {: .label .label-purple }
 
 Class module developed to share CSV dialects, or group of specific and related configuration, which instructs the parser on how to interpret the character set read from a CSV file. This container travels through the parsing and sniffer methods.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 

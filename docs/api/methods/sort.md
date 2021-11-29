@@ -6,10 +6,10 @@ nav_order: 27
 ---
 
 # Sort
-{: .fs-9 }
+{: .fs-6 }
 
 Sorts the imported CSV/TSV data.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 

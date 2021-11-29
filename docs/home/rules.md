@@ -6,7 +6,7 @@ nav_order: 4
 ---
 
 # RFC-4180 rules
-{: .fs-9 }
+{: .fs-6 }
 
 The CSVinterface library is intended to be nearest as possible to the RFC-4180 specs for CSV files, despite this some tweaks are added to make the interface more robust and useful.
 

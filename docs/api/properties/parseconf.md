@@ -6,10 +6,10 @@ nav_order: 12
 ---
 
 # parseConfig
-{: .fs-9 }
+{: .fs-6 }
 
 Holds the parser configuration for the current instance.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 

@@ -12,7 +12,7 @@ New
 {: .label .label-purple }
 
 Gets the result array regularity status on the current instance.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 

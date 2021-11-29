@@ -6,10 +6,10 @@ nav_order: 1
 ---
 
 # ClearData
-{: .fs-9 }
+{: .fs-6 }
 
 Erases the imported CSV/TSV data from the current instance.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 

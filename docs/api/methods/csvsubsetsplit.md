@@ -6,10 +6,10 @@ nav_order: 3
 ---
 
 # CSVsubsetSplit
-{: .fs-9 }
+{: .fs-6 }
 
 Splits the CSV data into a set of files in which each piece has a related portion of the data.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 

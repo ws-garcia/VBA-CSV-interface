@@ -6,10 +6,10 @@ nav_order: 10
 ---
 
 # item
-{: .fs-9 }
+{: .fs-6 }
 
 Gets a field, or an array with an entire record, from the result `CSVArrayList` on the current instance.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 

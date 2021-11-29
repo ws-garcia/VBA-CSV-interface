@@ -7,7 +7,7 @@ description: "Introduction to the VBA CSV interface library."
 ---
 
 # Getting Started
-{: .fs-9 }
+{: .fs-6 }
 
 ---
 

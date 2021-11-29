@@ -6,10 +6,10 @@ nav_order: 15
 ---
 
 # ImportFromCSVstring
-{: .fs-9 }
+{: .fs-6 }
 
 Parses a string and save its CSV/TSV data to the current instance.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 
