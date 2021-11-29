@@ -2843,6 +2843,7 @@ ParseCSVstring_NoSignificantData:
     Resume ParseCSVstring_Error_Handler
 End Sub
 Public Function RearrangeFields(FieldsOrder As String) As CSVinterface
+    On Error GoTo ErrHandler_RearrangeFields
     If P_SUCCESSFUL_IMPORT And Not P_VARYING_LENGTHS Then
         Dim tmpFldOrder() As String
         Dim cpRecord() As Variant
@@ -2865,7 +2866,7 @@ Public Function RearrangeFields(FieldsOrder As String) As CSVinterface
                 tmpRecord() = .item(rCounter)
                 iRecCnt = 0
                 For fCounter = LBound(tmpFldOrder) To UBound(tmpFldOrder)
-                    cpRecord(iRecCnt) = tmpRecord(CDbl(tmpFldOrder(fCounter)))
+                    cpRecord(CDbl(tmpFldOrder(iRecCnt))) = tmpRecord(fCounter)
                     iRecCnt = iRecCnt + 1
                 Next fCounter
                 .item(rCounter) = cpRecord
@@ -3402,6 +3403,64 @@ Sort_Error_Handler:
     P_ERROR_NUMBER = Err.Number
     P_ERROR_DESC = "[Sort] " & Err.Description
     P_ERROR_SOURCE = Err.Source
+End Function
+Public Function SortByField(Optional ByVal FromIndex As Long = -1, _
+                            Optional ByVal ToIndex As Long = -1, _
+                            Optional ByVal SortingKey As Long = 1, _
+                            Optional ByVal SortAlgorithm As SortingAlgorithms = SortingAlgorithms.SA_IntroSort) As CSVinterface
+    
+    On Error GoTo SortByField_Error_Handler:
+    
+    If P_SUCCESSFUL_IMPORT Then
+        If FromIndex = -1 Then
+            FromIndex = 1
+        End If
+        Dim CurField As CSVArrayList
+        Dim CurFieldArray() As Variant
+        Dim sfIcounter As Long
+        
+        Set CurField = New CSVArrayList
+        CurFieldArray() = P_CSV_DATA(Abs(SortingKey) - 1)
+        If ToIndex = -1 Then
+            ToIndex = UBound(CurFieldArray) + 1
+        End If
+        For sfIcounter = LBound(CurFieldArray) To UBound(CurFieldArray)
+            CurField.Add2 CurFieldArray(sfIcounter)
+        Next sfIcounter
+        CurField.ShrinkBuffer
+        CurField.Sort FromIndex, ToIndex, Sgn(SortingKey) * 1, SortAlgorithm
+        RearrangeFields SortRearrangeGetStr(CurFieldArray, CurField)
+        Set SortByField = Me
+    End If
+    Exit Function
+SortByField_Error_Handler:
+    P_ERROR_NUMBER = Err.Number
+    P_ERROR_DESC = "[SortByField] " & Err.Description
+    P_ERROR_SOURCE = Err.Source
+End Function
+Private Function SortRearrangeGetStr(FieldArray() As Variant, SortedFieldList As CSVArrayList) As String
+    Dim srgIcounter As Long
+    Dim srgJcounter As Long
+    Dim srgTmpBool As Boolean
+    Dim tmpData() As Variant
+    Dim fldPos As Long
+    Dim tmpResult As CSVArrayList
+    
+    tmpData() = SortedFieldList.items
+    Set tmpResult = New CSVArrayList
+    For srgIcounter = LBound(FieldArray) To UBound(FieldArray)
+        srgJcounter = LBound(tmpData)
+        fldPos = 0
+        Do
+            srgTmpBool = (tmpData(srgJcounter)(0) = FieldArray(srgIcounter))
+            If Not srgTmpBool Then
+                fldPos = fldPos + 1
+            End If
+            srgJcounter = srgJcounter + 1
+        Loop While Not srgTmpBool And srgJcounter <= UBound(tmpData)
+        tmpResult.Add fldPos
+    Next srgIcounter
+    SortRearrangeGetStr = Join$(tmpResult.items, ",")
 End Function
 Public Function SplitField(aIndex As Long, CharToSplitWith As String) As CSVinterface
     On Error GoTo ErrHandler_SplitField
