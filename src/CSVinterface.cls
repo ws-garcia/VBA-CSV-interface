@@ -448,18 +448,9 @@ Public Sub DumpToArray(OutPutArray() As Variant, _
         Set DataSource = P_CSV_DATA
     End If
     If Not DataSource Is Nothing Then
-        Dim UB1 As Long, ub2 As Long
-        Dim Counter1 As Long, Counter2 As Long
-        
-        UB1 = DataSource.count - 1
-        ReDim OutPutArray(0 To UB1, 0 To P_VECTORS_MAX_BOUND)
-        
-        For Counter1 = 0 To UB1
-            ub2 = UBound(DataSource(Counter1))
-            For Counter2 = 0 To ub2
-                OutPutArray(Counter1, Counter2) = DataSource(Counter1)(Counter2)
-            Next Counter2
-        Next Counter1
+        Dim tmpOutputArray() As Variant
+        tmpOutputArray = DataSource.items
+        DataSource.JaggedToTwoDimArray tmpOutputArray, OutPutArray
     End If
 End Sub
 Public Sub DumpToJaggedArray(OutPutArray() As Variant, _
@@ -468,15 +459,7 @@ Public Sub DumpToJaggedArray(OutPutArray() As Variant, _
         Set DataSource = P_CSV_DATA
     End If
     If Not DataSource Is Nothing Then
-        Dim UB1 As Long
-        Dim Counter1 As Long
-        
-        UB1 = DataSource.count - 1
-        ReDim OutPutArray(0 To UB1)
-        
-        For Counter1 = 0 To UB1
-            OutPutArray(Counter1) = DataSource(Counter1)
-        Next Counter1
+        OutPutArray() = DataSource.items
     End If
 End Sub
 Public Sub DumpToSheet(Optional WBookName As String, _
@@ -517,19 +500,15 @@ Public Sub DumpToSheet(Optional WBookName As String, _
         End If
         '@------------------------------------------------------
         'Dump the data
-        Dim tmpOutputArray() As String
-        Dim UB1 As Long, ub2 As Long
+        Dim tmpOutputArray() As Variant
+        Dim UB1 As Long, UB2 As Long
         Dim Counter1 As Long, Counter2 As Long
+        Dim OutPutArr() As Variant
         
         UB1 = DataSource.count - 1
-        ReDim tmpOutputArray(0 To UB1, 0 To colNumber)
-        
-        For Counter1 = 0 To UB1
-            ub2 = UBound(DataSource(Counter1))
-            For Counter2 = 0 To ub2
-                tmpOutputArray(Counter1, Counter2) = DataSource(Counter1)(Counter2)
-            Next Counter2
-        Next Counter1
+        tmpOutputArray() = DataSource.items
+        DataSource.JaggedToTwoDimArray tmpOutputArray, OutPutArr
+
         '@------------------------------------------------------
         'Set the target Range
         Set OutputRange = outputSheet.Range(rngName) _
@@ -538,8 +517,9 @@ Public Sub DumpToSheet(Optional WBookName As String, _
                             UB1 + 1, _
                             colNumber + 1 _
                             )
-        OutputRange.Value2 = tmpOutputArray
+        OutputRange.Value2 = OutPutArr
         Erase tmpOutputArray
+        Erase OutPutArr
         EnableOptimization False
     End If
 End Sub
@@ -1750,8 +1730,9 @@ Private Function JoinRecordsFields(ByRef RecordsArray As Variant, _
     Dim QuoteT As QuoteTokens
     Dim FldDelimiter As String
     Dim iLCounter As Long, jLCounter As Long
+    Dim JaggedRecordsArray() As Variant
     Dim LB1 As Long, UB1 As Long
-    Dim LB2 As Long, ub2 As Long
+    Dim LB2 As Long, UB2 As Long
     Dim recDelimiter As String
     Dim arrayHelper As CSVArrayList
     
@@ -1781,6 +1762,7 @@ Private Function JoinRecordsFields(ByRef RecordsArray As Variant, _
     EscapeSequence = CoerceChr & CoerceChr
     Dim tmpBuffer As Variant
     If LCase(TypeName(RecordsArray)) = "csvarraylist" Then
+        JaggedRecordsArray() = RecordsArray.items
         '@----------------------------------------------------------------------------
         'Set array sizes
         LB1 = 0
@@ -1789,11 +1771,11 @@ Private Function JoinRecordsFields(ByRef RecordsArray As Variant, _
         '@----------------------------------------------------------------------------
         'Concatenate fields
         For iLCounter = LB1 To UB1
-            tmpBuffer = RecordsArray(iLCounter)
+            tmpBuffer = JaggedRecordsArray(iLCounter)
             LB2 = LBound(tmpBuffer)
-            ub2 = UBound(tmpBuffer)
-            ReDim Buffer(LB2 To ub2)
-            For jLCounter = LB2 To ub2
+            UB2 = UBound(tmpBuffer)
+            ReDim Buffer(LB2 To UB2)
+            For jLCounter = LB2 To UB2
                 Buffer(jLCounter) = tmpBuffer(jLCounter)
                 If UseUnixEscapeSeq Then
                     UnixEscapeField Buffer(jLCounter), CoerceChr, FldDelimiter, _
@@ -1816,15 +1798,15 @@ Private Function JoinRecordsFields(ByRef RecordsArray As Variant, _
         LB1 = LBound(RecordsArray, 1)
         LB2 = LBound(RecordsArray, 2)
         UB1 = UBound(RecordsArray, 1)
-        ub2 = UBound(RecordsArray, 2)
+        UB2 = UBound(RecordsArray, 2)
         '@----------------------------------------------------------------------------
         'Set array sizes
         ReDim ConcatenatedArray(LB1 To UB1)
-        ReDim Buffer(LB2 To ub2)
+        ReDim Buffer(LB2 To UB2)
         '@----------------------------------------------------------------------------
         'Concatenate fields
         For iLCounter = LB1 To UB1
-            For jLCounter = LB2 To ub2
+            For jLCounter = LB2 To UB2
                 Buffer(jLCounter) = RecordsArray(iLCounter, jLCounter)
                 If UseUnixEscapeSeq Then
                     UnixEscapeField Buffer(jLCounter), CoerceChr, FldDelimiter, _
@@ -1882,9 +1864,9 @@ Private Function JoinRecordsFields(ByRef RecordsArray As Variant, _
             For iLCounter = LB1 To UB1
                 tmpBuffer = RecordsArray(iLCounter)
                 LB2 = LBound(tmpBuffer)
-                ub2 = UBound(tmpBuffer)
-                ReDim Buffer(LB2 To ub2)
-                For jLCounter = LB2 To ub2
+                UB2 = UBound(tmpBuffer)
+                ReDim Buffer(LB2 To UB2)
+                For jLCounter = LB2 To UB2
                     Buffer(jLCounter) = tmpBuffer(jLCounter)
                     If UseUnixEscapeSeq Then
                         UnixEscapeField Buffer(jLCounter), CoerceChr, FldDelimiter, _
