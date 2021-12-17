@@ -18,7 +18,7 @@ Splits the specified field in the imported CSV data.
 
 ## Syntax
 
-*expression*.`SplitField`*(aIndex, CharToMergeWith)*
+*expression*.`SplitField`*(aIndex, CharToSplitWith)*
 
 ### Parameters
 
