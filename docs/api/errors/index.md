@@ -12,11 +12,9 @@ This section describes the custom errors whose components are returned by the pa
 
 <table>
 <thead>
-<tr>
 <th style="text-align: left;">Error number</th>
 <th style="text-align: left;">Error description</th>
 <th style="text-align: left;">Error source</th>
-</tr>
 </thead>
 <tbody>
 <tr>
@@ -96,18 +94,22 @@ This section describes the custom errors whose components are returned by the pa
 <tr>
 <td style="text-align: left;"><em>-2147212482</em></td>
 <td style="text-align: left;">[CSV Fields Merge]: Cannot merge the fields in the current instance. This is because there is no imported data or the records do not have the same number of fields.</td>
+<td style="text-align: left;">CSVinterface Class.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><em>-2147212481</em></td>
 <td style="text-align: left;">[CSV Field Split]: Cannot split the field in the current instance. This is because there is no imported data or the records do not have the same number of fields.</td>
+<td style="text-align: left;">CSVinterface Class.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><em>-2147212480</em></td>
 <td style="text-align: left;">[CSV Field Shift: Cannot shift the field in the current instance. This is because there is no imported data or the records do not have the same number of fields.</td>
+<td style="text-align: left;">CSVinterface Class.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><em>-2147212479</em></td>
 <td style="text-align: left;">[CSV Field Shift: Cannot shift the record in the current instance. This is because there is no imported data or the records do not have the same number of fields.</td>
+<td style="text-align: left;">CSVinterface Class.</td>
 </tr>
 </tbody>
 </table>
