@@ -1,18 +1,18 @@
 ---
-title: vectorsBound
+title: fieldsBound
 parent: Properties
 grand_parent: API
-nav_order: 12
+nav_order: 7
 ---
 
-# vectorsBound
+# fieldsBound
 {: .d-inline-block }
 
 New
 {: .label .label-purple }
 
 Gets the regular bound of the vectors in the result array on the current instance.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 
@@ -24,7 +24,7 @@ _ReadOnly_
 
 ## Syntax
 
-*expression*.`vectorsBound`
+*expression*.`fieldsBound`
 
 ### Parameters
 
@@ -36,7 +36,7 @@ _None_
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->The `vectorsBound` property returns the number of fields the header record has. Is assumed to the most of the records in the result array has the same number of fields. In an irregular result array will exist at least one record with a number of fields greater than the value hold by this property.
+>The `fieldsBound` property returns the number of fields the header record has. Is assumed to the most of the records in the result array has the same number of fields. In an irregular result array will exist at least one record with a number of fields greater or less than the value hold by this property.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 See also

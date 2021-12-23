@@ -6,10 +6,10 @@ nav_order: 1
 ---
 
 # count
-{: .fs-9 }
+{: .fs-6 }
 
 Gets the number of records stored on the current instance after an import operation from a CSV/TSV file.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 

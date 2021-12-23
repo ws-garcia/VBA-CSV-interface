@@ -2,17 +2,14 @@
 title: parseConfig
 parent: Properties
 grand_parent: API
-nav_order: 10
+nav_order: 12
 ---
 
 # parseConfig
-{: .d-inline-block }
+{: .fs-6 }
 
-New
-{: .label .label-purple }
-
-Gets or sets the parser configuration for the current instance.
-{: .fs-6 .fw-300 }
+Holds the parser configuration for the current instance.
+{: .fs-4 .fw-300 }
 
 ---
 
@@ -53,7 +50,7 @@ _Yes_
 <tr>
 <td style="text-align: left; color:blue;"><em>bufferSize</em></td>
 <td style="text-align: left;">Property</td>
-<td style="text-align: left;">Gets or sets the buffer’s size, in MB, for the <code>ECPTextStream.cls</code> text stream operations. By default, this property is set to 0.5 MB for CSV/TSV file streams. When parsing a file with very long lines, it is necessary to adjust this property to avoid unexpected behavior.</td>
+<td style="text-align: left;">Gets or sets the buffer’s size, in MB, for the text stream operations using the <code>CSVTextStream.cls</code>. By default, this property is set to 0.5 MB for CSV/TSV file streams. When parsing a file with very long lines, the code attempts to adjust this value to avoid unexpected behavior.</td>
 </tr>
 <tr>
 <td style="text-align: left; color:blue;"><em>commentsToken</em></td>
@@ -68,12 +65,12 @@ _Yes_
 <tr>
 <td style="text-align: left; color:blue;"><em>DefineTypingTemplate</em></td>
 <td style="text-align: left;">Method</td>
-<td style="text-align: left;">This method is used to create the Dynamic Typing Template (DTT) through a <code>ParamArray</code>. User must specify a data conversion using the <code>TypeConversion</code> enumeration. Each DTT conversion needs to be linked to a field index.</td>
+<td style="text-align: left;">This method is used to create the Dynamic Typing Template (DTT) through a <code>ParamArray</code>. User must specify a data conversion using the <code>TypeConversion</code> enumeration. Each DTT element must be linked to a field index.</td>
 </tr>
 <tr>
 <td style="text-align: left; color:blue;"><em>DefineTypingTemplateLinks</em></td>
 <td style="text-align: left;">Method</td>
-<td style="text-align: left;">This method is used to link the Dynamic Typing Template (DTT), through a <code>ParamArray</code>, to specific fields. User must specify a column index (<code>Long</code>) for each data type conversion defined in the Typing Template.</td>
+<td style="text-align: left;">This method is used to link the Dynamic Typing Template (DTT), through a <code>ParamArray</code>, to specific fields. User must specify a column index (<code>Long</code>) for each element defined in the DTT.</td>
 </tr>
 <tr>
 <td style="text-align: left; color:blue;"><em>delimitersGuessing</em></td>
@@ -83,7 +80,12 @@ _Yes_
 <tr>
 <td style="text-align: left; color:blue;"><em>delimitersToGuess</em></td>
 <td style="text-align: left;">Property</td>
-<td style="text-align: left;">Gets or sets the delimiters used on the <code>delimitersGuessing</code> operation. By default, the parser uses a <code>String</code> array with the chars comma (","), semicolon (";"), Tab (<code>vbTab</code>),  pipe ("|") and colon (":").</td>
+<td style="text-align: left;">Gets or sets the delimiters used on the <code>delimitersGuessing</code> operation. By default, the parser uses a <code>String</code> array with the chars comma (<code>,</code>), semicolon (<code>;</code>), Tab (<code>vbTab</code>),  pipe (<code>|</code>) and colon (<code>:</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left; color:blue;"><em>dialect</em></td>
+<td style="text-align: left;">Property</td>
+<td style="text-align: left;">Gets or sets a <code>CSVdialect</code> object with attributes to help the parser handle delimiters, quotes and escape modes in the requested CSV file. Refer to the documentation for the <code>CSVdialect</code> class for more detailed information on.</td>
 </tr>
 <tr>
 <td style="text-align: left; color:blue;"><em>dTTemplateDefined</em></td>
@@ -108,22 +110,7 @@ _Yes_
 <tr>
 <td style="text-align: left; color:blue;"><em>dynamicTyping</em></td>
 <td style="text-align: left;">Property</td>
-<td style="text-align: left;">Gets or sets the Dynamic Typing behavior. By default, this property is set to <code>False</code>. If the value is set to <code>True</code> the parser will use the DTT to type the template linked fields.</td>
-</tr>
-<tr>
-<td style="text-align: left; color:blue;"><em>endingRecord</em></td>
-<td style="text-align: left;">Property</td>
-<td style="text-align: left;">This property must be used in combination with the <code>startingRecord</code> property for import a certain range of records from a CSV/TSV file.</td>
-</tr>
-<tr>
-<td style="text-align: left; color:blue;"><em>escapeToken</em></td>
-<td style="text-align: left;">Property</td>
-<td style="text-align: left;">Gets or sets the char that will be used for quote those fields containing some CSV/TSV syntax special char. The user must use the <code>EscapeTokens</code> enumeration to define this property. The user can choose between double quotes ("), single quotes (') and tilde (~) as escapeToken.</td>
-</tr>
-<tr>
-<td style="text-align: left; color:blue;"><em>fieldsDelimiter</em></td>
-<td style="text-align: left;">Property</td>
-<td style="text-align: left;">Gets or sets the char that will be used for delimit fields in the target CSV/TSV file.</td>
+<td style="text-align: left;">Gets or sets the Dynamic Typing behavior. By default, this property is set to <code>False</code>. If the value is set to <code>True</code> the parser will use the DTT to type/convert the fields linked to the template.</td>
 </tr>
 <tr>
 <td style="text-align: left; color:blue;"><em>headers</em></td>
@@ -136,14 +123,14 @@ _Yes_
 <td style="text-align: left;">If <code>True</code>, the parser will omit the header record.</td>
 </tr>
 <tr>
+<td style="text-align: left; color:blue;"><em>multiEndOfLineCSV</em></td>
+<td style="text-align: left;">Property</td>
+<td style="text-align: left;">Gets or sets the behavior of the parser when reading streams from text files. By default, this property is set to <code>False</code>. If the value is set to <code>True</code>, all line break characters in the loaded stream will be converted to <code>vbLf</code>. This option will affect performance, but may be useful when faced with CSV files with <code>vbCrLf</code>, <code>vbCr</code> and <code>vbLf</code> mixed in as line endings.</td>
+</tr>
+<tr>
 <td style="text-align: left; color:blue;"><em>path</em></td>
 <td style="text-align: left;">Property</td>
 <td style="text-align: left;">The full path, including the file name and its extension, to the target CSV/TSV.</td>
-</tr>
-<tr>
-<td style="text-align: left; color:blue;"><em>recordsDelimiter</em></td>
-<td style="text-align: left;">Property</td>
-<td style="text-align: left;">Gets or sets the char that will be used for delimit records in the target CSV/TSV file.</td>
 </tr>
 <tr>
 <td style="text-align: left; color:blue;"><em>skipCommentLines</em></td>
@@ -161,19 +148,14 @@ _Yes_
 <td style="text-align: left;">This property must be used in combination with the <code>endingRecord</code> property for import a certain range of records from a CSV/TSV file.</td>
 </tr>
 <tr>
-<td style="text-align: left; color:blue;"><em>turnStreamRecDelimiterToLF</em></td>
+<td style="text-align: left; color:blue;"><em>utf8EncodedFile</em></td>
 <td style="text-align: left;">Property</td>
-<td style="text-align: left;">Gets or sets the behavior of the parser when reading streams from text files. By default, this property is set to <code>False</code>. If the value is set to <code>True</code>, all line break characters in the loaded stream will be converted to <code>vbLf</code>. This option will affect performance, but may be useful when faced with CSV files with <code>vbCrLf</code>, <code>vbCr</code> and <code>vbLf</code> mixed in as line endings.</td>
-</tr>
-<tr>
-<td style="text-align: left; color:blue;"><em>unixEscapeMechanism</em></td>
-<td style="text-align: left;">Property</td>
-<td style="text-align: left;">Gets or sets the behavior of the parser when escaping or unescaping quotes. By default, this property is set to <code>False</code>. If the value is set to <code>True</code>, the escape character must be escaped by preceding it with a unix-style backslash (<code>\"</code>).</td>
+<td style="text-align: left;">Gets or sets the behavior of the text stream reader when returning data read from a CSV file. By default, this property is set to <code>False</code>. If the value is set to <code>True</code>, the data obtained from the file will be interpreted as UTF-8 encoded and operated on before returning the buffer string. This property internationalizes the parser, making it capable of dealing with files in almost any foreign language: Chinese, Russian, Danish, Greek...</td>
 </tr>
 </tbody>
 </table>
 
 See also
-: [ECPTextStream](https://github.com/ws-garcia/ECPTextStream).
+: [CSVdialect class](https://ws-garcia.github.io/VBA-CSV-interface/api/csvdialect.html), [CSVTextStream class](https://ws-garcia.github.io/VBA-CSV-interface/api/csvtextstream.html).
 
 [Back to Properties overview](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/)

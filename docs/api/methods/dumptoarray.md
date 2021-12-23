@@ -6,10 +6,10 @@ nav_order: 6
 ---
 
 # DumpToArray
-{: .fs-9 }
+{: .fs-6 }
 
 Dumps data from a source, or from the current instance, to an array.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 
@@ -33,7 +33,7 @@ Dumps data from a source, or from the current instance, to an array.
 </tr>
 <tr>
 <td style="text-align: left;"><em>DataSource</em></td>
-<td style="text-align: left;">Optional. Identifier specifying a <code>ECPArrayList</code> object variable representing the data to copy from.</td>
+<td style="text-align: left;">Optional. Identifier specifying a <code>CSVArrayList</code> object variable representing the data to copy from.</td>
 </tr>
 </tbody>
 </table>
@@ -60,5 +60,25 @@ When the *DataSource* parameter is omitted the `DumpToArray` method makes a copy
 >{: .text-grey-lt-000 .bg-green-000 }
 >The data is always returned in a Two-dimensional array, even when the imported file only contain a field per record.
 {: .text-grey-dk-300 .bg-yellow-000 }
+
+### ☕Example
+
+```vb
+Sub DumpToArrray()
+    Dim CSVint As CSVinterface
+    Dim MyArray() As Variant
+    
+    Set CSVint = New CSVinterface
+    With CSVint.parseConfig
+        .path = Environ("USERPROFILE") & "\Desktop\Demo_100000records.csv"
+    End With
+    With CSVint
+        .ImportFromCSV .parseConfig       'Import CSV data
+        .DumpToArray MyArray              'Dump the data to an array
+    End With
+    Erase MyArray
+    Set CSVint = Nothing
+End Sub
+```
 
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)

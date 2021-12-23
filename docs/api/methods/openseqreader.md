@@ -2,17 +2,14 @@
 title: OpenSeqReader
 parent: Methods
 grand_parent: API
-nav_order: 18
+nav_order: 19
 ---
 
 # OpenSeqReader
-{: .d-inline-block }
-
-New
-{: .label .label-purple }
+{: .fs-6 }
 
 Opens a sequential CSV reader for import records one at a time.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 
@@ -32,7 +29,7 @@ Opens a sequential CSV reader for import records one at a time.
 <tbody>
 <tr>
 <td style="text-align: left;"><em>configObj</em></td>
-<td style="text-align: left;">Required. Identifier specifying a <code>ParserConfig</code> object variable.</td>
+<td style="text-align: left;">Required. Identifier specifying a <code>CSVparserConfig</code> object variable.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><em>FilterColumns</em></td>
@@ -46,7 +43,7 @@ Opens a sequential CSV reader for import records one at a time.
 _None_
 
 See also
-: [GetRecord Method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/getrecord.html), [CloseSeqReader Method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/closeseqreader.html), [ParseConfig Property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/parseconf.html).
+: [GetRecord Method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/getrecord.html), [CloseSeqReader Method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/closeseqreader.html), [ParseConfig Property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/parseconf.html), [CSVTextStream class](https://ws-garcia.github.io/VBA-CSV-interface/api/csvtextstream.html).
 
 ---
 
@@ -59,5 +56,26 @@ The `OpenSeqReader` method works in conjunction with the `GetRecord` method. The
 >{: .text-grey-lt-000 .bg-green-000 }
 >After opening a sequential reader, the user can read the CSV records one by one and implement logics to work with the extracted data. This makes it possible to mimic the more complex behavior of SQL statements.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
+
+### ☕Example
+
+```vb
+Private Sub OpenSeqReaderAndGetRecord()
+    Dim CSVint As CSVinterface
+    Dim csvRecord As CSVArrayList
+            
+    Set CSVint = New CSVinterface
+    With CSVint
+        .parseConfig.path = Environ("USERPROFILE") & "\Desktop\Demo_100000records.csv"
+        Set .parseConfig.dialect = .SniffDelimiters(.parseConfig)
+        .OpenSeqReader .parseConfig, 1, 2                                                  'Start sequential reader
+                                                                                           'Import only 1st and 2nd fields
+        Do
+            Set csvRecord = .GetRecord                                                      'Get a record from CSV file
+        Loop While Not csvRecord Is Nothing                                                 'Loop trhonght all records in file
+    End With
+    Set CSVint = Nothing
+End Sub
+```
 
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)

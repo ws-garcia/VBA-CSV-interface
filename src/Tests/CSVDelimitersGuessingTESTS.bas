@@ -2,21 +2,21 @@ Attribute VB_Name = "CSVDelimitersGuessingTESTS"
 Option Explicit
 Private ActualResult() As Variant
 Private ExpectedResult() As Variant
-Private confObj As parserConfig
+Private confObj As CSVparserConfig
 '#
 '/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 'RUN TEST
 Public Sub RunTest()
-    Dim FilePath As String
+    Dim filePath As String
     
-    FilePath = ThisWorkbook.path & Application.PathSeparator & "results" & Application.PathSeparator & _
+    filePath = ThisWorkbook.path & Application.PathSeparator & "results" & Application.PathSeparator & _
                         "CSV delimiter guessing test - " & Format(Now, "dd-mmm-yyyy h-mm-ss") & ".txt"
                         
-    RunDelimitersGuessingTest FilePath
+    RunDelimitersGuessingTest filePath
     ClearObjects
 End Sub
-Public Sub RunDelimitersGuessingTest(FilePath As String)
-    DelimitersGuessingTests FilePath
+Public Sub RunDelimitersGuessingTest(filePath As String)
+    DelimitersGuessingTests filePath
 End Sub
 Private Sub ClearObjects()
     Erase ActualResult
@@ -26,22 +26,22 @@ End Sub
 '/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 '#
 '/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-Public Function CreateActualDelimitersArray(ByRef confObj As parserConfig) As Variant()
+Public Function CreateActualDelimitersArray(ByRef confObj As CSVparserConfig) As Variant()
     Dim tmpResult() As Variant
     ReDim tmpResult(0 To 2)
-    tmpResult(0) = confObj.fieldsDelimiter
-    tmpResult(1) = confObj.recordsDelimiter
-    tmpResult(2) = confObj.escapeToken
+    tmpResult(0) = confObj.dialect.fieldsDelimiter
+    tmpResult(1) = confObj.dialect.recordsDelimiter
+    tmpResult(2) = confObj.dialect.quoteToken
     CreateActualDelimitersArray = tmpResult
 End Function
 Public Function CreateExpectedDelimitersArray(fieldsDelimiter As String, _
                                                 recordsDelimiter As String, _
-                                                EscapeChar As EscapeTokens) As Variant()
+                                                QuoteChar As QuoteTokens) As Variant()
     Dim tmpResult() As Variant
     ReDim tmpResult(0 To 2)
     tmpResult(0) = fieldsDelimiter
     tmpResult(1) = recordsDelimiter
-    tmpResult(2) = EscapeChar
+    tmpResult(2) = QuoteChar
     CreateExpectedDelimitersArray = tmpResult
 End Function
 '/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -211,124 +211,124 @@ End Function
 Sub GetActualAndExpectedResults(FileName As String, _
                                 fieldsDelimiter As String, _
                                 recordsDelimiter As String, _
-                                EscapeChar As EscapeTokens)
+                                QuoteChar As QuoteTokens)
     Dim csv As CSVinterface
     
     Set csv = New CSVinterface
     confObj.path = ThisWorkbook.path & Application.PathSeparator & _
                 "delimiters-guessing" & Application.PathSeparator & FileName
-    csv.GuessDelimiters confObj
+    Set confObj.dialect = csv.SniffDelimiters(confObj)
     ActualResult() = CreateActualDelimitersArray(confObj)
     ExpectedResult() = CreateExpectedDelimitersArray(fieldsDelimiter, _
                                                         recordsDelimiter, _
-                                                        EscapeChar)
+                                                        QuoteChar)
 End Sub
 '/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 '#
 '/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 'Testing Functions
 Sub MixedCommaAndSemicolon()
-    Set confObj = New parserConfig
+    Set confObj = New CSVparserConfig
     
     GetActualAndExpectedResults "Mixed comma and semicolon.csv", ";", vbLf, Apostrophe
 End Sub
 Sub FileWithMultiLineField()
-    Set confObj = New parserConfig
+    Set confObj = New CSVparserConfig
     
     GetActualAndExpectedResults "File with multi-line field.csv", ";", vbLf, DoubleQuotes
 End Sub
 Sub OptionalQuotedFields()
-    Set confObj = New parserConfig
+    Set confObj = New CSVparserConfig
     
     GetActualAndExpectedResults "Optional quoted fields.csv", ",", vbCrLf, DoubleQuotes
 End Sub
 Sub MixedCommaAndSemicolonB()
-    Set confObj = New parserConfig
+    Set confObj = New CSVparserConfig
     
     GetActualAndExpectedResults "Mixed comma and semicolon-B.csv", ";", vbLf, DoubleQuotes
 End Sub
 Sub GeometricsCSV()
-    Set confObj = New parserConfig
+    Set confObj = New CSVparserConfig
     
     GetActualAndExpectedResults "testGeometries.txt", ";", vbCrLf, DoubleQuotes
 End Sub
 Sub TableEmbeddedInTheLastRecord()
-    Set confObj = New parserConfig
+    Set confObj = New CSVparserConfig
     
     GetActualAndExpectedResults "Table embedded in the last record.csv", ",", vbLf, DoubleQuotes
 End Sub
 Sub TableEmbeddedInTheSecondRecord()
-    Set confObj = New parserConfig
+    Set confObj = New CSVparserConfig
     
     GetActualAndExpectedResults "Table embedded in the second record.csv", ",", vbLf, DoubleQuotes
 End Sub
 Sub MultipleCommasInFields()
-    Set confObj = New parserConfig
+    Set confObj = New CSVparserConfig
     
     GetActualAndExpectedResults "Multiple commas in fields.csv", ";", vbLf, DoubleQuotes
 End Sub
 Sub UncommonCharAsFieldDelimiter()
-    Dim DelimitersToGuess() As String
+    Dim delimitersToGuess() As String
     
-    Set confObj = New parserConfig
+    Set confObj = New CSVparserConfig
     
-    DelimitersToGuess() = confObj.DelimitersToGuess
-    ReDim Preserve DelimitersToGuess(LBound(DelimitersToGuess) To UBound(DelimitersToGuess) + 1)
-    DelimitersToGuess(UBound(DelimitersToGuess)) = "q" 'Add a new delimiter to guessing list
-    confObj.DelimitersToGuess = DelimitersToGuess 'Save configuration
+    delimitersToGuess() = confObj.delimitersToGuess
+    ReDim Preserve delimitersToGuess(LBound(delimitersToGuess) To UBound(delimitersToGuess) + 1)
+    delimitersToGuess(UBound(delimitersToGuess)) = "q" 'Add a new delimiter to guessing list
+    confObj.delimitersToGuess = delimitersToGuess 'Save configuration
     
     GetActualAndExpectedResults "Uncommon char as field delimiter.csv", "q", vbLf, DoubleQuotes
 End Sub
 Sub WrongDelimitersHaveBeenAddedToGuessingOperation()
-    Dim DelimitersToGuess() As String
+    Dim delimitersToGuess() As String
     
-    Set confObj = New parserConfig
+    Set confObj = New CSVparserConfig
     
-    DelimitersToGuess() = confObj.DelimitersToGuess
-    ReDim Preserve DelimitersToGuess(LBound(DelimitersToGuess) To UBound(DelimitersToGuess) + 2)
-    DelimitersToGuess(UBound(DelimitersToGuess) - 1) = "a" 'Add [a] as new delimiter to guessing list
-    DelimitersToGuess(UBound(DelimitersToGuess)) = "p" 'Add [p] as new delimiter to guessing list
-    confObj.DelimitersToGuess = DelimitersToGuess 'Save configuration
+    delimitersToGuess() = confObj.delimitersToGuess
+    ReDim Preserve delimitersToGuess(LBound(delimitersToGuess) To UBound(delimitersToGuess) + 2)
+    delimitersToGuess(UBound(delimitersToGuess) - 1) = "a" 'Add [a] as new delimiter to guessing list
+    delimitersToGuess(UBound(delimitersToGuess)) = "p" 'Add [p] as new delimiter to guessing list
+    confObj.delimitersToGuess = delimitersToGuess 'Save configuration
     
     GetActualAndExpectedResults "Wrong delimiters have been added to guessing operation.csv", ",", vbLf, DoubleQuotes
 End Sub
 Sub FECdata_clevercsvIssue15()
-    Set confObj = New parserConfig
+    Set confObj = New CSVparserConfig
     
     GetActualAndExpectedResults "FEC data - [clevercsv issue #15].csv", "|", vbLf, DoubleQuotes
 End Sub
 Sub MixedCommaAndColon_clevercsvIssue35()
-    Set confObj = New parserConfig
+    Set confObj = New CSVparserConfig
     
     GetActualAndExpectedResults "Mixed comma and colon - [clevercsv issue #35].csv", ",", vbLf, Apostrophe
 End Sub
 Sub JsonDataType_clevercsvIssue37()
-    Set confObj = New parserConfig
+    Set confObj = New CSVparserConfig
     
     GetActualAndExpectedResults "Json data type - [clevercsv issue #37].csv", ",", vbLf, DoubleQuotes
 End Sub
 Sub UndefinedFieldDelimiter()
-    Set confObj = New parserConfig
+    Set confObj = New CSVparserConfig
     
     GetActualAndExpectedResults "Undefined field delimiter.csv", ",", vbLf, DoubleQuotes
 End Sub
 Sub RainbowCSVissue92()
-    Set confObj = New parserConfig
+    Set confObj = New CSVparserConfig
     
     GetActualAndExpectedResults "Rainbow CSV [issue #92].csv", ",", vbLf, DoubleQuotes
 End Sub
 Sub PipeCharIsMoreFrequentThanTheComma()
-    Set confObj = New parserConfig
+    Set confObj = New CSVparserConfig
     
     GetActualAndExpectedResults "Pipe character is more frequent than the comma.csv", ",", vbCrLf, DoubleQuotes
 End Sub
 Sub PipeCharIsMoreFrequentThanTheSemicolon()
-    Set confObj = New parserConfig
+    Set confObj = New CSVparserConfig
     
     GetActualAndExpectedResults "Pipe character is more frequent than the semicolon.csv", ";", vbCrLf, DoubleQuotes
 End Sub
 Sub ShortPipeSeparatedTableEmbedded()
-    Set confObj = New parserConfig
+    Set confObj = New CSVparserConfig
     
     GetActualAndExpectedResults "Short pipe separated table embedded.csv", ",", vbLf, DoubleQuotes
 End Sub

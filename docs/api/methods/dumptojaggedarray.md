@@ -6,10 +6,10 @@ nav_order: 7
 ---
 
 # DumpToJaggedArray
-{: .fs-9 }
+{: .fs-6 }
 
 Dumps data from a source, or from the current instance, to a jagged array.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 
@@ -33,7 +33,7 @@ Dumps data from a source, or from the current instance, to a jagged array.
 </tr>
 <tr>
 <td style="text-align: left;"><em>DataSource</em></td>
-<td style="text-align: left;">Optional. Identifier specifying a <code>ECPArrayList</code> object variable representing the data to copy from.</td>
+<td style="text-align: left;">Optional. Identifier specifying a <code>CSVArrayList</code> object variable representing the data to copy from.</td>
 </tr>
 </tbody>
 </table>
@@ -60,5 +60,25 @@ When the *DataSource* parameter is omitted the `DumpToJaggedArray` method makes 
 >{: .text-grey-lt-000 .bg-green-000 }
 >The *OutPutArray* argument will contain a set of `Variant` type arrays. To access to an individual element user must use something like **_expression(i)(j)_**, where **_i_** denotes an index in the main array and **_j_** denotes an index in the child array.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
+
+### ☕Example
+
+```vb
+Sub DumpToJaggedArrray()
+    Dim CSVint As CSVinterface
+    Dim MyArray() As Variant
+    
+    Set CSVint = New CSVinterface
+    With CSVint.parseConfig
+        .path = Environ("USERPROFILE") & "\Desktop\Demo_100000records.csv"
+    End With
+    With CSVint
+        .ImportFromCSV .parseConfig       'Import CSV data
+        .DumpToJaggedArray MyArray        'Dump the data to a jagged array
+    End With
+    Erase MyArray
+    Set CSVint = Nothing
+End Sub
+```
 
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)

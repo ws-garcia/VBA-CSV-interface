@@ -6,12 +6,9 @@ nav_order: 1
 ---
 
 # EndLineChar Enum
-{: .d-inline-block }
+{: .fs-9 }
 
-New
-{: .label .label-purple }
-
-Provides a list of constants to configure the `WriteBlankLines` method of the `ECPTextStream.cls` module.
+Provides a list of constants to configure the `WriteBlankLines` method of the `CSVTextStream.cls` module.
 {: .fs-6 .fw-300 }
 
 ---

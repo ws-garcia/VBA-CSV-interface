@@ -1,18 +1,18 @@
 ---
-title: vectorsMaxBound
+title: fieldsMaxBound
 parent: Properties
 grand_parent: API
-nav_order: 13
+nav_order: 8
 ---
 
-# vectorsMaxBound
+# fieldsMaxBound
 {: .d-inline-block }
 
 New
 {: .label .label-purple }
 
 Gets the maximum bound of the vectors in the result array on the current instance.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 
@@ -24,7 +24,7 @@ _ReadOnly_
 
 ## Syntax
 
-*expression*.`vectorsMaxBound`
+*expression*.`fieldsMaxBound`
 
 ### Parameters
 
@@ -36,7 +36,7 @@ _None_
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->The `vectorsMaxBound` property returns the max number of fields, concerning to one record, into the result array. This property is useful to reserve memory for copy data from the internal `ECPArrayList` to a 2D array.
+>The `fieldsMaxBound` property returns the max number of fields, concerning to one record, into the result array. This property is useful to reserve memory for copy data from the internal `ECPArrayList` to a 2D array.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 See also

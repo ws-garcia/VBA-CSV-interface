@@ -2,14 +2,14 @@
 title: GetDataFromCSV
 parent: Methods
 grand_parent: API
-nav_order: 11
+nav_order: 12
 ---
 
 # GetDataFromCSV
-{: .fs-9 }
+{: .fs-6 }
 
 Dumps a CSV/TSV file content to a string variable
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 
@@ -33,5 +33,8 @@ The required *csvPathAndFilename* argument is an identifier specifying a `String
 ## Behavior
 
 The `GetDataFromCSV` method returns an empty `String` when errors occurs.
+
+See also
+: [CSVTextStream class](https://ws-garcia.github.io/VBA-CSV-interface/api/csvtextstream.html).
 
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)

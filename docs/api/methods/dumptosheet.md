@@ -6,10 +6,10 @@ nav_order: 8
 ---
 
 # DumpToSheet
-{: .fs-9 }
+{: .fs-6 }
 
 Dumps data from a source, or from the current instance, to an Excel WorkSheet.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 
@@ -41,7 +41,7 @@ Dumps data from a source, or from the current instance, to an Excel WorkSheet.
 </tr>
 <tr>
 <td style="text-align: left;"><em>DataSource</em></td>
-<td style="text-align: left;">Optional. Identifier specifying a <code>ECPArrayList</code> object variable representing the data to copy from.</td>
+<td style="text-align: left;">Optional. Identifier specifying a <code>CSVArrayList</code> object variable representing the data to copy from.</td>
 </tr>
 </tbody>
 </table>
@@ -68,5 +68,24 @@ When the *WBookName* parameter is omitted the data is dumped into the Workbook t
 >{: .text-grey-lt-000 .bg-green-000 }
 >When the *DataSource* parameter is omitted the `DumpToSheet` method dumps all data stored in the current instance. If the user specified a data source, its data will be dumped.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
+
+### ☕Example
+
+```vb
+Sub DumpToSheet()
+    Dim CSVint As CSVinterface
+    
+    Set CSVint = New CSVinterface
+    With CSVint.parseConfig
+        .path = Environ("USERPROFILE") & "\Desktop\Demo_100000records.csv"
+    End With
+    With CSVint
+        .ImportFromCSV .parseConfig                              'Import CSV data
+        .DumpToSheet SheetName:="Dump demo", rngName:="C6"       'Dump the internal data to the 
+                                                                 '"Dump demo" sheet starting on the range "C6".
+    End With
+    Set CSVint = Nothing
+End Sub
+```
 
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)

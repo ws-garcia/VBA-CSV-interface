@@ -6,13 +6,10 @@ nav_order: 2
 ---
 
 # CloseSeqReader
-{: .d-inline-block }
-
-New
-{: .label .label-purple }
+{: .fs-6 }
 
 Closes an open sequential reader.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 
@@ -29,6 +26,6 @@ _None_
 _None_
 
 See also
-: [OpenSeqReader Method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/openseqreader.html), [GetRecord Method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/getrecord.html).
+: [OpenSeqReader Method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/openseqreader.html), [GetRecord Method](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/getrecord.html), [CSVTextStream class](https://ws-garcia.github.io/VBA-CSV-interface/api/csvtextstream.html).
 
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)

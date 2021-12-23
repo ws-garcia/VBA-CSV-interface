@@ -7,7 +7,7 @@ description: "Introduction to the VBA CSV interface library."
 ---
 
 # Getting Started
-{: .fs-9 }
+{: .fs-6 }
 
 ---
 
@@ -22,7 +22,7 @@ description: "Introduction to the VBA CSV interface library."
 {:toc}
 </details>
 
-In order to be able to use CSV interface library within your project, please review the installation instructions by clicking the button below.
+In order to be able to use the CSV interface library within your project, please review the installation instructions by clicking the button below.
 
 [Installation](https://ws-garcia.github.io/VBA-CSV-interface/home/installation.html){: .btn .btn-green }
 
@@ -30,7 +30,7 @@ The CSV files are special kind of tabulated plain text data container widely use
 Although many solutions has been developed for work with CSV files into VBA, including projects from [@sdkn104](https://github.com/sdkn104/VBA-CSV) and [@Senipah](https://github.com/Senipah/VBA-Better-Array) on GitHub, we were tempted to develop a set of pure VBA class modules that serve as interface between users and CSV files and offer a lots of useful features.
 
 ## Philosophy
-Starting on the version 3 of the VBA CSV interface library, the design philosophy changes from speed to usefulness and power when working with "big" files through streams. Despite this, the library still been the faster CSV/TSV file parser in VBA.
+Starting on the version 3 of the VBA CSV interface library, the design philosophy changes from speed to usefulness and power when working with "big" files through streams. Despite this, the library still been a fast CSV/TSV file parser for VBA.
 
 ## Usage
 Refer to the [importation](https://ws-garcia.github.io/VBA-CSV-interface/examples/importation-examples.html) and [exportation](https://ws-garcia.github.io/VBA-CSV-interface/examples/exportation-examples.html) examples to familiarize yourself with the interface.
@@ -40,33 +40,33 @@ Import whole CSV/TSV file into a VBA array:
 
 ```vb
 Dim CSVint As CSVinterface
-Dim conf As parserConfig
+Dim conf As CSVparserConfig
 Dim Arr() As Variant
 
 Set CSVint = New CSVinterface
-Set conf = CSVint.ParseConfig
+Set conf = CSVint.parseConfig
 With conf
     .path = "C:\100000.quoted.csv"
     .dynamicTyping = False
+    Set .dialect = CSVint.SniffDelimiters(conf)
 End With
-CSVint.GuessDelimiters conf
 CSVint.ImportFromCSV(conf).DumpToArray Arr
 ```
 
-Sort CSV/TSV file's content and put it into a VBA array:
+Sort the contents of the CSV/TSV file in descending order and put it into a VBA array:
 
 ```vb
 Dim CSVint As CSVinterface
 Dim Arr() As Variant
 
 Set CSVint = New CSVinterface
-With CSVint.ParseConfig
+With CSVint.parseConfig
     .path = "C:\100000.quoted.csv"
     .dynamicTyping = False
+    Set .dialect = CSVint.SniffDelimiters(CSVint.parseConfig)
 End With
 With CSVint
-    .GuessDelimiters .ParseConfig
-    .ImportFromCSV(.ParseConfig).Sort(SortColumn:=1, Descending:=True).DumpToArray Arr
+    .ImportFromCSV(.parseConfig).Sort(SortingKeys:=-1).DumpToArray Arr
 End With
 ```
 
@@ -74,18 +74,18 @@ Import a range of records from a CSV/TSV file into a VBA array:
 
 ```vb
 Dim CSVint As CSVinterface
-Dim conf As parserConfig
+Dim conf As CSVparserConfig
 Dim Arr() As Variant
 
 Set CSVint = New CSVinterface
-Set conf = CSVint.ParseConfig
+Set conf = CSVint.parseConfig
 With conf
     .startingRecord = 10
     .endingRecord = 20
     .path = "C:\100000.quoted.csv"
     .dynamicTyping = False
+    Set .dialect = CSVint.SniffDelimiters(conf)
 End With
-CSVint.GuessDelimiters conf
 CSVint.ImportFromCSV(conf).DumpToArray Arr
 ```
 
@@ -100,14 +100,14 @@ Element = CSVint(0, 0)
 Set the delimiters characters pack used on guessing operations:
 
 ```vb
-Dim conf As parserConfig
+Dim conf As CSVparserConfig
 Dim Delimiters() As String
 
-Redim Delimiters(0 To 3): Delimiters(0) = ",": _
+ReDim Delimiters(0 To 3): Delimiters(0) = ",": _
                           Delimiters(1) = ";": _
                           Delimiters(2) = vbTab: _
                           Delimiters(3) = "|"
-Set conf = New parserConfig
+Set conf = New CSVparserConfig
 conf.delimitersToGuess = Delimiters
 ```
 
@@ -136,16 +136,16 @@ End With
 Set the char to escape special fields:
 
 ```vb
-conf.escapeToken = EscapeTokens.DoubleQuotes
-conf.escapeToken = EscapeTokens.Apostrophe
-conf.escapeToken = EscapeTokens.Tilde
+conf.dialect.quoteToken = QuoteTokens.DoubleQuotes
+conf.dialect.quoteToken = QuoteTokens.Apostrophe
+conf.dialect.quoteToken = QuoteTokens.Tilde
 ```
 
 Set fields and records delimiters:
 
 ```vb
-conf.fieldsDelimiter = ";"
-conf.recordsDelimiter = vbCrLf
+conf.dialect.fieldsDelimiter = ";"
+conf.dialect.recordsDelimiter = vbCrLf
 ```
 
 >⚠️**Caution**
@@ -157,7 +157,7 @@ conf.recordsDelimiter = vbCrLf
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->Since the version 3 of the VBA CSV interface library, we adopted the `ECPArrayList` class for internals data storage.
+>Since the version 3 of the VBA CSV interface library, we adopted the `CSVArrayList` class for internals data storage.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 The benchmark provided here is focused on the supposed most critical operation, this is the parse one for many authors.
@@ -209,7 +209,7 @@ The images below shows the overall performance for the imports operations from t
 - The CSV syntax slow-down the performance. When the number of escaped fields are increased, the performance decrease.
 
 ## Licence
-Copyright (C) 2021  [W. García](https://github.com/ws-garcia/VBA-CSV-interface/).
+Copyright (C) 2020-2022  [W. García](https://github.com/ws-garcia/).
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 

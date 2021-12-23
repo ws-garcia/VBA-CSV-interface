@@ -6,6 +6,6 @@ nav_order: 4
 ---
 
 # CSV interface usage examples
-{: .fs-9 }
+{: .fs-6 }
 
 In this section you'll encounter useful examples that show you how to use the CSV interface for accomplish some task on the fly.

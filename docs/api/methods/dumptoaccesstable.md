@@ -6,13 +6,10 @@ nav_order: 5
 ---
 
 # DumpToAccessTable
-{: .d-inline-block }
-
-New
-{: .label .label-purple }
+{: .fs-6 }
 
 Dumps the data from the current instance to a Microsoft Access Database (.accdb).
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 
@@ -72,5 +69,26 @@ If a table named *tablename* already exists in the database, the method will att
 >{: .text-grey-lt-000 .bg-green-000 }
 >All the data is dumped as "Short Text". If the CSV file has some of the special chars listed in [this article](https://docs.microsoft.com/en-us/office/troubleshoot/access/error-using-special-characters) an error can occur.
 {: .text-grey-dk-300 .bg-yellow-000 }
+
+### ☕Example
+
+```vb
+Sub ImportAndDumpToAccessDB()
+    Dim CSVint As CSVinterface
+    Dim path As String
+    Dim dBase As DAO.Database
+    
+    Set CSVint = New CSVinterface
+    With CSVint
+        .parseConfig.path = Environ("USERPROFILE") & "\Desktop\Demo_100000records.csv"
+        Set .parseConfig.dialect = .SniffDelimiters(.parseConfig) 'Try to guess CSV file data delimiters
+        Set dBase = CurrentDb
+        'Import and dump the data into a new database table. This will create indexes for the "Region" field and for the second field in the table.
+        .ImportFromCSV(.parseConfig).DumpToAccessTable dBase, "CSV_ImportedData", "Region", 2
+    End With
+    Set CSVint = Nothing
+    Set dBase = Nothing
+End Sub
+```
 
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)

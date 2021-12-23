@@ -6,13 +6,10 @@ nav_order: 2
 ---
 
 # csvHeader
-{: .d-inline-block }
-
-New
-{: .label .label-purple }
+{: .fs-6 }
 
 Gets the imported CSV/TSV headers.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 
@@ -32,7 +29,7 @@ _None_
 
 ### Returns
 
-*Type*: `ECPArrayList`
+*Type*: `CSVArrayList`
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
@@ -40,7 +37,7 @@ _None_
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 See also
-: [parseConfig Property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/parseconf.html).
+: [parseConfig Property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/parseconf.html), [CSVArrayList class](https://ws-garcia.github.io/VBA-CSV-interface/api/csvarraylist.html).
 
 ---
 

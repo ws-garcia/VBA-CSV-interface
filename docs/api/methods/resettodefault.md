@@ -2,14 +2,14 @@
 title: ResetToDefault
 parent: Methods
 grand_parent: API
-nav_order: 19
+nav_order: 23
 ---
 
 # ResetToDefault
-{: .fs-9 }
+{: .fs-6 }
 
 Resets all config options to its default values.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 

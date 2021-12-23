@@ -6,10 +6,10 @@ nav_order: 4
 ---
 
 # errNumber
-{: .fs-9 }
+{: .fs-6 }
 
 Gets the number for the last occurred error over the current instance.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 

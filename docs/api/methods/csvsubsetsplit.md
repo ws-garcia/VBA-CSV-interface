@@ -1,24 +1,21 @@
 ---
-title: CSVdatasetSplit
+title: CSVsubsetSplit
 parent: Methods
 grand_parent: API
-nav_order: 4
+nav_order: 3
 ---
 
-# CSVdatasetSplit
-{: .d-inline-block }
-
-New
-{: .label .label-purple }
+# CSVsubsetSplit
+{: .fs-6 }
 
 Splits the CSV data into a set of files in which each piece has a related portion of the data.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 
 ## Syntax
 
-*expression*.`CSVdatasetSplit`*(filePath, \[subsetColumn:= 1\], \[headers:= True\])*
+*expression*.`CSVsubsetSplit`*(filePath, \[subsetColumn:= 1\], \[headers:= True\])*
 
 ### Parameters
 
@@ -53,11 +50,27 @@ Splits the CSV data into a set of files in which each piece has a related portio
 
 ## Behavior
 
-The `CSVdatasetSplit` method will create a file for each different value (data grouping) in the field at the *subsetColumn* position, then all related data is appended to the respective file. Use the *headers* parameter to include a header record in each new CSV file. When the CSV file has a header record and the user sets the *header* parameter to `False`, the header row is saved in a separate file and the rest of CSV files will have no header record.
+The `CSVsubsetSplit` method will create a file for each different value (data grouping) in the field at the *subsetColumn* position, then all related data is appended to the respective file. Use the *headers* parameter to include a header record in each new CSV file. When the CSV file has a header record and the user sets the *header* parameter to `False`, the header row is saved in a separate file and the rest of CSV files will have no header record.
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
 >The result subsets will be saved in a folder named [\*-subsets], where (\*) denotes the name of the source CSV file.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
+
+### ☕Example
+
+```vb
+Sub SplitCSV()
+    Dim CSVint As CSVinterface
+    Dim path As String
+    
+    Set CSVint = New CSVinterface
+    path = Environ("USERPROFILE") & "\Desktop\Demo_100000records.csv"
+    CSVint.CSVsubsetSplit path, 3, True   ' Split the CSV and rank the resulting files by
+                                          ' the contents of the third column. Header is
+                                          ' assumed to be present on the file.
+    Set CSVint = Nothing
+End Sub
+```
 
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)

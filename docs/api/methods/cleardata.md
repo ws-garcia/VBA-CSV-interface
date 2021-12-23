@@ -6,13 +6,10 @@ nav_order: 1
 ---
 
 # ClearData
-{: .d-inline-block }
-
-New
-{: .label .label-purple }
+{: .fs-6 }
 
 Erases the imported CSV/TSV data from the current instance.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 
@@ -29,7 +26,7 @@ _None_
 _None_
 
 See also
-: [ImportFromCSV Method](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/importfromcsv.html), [ImportFromCSVstring Method](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/importfromcsvstring.html).
+: [ImportFromCSV Method](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/importfromcsv.html), [ImportFromCSVstring Method](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/importfromcsvstring.html), [CSVArrayList class](https://ws-garcia.github.io/VBA-CSV-interface/api/csvarraylist.html).
 
 ---
 

@@ -6,10 +6,10 @@ nav_order: 14
 ---
 
 # ImportFromCSV
-{: .fs-9 }
+{: .fs-6 }
 
 Imports a CSV/TSV file's content to the current instance.
-{: .fs-6 .fw-300 }
+{: .fs-4 .fw-300 }
 
 ---
 
@@ -29,7 +29,7 @@ Imports a CSV/TSV file's content to the current instance.
 <tbody>
 <tr>
 <td style="text-align: left;"><em>configObj</em></td>
-<td style="text-align: left;">Required. Identifier specifying a <code>ParserConfig</code> object variable.</td>
+<td style="text-align: left;">Required. Identifier specifying a <code>CSVparserConfig</code> object variable.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><em>FilterColumns</em></td>
@@ -43,7 +43,7 @@ Imports a CSV/TSV file's content to the current instance.
 *Type*: `CSVinterface`
 
 See also
-: [ParseConfig Property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/parseconf.html).
+: [ParseConfig Property](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/parseconf.html), [CSVTextStream class](https://ws-garcia.github.io/VBA-CSV-interface/api/csvtextstream.html).
 
 ---
 
@@ -55,5 +55,23 @@ The `configObj` parameter is an object with all the options considered by the pa
 >{: .text-grey-lt-000 .bg-green-000 }
 >If the target file has no data (the file is an empty one) or an error occur when parsing, the `ImportFromCSV` method returns a non-initialized object.
 {: .text-grey-dk-300 .bg-yellow-000 }
+
+### ☕Example
+
+```vb
+Sub ImportFromCSV()
+    Dim CSVint As CSVinterface
+    
+    Set CSVint = New CSVinterface
+    With CSVint.parseConfig
+        .path = Environ("USERPROFILE") & "\Desktop\Demo_100000records.csv"
+        Set .dialect = CSVint.SniffDelimiters(CSVint.parseConfig)               'Sniff delimiters and save the result in the config object
+    End With
+    With CSVint
+        .ImportFromCSV .parseConfig                                             'Import CSV data
+    End With
+    Set CSVint = Nothing
+End Sub
+```
 
 [Back to Methods overview](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/)

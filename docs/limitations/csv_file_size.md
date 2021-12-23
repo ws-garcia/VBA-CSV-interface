@@ -7,7 +7,7 @@ description: "Discusses the recommended maximum CSV file size to work with the C
 ---
 
 # Experimental results
-{: .fs-9 }
+{: .fs-6 }
 
 ---
 
