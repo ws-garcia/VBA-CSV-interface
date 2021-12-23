@@ -12,9 +12,11 @@ This section describes the custom errors whose components are returned by the pa
 
 <table>
 <thead>
+<tr>
 <th style="text-align: left;">Error number</th>
 <th style="text-align: left;">Error description</th>
 <th style="text-align: left;">Error source</th>
+</tr>
 </thead>
 <tbody>
 <tr>
