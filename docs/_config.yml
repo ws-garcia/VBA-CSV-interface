@@ -6,7 +6,7 @@ baseurl: "/VBA-CSV-interface" # the subpath of your site, e.g. /blog
 #theme: jekyll-theme-architect
 remote_theme: ws-garcia/just-the-docs
 # Set a path/url to a logo that will be displayed instead of the title
-logo: "/assets/img/CSVinterface.png"
+logo: "/assets/img/CSVinterface-christmas.png"
 # Back to top link
 back_to_top: true
 back_to_top_text: "Back to top"
