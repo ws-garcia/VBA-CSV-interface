@@ -33,7 +33,7 @@ Although many solutions has been developed for work with CSV files into VBA, inc
 Starting on the version 3 of the VBA CSV interface library, the design philosophy changes from speed to usefulness and power when working with "big" files through streams. Despite this, the library still been a fast CSV/TSV file parser for VBA.
 
 ## Usage
-Refer to the [importation](https://ws-garcia.github.io/VBA-CSV-interface/examples/importation-examples.html) and [exportation](https://ws-garcia.github.io/VBA-CSV-interface/examples/exportation-examples.html) examples to familiarize yourself with the interface.
+Refer to the [project home page](https://github.com/ws-garcia/VBA-CSV-interface) examples to familiarize yourself with the interface.
 
 Import whole CSV/TSV file into a VBA array:
 
