@@ -42,7 +42,6 @@ The `RearrangeFields` method will change the order of all fields specified in th
 ```vb
 Sub Rearrange()
     Dim CSVint As CSVinterface
-    Dim FilteredData As CSVArrayList
     
     Set CSVint = New CSVinterface
     With CSVint.parseConfig
