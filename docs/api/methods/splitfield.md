@@ -59,7 +59,6 @@ The `SplitField` method will split the field specified in the current instance, 
 ```vb
 Sub SplitField()
     Dim CSVint As CSVinterface
-    Dim FilteredData As CSVArrayList
     
     Set CSVint = New CSVinterface
     With CSVint.parseConfig
