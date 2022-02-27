@@ -23,18 +23,18 @@ Public Enum FieldDataType
     Known = 1
     UnKnown = 0
 End Enum
-Private Function LikeCompare(ByRef Value As Variant, _
-                                        ParamArray pattern() As Variant) As Boolean
+Private Function LikeCompare(ByRef value As Variant, _
+                                        ParamArray Pattern() As Variant) As Boolean
     Dim iCounter As Long
     Dim ParamLB As Long
     Dim ParamUB As Long
     Dim tmpBool As Boolean
     
-    ParamLB = LBound(pattern)
-    ParamUB = UBound(pattern)
+    ParamLB = LBound(Pattern)
+    ParamUB = UBound(Pattern)
     iCounter = ParamLB
     Do
-        tmpBool = Value Like pattern(iCounter)
+        tmpBool = value Like Pattern(iCounter)
         iCounter = iCounter + 1
     Loop While iCounter <= ParamUB And Not tmpBool
     LikeCompare = tmpBool
@@ -43,20 +43,20 @@ End Function
 ''' Attempts to detect the data type of a CSV field.
 ''' </summary>
 ''' <param name="value">CSV field content.</param>
-Public Function DetectDataType(ByRef Value As Variant) As FieldDataType
+Public Function DetectDataType(ByRef value As Variant) As FieldDataType
     Dim tmpDataType As FieldDataType
     
     tmpDataType = UnKnown
-    If IsNumericData(Value) Then
+    If IsNumericData(value) Then
         tmpDataType = FieldDataType.Known
     Else
-        If IsDateOrSpecialData(Value) Then
+        If IsDateOrSpecialData(value) Then
             tmpDataType = FieldDataType.Known
         Else
-            If IsStructuredOrURI(Value) Then
+            If IsStructuredOrURI(value) Then
                 tmpDataType = FieldDataType.Known
             Else
-                If IsFileSystemPath(Value) Then
+                If IsFileSystemPath(value) Then
                     tmpDataType = FieldDataType.Known
                 End If
             End If
@@ -64,9 +64,9 @@ Public Function DetectDataType(ByRef Value As Variant) As FieldDataType
     End If
     DetectDataType = tmpDataType
 End Function
-Private Function dmyyyyhhmmDateTime(Value As Variant) As Boolean
+Private Function dmyyyyhhmmDateTime(value As Variant) As Boolean
     'Match DD/MM/YYYY[YYYY/DD/MM] and MM/DD/YYYY[YYYY/MM/DD] HH:MM
-    dmyyyyhhmmDateTime = LikeCompare(Value, _
+    dmyyyyhhmmDateTime = LikeCompare(value, _
                                     "##[-/.]##[-/.]####[T]##:##", _
                                     "####[-/.]##[-/.]##[T]##:##", _
                                     "#[-/.]##[-/.]####[T]##:##", _
@@ -76,9 +76,9 @@ Private Function dmyyyyhhmmDateTime(Value As Variant) As Boolean
                                     "##[-/.]#[-/.]####[T]##:##", _
                                     "####[-/.]##[-/.]#[T]##:##")
 End Function
-Private Function dmyyyyhhmmssDateTime(Value As Variant) As Boolean
+Private Function dmyyyyhhmmssDateTime(value As Variant) As Boolean
     'Match DD/MM/YYYY[YYYY/DD/MM] and MM/DD/YYYY[YYYY/MM/DD] HH:MM:SS
-    dmyyyyhhmmssDateTime = LikeCompare(Value, _
+    dmyyyyhhmmssDateTime = LikeCompare(value, _
                                     "##[-/.]##[-/.]####[T]##:##:##", _
                                     "####[-/.]##[-/.]##[T]##:##:##", _
                                     "#[-/.]##[-/.]####[T]##:##:##", _
@@ -88,9 +88,9 @@ Private Function dmyyyyhhmmssDateTime(Value As Variant) As Boolean
                                     "##[-/.]#[-/.]####[T]##:##:##", _
                                     "####[-/.]##[-/.]#[T]##:##:##")
 End Function
-Private Function dmyyyyhhmmssTStampedDateTime(Value As Variant) As Boolean
+Private Function dmyyyyhhmmssTStampedDateTime(value As Variant) As Boolean
     'Match DD/MM/YYYY[YYYY/DD/MM] and MM/DD/YYYY[YYYY/MM/DD] HH:MM:SS +/- HH:MM
-    dmyyyyhhmmssTStampedDateTime = LikeCompare(Value, _
+    dmyyyyhhmmssTStampedDateTime = LikeCompare(value, _
                                             "##[-/.]##[-/.]####[T]##:##:##[+-]##:##", _
                                             "####[-/.]##[-/.]##[T]##:##:##[+-]##:##", _
                                             "#[-/.]##[-/.]####[T]##:##:##[+-]##:##", _
@@ -100,9 +100,9 @@ Private Function dmyyyyhhmmssTStampedDateTime(Value As Variant) As Boolean
                                             "##[-/.]#[-/.]####[T]##:##:##[+-]##:##", _
                                             "####[-/.]##[-/.]#[T]##:##:##[+-]##:##")
 End Function
-Private Function dmyyyyhhmmTStampedDateTime(Value As Variant) As Boolean
+Private Function dmyyyyhhmmTStampedDateTime(value As Variant) As Boolean
     'Match DD/MM/YYYY[YYYY/DD/MM] and MM/DD/YYYY[YYYY/MM/DD] HH:MM +/- HH:MM
-    dmyyyyhhmmTStampedDateTime = LikeCompare(Value, _
+    dmyyyyhhmmTStampedDateTime = LikeCompare(value, _
                                             "##[-/.]##[-/.]####[T]##:##[+-]##:##", _
                                             "####[-/.]##[-/.]##[T]##:##[+-]##:##", _
                                             "#[-/.]##[-/.]####[T]##:##[+-]##:##", _
@@ -112,22 +112,22 @@ Private Function dmyyyyhhmmTStampedDateTime(Value As Variant) As Boolean
                                             "##[-/.]#[-/.]####[T]##:##[+-]##:##", _
                                             "####[-/.]##[-/.]#[T]##:##[+-]##:##")
 End Function
-Private Function hhmmssTStampedDateTime(Value As Variant) As Boolean
+Private Function hhmmssTStampedDateTime(value As Variant) As Boolean
     'Match HH:MM:SS and HH:MM +/- 00:00
-    hhmmssTStampedDateTime = LikeCompare(Value, _
+    hhmmssTStampedDateTime = LikeCompare(value, _
                                         "##:##:##[+-]##:##", _
                                         "##:##[+-]##:##")
 End Function
-Private Function IsAlphaNumeric(Value As Variant) As Boolean
+Private Function IsAlphaNumeric(value As Variant) As Boolean
 'Match ABCZ10, nullString and ABCZ_10
     Dim StrLen As Long
     Dim iCounter As Long
     Dim tmpBool As Boolean
     
-    StrLen = LenB(Value)
+    StrLen = LenB(value)
     iCounter = 1
     Do
-        Select Case AscW(MidB(Value, iCounter, 2))
+        Select Case AscW(MidB(value, iCounter, 2))
             Case 48 To 57, 65 To 90, 95, 97 To 122
                 tmpBool = True
             Case Else
@@ -137,46 +137,46 @@ Private Function IsAlphaNumeric(Value As Variant) As Boolean
     Loop While iCounter <= StrLen And tmpBool
     IsAlphaNumeric = tmpBool
 End Function
-Private Function IsCurrency(Value As Variant) As Boolean
-    If LikeCompare(Value, "[$€£¥]#*[.,]##", "[$€£¥][ ]#*[.,]##") Then
-        IsCurrency = IsNumeric(Format(MidB(Value, 3), "#,#0.00"))
+Private Function IsCurrency(value As Variant) As Boolean
+    If LikeCompare(value, "[$€£¥]#*[.,]##", "[$€£¥][ ]#*[.,]##") Then
+        IsCurrency = IsNumeric(Format(MidB(value, 3), "#,#0.00"))
     Else
-        If LikeCompare(Value, "[ ][$€£¥]#*[.,]##", "[ ][$€£¥][ ]#*[.,]##") Then
-            IsCurrency = IsNumeric(Format(MidB(Value, 5), "#,#0.00"))
+        If LikeCompare(value, "[ ][$€£¥]#*[.,]##", "[ ][$€£¥][ ]#*[.,]##") Then
+            IsCurrency = IsNumeric(Format(MidB(value, 5), "#,#0.00"))
         End If
     End If
 End Function
-Private Function IsDateOrSpecialData(Value As Variant) As Boolean
+Private Function IsDateOrSpecialData(value As Variant) As Boolean
     Dim tmpBool As Boolean
     
-    tmpBool = IsSpecialData(Value)
+    tmpBool = IsSpecialData(value)
     If Not tmpBool Then
-        If IsDate(Value) Then
+        If IsDate(value) Then
             tmpBool = True
         Else
-            If IsDateTime(Value) Then
+            If IsDateTime(value) Then
                 tmpBool = True
             End If
         End If
     End If
     IsDateOrSpecialData = tmpBool
 End Function
-Private Function IsDateTime(Value As Variant) As Boolean
+Private Function IsDateTime(value As Variant) As Boolean
     Dim tmpBool As Boolean
-    If InStrB(1, Value, ":") Then
-        tmpBool = hhmmssTStampedDateTime(Value)
+    If InStrB(1, value, ":") Then
+        tmpBool = hhmmssTStampedDateTime(value)
         If Not tmpBool Then
-            If InStrB(1, Value, "T") Then
-                tmpBool = IsLongOrStampedDateTime(Value)
+            If InStrB(1, value, "T") Then
+                tmpBool = IsLongOrStampedDateTime(value)
                 If Not tmpBool Then
-                    tmpBool = IsOtherDateTime(Value)
+                    tmpBool = IsOtherDateTime(value)
                 End If
             End If
         End If
     Else
         'Match [Mon, Jan 1 | Mon., Jan. 15 | Monday, January 31 | ...]
         'and [Lun, Ene 1 | Lun., Ene. 15 | Lunes, Enero 31 | ...]
-        tmpBool = LikeCompare(Value, _
+        tmpBool = LikeCompare(value, _
                             "[SMTWF][uoehra][neduit]*[,][ ][JFMASOND][aepuco][nbrylgptvc]*[ ]#", _
                             "[SMTWF][uoehra][neduit]*[,][ ][JFMASOND][aepuco][nbrylgptvc]*[ ]##", _
                             "[DLMJVS][ouai][mnreb]*[,][ ][EFMAJSOND][neabugcoi][ebrynloptvc]*[ ]#", _
@@ -184,8 +184,8 @@ Private Function IsDateTime(Value As Variant) As Boolean
     End If
     IsDateTime = tmpBool
 End Function
-Private Function IsDotDate(Value As Variant) As Boolean
-    IsDotDate = LikeCompare(Value, _
+Private Function IsDotDate(value As Variant) As Boolean
+    IsDotDate = LikeCompare(value, _
                             "####[.]##[.]##", _
                             "##[.]##[.]####", _
                             "####[.]##[.]#", _
@@ -195,17 +195,17 @@ Private Function IsDotDate(Value As Variant) As Boolean
                             "####[.]#[.]##", _
                             "##[.]#[.]####")
 End Function
-Private Function IsEmail(Value As Variant) As Boolean
-    If InStrB(1, Value, "@") Then
-        If Value Like "*[@]*[.]?*?" Then
+Private Function IsEmail(value As Variant) As Boolean
+    If InStrB(1, value, "@") Then
+        If value Like "*[@]*[.]?*?" Then
             Dim StrLen As Long
             Dim iCounter As Long
             Dim tmpBool As Boolean
     
-            StrLen = LenB(Value)
+            StrLen = LenB(value)
             iCounter = 1
             Do
-                Select Case AscW(MidB(Value, iCounter, 2))
+                Select Case AscW(MidB(value, iCounter, 2))
                     Case 33 To 39, 42 To 43, 45 To 57, 61, 63 To 90, 94 To 126
                         tmpBool = True
                     Case Else
@@ -217,155 +217,155 @@ Private Function IsEmail(Value As Variant) As Boolean
     End If
     IsEmail = tmpBool
 End Function
-Private Function IsFileSystemPath(Value As Variant) As Boolean
+Private Function IsFileSystemPath(value As Variant) As Boolean
     Dim tmpBool As Boolean
     
-    If IsWindowsAbsolutePath(Value) Then
+    If IsWindowsAbsolutePath(value) Then
         tmpBool = True
     Else
-        If IsUnixAbsolutePath(Value) Then
+        If IsUnixAbsolutePath(value) Then
             tmpBool = True
         End If
     End If
     IsFileSystemPath = tmpBool
 End Function
-Private Function IsIPv4(Value As Variant) As Boolean
-    If Value Like "*.*.*.*" Then
-        IsIPv4 = IsValidIPv4(Value)
+Private Function IsIPv4(value As Variant) As Boolean
+    If value Like "*.*.*.*" Then
+        IsIPv4 = IsValidIPv4(value)
     End If
 End Function
-Private Function IsISOdate(Value As Variant) As Boolean
+Private Function IsISOdate(value As Variant) As Boolean
     'Match YYYY/MM/DDTHH:MM:SSZ and YYYY/MM/DDTHH:MM:SS[+/-]HH:MM
-    IsISOdate = LikeCompare(Value, _
+    IsISOdate = LikeCompare(value, _
                             "####[-/.]##[-/.]##T##:##:##Z", _
                             "####[-/.]##[-/.]##T##:##:##[+-]##:##")
 End Function
-Private Function IsJSfullTextDateTime(Value As Variant) As Boolean
+Private Function IsJSfullTextDateTime(value As Variant) As Boolean
     'Match JavaScript full text date and time
-    IsJSfullTextDateTime = LikeCompare(Value, _
+    IsJSfullTextDateTime = LikeCompare(value, _
                                     "??? ??? ## #### ##:##:## *-* (*)")
 End Function
-Private Function IsLongOrStampedDateTime(Value As Variant) As Boolean
+Private Function IsLongOrStampedDateTime(value As Variant) As Boolean
     Dim tmpBool As Boolean
-    tmpBool = IsISOdate(Value)
+    tmpBool = IsISOdate(value)
     If Not tmpBool Then
-        tmpBool = dmyyyyhhmmssDateTime(Value)
+        tmpBool = dmyyyyhhmmssDateTime(value)
         If Not tmpBool Then
-            tmpBool = dmyyyyhhmmDateTime(Value)
+            tmpBool = dmyyyyhhmmDateTime(value)
             If Not tmpBool Then
-                tmpBool = IsStampedDateTime(Value)
+                tmpBool = IsStampedDateTime(value)
             End If
         End If
     End If
     IsLongOrStampedDateTime = tmpBool
 End Function
-Private Function IsNumericData(Value As Variant) As Boolean
+Private Function IsNumericData(value As Variant) As Boolean
     Dim tmpBool As Boolean
     
-    If IsNumeric(Value) Then
+    If IsNumeric(value) Then
         tmpBool = True
     Else
-        If IsCurrency(Value) Then
+        If IsCurrency(value) Then
             tmpBool = True
         Else
-            If IsPercentage(Value) Then
+            If IsPercentage(value) Then
                 tmpBool = True
             End If
         End If
     End If
     IsNumericData = tmpBool
 End Function
-Private Function IsOtherDateTime(Value As Variant) As Boolean
+Private Function IsOtherDateTime(value As Variant) As Boolean
     Dim tmpBool As Boolean
     
     'Match YYYY/MM/DD[ ][T]HH:MM:SS.ss and MM/DD/YYYY[ ][T]HH:MM:SS.ss
-    If LikeCompare(Value, _
+    If LikeCompare(value, _
                     "####[-/.]##[-/.]##[ T]##:##:##.#*#", _
                     "##[-/.]##[-/.]####[ T]##:##:##.#*#") Then
         Dim tmpMilliSec As String
         
-        tmpMilliSec = Split(Value, ".")(1)
+        tmpMilliSec = Split(value, ".")(1)
         tmpBool = IsNumeric(tmpMilliSec)
     Else
         'Match [Mon Dec 31 01:41:00 2001 | Mon Dec 1 01:41:00 2001]
         'and [Mon Dec 31 01:41:00 21 | Mon Dec 1 01:41:00 21]
-        tmpBool = LikeCompare(Value, _
+        tmpBool = LikeCompare(value, _
                             "[SMTWF][uoehra][neduit][ ][JFMASOND][aepuco][nbrylgptvc][ ]##[ ]##:##:##[ ]####", _
                             "[SMTWF][uoehra][neduit][ ][JFMASOND][aepuco][nbrylgptvc][ ]#[ ]##:##:##[ ]####", _
                             "[SMTWF][uoehra][neduit][ ][JFMASOND][aepuco][nbrylgptvc][ ]##[ ]##:##:##[ ]##", _
                             "[SMTWF][uoehra][neduit][ ][JFMASOND][aepuco][nbrylgptvc][ ]#[ ]##:##:##[ ]##")
         If Not tmpBool Then
-            tmpBool = IsSpanishDate(Value)
+            tmpBool = IsSpanishDate(value)
             'Match [11.01.2001 | 2001.01.11]
             If Not tmpBool Then
-                tmpBool = IsDotDate(Value)
+                tmpBool = IsDotDate(value)
             End If
         End If
     End If
     IsOtherDateTime = tmpBool
 End Function
-Private Function IsPercentage(Value As Variant) As Boolean
-    If LikeCompare(Value, "*#[%]") Then
-        IsPercentage = IsNumeric(Format(MidB(Value, 1, LenB(Value) - 2), "#,#0.00"))
+Private Function IsPercentage(value As Variant) As Boolean
+    If LikeCompare(value, "*#[%]") Then
+        IsPercentage = IsNumeric(Format(MidB(value, 1, LenB(value) - 2), "#,#0.00"))
     End If
 End Function
-Private Function IsSpanishDate(Value As Variant) As Boolean
+Private Function IsSpanishDate(value As Variant) As Boolean
     'Match [Lun Dic 31 01:41:00 2001 | Lun Dic 1 01:41:00 2001]
     'and [Lun Dic 31 01:41:00 21 | Lun Dic 1 01:41:00 21]
-    IsSpanishDate = LikeCompare(Value, _
+    IsSpanishDate = LikeCompare(value, _
                                 "[DLMJVS][ouai][mnreb][ ][EFMAJSOND][neabugcoi][ebrynloptvc][ ]##[ ]##:##:##[ ]####", _
                                 "[DLMJVS][ouai][mnreb][ ][EFMAJSOND][neabugcoi][ebrynloptvc][ ]#[ ]##:##:##[ ]####", _
                                 "[DLMJVS][ouai][mnreb][ ][EFMAJSOND][neabugcoi][ebrynloptvc][ ]##[ ]##:##:##[ ]##", _
                                 "[DLMJVS][ouai][mnreb][ ][EFMAJSOND][neabugcoi][ebrynloptvc][ ]#[ ]##:##:##[ ]##")
 End Function
-Private Function IsSpecialData(Value As Variant) As Boolean
+Private Function IsSpecialData(value As Variant) As Boolean
     Dim tmpBool As Boolean
     
-    If LenB(Value) = 0 Then
+    If LenB(value) = 0 Then
         tmpBool = True
     Else
-        If IsAlphaNumeric(Value) Then
+        If IsAlphaNumeric(value) Then
             tmpBool = True
         Else
-            If LCase(Value) = "n/a" Then
+            If LCase(value) = "n/a" Then
                 tmpBool = True
             End If
         End If
     End If
     IsSpecialData = tmpBool
 End Function
-Private Function IsStampedDateTime(Value As Variant) As Boolean
+Private Function IsStampedDateTime(value As Variant) As Boolean
     Dim tmpBool As Boolean
-    tmpBool = dmyyyyhhmmssTStampedDateTime(Value)
+    tmpBool = dmyyyyhhmmssTStampedDateTime(value)
     If Not tmpBool Then
-        tmpBool = dmyyyyhhmmTStampedDateTime(Value)
+        tmpBool = dmyyyyhhmmTStampedDateTime(value)
         If Not tmpBool Then
-            tmpBool = IsJSfullTextDateTime(Value)
+            tmpBool = IsJSfullTextDateTime(value)
         End If
     End If
     IsStampedDateTime = tmpBool
 End Function
-Private Function IsStructuredData(Value As Variant) As Boolean
+Private Function IsStructuredData(value As Variant) As Boolean
     Dim tmpBool As Boolean
-    If InStrB(1, Value, "[") Then
-        If LikeCompare(Value, "[[]*]") Then
+    If InStrB(1, value, "[") Then
+        If LikeCompare(value, "[[]*]") Then
             tmpBool = True
         End If
     Else
-        If InStrB(1, Value, "(") Then
-            If LikeCompare(Value, "(*)") Then
+        If InStrB(1, value, "(") Then
+            If LikeCompare(value, "(*)") Then
                 tmpBool = True
-            ElseIf LikeCompare(Value, "bytearray(*)") Then
+            ElseIf LikeCompare(value, "bytearray(*)") Then
                 tmpBool = True
             End If
-            If InStrB(1, Value, "{") Then
-                If LikeCompare(Value, "frozenset({*})") Then
+            If InStrB(1, value, "{") Then
+                If LikeCompare(value, "frozenset({*})") Then
                     tmpBool = True
                 End If
             End If
         Else
-            If InStrB(1, Value, "{") Then
-                If LikeCompare(Value, "{*}") Then
+            If InStrB(1, value, "{") Then
+                If LikeCompare(value, "{*}") Then
                     tmpBool = True
                 End If
             End If
@@ -373,19 +373,19 @@ Private Function IsStructuredData(Value As Variant) As Boolean
     End If
     IsStructuredData = tmpBool
 End Function
-Private Function IsStructuredOrURI(Value As Variant) As Boolean
+Private Function IsStructuredOrURI(value As Variant) As Boolean
     Dim tmpBool As Boolean
     
-    If IsStructuredData(Value) Then
+    If IsStructuredData(value) Then
         tmpBool = True
     Else
-        If IsEmail(Value) Then
+        If IsEmail(value) Then
             tmpBool = True
         Else
-            If IsURL(Value) Then
+            If IsURL(value) Then
                 tmpBool = True
             Else
-                If IsIPv4(Value) Then
+                If IsIPv4(value) Then
                     tmpBool = True
                 End If
             End If
@@ -393,22 +393,22 @@ Private Function IsStructuredOrURI(Value As Variant) As Boolean
     End If
     IsStructuredOrURI = tmpBool
 End Function
-Private Function IsUnixAbsolutePath(Value As Variant) As Boolean
-    IsUnixAbsolutePath = LikeCompare(Value, "/*")
+Private Function IsUnixAbsolutePath(value As Variant) As Boolean
+    IsUnixAbsolutePath = LikeCompare(value, "/*")
 End Function
-Private Function IsURL(Value As Variant) As Boolean
-    If InStrB(1, Value, "://") Then
-        If Value Like "[a-z][a-z]*[a-z]://*" Then
-            If Value Like "http://*" Or Value Like "https://*" _
-            Or Value Like "ftp://*" Or Value Like "ftps://*" Then
+Private Function IsURL(value As Variant) As Boolean
+    If InStrB(1, value, "://") Then
+        If value Like "[a-z][a-z]*[a-z]://*" Then
+            If value Like "http://*" Or value Like "https://*" _
+            Or value Like "ftp://*" Or value Like "ftps://*" Then
                 Dim StrLen As Long
                 Dim iCounter As Long
                 Dim tmpBool As Boolean
     
-                StrLen = LenB(Value)
+                StrLen = LenB(value)
                 iCounter = 1
                 Do
-                    Select Case AscW(MidB(Value, iCounter, 2))
+                    Select Case AscW(MidB(value, iCounter, 2))
                         Case 33, 35 To 59, 61, 63 To 91, 93, 95, 97 To 122, 126
                             tmpBool = True
                         Case Else
@@ -421,18 +421,18 @@ Private Function IsURL(Value As Variant) As Boolean
     End If
     IsURL = tmpBool
 End Function
-Private Function IsValidIPv4(Value As Variant) As Boolean
+Private Function IsValidIPv4(value As Variant) As Boolean
     Dim tmpData() As String
-    tmpData() = Split(Value, ".")
+    tmpData() = Split(value, ".")
     If UBound(tmpData) - LBound(tmpData) + 1 = 4 Then
         Dim StrLen As Long
         Dim iCounter As Long
         Dim tmpBool As Boolean
     
-        StrLen = LenB(Value)
+        StrLen = LenB(value)
         iCounter = 1
         Do
-            Select Case AscW(MidB(Value, iCounter, 2))
+            Select Case AscW(MidB(value, iCounter, 2))
                 Case 46, 48 To 57
                     tmpBool = True
                 Case Else
@@ -462,8 +462,8 @@ Private Function IsValidIPv4Range(valuesArray As Variant) As Boolean
     Loop While iCounter <= UBound(valuesArray) And tmpBool
     IsValidIPv4Range = tmpBool
 End Function
-Private Function IsWindowsAbsolutePath(Value As Variant) As Boolean
-    IsWindowsAbsolutePath = LikeCompare(Value, "[A-Za-z]:\*")
+Private Function IsWindowsAbsolutePath(value As Variant) As Boolean
+    IsWindowsAbsolutePath = LikeCompare(value, "[A-Za-z]:\*")
 End Function
 Private Function RecordsAvgFields(ArrayList As CSVArrayList) As Double
     Dim CumulativeFields As Double
@@ -483,16 +483,16 @@ End Function
 ''' 0 < x <= 20 for single UnKnown data type field.
 ''' </summary>
 ''' <param name="strArray">One-dimensional record array.</param>
-Private Function RecordScore(ByRef strArray As Variant) As Double
+Private Function RecordScore(ByRef StrArray As Variant) As Double
     Dim L0 As Long
     Dim tmpSUM As Double
     Dim FielCount As Long
     Dim StdDev As Double
     
-    FielCount = 1 + UBound(strArray) - LBound(strArray)
+    FielCount = 1 + UBound(StrArray) - LBound(StrArray)
     tmpSUM = 0
-    For L0 = LBound(strArray) To UBound(strArray)
-        Select Case DetectDataType(strArray(L0))
+    For L0 = LBound(StrArray) To UBound(StrArray)
+        Select Case DetectDataType(StrArray(L0))
             Case FieldDataType.Known
                 tmpSUM = tmpSUM + 100
             Case Else

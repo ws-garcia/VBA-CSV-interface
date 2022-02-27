@@ -88,14 +88,14 @@ End Property
 Public Property Get delimitersGuessing() As Boolean
     delimitersGuessing = P_DELIMITERSGUESSING
 End Property
-Public Property Let delimitersGuessing(Value As Boolean)
-    P_DELIMITERSGUESSING = Value
+Public Property Let delimitersGuessing(value As Boolean)
+    P_DELIMITERSGUESSING = value
 End Property
 Public Property Get delimitersToGuess() As String()
     delimitersToGuess = P_DELIMITERSTOGUESS
 End Property
-Public Property Let delimitersToGuess(Value() As String)
-    P_DELIMITERSTOGUESS = Value
+Public Property Let delimitersToGuess(value() As String)
+    P_DELIMITERSTOGUESS = value
 End Property
 Public Property Get dialect() As CSVdialect
     Set dialect = P_DIALECT
@@ -142,8 +142,8 @@ End Property
 Public Property Get dynamicTyping() As Boolean
     dynamicTyping = P_DYNAMIC_TYPING
 End Property
-Public Property Let dynamicTyping(Value As Boolean)
-    P_DYNAMIC_TYPING = Value
+Public Property Let dynamicTyping(value As Boolean)
+    P_DYNAMIC_TYPING = value
 End Property
 Public Property Get endingRecord() As Long
     endingRecord = P_ENDINGRECORD
@@ -159,26 +159,26 @@ End Property
 Public Property Get Headers() As Boolean
     Headers = P_HEADERS
 End Property
-Public Property Let Headers(Value As Boolean)
-    P_HEADERS = Value
+Public Property Let Headers(value As Boolean)
+    P_HEADERS = value
 End Property
 Public Property Get headersOmission() As Boolean
     headersOmission = P_HEADEROMISSION
 End Property
-Public Property Let headersOmission(Value As Boolean)
-    P_HEADEROMISSION = Value
+Public Property Let headersOmission(value As Boolean)
+    P_HEADEROMISSION = value
 End Property
 Public Property Get skipCommentLines() As Boolean
     skipCommentLines = P_SKIP_COMMENTS
 End Property
-Public Property Let skipCommentLines(Value As Boolean)
-    P_SKIP_COMMENTS = Value
+Public Property Let skipCommentLines(value As Boolean)
+    P_SKIP_COMMENTS = value
 End Property
 Public Property Get skipEmptyLines() As Boolean
     skipEmptyLines = P_SKIP_EMPTYLINES
 End Property
-Public Property Let skipEmptyLines(Value As Boolean)
-    P_SKIP_EMPTYLINES = Value
+Public Property Let skipEmptyLines(value As Boolean)
+    P_SKIP_EMPTYLINES = value
 End Property
 Public Property Get path() As String
     path = P_PATH
@@ -200,14 +200,14 @@ End Property
 Public Property Get multiEndOfLineCSV() As Boolean
     multiEndOfLineCSV = P_MULTIENDOFLINECSV
 End Property
-Public Property Let multiEndOfLineCSV(ByVal Value As Boolean)
-    P_MULTIENDOFLINECSV = Value
+Public Property Let multiEndOfLineCSV(ByVal value As Boolean)
+    P_MULTIENDOFLINECSV = value
 End Property
 Public Property Get utf8EncodedFile() As Boolean
     utf8EncodedFile = P_UTF8ENCODED
 End Property
-Public Property Let utf8EncodedFile(Value As Boolean)
-    P_UTF8ENCODED = Value
+Public Property Let utf8EncodedFile(value As Boolean)
+    P_UTF8ENCODED = value
 End Property
 '////////////////////////////////////////////////////////////////////////////////////////////
 '#

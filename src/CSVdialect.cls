@@ -60,8 +60,8 @@ End Enum
 Public Property Get escapeMode() As EscapeStyle
     escapeMode = P_ESCAPEMODE
 End Property
-Public Property Let escapeMode(Value As EscapeStyle)
-    P_ESCAPEMODE = Value
+Public Property Let escapeMode(value As EscapeStyle)
+    P_ESCAPEMODE = value
 End Property
 ''' <summary>
 ''' Gets or sets the quote token.
