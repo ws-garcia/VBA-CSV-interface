@@ -734,106 +734,6 @@ End Function
 Private Function FilterAchievement(aValue As Variant, Pattern As Variant) As Boolean
     FilterAchievement = aValue Like Pattern
 End Function
-Public Function GetCSVSubSet(FilePath As String, _
-                        ByRef filters As Variant, _
-                        keyIndex As Long, _
-                        Optional configObj As CSVparserConfig = Nothing) As CSVArrayList
-                        
-    Dim StreamReader As CSVTextStream
-    Dim curItems As CSVArrayList
-    Dim filteredRecords As CSVArrayList
-    Dim CSVparser As CSVinterface
-    Dim gssCounter As Long
-    
-    Set CSVparser = New CSVinterface
-    Set filteredRecords = New CSVArrayList
-    Set StreamReader = New CSVTextStream
-    On Error GoTo CSVsubset_ErrHandler
-    If FilePath <> vbNullString Then
-        '@----------------------------------------------------
-        ' Check file
-        If FileExists(FilePath) Then
-            If FileLen(FilePath) = 0 Then
-                GoTo CSVsubset_EmptyCSVfile
-            End If
-        Else
-            GoTo CSVsubset_MissingCSVfile
-        End If
-        queryFilters = filters
-        UB = UBound(queryFilters)
-        If keyIndex >= 1 Then
-            keyIndex = keyIndex - 1 'Zero based
-        Else
-            keyIndex = 0
-        End If
-        If UB <> -1 Then
-            LB = LBound(queryFilters)
-            '@----------------------------------------------------
-            ' Parser config
-            If configObj Is Nothing Then
-                Set configObj = config
-            End If
-            configObj.path = FilePath
-            With CSVparser.parseConfig
-                Set .dialect = CSVparser.SniffDelimiters(configObj)
-            End With
-            '@----------------------------------------------------
-            ' Sequential reading from file
-            With StreamReader
-                .utf8EncodedFile = configObj.utf8EncodedFile
-                .endStreamOnLineBreak = True
-                .OpenStream FilePath
-                .ReadText
-            End With
-            '@----------------------------------------------------
-            ' Parse string
-            Set curItems = CSVparser.ImportFromCSVString(StreamReader.bufferString, configObj).items
-            If configObj.Headers Then
-                filteredRecords.Add curItems(0) 'Save the CSV header
-                gssCounter = gssCounter + 1
-            End If
-            For gssCounter = gssCounter To curItems.count - 1
-                If MeetsCriterion(curItems(gssCounter)(keyIndex)) Then
-                    filteredRecords.Add curItems(gssCounter) 'Append data
-                End If
-            Next gssCounter
-            Do While Not StreamReader.atEndOfStream
-                StreamReader.ReadText 'Read next CSV data chunk
-                Set curItems = CSVparser.ImportFromCSVString(StreamReader.bufferString, configObj).items
-                For gssCounter = 0 To curItems.count - 1
-                    If MeetsCriterion(curItems(gssCounter)(keyIndex)) Then
-                        filteredRecords.Add curItems(gssCounter) 'Append data
-                    End If
-                Next gssCounter
-            Loop
-            Set GetCSVSubSet = filteredRecords
-            Set filteredRecords = Nothing
-            Set CSVparser = Nothing
-            Set curItems = Nothing
-            Set StreamReader = Nothing
-        End If
-        P_SUCCESSFUL_IMPORT = True
-    Else
-        GoTo CSVsubset_MissingCSVfile
-    End If
-    ResetAlerts
-    Exit Function
-CSVsubset_ErrHandler:
-    Set StreamReader = Nothing
-    Set CSVparser = Nothing
-    Set curItems = Nothing
-    Exit Function
-CSVsubset_EmptyCSVfile:
-    P_ERROR_DESC = "[CSV file subset]: The specified CSV file is empty. No subset can be processed."
-    P_ERROR_NUMBER = vbObjectError + 9013
-    P_ERROR_SOURCE = "CSVinterface"
-    GoTo CSVsubset_ErrHandler
-CSVsubset_MissingCSVfile:
-    P_ERROR_DESC = "[CSV file subset]: The given path name is an empty string or the specified CSV file does not exist in the supplied path."
-    P_ERROR_NUMBER = vbObjectError + 9014
-    P_ERROR_SOURCE = "CSVinterface"
-    GoTo CSVsubset_ErrHandler
-End Function
 Public Function GetDataFromCSV(csvPathAndFilename As String) As String
     
     On Error GoTo ErrHandler_GetDataFromCSV
@@ -2114,17 +2014,6 @@ Private Function MinIndexVal(ByRef values As Variant) As Long
         End If
     Next idx0
     MinIndexVal = idx
-End Function
-Private Function MeetsCriterion(value As Variant) As Boolean
-    Dim tmpResult As Boolean
-    Dim vCounter As Long
-    
-    vCounter = LB
-    Do While vCounter <= UB And tmpResult = False
-        tmpResult = (value = queryFilters(vCounter))
-        vCounter = vCounter + 1
-    Loop
-    MeetsCriterion = tmpResult
 End Function
 Public Sub OpenSeqReader(configObj As CSVparserConfig, _
                             ParamArray FilterColumns() As Variant)
