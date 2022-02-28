@@ -47,7 +47,7 @@ Option Explicit
 ' Argument      =     (List | Variable | Operand)
 ' List          =     "{" ["{"] SubExpr [{";" SubExpr}] ["}"] "}"
 ' Unary         =     "-" | "+" | ~
-' Operand       =     ({Digit} ["."] [{Digit}] ["E"("-" | "+"){Digit}] | (True | False))
+' Operand       =     ({Digit} ["."] [{Digit}] ["E"("-" | "+"){Digit}] | (True | False) | "'"Alphabet"'")
 ' Variable      =     Alphabet [{Decimal}] [{(Digit | Alphabet)}]
 ' Alphabet      =     "A-Z" | "a-z"
 ' Decimal       =     "."
