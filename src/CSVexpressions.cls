@@ -565,7 +565,7 @@ Public Function ArrayFromString(ByRef StrArray As String) As String()
     Dim VectorStartPos As Long
     Dim OpenCBrackets As Long
     
-    StrCopy = Join(Split(StrArray, " "), vbNullString)
+    StrCopy = ReconstructLiteralStrings(StrArray, Join$(Split(StrArray, " "), vbNullString))
     StrLen = LenB(StrCopy) - 4
     If MidB$(StrCopy, StrLen + 1, 4) <> "}}" Then 'Missed "}" from input
         Exit Function
@@ -2732,7 +2732,7 @@ Private Sub VariableAssignment(ByRef vString As String)
     Dim avIcounter As Long
     Dim VarIdx As Long
     
-    tmpAssignment() = Split(ReconstructLiteralStrings(vString, Join(Split(vString, " "), vbNullString)), P_SEPARATORCHAR)
+    tmpAssignment() = Split(ReconstructLiteralStrings(vString, Join$(Split(vString, " "), vbNullString)), P_SEPARATORCHAR)
     For avIcounter = LBound(tmpAssignment) To UBound(tmpAssignment)
         tmpValues() = Split(tmpAssignment(avIcounter), "=")
         If tmpValues(UBound(tmpValues)) <> vbNullString Then
