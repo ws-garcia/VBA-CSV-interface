@@ -350,8 +350,11 @@ Public Function Filter(Pattern As String, startIndex As Long) As CSVArrayList
         .Create Pattern
         FilterFields() = FieldsToFilter(.CurrentVariables)
         For rCounter = startIndex - 1 To CurrentIndex
-            If CBool(.Eval(FilterVarValues(rCounter, FilterFields))) Then
-                Filter.Add Buffer(rCounter) 'Append current record
+            .Eval FilterVarValues(rCounter, FilterFields)
+            If .ErrorType = ExpressionErrors.errNone Then
+                If CBool(.Result) Then
+                    Filter.Add Buffer(rCounter) 'Append current record
+                End If
             End If
         Next rCounter
     End With
