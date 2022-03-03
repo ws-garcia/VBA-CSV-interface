@@ -357,7 +357,7 @@ End Property
 ''' <summary>
 ''' Returns the type of the last error message generated.
 ''' </summary>
-Public Property Get ErrorType() As String
+Public Property Get ErrorType() As ExpressionErrors
     ErrorType = P_ERRTYPE
 End Property
 
