@@ -655,32 +655,42 @@ End Function
 ''' <summary>
 ''' Filter the target CSV file using expression evaluation.
 ''' </summary>
-''' <param name="FilePath">Full file path, including file extension.</param>
 ''' <param name="Pattern">A valid string expression to evaluate when filtering records.</param>
+''' <param name="FilePath">Full file path, including file extension.</param>
 ''' <param name="ExcludeFirstRecord">Used if the user wants to exclude the headers.</param>
-Public Function Filter(FilePath As String, Pattern As String, _
+Public Function Filter(Pattern As String, Optional FilePath As String = vbNullString, _
                             Optional ExcludeFirstRecord As Boolean = True) As CSVArrayList
+    
     Dim CSVparser As CSVinterface
-    Dim StreamReader As CSVTextStream
-    Dim streamsCounter As Long
     
-    Set CSVparser = New CSVinterface
-    Set StreamReader = New CSVTextStream
     Set Filter = New CSVArrayList
+    If FilePath <> vbnullestring Then 'Filter CSV file
+        Dim StreamReader As CSVTextStream
+        Dim streamsCounter As Long
+        
+        Set CSVparser = New CSVinterface
+        Set StreamReader = New CSVTextStream
     
-    With CSVparser.parseConfig
-        .delimitersGuessing = True
-    End With
-    With StreamReader
-        .endStreamOnLineBreak = True
-        .OpenStream FilePath
-        Do While Not .atEndOfStream
-            .ReadText
-            streamsCounter = streamsCounter + 1
-            CSVparser.ImportFromCSVString .bufferString, CSVparser.parseConfig
-            Filter.Concat2 CSVparser.items.Filter(Pattern, 1 + Abs(ExcludeFirstRecord And streamsCounter = 1))
-        Loop
-    End With
+        With CSVparser.parseConfig
+            .delimitersGuessing = True
+        End With
+        With StreamReader
+            .endStreamOnLineBreak = True
+            .OpenStream FilePath
+            Do While Not .atEndOfStream
+                .ReadText
+                streamsCounter = streamsCounter + 1
+                CSVparser.ImportFromCSVString .bufferString, CSVparser.parseConfig
+                Filter.Concat2 CSVparser.items.Filter(Pattern, 1 + Abs(ExcludeFirstRecord And streamsCounter = 1))
+            Loop
+        End With
+    Else
+        Set CSVparser = Me
+        If CSVparser.importSuccess Then
+            ExcludeFirstRecord = (CSVparser.parseConfig.Headers = True)
+            Filter.Concat2 CSVparser.items.Filter(Pattern, 1 + Abs(ExcludeFirstRecord))
+        End If
+    End If
 End Function
 ''' <summary>
 ''' Filter imported data using VBA like patterns.
