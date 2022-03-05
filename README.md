@@ -294,7 +294,7 @@ Sub QueryCSV()
     CSVint.parseConfig.path = path
     If path <> vbNullString Then
         Set CSVrecords = CSVint.ImportFromCSV(CSVint.parseConfig).items
-        Set FilteredData = CSVint.Filter(path, "f1='Asia' & f9>20 & f9<=50") 		'Select "Units sold" greater than 20 and less or 
+        Set FilteredData = CSVint.Filter("f1='Asia' & f9>20 & f9<=50", path) 		'Select "Units sold" greater than 20 and less or 
 																											'equal to 50 from Asian customers
         Set CSVint = Nothing
         Set FilteredData = Nothing
