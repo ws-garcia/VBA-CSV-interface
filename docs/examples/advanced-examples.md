@@ -9,13 +9,14 @@ The \[EXAMPLE1\] shows how you can execute a like SQL simple query over a CSV fi
 
 #### [EXAMPLE1]
 ```vb
-Private Sub Query_CSV(path As String, ByVal keyIndex As Long, queryFilters As Variant)
+Private Sub Query_CSV(path As String)
     Dim CSVint As CSVinterface
     Dim CSVrecords As CSVArrayList
     
     Set CSVint = New CSVinterface
     If path <> vbNullString Then
-        Set CSVrecords = CSVint.GetCSVsubset(path, queryFilters, keyIndex) 'data filtered on keyIndex th field
+        Set CSVrecords = CSVint.Filter("f1='Asia' & f9>20 & f9<=50", path) 				'Select "Units sold" greater than 20 and less or 
+																													'equal to 50 from Asian customers
         CSVint.DumpToSheet DataSource:=CSVrecords 'dump result
         Set CSVint = Nothing
         Set CSVrecords = Nothing

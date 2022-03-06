@@ -284,7 +284,7 @@ So far, it has been outlined the way in which you can import the records from a 
 
 ```
 Sub QueryCSV()
-    Dim CSVint As CSVinterfac
+    Dim CSVint As CSVinterface
     Dim path As String
     Dim FilteredData As CSVArrayList
     
@@ -293,7 +293,6 @@ Sub QueryCSV()
     CSVint.parseConfig.Headers = False                                      		'The file has no header record/row
     CSVint.parseConfig.path = path
     If path <> vbNullString Then
-        Set CSVrecords = CSVint.ImportFromCSV(CSVint.parseConfig).items
         Set FilteredData = CSVint.Filter("f1='Asia' & f9>20 & f9<=50", path) 		'Select "Units sold" greater than 20 and less or 
 																											'equal to 50 from Asian customers
         Set CSVint = Nothing
