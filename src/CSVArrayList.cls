@@ -392,9 +392,9 @@ Private Function FilterVarValues(RecIndex As Long, FieldsToFilterOn() As Long) A
 End Function
 
 Private Function IsBoolean(ByRef Expression As String) As Boolean
-    IsBoolean = (Expression = "true")
+    IsBoolean = (LCase(Expression) = "true")
     If Not IsBoolean Then
-        IsBoolean = (Expression = "false")
+        IsBoolean = (LCase(Expression) = "false")
     End If
 End Function
 
