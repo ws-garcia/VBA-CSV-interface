@@ -664,7 +664,7 @@ Public Function Filter(Pattern As String, Optional FilePath As String = vbNullSt
     Dim CSVparser As CSVinterface
     
     Set Filter = New CSVArrayList
-    If FilePath <> vbnullestring Then 'Filter CSV file
+    If FilePath <> vbNullString Then 'Filter CSV file
         Dim StreamReader As CSVTextStream
         Dim streamsCounter As Long
         
