@@ -18,7 +18,7 @@ The most powerful and comprehensive CSV/[TSV](https://www.iana.org/assignments/m
 * __Automatic delimiter sniffer__. Don't worry if you forgot the file configuration. The interface has a solid strategy to sniff delimiters!
 * __Highly Configurable__. User can configure the parser to work with a wide range of CSV files.
 * __CSV data subsetting__. Split CSV data into a set of files with related data.
-* __Like SQL queries on CSV files__. Add your own logic to mimic SQL queries and filter data by criteria (=, <>, >=, <=, AND, OR).
+* __Like SQL queries on CSV files__. Use complex patterns to mimic SQL queries and filter data by criteria (=, <>, >=, <=, & (AND), |(OR)).
 * __Flexible__. Import only certain range of records from the given file, import fields (columns) by indexes or names, read records in sequential mode. 
 * __Dynamic Typing support__. Turn CSV data field to a desired VBA data type.
 * __Multi-level data sorting__. Sort CSV imported data over multiple columns using the hyper-fast(100k records per second) [Yaroslavskiy Dual-Pivot Quicksort](https://web.archive.org/web/20151002230717/http://iaroslavski.narod.ru/quicksort/DualPivotQuicksort.pdf) like Java and also other methods like: IntroSort, HeapSort and Merge sort.
@@ -283,26 +283,20 @@ End Sub
 So far, it has been outlined the way in which you can import the records from a CSV file sequentially, the following example shows how to filter the records, in a like SQL way, according to whether they meet a criterion set by the user:
 
 ```
-Sub QueryCSV(path As String, ByVal keyIndex As Long, queryFilters As Variant)
+Sub QueryCSV()
     Dim CSVint As CSVinterface
-    Dim CSVrecords As ECPArrayList
+    Dim path As String
+    Dim FilteredData As CSVArrayList
     
     Set CSVint = New CSVinterface
-    With CSVint.parseConfig
-        .path = "C:\Sample.csv"
-        .dialect.fieldsDelimiter = ","                      ' Columns delimiter
-        .dialect.recordsDelimiter = vbCrLf                  ' Rows delimiter
-    End With
+    path = Environ("USERPROFILE") & "\Desktop\Demo_100000records.csv"
+    CSVint.parseConfig.Headers = False                                      		'The file has no header record/row
+    CSVint.parseConfig.path = path
     If path <> vbNullString Then
-        '@-----------------------------------------------
-        ' The following instruction will filter the data
-        ' on the keyIndex(th) field.
-        Set CSVrecords = CSVint.GetCSVsubset(path, _
-                                            queryFilters, _
-                                            keyIndex)
-        CSVint.DumpToSheet DataSource:=CSVrecords           ' Dump result to new WorkSheet
+        Set FilteredData = CSVint.Filter("f1='Asia' & f9>20 & f9<=50", path) 		'Select "Units sold" greater than 20 and less or 
+																											'equal to 50 from Asian customers
         Set CSVint = Nothing
-        Set CSVrecords = Nothing
+        Set FilteredData = Nothing
     End If
 End Sub
 ```
@@ -383,11 +377,14 @@ The benchmark results for VBA-CSV Interface are available at [this site](https:/
 
 The library is composed of the following class modules:
 * `CSVArrayList`
+* [`CSVcallBack`](https://github.com/ws-garcia/VBA-Expressions)
 * `CSVdialect`
+* [`CSVexpressions`](https://github.com/ws-garcia/VBA-Expressions)
 * `CSVinterface`
 * `CSVparserConfig`
 * `CSVSniffer`
 * `CSVTextStream`
+* [`CSVudFunctions`](https://github.com/ws-garcia/VBA-Expressions)
 
 All dependencies are written in pure VBA.
 

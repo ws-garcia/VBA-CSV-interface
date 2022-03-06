@@ -52,6 +52,11 @@ Class module developed to emulate some functionalities from the `ArrayList` pres
 <td style="text-align: left;">Concatenates the values from the current instance with the specified values and returns a <code>CSVArraylist</code> object as result. The <code>AValues</code> parameter is a <code>Variant</code> data type containing the array, <code>CSVArraylist</code> or value to concatenate.</td>
 </tr>
 <tr>
+<td style="text-align: left; color:blue;"><em>Concat2</em></td>
+<td style="text-align: left;">Method</td>
+<td style="text-align: left;">Concatenates the values from the current instance with the specified values and returns a <code>CSVArraylist</code> object as result. The <code>AValues</code> parameter is a <code>CSVArraylist</code> with the values to concatenate.</td>
+</tr>
+<tr>
 <td style="text-align: left; color:blue;"><em>Copy</em></td>
 <td style="text-align: left;">Method</td>
 <td style="text-align: left;">Returns a <code>CSVArraylist</code> object with a copy of the current instance from and to a given index. The <code>StartIndex</code> parameter indicates where the copy will start and the <code>EndIndex</code> determines where the operation will end. If the <code>EndIndex</code> parameter is set to <code>-1</code>, the operation will end at the maximum index available for the current instance.</td>
@@ -70,6 +75,11 @@ Class module developed to emulate some functionalities from the `ArrayList` pres
 <td style="text-align: left; color:blue;"><em>CreateJagged</em></td>
 <td style="text-align: left;">Method</td>
 <td style="text-align: left;">Creates an empty jagged array. The operation will turns the array <code>ArrVar</code> into an jagged array with <code>ArraySize + 1</code> rows and each row with <code>VectorSize</code> columns. To access to an individual element user must use something like <code>expression(i)(j)</code>, where <code>i</code> denotes an index in the main array and <code>j</code> denotes an index in the child array.</td>
+</tr>
+<tr>
+<td style="text-align: left; color:blue;"><em>Filter</em></td>
+<td style="text-align: left;">Method</td>
+<td style="text-align: left;">Returns a filtered array list using the <code>CSVexpressions</code> class module.</td>
 </tr>
 <tr>
 <td style="text-align: left; color:blue;"><em>Insert</em></td>

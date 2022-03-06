@@ -55,11 +55,6 @@ This section describes the custom errors whose components are returned by the pa
 <td style="text-align: left;">CSVinterface Class.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><em>-2147212490</em></td>
-<td style="text-align: left;">[CSV file subset]: The given path name is an empty string or the specified CSV file does not exist in the supplied path.</td>
-<td style="text-align: left;">CSVinterface Class.</td>
-</tr>
-<tr>
 <td style="text-align: left;"><em>-2147212489</em></td>
 <td style="text-align: left;">[CSV Field Insert]: Cannot insert a field in the current instance. This is because there is no imported data or the records do not have the same number of fields.</td>
 <td style="text-align: left;">CSVinterface Class.</td>

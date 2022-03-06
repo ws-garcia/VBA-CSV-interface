@@ -40,6 +40,11 @@ Private tmpBuffer As Variant
 '////////////////////////////////////////////////////////////////////////////////////////////
 '#
 '////////////////////////////////////////////////////////////////////////////////////////////
+' CONSTANTS:
+Private Const d_Apostrophe As String = "'"
+'////////////////////////////////////////////////////////////////////////////////////////////
+'#
+'////////////////////////////////////////////////////////////////////////////////////////////
 ' ENUMERATIONS:
 Public Enum SortingAlgorithms
     SA_IntroSort = 0
@@ -82,14 +87,14 @@ End Property
 ''' Gets or sets the Item, by its index, from the current instance.
 ''' </summary>
 ''' <param name="Index">Item's position in this instance.</param>
-Public Property Get item(index As Long) As Variant
+Public Property Get item(Index As Long) As Variant
 Attribute item.VB_Description = "Gets the Item, by its index, from the current instance."
 Attribute item.VB_UserMemId = 0
-    Select Case index
+    Select Case Index
         Case 0 To CurrentIndex
-            item = Buffer(index)
+            item = Buffer(Index)
         Case Else
-            Err.Raise 9
+            err.Raise 9
     End Select
 End Property
 
@@ -98,12 +103,12 @@ End Property
 ''' </summary>
 ''' <param name="Index">Item's position in this instance.</param>
 ''' <param name="aValue">The value to overwrite the element.</param>
-Public Property Let item(index As Long, aValue As Variant)
-    Select Case index
+Public Property Let item(Index As Long, aValue As Variant)
+    Select Case Index
         Case 0 To CurrentIndex
-            Buffer(index) = aValue
+            Buffer(Index) = aValue
         Case Else
-            Err.Raise 9
+            err.Raise 9
     End Select
 End Property
 
@@ -181,29 +186,29 @@ End Sub
 ''' values to the current instance.
 ''' </summary>
 ''' <param name="aValue">The value to append.</param>
-Public Sub Add2(ParamArray AValues() As Variant)
+Public Sub Add2(ParamArray aValues() As Variant)
 Attribute Add2.VB_Description = "Appends a copy, in jagged array fashion, of the specified value to the current instance."
     Dim i As Long
     Dim tmpValue() As Variant
     
     ReDim tmpValue(0 To 0)
-    For i = LBound(AValues) To UBound(AValues)
+    For i = LBound(aValues) To UBound(aValues)
         CurrentIndex = CurrentIndex + 1
         Select Case CurrentIndex
             Case Is <= MaxIndex
-                If IsArray(AValues(i)) Then
-                    Buffer(CurrentIndex) = AValues(i)
+                If IsArray(aValues(i)) Then
+                    Buffer(CurrentIndex) = aValues(i)
                 Else
-                    tmpValue(0) = AValues(i)
+                    tmpValue(0) = aValues(i)
                     Buffer(CurrentIndex) = tmpValue
                 End If
             Case Else
                 MaxIndex = 2 * (MaxIndex + 1) - 1
                 ReDim Preserve Buffer(0 To MaxIndex)
-                If IsArray(AValues(i)) Then
-                    Buffer(CurrentIndex) = AValues(i)
+                If IsArray(aValues(i)) Then
+                    Buffer(CurrentIndex) = aValues(i)
                 Else
-                    tmpValue(0) = AValues(i)
+                    tmpValue(0) = aValues(i)
                     Buffer(CurrentIndex) = tmpValue
                 End If
         End Select
@@ -247,11 +252,11 @@ End Sub
 ''' equal to the specified number.
 ''' Equivalent to .NET Math.Ceiling function.
 ''' </summary>
-Private Function Ceiling(Value As Double) As Long
+Private Function Ceiling(value As Double) As Long
     Dim tmpResult As Long
     
-    tmpResult = Fix(Value)
-    Ceiling = tmpResult - ((Value <> tmpResult) And (Value > 0))
+    tmpResult = Fix(value)
+    Ceiling = tmpResult - ((value <> tmpResult) And (value > 0))
 End Function
 
 ''' <summary>
@@ -283,27 +288,126 @@ Private Function EndOfSortingBlock(OldKey As Long, _
                                     StartPos As Long, _
                                     MaxIndex As Long) As Long
     Dim i As Long
-    Dim Switch As Boolean
+    Dim switch As Boolean
     Dim tmpRecordIndex As Long
     
     i = StartPos
     tmpRecordIndex = i
-    Do While i <= MaxIndex And Not Switch
-        Switch = Buffer(tmpRecordIndex)(OldKey) <> Buffer(i)(OldKey)
-        i = i + (1 + Switch)
+    Do While i <= MaxIndex And Not switch
+        switch = Buffer(tmpRecordIndex)(OldKey) <> Buffer(i)(OldKey)
+        i = i + (1 + switch)
     Loop
     EndOfSortingBlock = i - 1
 End Function
+
+''' <summary>
+''' Returns the indexes of the fields
+''' to be used in the filter operation.
+''' </summary>
+''' <param name="VarList">List of varibles [f1; f2; ...; fn].</param>
+Private Function FieldsToFilter(VarList As String) As Long()
+    Dim tmpResult() As Long
+    Dim tmpVars() As String
+    Dim jC As Long
+    Dim opLB As Long
+    Dim opUB As Long
+    Dim IdxLen As Long
+    
+    tmpVars() = Split(VarList, "; ")                    'Separates variables [f#; f#...]
+    opLB = LBound(tmpVars)
+    opUB = UBound(tmpVars)
+    ReDim tmpResult(opLB To opUB)
+    For jC = opLB To opUB
+        IdxLen = LenB(tmpVars(jC)) - (InStrB(1, tmpVars(jC), "f") + 1)
+        If IdxLen Then 'At least one digit to extract
+            tmpResult(jC) = CLng(MidB$(tmpVars(jC), 3))
+        Else 'Input error
+            ReDim tmpResult(0)
+            tmpResult(0) = -1
+            FieldsToFilter = tmpResult
+            Exit Function
+        End If
+    Next jC
+    FieldsToFilter = tmpResult
+End Function
+
+''' <summary>
+''' Returns a filtered array list using the
+''' CSVexpressions class module.
+''' </summary>
+''' <param name="Pattern">The expression to eval.</param>
+''' <param name="StartIndex">The index to start filter records (base 1).</param>
+Public Function Filter(Pattern As String, startIndex As Long) As CSVArrayList
+    Dim Evaluator As CSVexpressions
+    Dim rCounter As Long
+    Dim FilterFields() As Long
+    
+    If startIndex < 1 Then Exit Function
+    Set Filter = New CSVArrayList
+    Set Evaluator = New CSVexpressions
+    With Evaluator
+        .GallopingMode = False
+        .Create Pattern
+        FilterFields() = FieldsToFilter(.CurrentVariables)
+        For rCounter = startIndex - 1 To CurrentIndex
+            .Eval FilterVarValues(rCounter, FilterFields)
+            If .ErrorType = ExpressionErrors.errNone Then
+                If CBool(.Result) Then
+                    Filter.Add Buffer(rCounter) 'Append current record
+                End If
+            End If
+        Next rCounter
+    End With
+End Function
+
+''' <summary>
+''' Returns teh fields values to apply
+''' filter on given record.
+''' </summary>
+''' <param name="Pattern">The expression to eval.</param>
+Private Function FilterVarValues(RecIndex As Long, FieldsToFilterOn() As Long) As String
+    Dim tmpData() As String
+    Dim tdLB As Long
+    Dim tdUB As Long
+    Dim idxIter As Long
+    
+    tdLB = LBound(FieldsToFilterOn)
+    tdUB = UBound(FieldsToFilterOn)
+    ReDim tmpData(tdLB To tdUB)
+    For idxIter = tdLB To tdUB
+        If IsNumeric(Buffer(RecIndex)(FieldsToFilterOn(idxIter) - 1)) Then
+            tmpData(idxIter) = "f" & FieldsToFilterOn(idxIter) & "=" _
+                                & Buffer(RecIndex)(FieldsToFilterOn(idxIter) - 1)
+        Else    'Literal strings
+            If IsBoolean(CStr(Buffer(RecIndex)(FieldsToFilterOn(idxIter) - 1))) Then
+                tmpData(idxIter) = "f" & FieldsToFilterOn(idxIter) & "=" _
+                                & Buffer(RecIndex)(FieldsToFilterOn(idxIter) - 1)
+            Else
+                tmpData(idxIter) = "f" & FieldsToFilterOn(idxIter) & "=" _
+                                & d_Apostrophe & Buffer(RecIndex)(FieldsToFilterOn(idxIter) - 1) & d_Apostrophe
+            End If
+        End If
+    Next idxIter
+    FilterVarValues = Join$(tmpData, ";")
+End Function
+
+Private Function IsBoolean(ByRef Expression As String) As Boolean
+    IsBoolean = (Expression = "true")
+    If Not IsBoolean Then
+        IsBoolean = (Expression = "false")
+    End If
+End Function
+
 ''' <summary>
 ''' Returns the largest integral value less than or
 ''' equal to the specified number.
 ''' Equivalent to .NET Math.Floor function.
 ''' </summary>
-Private Function Floor(Value As Double) As Long
+Private Function Floor(value As Double) As Long
     Dim tmpResult As Long
     
-    tmpResult = Fix(Value)
-    Floor = tmpResult + ((Value <> tmpResult) And (Value < 0))
+    tmpResult = Fix(value)
+    Floor = tmpResult + ((value <> tmpResult) And (value < 0))
 End Function
 
 ''' <summary>
@@ -320,15 +424,15 @@ End Function
 ''' <summary>
 ''' Check sorting bounds.
 ''' </summary>
-Private Function CheckSortingBounds(StartIndex As Long, EndIndex As Long) As Boolean
+Private Function CheckSortingBounds(startIndex As Long, EndIndex As Long) As Boolean
     CheckSortingBounds = True
-    If StartIndex > CurrentIndex + 1 And StartIndex <= 0 Then
+    If startIndex > CurrentIndex + 1 And startIndex <= 0 Then
         CheckSortingBounds = False
     End If
     If EndIndex > CurrentIndex + 1 And EndIndex <= 0 Then
         CheckSortingBounds = False
     End If
-    If StartIndex > EndIndex Then
+    If startIndex > EndIndex Then
         CheckSortingBounds = False
     End If
 End Function
@@ -383,42 +487,60 @@ End Function
 ''' Concatenates the values from the current instance with the specified values.
 ''' </summary>
 ''' <param name="AValues">A variant containing the array, arraylist or value to concatenate.</param>
-Public Function Concat(ByRef AValues As Variant) As CSVArrayList
+Public Function Concat(ByRef aValues As Variant) As CSVArrayList
 Attribute Concat.VB_Description = "Concatenates the values from the current instance with the specified values."
     On Error GoTo Concat_ErrHandler
-    Dim TmpValues As Variant
+    Dim tmpValues As Variant
     
-    If TypeName(AValues) = TypeName(Me) Then
-        TmpValues = AValues.items
+    If TypeName(aValues) = TypeName(Me) Then
+        tmpValues = aValues.items
     Else
-        TmpValues = AValues
+        tmpValues = aValues
     End If
-    If IsArray(TmpValues) Then
+    If IsArray(tmpValues) Then
         Dim Dim1Pointer As Long
         Dim Dim2Pointer As Long
         Dim tmpRow() As Variant
         
-        If MultiDimensional(TmpValues) Then '2D array expected
-            ReDim tmpRow(LBound(TmpValues, 2) To UBound(TmpValues, 2))
-            For Dim1Pointer = LBound(TmpValues) To UBound(TmpValues)
-                For Dim2Pointer = LBound(TmpValues, 2) To UBound(TmpValues, 2)
-                    tmpRow(Dim1Pointer, Dim2Pointer) = TmpValues(Dim1Pointer, Dim2Pointer)
+        If MultiDimensional(tmpValues) Then '2D array expected
+            ReDim tmpRow(LBound(tmpValues, 2) To UBound(tmpValues, 2))
+            For Dim1Pointer = LBound(tmpValues) To UBound(tmpValues)
+                For Dim2Pointer = LBound(tmpValues, 2) To UBound(tmpValues, 2)
+                    tmpRow(Dim1Pointer, Dim2Pointer) = tmpValues(Dim1Pointer, Dim2Pointer)
                 Next Dim2Pointer
                 Add tmpRow
             Next Dim1Pointer
         Else 'Jagged or 1D array expected
-            If IsJaggedArray(TmpValues) Then
-                For Dim1Pointer = LBound(TmpValues) To UBound(TmpValues)
-                    Add TmpValues(Dim1Pointer)
+            If IsJaggedArray(tmpValues) Then
+                For Dim1Pointer = LBound(tmpValues) To UBound(tmpValues)
+                    Add tmpValues(Dim1Pointer)
                 Next Dim1Pointer
             Else
-                Add TmpValues
+                Add tmpValues
             End If
         End If
     Else
-        Add2 TmpValues
+        Add2 tmpValues
     End If
     Set Concat = Me
+Concat_ErrHandler:
+End Function
+
+''' <summary>
+''' Concatenates the values from the current instance with the specified values.
+''' CSV generated storage expected
+''' </summary>
+''' <param name="AValues">Containing an arraylist or value to concatenate.</param>
+Public Function Concat2(ByRef aValues As CSVArrayList) As CSVArrayList
+    On Error GoTo Concat_ErrHandler
+    Dim tmpValues As Variant
+    Dim jc2 As Long
+    
+    tmpValues = aValues.items
+    For jc2 = LBound(tmpValues) To UBound(tmpValues)
+        Add tmpValues(jc2)
+    Next jc2
+    Set Concat2 = Me
 Concat_ErrHandler:
 End Function
 
@@ -427,7 +549,7 @@ End Function
 ''' </summary>
 ''' <param name="StartIndex">The index in which the operation will start.</param>
 ''' <param name="EndIndex">The index in which the operation will end.</param>
-Public Function Copy(Optional StartIndex As Long = 0, _
+Public Function Copy(Optional startIndex As Long = 0, _
                         Optional EndIndex As Long = -1) As CSVArrayList
 Attribute Copy.VB_Description = "Returns a copy of the current instance."
     Dim c As Long
@@ -436,8 +558,8 @@ Attribute Copy.VB_Description = "Returns a copy of the current instance."
     If EndIndex = -1 Then
         EndIndex = CurrentIndex
     End If
-    Copy.Reinitialize EndIndex - StartIndex + 1
-    For c = StartIndex To EndIndex
+    Copy.Reinitialize EndIndex - startIndex + 1
+    For c = startIndex To EndIndex
         Copy.Add Buffer(c)
     Next c
 End Function
@@ -447,7 +569,7 @@ End Function
 ''' </summary>
 ''' <param name="StartIndex">The index in which the operation will start.</param>
 ''' <param name="EndIndex">The index in which the operation will end.</param>
-Public Function CopyToArray(Optional StartIndex As Long = 0, _
+Public Function CopyToArray(Optional startIndex As Long = 0, _
                         Optional EndIndex As Long = -1) As Variant()
 Attribute CopyToArray.VB_Description = "Returns a copy of the current instance."
     Dim c As Long
@@ -456,8 +578,8 @@ Attribute CopyToArray.VB_Description = "Returns a copy of the current instance."
     If EndIndex = -1 Then
         EndIndex = CurrentIndex
     End If
-    ReDim tmpResult(0 To EndIndex - StartIndex)
-    For c = StartIndex To EndIndex
+    ReDim tmpResult(0 To EndIndex - startIndex)
+    For c = startIndex To EndIndex
         tmpResult(c) = Buffer(c)
     Next c
     CopyToArray = tmpResult
@@ -501,32 +623,32 @@ End Sub
 ''' </summary>
 ''' <param name="Index">The index into which the Item'll be inserted.</param>
 ''' <param name="aValue">The value to be inserted.</param>
-Public Sub Insert(index As Long, aValue As Variant)
+Public Sub Insert(Index As Long, aValue As Variant)
 Attribute Insert.VB_Description = "Inserts an Item, at the given Index, in the current instance of the class."
     Dim tmpCopy() As Variant
     Dim iCounter As Long
         
-    Select Case index
+    Select Case Index
         Case 0 To CurrentIndex + 1 'Avoids to leave empty items
             Me.Add aValue
             'Checks if the item need to be placed on a previous Index
-            If index < CurrentIndex Then
+            If Index < CurrentIndex Then
                 tmpCopy() = Buffer
                 Erase Buffer
                 ReDim Buffer(0 To MaxIndex)
-                For iCounter = 0 To index - 1
+                For iCounter = 0 To Index - 1
                     Buffer(iCounter) = tmpCopy(iCounter)
                     tmpCopy(iCounter) = Null
                 Next iCounter
-                Buffer(index) = tmpCopy(CurrentIndex)
-                For iCounter = index To CurrentIndex - 1
+                Buffer(Index) = tmpCopy(CurrentIndex)
+                For iCounter = Index To CurrentIndex - 1
                     Buffer(iCounter + 1) = tmpCopy(iCounter)
                     tmpCopy(iCounter) = Null
                 Next iCounter
                 Erase tmpCopy
             End If
         Case Else
-            Err.Raise 9
+            err.Raise 9
     End Select
 End Sub
 
@@ -637,15 +759,15 @@ Private Sub max_heapify(i As Long, _
                         SortingKey As Long, _
                         HeapSize As Long)
     Dim largest As Long
-    Dim L As Long
+    Dim l As Long
     Dim R As Long
     
-    L = 2 * i                                   'LEFT
+    l = 2 * i                                   'LEFT
     R = 2 * i + 1                               'RIGHT
     largest = i
-    If L <= HeapSize Then
-        If Buffer(leftt + L - 1)(SortingKey) > Buffer(leftt + i - 1)(SortingKey) Then
-            largest = L
+    If l <= HeapSize Then
+        If Buffer(leftt + l - 1)(SortingKey) > Buffer(leftt + i - 1)(SortingKey) Then
+            largest = l
         End If
     End If
     If R <= HeapSize Then
@@ -667,7 +789,7 @@ End Sub
 ''' <param name="R">The index of the last item to be merged.</param>
 ''' <param name="SortingKey">The column/key for the logical comparisons.</param>
 ''' <param name="Descending">Sort order.</param>
-Private Sub merge(L As Long, m As Long, R As Long, SortingKey As Long, Descending As Boolean)
+Private Sub merge(l As Long, m As Long, R As Long, SortingKey As Long, Descending As Boolean)
     
     If Descending Then
         If Buffer(m)(SortingKey) >= Buffer(m + 1)(SortingKey) Then
@@ -686,19 +808,19 @@ Private Sub merge(L As Long, m As Long, R As Long, SortingKey As Long, Descendin
     Dim j As Long
     Dim k As Long
     
-    len1 = m - L + 1
+    len1 = m - l + 1
     len2 = R - m
     ReDim leftt(len1 - 1)
     ReDim rightt(len2 - 1)
     For i = 0 To len1 - 1
-        leftt(i) = Buffer(L + i)
+        leftt(i) = Buffer(l + i)
     Next i
     For i = 0 To len2 - 1
         rightt(i) = Buffer(m + 1 + i)
     Next i
     i = 0
     j = 0
-    k = L
+    k = l
     If Descending Then
         Do While i < len1 And j < len2
             If leftt(i)(SortingKey) >= rightt(j)(SortingKey) Then
@@ -769,7 +891,7 @@ Private Sub MergeSort_Asc(leftt As Long, _
                             SortingKey As Long, _
                             pvarMirror As Variant)
     Dim Ulen As Long
-    Dim L As Long
+    Dim l As Long
     Dim R As Long
     Dim O As Long
     Dim BoolSwitch As Boolean
@@ -784,25 +906,25 @@ Private Sub MergeSort_Asc(leftt As Long, _
             MergeSort_Asc leftt, Ulen, SortingKey, pvarMirror
             MergeSort_Asc Ulen + 1, rightt, SortingKey, pvarMirror
             ' Merge the resulting halves
-            L = leftt ' start of first (left) half
+            l = leftt ' start of first (left) half
             R = Ulen + 1 ' start of second (right) half
             O = leftt ' start of output (mirror array)
             Do
-                BoolSwitch = Buffer(R)(SortingKey) < Buffer(L)(SortingKey)
+                BoolSwitch = Buffer(R)(SortingKey) < Buffer(l)(SortingKey)
                 If BoolSwitch Then
                     pvarMirror(O) = Buffer(R)
                     R = R + 1
                     If R > rightt Then
-                        For L = L To Ulen
+                        For l = l To Ulen
                             O = O + 1
-                            pvarMirror(O) = Buffer(L)
+                            pvarMirror(O) = Buffer(l)
                         Next
                         Exit Do
                     End If
                 Else
-                    pvarMirror(O) = Buffer(L)
-                    L = L + 1
-                    If L > Ulen Then
+                    pvarMirror(O) = Buffer(l)
+                    l = l + 1
+                    If l > Ulen Then
                         For R = R To rightt
                             O = O + 1
                             pvarMirror(O) = Buffer(R)
@@ -826,7 +948,7 @@ Private Sub MergeSort_Desc(leftt As Long, _
                             SortingKey As Long, _
                             pvarMirror As Variant)
     Dim Ulen As Long
-    Dim L As Long
+    Dim l As Long
     Dim R As Long
     Dim O As Long
     Dim BoolSwitch As Boolean
@@ -841,25 +963,25 @@ Private Sub MergeSort_Desc(leftt As Long, _
             MergeSort_Desc leftt, Ulen, SortingKey, pvarMirror
             MergeSort_Desc Ulen + 1, rightt, SortingKey, pvarMirror
             ' Merge the resulting halves
-            L = leftt ' start of first (left) half
+            l = leftt ' start of first (left) half
             R = Ulen + 1 ' start of second (right) half
             O = leftt ' start of output (mirror array)
             Do
-                BoolSwitch = Buffer(R)(SortingKey) > Buffer(L)(SortingKey)
+                BoolSwitch = Buffer(R)(SortingKey) > Buffer(l)(SortingKey)
                 If BoolSwitch Then
                     pvarMirror(O) = Buffer(R)
                     R = R + 1
                     If R > rightt Then
-                        For L = L To Ulen
+                        For l = l To Ulen
                             O = O + 1
-                            pvarMirror(O) = Buffer(L)
+                            pvarMirror(O) = Buffer(l)
                         Next
                         Exit Do
                     End If
                 Else
-                    pvarMirror(O) = Buffer(L)
-                    L = L + 1
-                    If L > Ulen Then
+                    pvarMirror(O) = Buffer(l)
+                    l = l + 1
+                    If l > Ulen Then
                         For R = R To rightt
                             O = O + 1
                             pvarMirror(O) = Buffer(R)
@@ -880,11 +1002,11 @@ End Sub
 ''' </summary>
 ''' <param name="a">First value.</param>
 ''' <param name="b">Second value.</param>
-Private Function min(a As Long, b As Long) As Long
-    If b < a Then
-        min = b
+Private Function Min(a As Long, B As Long) As Long
+    If B < a Then
+        Min = B
     Else
-        min = a
+        Min = a
     End If
 End Function
 
@@ -899,15 +1021,15 @@ Private Sub min_heapify(i As Long, _
                         SortingKey As Long, _
                         HeapSize As Long)
     Dim smallest As Long
-    Dim L As Long
+    Dim l As Long
     Dim R As Long
     
-    L = 2 * i                                   'LEFT
+    l = 2 * i                                   'LEFT
     R = 2 * i + 1                               'RIGHT
     smallest = i
-    If L <= HeapSize Then
-        If Buffer(leftt + L - 1)(SortingKey) < Buffer(leftt + i - 1)(SortingKey) Then
-            smallest = L
+    If l <= HeapSize Then
+        If Buffer(leftt + l - 1)(SortingKey) < Buffer(leftt + i - 1)(SortingKey) Then
+            smallest = l
         End If
     End If
     If R <= HeapSize Then
@@ -1178,7 +1300,7 @@ Public Sub Reinitialize(bufferSize As Long)
             MaxIndex = bufferSize - 1
             ReDim Buffer(0 To MaxIndex)
         Case Else
-            Err.Raise 9
+            err.Raise 9
     End Select
 End Sub
 
@@ -1186,28 +1308,28 @@ End Sub
 ''' Removes the Item at specified Index.
 ''' </summary>
 ''' <param name="Index">The index of the Item'll be deleted.</param>
-Public Sub RemoveAt(index As Long)
+Public Sub RemoveAt(Index As Long)
 Attribute RemoveAt.VB_Description = "Removes an Item at specified Index."
     Dim tmpCopy() As Variant
     Dim iCounter As Long
         
-    Select Case index
+    Select Case Index
         Case 0 To CurrentIndex
             tmpCopy() = Buffer
             Erase Buffer
             ReDim Buffer(0 To MaxIndex)
-            For iCounter = 0 To index - 1
+            For iCounter = 0 To Index - 1
                 Buffer(iCounter) = tmpCopy(iCounter)
                 tmpCopy(iCounter) = Null
             Next iCounter
-            For iCounter = index + 1 To CurrentIndex
+            For iCounter = Index + 1 To CurrentIndex
                 Buffer(iCounter - 1) = tmpCopy(iCounter)
                 tmpCopy(iCounter) = Null
             Next iCounter
             Erase tmpCopy
             CurrentIndex = CurrentIndex - 1
         Case Else
-            Err.Raise 9
+            err.Raise 9
     End Select
 End Sub
 
@@ -1216,23 +1338,23 @@ End Sub
 ''' </summary>
 ''' <param name="Index">The index of the first item to be deleted.</param>
 ''' <param name="Count">The number of item to be deleted.</param>
-Public Sub RemoveRange(index As Long, count As Long)
+Public Sub RemoveRange(Index As Long, count As Long)
 Attribute RemoveRange.VB_Description = "Removes a range of Items starting at specified Index."
     Dim tmpCopy() As Variant
     Dim iCounter As Long
     Dim EndIndex As Long
         
-    Select Case index
+    Select Case Index
         Case 0 To CurrentIndex
-            EndIndex = index + count - 1
+            EndIndex = Index + count - 1
             If EndIndex > CurrentIndex Then
                 EndIndex = CurrentIndex
-                count = EndIndex - index + 1
+                count = EndIndex - Index + 1
             End If
             tmpCopy() = Buffer
             Erase Buffer
             ReDim Buffer(0 To MaxIndex)
-            For iCounter = 0 To index - 1
+            For iCounter = 0 To Index - 1
                 Buffer(iCounter) = tmpCopy(iCounter)
                 tmpCopy(iCounter) = Null
             Next iCounter
@@ -1243,7 +1365,7 @@ Attribute RemoveRange.VB_Description = "Removes a range of Items starting at spe
             CurrentIndex = CurrentIndex - count
             Erase tmpCopy
         Case Else
-            Err.Raise 9
+            err.Raise 9
     End Select
 End Sub
 
@@ -1252,21 +1374,21 @@ End Sub
 ''' </summary>
 ''' <param name="StartIndex">The index of the first item to be reversed.</param>
 ''' <param name="EndIndex">The number of item to be reversed.</param>
-Public Function Reverse(Optional StartIndex As Long = -1, _
+Public Function Reverse(Optional startIndex As Long = -1, _
                         Optional EndIndex As Long = -1) As Boolean
 Attribute Reverse.VB_Description = "Reverse the order of the internal items."
     Dim i As Long
     
     On Error GoTo Reverse_ErrHandler
-    If StartIndex < 0 Then
-        StartIndex = 0
+    If startIndex < 0 Then
+        startIndex = 0
     End If
     If EndIndex < 0 Then
         EndIndex = CurrentIndex
     End If
-    If EndIndex > StartIndex Then
-        For i = StartIndex To (StartIndex + ((EndIndex - StartIndex - 1) \ 2))
-            Swap i, EndIndex - (i - StartIndex)
+    If EndIndex > startIndex Then
+        For i = startIndex To (startIndex + ((EndIndex - startIndex - 1) \ 2))
+            Swap i, EndIndex - (i - startIndex)
         Next i
     End If
     Reverse = True
@@ -1282,21 +1404,21 @@ End Function
 ''' <param name="EndIndex">The number of item to be reversed.</param>
 ''' <param name="TargetArr">Array to reverse in.</param>
 Public Function Reverse2(ByRef TargetArr() As Variant, _
-                            Optional StartIndex As Long = -1, _
+                            Optional startIndex As Long = -1, _
                             Optional EndIndex As Long = -1) As Boolean
 Attribute Reverse2.VB_Description = "Reverse the order of items in the target array."
     Dim i As Long
     
     On Error GoTo Reverse_ErrHandler
-    If StartIndex < 0 Then
-        StartIndex = LBound(TargetArr)
+    If startIndex < 0 Then
+        startIndex = LBound(TargetArr)
     End If
     If EndIndex < 0 Then
         EndIndex = UBound(TargetArr)
     End If
-    If EndIndex > StartIndex Then
-        For i = StartIndex To (StartIndex + ((EndIndex - StartIndex - 1) \ 2))
-            Swap2 TargetArr, i, EndIndex - (i - StartIndex)
+    If EndIndex > startIndex Then
+        For i = startIndex To (startIndex + ((EndIndex - startIndex - 1) \ 2))
+            Swap2 TargetArr, i, EndIndex - (i - startIndex)
         Next i
     End If
     Reverse2 = True
@@ -1485,28 +1607,28 @@ End Sub
 ''' <param name="Descending">Sort order.</param>
 Private Sub TimSort(leftt As Long, rightt As Long, SortingKey As Long, Descending As Boolean)
     Dim Size As Long
-    Dim L As Long
+    Dim l As Long
     Dim midd As Long
     Dim R As Long
     Dim i As Long
     
     For i = leftt To rightt Step RUN
-        InsertionSort i, min(i + RUN - 1, rightt), SortingKey, Descending
+        InsertionSort i, Min(i + RUN - 1, rightt), SortingKey, Descending
     Next i
     ' Start merging from size RUN (or 32).
     ' It will merge
     ' to form size 32, then 64, 128...
     Size = RUN
     Do While Size - 1 < rightt
-        For L = leftt To rightt Step 2 * Size
-            midd = min(L + Size - 1, rightt)
-            R = min(L + 2 * Size - 1, rightt)
+        For l = leftt To rightt Step 2 * Size
+            midd = Min(l + Size - 1, rightt)
+            R = Min(l + 2 * Size - 1, rightt)
             ' merge sub array arr[L.....midd] &
             ' arr[midd+1....R]
             If midd < R Then
-                merge L, midd, R, SortingKey, Descending
+                merge l, midd, R, SortingKey, Descending
             End If
-        Next L
+        Next l
         Size = 2 * Size
     Loop
 End Sub

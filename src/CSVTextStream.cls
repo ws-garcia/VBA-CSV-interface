@@ -94,8 +94,8 @@ Public Property Get bufferSize() As Single
 Attribute bufferSize.VB_Description = "Gets or sets the buffer’s size, in MB, for text stream operations."
     bufferSize = P_BUFFERSIZE
 End Property
-Public Property Let bufferSize(Value As Single)
-    P_BUFFERSIZE = Value
+Public Property Let bufferSize(value As Single)
+    P_BUFFERSIZE = value
     P_BUFFERLENGTH = CLng(P_BUFFERSIZE * SizeFactor)
     Buffer = SPACE$(P_BUFFERLENGTH)
 End Property
@@ -114,8 +114,8 @@ Public Property Get endStreamOnLineBreak() As Boolean
 Attribute endStreamOnLineBreak.VB_Description = "Allows to end buffer just after the first, from right to left, line break character."
     endStreamOnLineBreak = P_ENDSTREAMONLINEBREAK
 End Property
-Public Property Let endStreamOnLineBreak(Value As Boolean)
-    P_ENDSTREAMONLINEBREAK = Value
+Public Property Let endStreamOnLineBreak(value As Boolean)
+    P_ENDSTREAMONLINEBREAK = value
 End Property
 Public Property Get isOpenStream() As Boolean
     isOpenStream = P_ISOPENSTREAM
@@ -127,8 +127,8 @@ End Property
 Public Property Get linebreakMatchingBehavior() As EndLineMatchingBehavior
     linebreakMatchingBehavior = P_LINEBREAKMATCHINGBEHAVIOR
 End Property
-Public Property Let linebreakMatchingBehavior(Value As EndLineMatchingBehavior)
-    P_LINEBREAKMATCHINGBEHAVIOR = Value
+Public Property Let linebreakMatchingBehavior(value As EndLineMatchingBehavior)
+    P_LINEBREAKMATCHINGBEHAVIOR = value
 End Property
 Public Property Get pointerPosition() As Long
 Attribute pointerPosition.VB_Description = "Gets the overall pointer position over the current text file."
@@ -146,15 +146,15 @@ Public Property Get unifiedLFOutput() As Boolean
 Attribute unifiedLFOutput.VB_Description = "Determines whether the buffer string is returned using only the LF character as a line feed. Similarly, this property instruct to write files without the Unicode Byte Order Mark."
     unifiedLFOutput = P_UNIFIEDLFOUTPUT
 End Property
-Public Property Let unifiedLFOutput(Value As Boolean)
-    P_UNIFIEDLFOUTPUT = Value
+Public Property Let unifiedLFOutput(value As Boolean)
+    P_UNIFIEDLFOUTPUT = value
 End Property
 Public Property Get utf8EncodedFile() As Boolean
 Attribute utf8EncodedFile.VB_Description = "Indicates whether the buffer string is returned as a decoded string, assuming the file is UTF8 encoded."
     utf8EncodedFile = P_UTF8ENCODED
 End Property
-Public Property Let utf8EncodedFile(Value As Boolean)
-    P_UTF8ENCODED = Value
+Public Property Let utf8EncodedFile(value As Boolean)
+    P_UTF8ENCODED = value
 End Property
 '////////////////////////////////////////////////////////////////////////////////////////////
 '#
@@ -269,10 +269,10 @@ Private Sub NormalizeLineBreaks()
     Loop
     P_LINEBREAK = vbLf
 End Sub
-Public Sub OpenStream(filePath As String)
+Public Sub OpenStream(FilePath As String)
 Attribute OpenStream.VB_Description = "Opens a stream over a text file."
     FileHandled = FreeFile
-    Open filePath For Binary As #FileHandled
+    Open FilePath For Binary As #FileHandled
     P_ISOPENSTREAM = True
     P_STREAMLENGTH = LOF(FileHandled)
     StartVariables
@@ -338,28 +338,28 @@ Private Sub StartVariables()
     P_ATENDOFSTREAM = False
 End Sub
 Public Function UTF8Decode(ByVal sStr As String) As String
-    Dim L As Long, sUTF8 As CSVArrayList, iChar As Long, iChar2 As Long
+    Dim l As Long, sUTF8 As CSVArrayList, iChar As Long, iChar2 As Long
     
     On Error GoTo UTF8_Decode_error
     Set sUTF8 = New CSVArrayList
-    For L = 1 To LenB(sStr) Step 2
-        iChar = Asc(MidB$(sStr, L, 2))
+    For l = 1 To LenB(sStr) Step 2
+        iChar = Asc(MidB$(sStr, l, 2))
         If iChar > 127 Then
             If Not iChar And 32 Then ' 2 chars
-                iChar2 = Asc(MidB$(sStr, L + 2, 2))
+                iChar2 = Asc(MidB$(sStr, l + 2, 2))
                 sUTF8.Add ChrW$(((31 And iChar) * 64 + (63 And iChar2)))
-                L = L + 2
+                l = l + 2
             Else
                 Dim iChar3 As Integer
-                iChar2 = Asc(MidB$(sStr, L + 2, 2))
-                iChar3 = Asc(MidB$(sStr, L + 4, 2))
+                iChar2 = Asc(MidB$(sStr, l + 2, 2))
+                iChar3 = Asc(MidB$(sStr, l + 4, 2))
                 sUTF8.Add ChrW$(((iChar And 15) * 16 * 256) + ((iChar2 And 63) * 64) + (iChar3 And 63))
-                L = L + 4
+                l = l + 4
             End If
         Else
             sUTF8.Add ChrW$(iChar)
         End If
-    Next L
+    Next l
     UTF8Decode = Join$(sUTF8.items, vbNullString)
     Set sUTF8 = Nothing
     Exit Function
