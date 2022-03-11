@@ -1184,10 +1184,10 @@ Private Function GetArithOpInfo(ByRef Expression As String) As TokenInfo
         GetArithOpInfo.OperationToken = otPower
         GetArithOpInfo.OperatorLen = LenB(op_power)
     Else
-        MultSymbolPos = GetMultSymbolPos(Expression)
-        DivSymbolPos = InStrB(1, Expression, op_div)
-        IntDivSymbolPos = InStrB(1, Expression, op_intDiv)
-        ModSymbolPos = InStrB(1, Expression, op_mod)
+        MultSymbolPos = GetOPeratorSymbolPos(Expression, op_mult)
+        DivSymbolPos = GetOPeratorSymbolPos(Expression, op_div)
+        IntDivSymbolPos = GetOPeratorSymbolPos(Expression, op_intDiv)
+        ModSymbolPos = GetOPeratorSymbolPos(Expression, op_mod)
         If NonZero(MultSymbolPos, DivSymbolPos, ModSymbolPos, IntDivSymbolPos) Then
             GetArithOpInfo.Position = MinNonZero(MultSymbolPos, DivSymbolPos, ModSymbolPos, IntDivSymbolPos)    'Priority to the first operator
             Select Case GetArithOpInfo.Position
@@ -1205,9 +1205,9 @@ Private Function GetArithOpInfo(ByRef Expression As String) As TokenInfo
                     GetArithOpInfo.OperatorLen = LenB(op_mod)
             End Select
         Else                                               'Addition and subtraction
-            AddSymbolPos = InStrB(1, Expression, op_plus)
+            AddSymbolPos = GetOPeratorSymbolPos(Expression, op_plus)
             If AddSymbolPos = 1 Then                       'Unary symbol
-                AddSymbolPos = InStrB(AddSymbolPos + 2, Expression, op_plus)
+                AddSymbolPos = GetOPeratorSymbolPos(Expression, op_plus, AddSymbolPos + 2)
             End If
             If AddSymbolPos Then
                 tmpPos = AddSymbolPos - 2
@@ -1231,7 +1231,7 @@ Private Function GetArithOpInfo(ByRef Expression As String) As TokenInfo
                         End If
                         tmpStr = MidB$(Expression, tmpPos, AddSymbolPos - tmpPos)
                         If GetFunctionName(tmpStr) <> vbNullString Or tmpStr = "E" Then
-                            AddSymbolPos = InStrB(AddSymbolPos + 2, Expression, op_plus)
+                            AddSymbolPos = GetOPeratorSymbolPos(Expression, op_plus, AddSymbolPos + 2)
                         Else
                             Exit Do
                         End If
@@ -1240,9 +1240,9 @@ Private Function GetArithOpInfo(ByRef Expression As String) As TokenInfo
                     End If
                 Loop
             End If
-            SubtSymbolPos = InStrB(1, Expression, op_minus)
+            SubtSymbolPos = GetOPeratorSymbolPos(Expression, op_minus)
             If SubtSymbolPos = 1 Then
-                SubtSymbolPos = InStrB(SubtSymbolPos + 2, Expression, op_minus)
+                SubtSymbolPos = GetOPeratorSymbolPos(Expression, op_minus, SubtSymbolPos + 2)
             End If
             If SubtSymbolPos Then
                 tmpPos = SubtSymbolPos - 2
@@ -1266,7 +1266,7 @@ Private Function GetArithOpInfo(ByRef Expression As String) As TokenInfo
                         End If
                         tmpStr = MidB$(Expression, tmpPos, SubtSymbolPos - tmpPos)
                         If GetFunctionName(tmpStr) <> vbNullString Or tmpStr = "E" Then
-                            SubtSymbolPos = InStrB(SubtSymbolPos + 2, Expression, op_minus)
+                            SubtSymbolPos = GetOPeratorSymbolPos(Expression, op_minus, SubtSymbolPos + 2)
                         Else
                             Exit Do
                         End If
@@ -1494,16 +1494,16 @@ Private Function GetLCOpInfo(ByRef Expression As String) As TokenInfo
     '@--------------------------------------------------------------------
     ' Comparisons first
     Do 'Discard false positives
-        EqualSymbolPos = InStrB(EqualSymbolPos + 1, Expression, op_equal)
+        EqualSymbolPos = GetOPeratorSymbolPos(Expression, op_equal, EqualSymbolPos + 1)
         If EqualSymbolPos > 2 Then
             testChar = MidB$(Expression, EqualSymbolPos - 2, 2)
         Else
             testChar = vbNullString
         End If
     Loop While EqualSymbolPos > 0 And testChar Like "[<>]"
-    NotEqualSymbolPos = InStrB(1, Expression, op_inequality)
+    NotEqualSymbolPos = GetOPeratorSymbolPos(Expression, op_inequality)
     Do
-        GreatterThanSymbolPos = InStrB(GreatterThanSymbolPos + 1, Expression, op_gt)
+        GreatterThanSymbolPos = GetOPeratorSymbolPos(Expression, op_gt, GreatterThanSymbolPos + 1)
         If GreatterThanSymbolPos Then
             testChar = MidB$(Expression, GreatterThanSymbolPos + 2, 2)
         Else
@@ -1511,15 +1511,15 @@ Private Function GetLCOpInfo(ByRef Expression As String) As TokenInfo
         End If
     Loop While GreatterThanSymbolPos > 0 And testChar = op_equal
     Do
-        LessThanSymbolPos = InStrB(LessThanSymbolPos + 1, Expression, op_lt)
+        LessThanSymbolPos = GetOPeratorSymbolPos(Expression, op_lt, LessThanSymbolPos + 1)
         If LessThanSymbolPos Then
             testChar = MidB$(Expression, LessThanSymbolPos + 2, 2)
         Else
             testChar = vbNullString
         End If
     Loop While LessThanSymbolPos > 0 And testChar = op_equal
-    GreatterOrEqualSymbolPos = InStrB(1, Expression, op_gtequal)
-    LessOrEqualSymbolPos = InStrB(1, Expression, op_ltequal)
+    GreatterOrEqualSymbolPos = GetOPeratorSymbolPos(Expression, op_gtequal)
+    LessOrEqualSymbolPos = GetOPeratorSymbolPos(Expression, op_ltequal)
     LikeSymbolPos = InStrB(LessThanSymbolPos + 1, Expression, op_like)
     If NonZero(EqualSymbolPos, NotEqualSymbolPos, GreatterThanSymbolPos, _
                 LessThanSymbolPos, GreatterOrEqualSymbolPos, LessOrEqualSymbolPos, LikeSymbolPos) Then
@@ -1554,20 +1554,20 @@ Private Function GetLCOpInfo(ByRef Expression As String) As TokenInfo
         Else
             '@--------------------------------------------------------------------
             ' Check the expression giving higher precedence to AND, XOR
-            LogANDSymbolPos = InStrB(LogANDSymbolPos + 1, Expression, op_and)
+            LogANDSymbolPos = GetOPeratorSymbolPos(Expression, op_and, LogANDSymbolPos + 1)
             If NonZero(LogANDSymbolPos) Then
                 GetLCOpInfo.Position = LogANDSymbolPos
                 GetLCOpInfo.OperationToken = otLogicalAND
                 GetLCOpInfo.OperatorLen = LenB(op_and)
             Else
-                LogXORSymbolPos = InStrB(LogXORSymbolPos + 1, Expression, op_xor)
+                LogXORSymbolPos = GetOPeratorSymbolPos(Expression, op_xor, LogXORSymbolPos + 1)
                 If NonZero(LogXORSymbolPos) Then
                     GetLCOpInfo.Position = LogXORSymbolPos
                     GetLCOpInfo.OperationToken = otLogicalXOR
                     GetLCOpInfo.OperatorLen = LenB(op_xor)
                 Else
                     Do 'Discard false positives: "||"
-                        LogORSymbolPos = InStrB(LogORSymbolPos + 1, Expression, op_or)
+                        LogORSymbolPos = GetOPeratorSymbolPos(Expression, op_or, LogORSymbolPos + 1)
                         If LogORSymbolPos Then
                             testChar = MidB$(Expression, LogORSymbolPos + 2, 2)
                         Else
@@ -1616,22 +1616,6 @@ Private Function GetLParentPos(ByRef Expression As String, ByRef RelativePositio
         OpenedP = InStrB(SearchIndex, Expression, d_lParenthesis)
     Loop
     GetLParentPos = tmpResult
-End Function
-
-Private Function GetMultSymbolPos(ByRef Expression As String) As Long
-    Dim tmpResult As Long
-    Dim LStrOpenPos As Long
-    Dim LStrClosePos As Long
-    
-    tmpResult = InStrB(1, Expression, op_mult)
-    LStrOpenPos = InStrB(1, Expression, d_Apostrophe)
-    If LStrOpenPos Then
-        LStrClosePos = InStrB(LStrOpenPos + 2, Expression, d_Apostrophe)
-        Do While (tmpResult > LStrOpenPos) And (tmpResult < LStrClosePos)
-            tmpResult = InStrB(tmpResult + 2, Expression, op_mult)
-        Loop
-    End If
-    GetMultSymbolPos = tmpResult
 End Function
 
 Private Sub GetOperand(ByRef CurToken As Token, ByRef CurArg As Argument, _
@@ -1707,6 +1691,24 @@ Private Sub GetOperands(ByRef CurToken As Token, ByRef CurTree As ClusterTree, _
     End If
 End Sub
 
+Private Function GetOPeratorSymbolPos(ByRef Expression As String, _
+                                    ByRef OperatorSymbol As String, _
+                                    Optional StartPosition As Long = 1) As Long
+    Dim tmpResult As Long
+    Dim LStrOpenPos As Long
+    Dim LStrClosePos As Long
+    
+    tmpResult = InStrB(StartPosition, Expression, OperatorSymbol)
+    LStrOpenPos = InStrB(StartPosition, Expression, d_Apostrophe)
+    If LStrOpenPos Then
+        LStrClosePos = InStrB(LStrOpenPos + LenB(OperatorSymbol), Expression, d_Apostrophe)
+        Do While (tmpResult > LStrOpenPos) And (tmpResult < LStrClosePos)
+            tmpResult = InStrB(tmpResult + LenB(OperatorSymbol), Expression, OperatorSymbol)
+        Loop
+    End If
+    GetOPeratorSymbolPos = tmpResult
+End Function
+
 ''' <summary>
 ''' Gets the operator given an operator token.
 ''' </summary>
@@ -1752,11 +1754,11 @@ End Function
 Private Function GetPowerSymbolPos(ByRef Expression As String) As Long
     Dim tmpPos As Long
     Dim tmpResult As Long
-    
-    tmpPos = InStrB(1, Expression, op_power)
+
+    tmpPos = GetOPeratorSymbolPos(Expression, op_power)
     Do While tmpPos
         tmpResult = tmpPos
-        tmpPos = InStrB(tmpResult + 2, Expression, op_power)
+        tmpPos = GetOPeratorSymbolPos(Expression, op_power)
     Loop
     GetPowerSymbolPos = tmpResult
 End Function
