@@ -52,7 +52,7 @@ Option Explicit
 ' Alphabet      =     "A-Z" | "a-z"
 ' Decimal       =     "."
 ' Digit = "0-9"
-' Operator      =     "+" | "-" | "*" | "/" | "\" | "^" | "%" | "!" | "<" | "<=" | "<>" | ">" | ">=" | "=" | "&" | "|" | "||"
+' Operator      =     "+" | "-" | "*" | "/" | "\" | "^" | "%" | "!" | "<" | "<=" | "<>" | ">" | ">=" | "=" | "$" | "&" | "|" | "||"
 ' Function      =     "abs" | "sin" | "cos" | "min" |...|[UDF]
 '
 '///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -60,20 +60,20 @@ Option Explicit
 ' ABOUT THE ORDER IN WHICH MATHEMATICAL EXPRESSIONS ARE EVALUATED:
 ' VBA expressions uses the following precedence rules to evaluate mathematical expressions:
 '
-' 1. ()             Grouping: evaluates functions arguments as well.
-' 2. ! - +          Unary operators: exponentiation is the only operation that violates this. Ex.:
-'                   -2 ^ 2 = -4 | (-2) ^ 2 = 4.
-' 3. ^              Exponentiation: Although Excel and Matlab evaluate nested exponentiations from
-'                   left to right, Google, mathematicians and several modern programming languages,
-'                   such as Perl, Python and Ruby, evaluate this operation from right to left.
-'                   VBA expressions also evals in Python way: a^b^c = a^(b^c).
-' 4. * / %          Multiplication, division, modulo: from left to right.
-' 5. + -            Addition and subtraction: from left to right.
-' 6. < <= <> >= = > Comparison operators.
-' 7. ~              Logical negation.
-' 8. &              Logical AND.
-' 9. ||             Logical XOR.
-' 10. |             Logical OR.
+' 1. ()               Grouping: evaluates functions arguments as well.
+' 2. ! - +            Unary operators: exponentiation is the only operation that violates this. Ex.:
+'                     -2 ^ 2 = -4 | (-2) ^ 2 = 4.
+' 3. ^                Exponentiation: Although Excel and Matlab evaluate nested exponentiations from
+'                     left to right, Google, mathematicians and several modern programming languages,
+'                     such as Perl, Python and Ruby, evaluate this operation from right to left.
+'                     VBA expressions also evals in Python way: a^b^c = a^(b^c).
+' 4. * / %            Multiplication, division, modulo: from left to right.
+' 5. + -              Addition and subtraction: from left to right.
+' 6. < <= <> >= = > $ Comparison operators.
+' 7. ~                Logical negation.
+' 8. &                Logical AND.
+' 9. ||               Logical XOR.
+' 10. |               Logical OR.
 '
 ' Users can enter variables and substitute their values for the calculations. Variable names
 ' must meet the following requirements:
@@ -136,9 +136,10 @@ Private Const op_gtequal As String = ">="
 Private Const op_and As String = "&"
 Private Const op_or As String = "|"
 Private Const op_xor As String = "||"
+Private Const op_like As String = "$"
 Private Const op_neg As String = "~"
-Private Const op_AllItems As String = "*+-/^%\=<>&|"
-Private Const op_AllNotUnaryItems As String = "*/^%\=<>&|"
+Private Const op_AllItems As String = "*+-/^%\=<>&|$"
+Private Const op_AllNotUnaryItems As String = "*/^%\=<>&|$"
 Private Const d_lCurly As String = "{"
 Private Const d_rCurly As String = "}"
 Private Const d_lParenthesis As String = "("
@@ -175,22 +176,23 @@ Private UserDefFunctions As ClusterBuffer
 ' ENUMERATIONS:
 Public Enum OperatorToken
     otNull = 0
-    otSum = 1                  '+
-    otDiff = 2                 '-
-    otMultiplication = 3       '*
-    otDivision = 4             '/
-    otIntDiv = 5               '\
-    otPower = 6                '^
-    otMod = 7                  '%
-    otEqual = 8                '=
-    otNotEqual = 9             '<>
-    otGreaterThan = 10         '>
-    otLessThan = 11            '<
-    otGreaterThanOrEqual = 12  '>=
-    otLessThanOrEqual = 13     '<=
-    otLogicalAND = 14          '&
-    otLogicalOR = 15           '|
-    otLogicalXOR = 16          '||
+    otSum = 1                    '+
+    otDiff = 2                   '-
+    otMultiplication = 3         '*
+    otDivision = 4               '/
+    otIntDiv = 5                 '\
+    otPower = 6                  '^
+    otMod = 7                    '%
+    otEqual = 101                '=
+    otNotEqual = 102             '<>
+    otGreaterThan = 103          '>
+    otLessThan = 104             '<
+    otGreaterThanOrEqual = 105   '>=
+    otLessThanOrEqual = 106      '<=
+    otLike = 107                 '$
+    otLogicalAND = 201           '&
+    otLogicalOR = 202            '|
+    otLogicalXOR = 203           '||
 End Enum
 Public Enum ExpressionErrors
     errNone = 0
@@ -343,8 +345,8 @@ Public Property Get Degrees() As Boolean
     Degrees = P_DEGREES
 End Property
 
-Public Property Let Degrees(aValue As Boolean)
-    P_DEGREES = aValue
+Public Property Let Degrees(AValue As Boolean)
+    P_DEGREES = AValue
 End Property
 
 ''' <summary>
@@ -377,8 +379,8 @@ Public Property Get GallopingMode() As Boolean
     GallopingMode = P_GALLOPING_MODE
 End Property
 
-Public Property Let GallopingMode(aValue As Boolean)
-    P_GALLOPING_MODE = aValue
+Public Property Let GallopingMode(AValue As Boolean)
+    P_GALLOPING_MODE = AValue
 End Property
 
 ''' <summary>
@@ -403,8 +405,8 @@ Public Property Get SeparatorChar() As String
     SeparatorChar = P_SEPARATORCHAR
 End Property
 
-Public Property Let SeparatorChar(aValue As String)
-    P_SEPARATORCHAR = aValue
+Public Property Let SeparatorChar(AValue As String)
+    P_SEPARATORCHAR = AValue
 End Property
 
 ''' <summary>
@@ -442,12 +444,12 @@ Private Function aCeiling(ByRef Expression As String) As Double
     aCeiling = Ceiling(CDbl(Expression))
 End Function
 
-Public Sub AddConstant(aValue As String, aKey As String)
+Public Sub AddConstant(AValue As String, aKey As String)
     Dim ConstIdx As Long
     
     ConstIdx = GetCBItemIdx(P_CONSTANTS, aKey)
     If ConstIdx = -1 Then 'Ensure uniqueness
-        AppendToCBbuffer P_CONSTANTS, aKey, aValue
+        AppendToCBbuffer P_CONSTANTS, aKey, AValue
     End If
 End Sub
 
@@ -696,7 +698,7 @@ Private Function average(ByRef Expression As String) As Double
 End Function
 
 Private Sub BottomLevelEval(ByRef aToken As Token)
-    If aToken.OperationToken < 8 Then 'Arithmetic operators
+    If aToken.OperationToken < 100 Then 'Arithmetic operators
         Select Case aToken.OperationToken
             Case OperatorToken.otSum
                 aToken.EvalResult = CastOPtype(aToken.Arg1.Operand, aToken.Arg1.NegationFlagOn) _
@@ -741,7 +743,7 @@ Private Sub BottomLevelEval(ByRef aToken As Token)
                 End If
         End Select
     Else
-        If aToken.OperationToken < 14 Then 'Comparison operators
+        If aToken.OperationToken < 200 Then 'Comparison operators
             Select Case aToken.OperationToken
                 Case OperatorToken.otEqual
                     aToken.EvalResult = (CastOPtype(aToken.Arg1.Operand, aToken.Arg1.NegationFlagOn) = _
@@ -758,8 +760,11 @@ Private Sub BottomLevelEval(ByRef aToken As Token)
                 Case OperatorToken.otGreaterThanOrEqual
                     aToken.EvalResult = CastOPtype(aToken.Arg1.Operand, aToken.Arg1.NegationFlagOn) >= _
                                         CastOPtype(aToken.Arg2.Operand, aToken.Arg2.NegationFlagOn)
-                Case Else
+                Case OperatorToken.otLessThanOrEqual
                     aToken.EvalResult = CastOPtype(aToken.Arg1.Operand, aToken.Arg1.NegationFlagOn) <= _
+                                        CastOPtype(aToken.Arg2.Operand, aToken.Arg2.NegationFlagOn)
+                Case OperatorToken.otLike
+                    aToken.EvalResult = CastOPtype(aToken.Arg1.Operand, aToken.Arg1.NegationFlagOn) Like _
                                         CastOPtype(aToken.Arg2.Operand, aToken.Arg2.NegationFlagOn)
             End Select
         Else 'Logical operators
@@ -806,8 +811,8 @@ Private Sub CastCase(ByRef Expression As String, ByRef outStr As String)
 End Sub
 
 Private Function CastOPtype(ByRef strOperand As String, ByRef Negate As Boolean) As Variant
-    If InStrB(1, strOperand, d_Apostrophe) Then 'Literal strings like ['string']
-        CastOPtype = strOperand
+    If IsLiteralString(strOperand) Then 'Literal strings like ['string']
+        CastOPtype = FormatLiteralString(strOperand)
     Else
         If AscW(strOperand) < 58 Then
             CastOPtype = CDbl(strOperand)
@@ -1099,6 +1104,9 @@ Private Function Floor(ByRef value As Double) As Double
     Floor = tmpResult + ((value <> tmpResult) And (value < 0))
 End Function
 
+Private Function FormatLiteralString(ByRef LiteralString As String) As String
+    FormatLiteralString = MidB$(LiteralString, 3, LenB(LiteralString) - 4)
+End Function
 Private Function Gamma(ByRef x As Double) As Double
     'Copyright © 2004, Leonardo Volpi & Foxes Team.
     Dim mantissa As Double, Expo As Double, z As Double
@@ -1176,7 +1184,7 @@ Private Function GetArithOpInfo(ByRef Expression As String) As TokenInfo
         GetArithOpInfo.OperationToken = otPower
         GetArithOpInfo.OperatorLen = LenB(op_power)
     Else
-        MultSymbolPos = InStrB(1, Expression, op_mult)
+        MultSymbolPos = GetMultSymbolPos(Expression)
         DivSymbolPos = InStrB(1, Expression, op_div)
         IntDivSymbolPos = InStrB(1, Expression, op_intDiv)
         ModSymbolPos = InStrB(1, Expression, op_mod)
@@ -1370,7 +1378,11 @@ Private Function GetEvalToken(ByRef Expression As String) As Token
         GetTokenStart Expression, TokenDet.Position, TokenStart
         '@--------------------------------------------------------------------
         ' Find token end
-        GetTokenEnd Expression, TokenDet.Position, TokenDet.OperatorLen, TokenEnd
+        If TokenDet.OperationToken <> otLike Then
+            GetTokenEnd Expression, TokenDet.Position, TokenDet.OperatorLen, TokenEnd
+        Else
+            GetTokenEnd Expression, InStrB(TokenDet.Position + 4, Expression, d_Apostrophe), TokenDet.OperatorLen, TokenEnd
+        End If
         '@--------------------------------------------------------------------
         ' Fill token data
         GetEvalToken.DefString = MidB$(Expression, TokenStart, TokenEnd - TokenStart + 2)
@@ -1476,6 +1488,7 @@ Private Function GetLCOpInfo(ByRef Expression As String) As TokenInfo
     Dim LogANDSymbolPos As Long
     Dim LogORSymbolPos As Long
     Dim LogXORSymbolPos As Long
+    Dim LikeSymbolPos As Long
     Dim testChar As String
     
     '@--------------------------------------------------------------------
@@ -1507,10 +1520,12 @@ Private Function GetLCOpInfo(ByRef Expression As String) As TokenInfo
     Loop While LessThanSymbolPos > 0 And testChar = op_equal
     GreatterOrEqualSymbolPos = InStrB(1, Expression, op_gtequal)
     LessOrEqualSymbolPos = InStrB(1, Expression, op_ltequal)
+    LikeSymbolPos = InStrB(LessThanSymbolPos + 1, Expression, op_like)
     If NonZero(EqualSymbolPos, NotEqualSymbolPos, GreatterThanSymbolPos, _
-                LessThanSymbolPos, GreatterOrEqualSymbolPos, LessOrEqualSymbolPos) Then
+                LessThanSymbolPos, GreatterOrEqualSymbolPos, LessOrEqualSymbolPos, LikeSymbolPos) Then
         GetLCOpInfo.Position = MinNonZero(EqualSymbolPos, NotEqualSymbolPos, GreatterThanSymbolPos, _
-                                    LessThanSymbolPos, GreatterOrEqualSymbolPos, LessOrEqualSymbolPos)    'Priority to the first operator
+                                    LessThanSymbolPos, GreatterOrEqualSymbolPos, LessOrEqualSymbolPos, _
+                                    LikeSymbolPos)                                                         'Priority to the first operator
         Select Case GetLCOpInfo.Position
             Case EqualSymbolPos
                 GetLCOpInfo.OperationToken = otEqual
@@ -1527,9 +1542,12 @@ Private Function GetLCOpInfo(ByRef Expression As String) As TokenInfo
             Case GreatterOrEqualSymbolPos
                 GetLCOpInfo.OperationToken = otGreaterThanOrEqual
                 GetLCOpInfo.OperatorLen = LenB(op_gtequal)
-            Case Else
+            Case LessOrEqualSymbolPos
                 GetLCOpInfo.OperationToken = otLessThanOrEqual
                 GetLCOpInfo.OperatorLen = LenB(op_ltequal)
+            Case LikeSymbolPos
+                GetLCOpInfo.OperationToken = otLike
+                GetLCOpInfo.OperatorLen = LenB(op_like)
             End Select
         '@--------------------------------------------------------------------
         ' LogicalOperators
@@ -1598,6 +1616,22 @@ Private Function GetLParentPos(ByRef Expression As String, ByRef RelativePositio
         OpenedP = InStrB(SearchIndex, Expression, d_lParenthesis)
     Loop
     GetLParentPos = tmpResult
+End Function
+
+Private Function GetMultSymbolPos(ByRef Expression As String) As Long
+    Dim tmpResult As Long
+    Dim LStrOpenPos As Long
+    Dim LStrClosePos As Long
+    
+    tmpResult = InStrB(1, Expression, op_mult)
+    LStrOpenPos = InStrB(1, Expression, d_Apostrophe)
+    If LStrOpenPos Then
+        LStrClosePos = InStrB(LStrOpenPos + 2, Expression, d_Apostrophe)
+        Do While (tmpResult > LStrOpenPos) And (tmpResult < LStrClosePos)
+            tmpResult = InStrB(tmpResult + 2, Expression, op_mult)
+        Loop
+    End If
+    GetMultSymbolPos = tmpResult
 End Function
 
 Private Sub GetOperand(ByRef CurToken As Token, ByRef CurArg As Argument, _
@@ -1704,6 +1738,8 @@ Private Function GetOpSymbol(ByRef OPtoken As OperatorToken) As String
             GetOpSymbol = op_gtequal
         Case OperatorToken.otLessThanOrEqual
             GetOpSymbol = op_ltequal
+        Case OperatorToken.otLike
+            GetOpSymbol = op_like
         Case OperatorToken.otLogicalAND
             GetOpSymbol = op_and
         Case OperatorToken.otLogicalOR
@@ -1758,9 +1794,9 @@ Private Sub GetRootedTree(ByRef SubExpression As String, ByRef tmpReplacement As
     Loop While switch
 End Sub
 
-Private Function GetSubstStr(ByRef aValue As Long) As String
-    If aValue >= 0 Then
-        LIndexConstruc(1) = aValue
+Private Function GetSubstStr(ByRef AValue As Long) As String
+    If AValue >= 0 Then
+        LIndexConstruc(1) = AValue
         GetSubstStr = Join$(LIndexConstruc, vbNullString)
     End If
 End Function
@@ -1894,7 +1930,7 @@ Private Function GetTokenInfo(ByRef Expression As String) As TokenInfo
             
     tmpResult = GetArithOpInfo(Expression)
     If tmpResult.Position = -1 Then 'Missing arithmetic opetarators.
-        If Expression Like "*[=<>&|]*" Then 'Try with logical operators.
+        If Expression Like "*[=<>&|$]*" Then 'Try with logical operators.
             tmpResult = GetLCOpInfo(Expression)
             tmpResult.LogicalToken = True
         Else
@@ -2085,9 +2121,12 @@ Private Function IsLikeSciNot(ByRef Chars As String) As Boolean
 End Function
 
 Private Function IsLiteralString(ByRef aString As String) As Boolean
-    If LenB(aString) Then
+    Dim LenStr As Long
+    
+    LenStr = LenB(aString)
+    If LenStr Then
         If AscW(aString) = 39 Then 'Apostrophe
-            IsLiteralString = (InStrB(3, aString, d_Apostrophe) = LenB(aString) - 1)
+            IsLiteralString = (InStrB(3, aString, d_Apostrophe) = LenStr - 1)
         Else
             IsLiteralString = False
         End If
@@ -2232,14 +2271,14 @@ End Function
 Private Function OPsymbolInArgument(ByRef ArgDefStr As String, ByRef Pattrn As String) As Boolean
     Dim i As Long
     Dim tmpResult As Boolean
-    Dim lenStr As Long
+    Dim LenStr As Long
     
     i = 1
-    lenStr = LenB(ArgDefStr)
+    LenStr = LenB(ArgDefStr)
     Do
         tmpResult = InStrB(1, MidB$(ArgDefStr, i, 2), Pattrn)
         i = i + 2
-    Loop While i <= lenStr And Not tmpResult
+    Loop While i <= LenStr And Not tmpResult
     OPsymbolInArgument = tmpResult
 End Function
 
