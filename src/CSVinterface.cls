@@ -692,57 +692,8 @@ Public Function Filter(Pattern As String, Optional FilePath As String = vbNullSt
         End If
     End If
 End Function
-''' <summary>
-''' Filter imported data using VBA like patterns.
-''' </summary>
-''' <param name="fieldIndex">Field to apply the filter.</param>
-''' <param name="patterns">A valid list of VBA string patterns.</param>
-Public Function Filter2(fieldIndex As Long, ParamArray patterns() As Variant) As CSVArrayList
-    Dim UB As Long
-    Dim LB As Long
-    Dim cIndex As Long
-    Dim rCount As Long
-    Dim mettsPattern As Boolean
-    
-    On Error GoTo ErrHandler_Filter
-    If P_SUCCESSFUL_IMPORT Then
-        Select Case fieldIndex
-            Case 0 To P_VECTORS_REGULAR_BOUND
-                UB = UBound(patterns)
-                If UB >= 0 Then
-                    Set Filter2 = New CSVArrayList
-                    LB = LBound(patterns)
-                    For rCount = 0 To P_CSV_DATA.count - 1
-                        cIndex = LB
-                        Do
-                            mettsPattern = FilterAchievement(P_CSV_DATA(rCount)(fieldIndex), patterns(cIndex))
-                            cIndex = cIndex + 1
-                        Loop While Not mettsPattern And cIndex <= UB
-                        If mettsPattern Then
-                            Filter2.Add P_CSV_DATA(rCount)
-                        End If
-                    Next rCount
-                Else
-                    Set Filter2 = P_CSV_DATA
-                End If
-            Case Else
-                GoTo OutOfBounds_Filter
-        End Select
-    End If
-    Exit Function
-ErrHandler_Filter:
-    P_ERROR_DESC = "[CSV Field Insert]: " & err.Description
-    P_ERROR_NUMBER = err.Number
-    P_ERROR_SOURCE = "CSVinterface"
-    Exit Function
-OutOfBounds_Filter:
-    err.Raise Number:=vbObjectError + 9016, _
-                    Source:="CSVinterface Class", _
-                    Description:="The specified index is out of bounds. Please check and try again."
-    Resume ErrHandler_Filter
-End Function
-Private Function FilterAchievement(aValue As Variant, Pattern As Variant) As Boolean
-    FilterAchievement = aValue Like Pattern
+Private Function FilterAchievement(AValue As Variant, Pattern As Variant) As Boolean
+    FilterAchievement = AValue Like Pattern
 End Function
 Public Function GetDataFromCSV(csvPathAndFilename As String) As String
     

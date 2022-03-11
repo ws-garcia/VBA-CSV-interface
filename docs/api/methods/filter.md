@@ -60,6 +60,22 @@ The `Pattern` parameter is evaluated according to the number of records in the C
 * To reference a field value, the user must type something like `f#` where `f` is a required identifier and `#` is the numeric position of the desired field. For example, `f1>5` indicates the selection of records whose first field value is greater than `5`.
 * If the user needs to compare literal strings, the values must be enclosed in apostrophes. Example, `Region = 'Central America'` is a valid string assigned to the variable `Region`.
 * User can use functions in the `Pattern` definition, including custom UDFs (refer to [VBAexpressions documentation](https://github.com/ws-garcia/VBA-Expressions)). I.e.: `min(f5;f2)>=100` 
+* The LIKE operator (`$`) comparison is influenced by the `Option Compare` statement (one of: `Option Compare Binary` or `Option Compare Text`). The binary compare is case sensitive, the text compare is not. The following table describes the special characters to be used when creating patterns; all other characters match themselves:
+	* 
+	|Character|Meaning|
+	|:------:|:-----|
+	|?|Any single character|
+	|\*|Zero or more characters|
+	|#|Any single digit (0-9)|
+	|\[list\]|Any single character in list|
+	|\[!list\]|Any single character not in list|
+	|\[\]|A zero-length string ("")|
+* 'list' matches a group of characters in `patterns` to a single character in the string and can contain almost all available characters, including digits.
+* Use a hyphen (-) in 'list' to create a range of characters that matches a character in the string: e.g. [A-D] matches A,B,C, or D at that character position in the string. Multiple ranges of characters can be included in 'list' without the use of a delimiter: e.g. \[A-DJ-L\].
+* Use the hyphen at the start or end of 'list' to match to itself. For example, \[-A-G\] matches a hyphen or any character from A to G.
+* The exclamation mark in the "pattern" match is similar to the negation operator. For example, [!A-G] matches all characters except characters A through G.
+* The exclamation mark outside the bracket  matches itself.
+* To use any special character as a matching character, enclose the special character in brackets. For example, to match a question mark, use \[?\].
 
 When the `FilePath` argument is omitted, the method will proceed to filter the data stored in the current instance, otherwise it will filter the content of the CSV file specified with the referred argument.
 
@@ -76,8 +92,8 @@ Sub FilterCSV()
     CSVint.parseConfig.Headers = False                                      		'The file has no header record/row
     CSVint.parseConfig.path = path
     If path <> vbNullString Then
-        Set FilteredData = CSVint.Filter("f1='Asia' & f9>20 & f9<=50", path) 		'Select "Units sold" greater than 20 and less or 
-																											'equal to 50 from Asian customers
+        Set FilteredData = CSVint.Filter("f1='Asia' & f9>20 & f9<=50 & f8 $ '10/*/2014'", path) 		'Select "Units sold" greater than 20 and less or 
+																																		'equal to 50 from Asian customers in October 2014
         Set CSVint = Nothing
         Set FilteredData = Nothing
     End If
