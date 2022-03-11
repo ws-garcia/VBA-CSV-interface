@@ -1378,11 +1378,7 @@ Private Function GetEvalToken(ByRef Expression As String) As Token
         GetTokenStart Expression, TokenDet.Position, TokenStart
         '@--------------------------------------------------------------------
         ' Find token end
-        If TokenDet.OperationToken <> otLike Then
-            GetTokenEnd Expression, TokenDet.Position, TokenDet.OperatorLen, TokenEnd
-        Else
-            GetTokenEnd Expression, InStrB(TokenDet.Position + 4, Expression, d_Apostrophe), TokenDet.OperatorLen, TokenEnd
-        End If
+        GetTokenEnd Expression, TokenDet.Position, TokenDet.OperatorLen, TokenEnd
         '@--------------------------------------------------------------------
         ' Fill token data
         GetEvalToken.DefString = MidB$(Expression, TokenStart, TokenEnd - TokenStart + 2)
@@ -1691,6 +1687,19 @@ Private Sub GetOperands(ByRef CurToken As Token, ByRef CurTree As ClusterTree, _
     End If
 End Sub
 
+Private Function IsSymbolInLiteralString(ByRef Expression As String, SymbolPos As Long) As Boolean
+    Dim flagCounter As Long
+    Dim tmpPos As Long
+    
+    tmpPos = InStrB(1, Expression, d_Apostrophe)
+    If tmpPos Then
+        Do While tmpPos < SymbolPos
+            flagCounter = flagCounter + 1
+            tmpPos = InStrB(tmpPos + 2, Expression, d_Apostrophe)
+        Loop
+    End If
+    IsSymbolInLiteralString = flagCounter And 1
+End Function
 Private Function GetOPeratorSymbolPos(ByRef Expression As String, _
                                     ByRef OperatorSymbol As String, _
                                     Optional StartPosition As Long = 1) As Long
@@ -1699,13 +1708,9 @@ Private Function GetOPeratorSymbolPos(ByRef Expression As String, _
     Dim LStrClosePos As Long
     
     tmpResult = InStrB(StartPosition, Expression, OperatorSymbol)
-    LStrOpenPos = InStrB(StartPosition, Expression, d_Apostrophe)
-    If LStrOpenPos Then
-        LStrClosePos = InStrB(LStrOpenPos + LenB(OperatorSymbol), Expression, d_Apostrophe)
-        Do While (tmpResult > LStrOpenPos) And (tmpResult < LStrClosePos)
-            tmpResult = InStrB(tmpResult + LenB(OperatorSymbol), Expression, OperatorSymbol)
-        Loop
-    End If
+    Do While IsSymbolInLiteralString(Expression, tmpResult)
+        tmpResult = InStrB(tmpResult + LenB(OperatorSymbol), Expression, OperatorSymbol)
+    Loop
     GetOPeratorSymbolPos = tmpResult
 End Function
 
@@ -1758,7 +1763,7 @@ Private Function GetPowerSymbolPos(ByRef Expression As String) As Long
     tmpPos = GetOPeratorSymbolPos(Expression, op_power)
     Do While tmpPos
         tmpResult = tmpPos
-        tmpPos = GetOPeratorSymbolPos(Expression, op_power)
+        tmpPos = GetOPeratorSymbolPos(Expression, op_power, tmpPos)
     Loop
     GetPowerSymbolPos = tmpResult
 End Function
@@ -1881,6 +1886,15 @@ Private Sub GetTokenEnd(ByRef Expression As String, ByRef startIndex As Long, By
     lenExpr = LenB(Expression)
     outLng = startIndex + OPlen
     curChar = MidB$(Expression, outLng, 2)
+    '@--------------------------------------------------------------------
+    ' Skip literal strings
+    If curChar = d_Apostrophe Then
+        Do
+            outLng = outLng + 2
+            curChar = MidB$(Expression, outLng, 2)
+        Loop While curChar <> d_Apostrophe And outLng < lenExpr
+        If outLng >= lenExpr Then Exit Sub
+    End If
     Do
         tmpPos = outLng
         If IsLetter(curChar) Then 'Check for functions [ arg/-funct(...) ] and Sci notation
@@ -1952,10 +1966,17 @@ End Function
 Private Sub GetTokenStart(ByRef Expression As String, ByRef startIndex As Long, ByRef outLng As Long)
     Dim curChar As String
     
-    '@--------------------------------------------------------------------
-    ' Find token start
     outLng = startIndex - 2
     curChar = MidB$(Expression, outLng, 2)
+    '@--------------------------------------------------------------------
+    ' Skip literal strings
+    If curChar = d_Apostrophe Then
+        Do
+            outLng = outLng - 2
+            curChar = MidB$(Expression, outLng, 2)
+        Loop While curChar <> d_Apostrophe And outLng > 1
+        If outLng = 1 Then Exit Sub
+    End If
     Do While (InStrB(1, op_AllItems, curChar) = 0) And outLng > 1
         outLng = outLng - 2
         curChar = MidB$(Expression, outLng, 2)
