@@ -1763,7 +1763,7 @@ Private Function GetPowerSymbolPos(ByRef Expression As String) As Long
     tmpPos = GetOPeratorSymbolPos(Expression, op_power)
     Do While tmpPos
         tmpResult = tmpPos
-        tmpPos = GetOPeratorSymbolPos(Expression, op_power, tmpPos)
+        tmpPos = GetOPeratorSymbolPos(Expression, op_power, tmpPos + 2)
     Loop
     GetPowerSymbolPos = tmpResult
 End Function
