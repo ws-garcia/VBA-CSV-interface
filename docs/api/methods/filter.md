@@ -92,8 +92,8 @@ Sub FilterCSV()
     CSVint.parseConfig.Headers = False                                      		'The file has no header record/row
     CSVint.parseConfig.path = path
     If path <> vbNullString Then
-        Set FilteredData = CSVint.Filter("f1='Asia' & f9>20 & f9<=50 & f8 $ '10/*/2014'", path) 		'Select "Units sold" greater than 20 and less or 
-																																		'equal to 50 from Asian customers in October 2014
+	'Select "Units sold" greater than 20 and less or equal to 50 from Asian customers in October 2014
+	Set FilteredData = CSVint.Filter("f1='Asia' & f9>20 & f9<=50 & f8 $ '10/*/2014'", path) 				
         Set CSVint = Nothing
         Set FilteredData = Nothing
     End If
