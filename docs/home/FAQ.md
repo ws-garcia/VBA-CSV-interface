@@ -20,11 +20,14 @@ However, using Power Query implies establishing a physical connection to each da
 Yes. The VBA CSV interface library is composed of the following class modules:  
 
 * `CSVArrayList`
+* [`CSVcallBack`](https://github.com/ws-garcia/VBA-Expressions)
 * `CSVdialect`
+* [`CSVexpressions`](https://github.com/ws-garcia/VBA-Expressions)
 * `CSVinterface`
 * `CSVparserConfig`
 * `CSVSniffer`
 * `CSVTextStream`
+* [`CSVudFunctions`](https://github.com/ws-garcia/VBA-Expressions)
 
 Please review the [instalation page](https://ws-garcia.github.io/VBA-CSV-interface/home/installation.html). 
 

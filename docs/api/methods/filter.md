@@ -56,7 +56,7 @@ See also
 
 ## Behavior
 
-The `Pattern` parameter is evaluated according to the number of records in the CSV file, when the evaluation returns `True`, the current record is saved. The rules that apply to the `Pattern` parameter are listed below:
+The `Pattern` parameter is evaluated against the number of records in the CSV file, when the evaluation returns `True`, the current record is saved. The rules that apply to the `Pattern` parameter are listed below:
 * To reference a field value, the user must type something like `f#` where `f` is a required identifier and `#` is the numeric position of the desired field. For example, `f1>5` indicates the selection of records whose first field value is greater than `5`.
 * If the user needs to compare literal strings, the values must be enclosed in apostrophes. Example, `Region = 'Central America'` is a valid string assigned to the variable `Region`.
 * User can use functions in the `Pattern` definition, including custom UDFs (refer to [VBAexpressions documentation](https://github.com/ws-garcia/VBA-Expressions)). I.e.: `min(f5;f2)>=100` 
@@ -92,8 +92,8 @@ Sub FilterCSV()
     CSVint.parseConfig.Headers = False                                      		'The file has no header record/row
     CSVint.parseConfig.path = path
     If path <> vbNullString Then
-        Set FilteredData = CSVint.Filter("f1='Asia' & f9>20 & f9<=50 & f8 $ '10/*/2014'", path) 		'Select "Units sold" greater than 20 and less or 
-																																		'equal to 50 from Asian customers in October 2014
+	'Select "Units sold" greater than 20 and less or equal to 50 from Asian customers in October 2014
+	Set FilteredData = CSVint.Filter("f1='Asia' & f9>20 & f9<=50 & f8 $ '10/*/2014'", path) 				
         Set CSVint = Nothing
         Set FilteredData = Nothing
     End If
