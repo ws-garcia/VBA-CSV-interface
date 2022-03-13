@@ -1028,7 +1028,7 @@ Private Function EvalFunction(ByRef Argument As String, ByRef FunctionName As St
             Case "LN"
                 EvalFunction = LN(Argument)
             Case "Max"
-                EvalFunction = Max(Argument)
+                EvalFunction = max(Argument)
             Case "Min"
                 EvalFunction = Min(Argument)
             Case "Percent"
@@ -1107,20 +1107,20 @@ End Function
 Private Function FormatLiteralString(ByRef LiteralString As String) As String
     FormatLiteralString = MidB$(LiteralString, 3, LenB(LiteralString) - 4)
 End Function
-Private Function Gamma(ByRef x As Double) As Double
+Private Function Gamma(ByRef X As Double) As Double
     'Copyright © 2004, Leonardo Volpi & Foxes Team.
     Dim mantissa As Double, Expo As Double, z As Double
-    Dim t As Double, y As Double, e As Long
-    If x <= 0 And x - Int(x) = 0 Then 'negative integer
+    Dim t As Double, Y As Double, e As Long
+    If X <= 0 And X - Int(X) = 0 Then 'negative integer
         Gamma = "?": Exit Function
     End If
-    z = Abs(x)
+    z = Abs(X)
     GammaSplit z, mantissa, Expo
-    If x < 0 Then
+    If X < 0 Then
         t = z * Sin(PI * z)
-        y = -PI / (mantissa * t)
-        e = Int(Log(Abs(y)) / Log(10#))
-        mantissa = y * 10 ^ -e
+        Y = -PI / (mantissa * t)
+        e = Int(Log(Abs(Y)) / Log(10#))
+        mantissa = Y * 10 ^ -e
         Expo = e - Expo
     End If
     Gamma = mantissa * 10 ^ Expo
@@ -1128,10 +1128,10 @@ End Function
 
 ' gamma  - Lanczos approximation algorithm for gamma function
 'Copyright © 2004, Leonardo Volpi & Foxes Team.
-Private Sub GammaSplit(ByVal x As Double, ByRef mantissa As Double, ByRef Expo As Double)
+Private Sub GammaSplit(ByVal X As Double, ByRef mantissa As Double, ByRef Expo As Double)
 Dim z As Double, Cf(14) As Double, w As Double, i As Long, s As Double, p As Double
 Const G_ As Double = 4.7421875  '607/128
-    z = x - 1
+    z = X - 1
     
     Cf(0) = 0.999999999999997
     Cf(1) = 57.1562356658629
@@ -1292,12 +1292,12 @@ Private Function GetArithOpInfo(ByRef Expression As String) As TokenInfo
     End If
 End Function
 
-Private Function GetArrItm(ByRef Arr As Variant, ByRef MultiDimArr As Boolean, _
+Private Function GetArrItm(ByRef arr As Variant, ByRef MultiDimArr As Boolean, _
                             ByRef IdxDim1 As Long, ByRef IdxDim2 As Long) As String
     If MultiDimArr Then
-        GetArrItm = CStr(Arr(IdxDim1, IdxDim2))
+        GetArrItm = CStr(arr(IdxDim1, IdxDim2))
     Else
-        GetArrItm = CStr(Arr(IdxDim1))
+        GetArrItm = CStr(arr(IdxDim1))
     End If
 End Function
 
@@ -1693,7 +1693,7 @@ Private Function IsSymbolInLiteralString(ByRef Expression As String, SymbolPos A
     
     tmpPos = InStrB(1, Expression, d_Apostrophe)
     If tmpPos Then
-        Do While tmpPos < SymbolPos
+        Do While tmpPos < SymbolPos And tmpPos > 0
             flagCounter = flagCounter + 1
             tmpPos = InStrB(tmpPos + 2, Expression, d_Apostrophe)
         Loop
@@ -2058,22 +2058,22 @@ Private Sub InitializeErrHandler()
     P_ERRTYPE = errNone
 End Sub
 
-Private Function InitializedArray(ByRef Arr As Variant) As Boolean
+Private Function InitializedArray(ByRef arr As Variant) As Boolean
     Dim UB As Long
     
     On Error GoTo err_handler
-    UB = UBound(Arr)
+    UB = UBound(arr)
     InitializedArray = True
     Exit Function
 err_handler:
     InitializedArray = False
 End Function
 
-Private Function Is2Darray(Arr As Variant) As Boolean
+Private Function Is2Darray(arr As Variant) As Boolean
     Dim d As Long
     
     On Error GoTo err_handler
-    d = UBound(Arr, 2)
+    d = UBound(arr, 2)
     Is2Darray = True
     Exit Function
 err_handler:
@@ -2208,7 +2208,7 @@ Private Function Logarithm(ByRef Expression As String) As Double
     Logarithm = Log(CDbl(Expression)) / Log(10)
 End Function
 
-Private Function Max(ByRef Expression As String) As Double
+Private Function max(ByRef Expression As String) As Double
     Dim g As Long
     Dim tmpData() As String
     Dim tmpEval As Double
@@ -2222,7 +2222,7 @@ Private Function Max(ByRef Expression As String) As Double
             tmpEval = compEval
         End If
     Next g
-    Max = tmpEval
+    max = tmpEval
 End Function
 
 Private Function Min(ByRef Expression As String) As Double
