@@ -103,10 +103,10 @@ End Property
 ''' </summary>
 ''' <param name="Index">Item's position in this instance.</param>
 ''' <param name="aValue">The value to overwrite the element.</param>
-Public Property Let item(Index As Long, aValue As Variant)
+Public Property Let item(Index As Long, AValue As Variant)
     Select Case Index
         Case 0 To CurrentIndex
-            Buffer(Index) = aValue
+            Buffer(Index) = AValue
         Case Else
             err.Raise 9
     End Select
@@ -130,34 +130,34 @@ End Property
 ''' <summary>
 ''' Gets or sets the current instance's array.
 ''' </summary>
-Public Property Let items(aValue As Variant)
+Public Property Let items(AValue As Variant)
     Clear
-    If IsArray(aValue) Then
+    If IsArray(AValue) Then
         Dim Dim1Pointer As Long
         Dim Dim2Pointer As Long
         Dim tmpRow() As Variant
         
-        If MultiDimensional(aValue) Then '2D array expected
-            ReDim tmpRow(LBound(aValue, 2) To UBound(aValue, 2))
-            For Dim1Pointer = LBound(aValue) To UBound(aValue)
-                For Dim2Pointer = LBound(aValue, 2) To UBound(aValue, 2)
-                    tmpRow(Dim2Pointer) = aValue(Dim1Pointer, Dim2Pointer)
+        If MultiDimensional(AValue) Then '2D array expected
+            ReDim tmpRow(LBound(AValue, 2) To UBound(AValue, 2))
+            For Dim1Pointer = LBound(AValue) To UBound(AValue)
+                For Dim2Pointer = LBound(AValue, 2) To UBound(AValue, 2)
+                    tmpRow(Dim2Pointer) = AValue(Dim1Pointer, Dim2Pointer)
                 Next Dim2Pointer
                 Add tmpRow
             Next Dim1Pointer
         Else 'Jagged or 1D array expected
-            If IsJaggedArray(aValue) Then
-                For Dim1Pointer = LBound(aValue) To UBound(aValue)
-                    Add aValue(Dim1Pointer)
+            If IsJaggedArray(AValue) Then
+                For Dim1Pointer = LBound(AValue) To UBound(AValue)
+                    Add AValue(Dim1Pointer)
                 Next Dim1Pointer
             Else
-                For Dim1Pointer = LBound(aValue) To UBound(aValue)
-                    Add2 aValue
+                For Dim1Pointer = LBound(AValue) To UBound(AValue)
+                    Add2 AValue
                 Next Dim1Pointer
             End If
         End If
     Else
-        Add2 aValue
+        Add2 AValue
     End If
 End Property
 '////////////////////////////////////////////////////////////////////////////////////////////
@@ -170,16 +170,16 @@ End Property
 ''' Appends a copy of the specified value to the current instance.
 ''' </summary>
 ''' <param name="aValue">The value to append.</param>
-Public Sub Add(aValue As Variant)
+Public Sub Add(AValue As Variant)
 Attribute Add.VB_Description = "Appends a copy of the specified value to the current instance."
     CurrentIndex = CurrentIndex + 1
     On Error GoTo Expand_Buffer
-    Buffer(CurrentIndex) = aValue
+    Buffer(CurrentIndex) = AValue
     Exit Sub
 Expand_Buffer:
     MaxIndex = 2 * (MaxIndex + 1) - 1
     ReDim Preserve Buffer(0 To MaxIndex)
-    Buffer(CurrentIndex) = aValue
+    Buffer(CurrentIndex) = AValue
 End Sub
 ''' <summary>
 ''' Appends a copy, in jagged array fashion, of the specified
@@ -350,10 +350,15 @@ Public Function Filter(Pattern As String, startIndex As Long) As CSVArrayList
         .Create Pattern
         FilterFields() = FieldsToFilter(.CurrentVariables)
         For rCounter = startIndex - 1 To CurrentIndex
+            On Error Resume Next
             .Eval FilterVarValues(rCounter, FilterFields)
             If .ErrorType = ExpressionErrors.errNone Then
-                If CBool(.Result) Then
-                    Filter.Add Buffer(rCounter) 'Append current record
+                If err.Number = 0 Then
+                    If CBool(.Result) Then
+                        Filter.Add Buffer(rCounter) 'Append current record
+                    End If
+                Else
+                    err.Clear
                 End If
             End If
         Next rCounter
@@ -623,14 +628,14 @@ End Sub
 ''' </summary>
 ''' <param name="Index">The index into which the Item'll be inserted.</param>
 ''' <param name="aValue">The value to be inserted.</param>
-Public Sub Insert(Index As Long, aValue As Variant)
+Public Sub Insert(Index As Long, AValue As Variant)
 Attribute Insert.VB_Description = "Inserts an Item, at the given Index, in the current instance of the class."
     Dim tmpCopy() As Variant
     Dim iCounter As Long
         
     Select Case Index
         Case 0 To CurrentIndex + 1 'Avoids to leave empty items
-            Me.Add aValue
+            Me.Add AValue
             'Checks if the item need to be placed on a previous Index
             If Index < CurrentIndex Then
                 tmpCopy() = Buffer
