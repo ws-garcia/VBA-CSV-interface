@@ -14,8 +14,9 @@ Attribute VB_Exposed = False
 ' https://ingwilfredogarcia.wordpress.com
 '#
 ' GENERAL INFO:
-' The most powerful, robust and versatile VBA library for high speed CSV parsing with support
-' for RFC-4180 specs and Unix DSV files.
+' The most powerful and comprehensive CSV/TSV/DSV data management library for VBA, providing
+' parsing/writing capabilities compliant with RFC-4180 specifications and a complete set of
+' tools for manipulating records, fields and files.
 '////////////////////////////////////////////////////////////////////////////////////////////
 '#
 Option Explicit
@@ -99,12 +100,10 @@ Private static_Headers As Boolean
 Private static_IgnoreCommentLines As Boolean
 Private static_IgnoreEmptyLines As Boolean
 Private static_IgnoreLines As Boolean
-Private static_ImportDepth As Long
 Private static_ImportSwitch As Boolean
 Private static_Index As Long, static_MaxIndex As Long
 Private static_IsHeader As Boolean
 Private static_IsWellEscapedField As Boolean
-Private static_KnownEnding As Boolean
 Private static_LenCurrentIndex As Long
 Private static_MaxReqIndex As Long
 Private static_NotEvenEscapeChrNumber As Boolean
@@ -137,9 +136,17 @@ Private static_fieldsBound As Long
 Private static_fieldsMaxBound As Long
 '@------------------------------------------------------
 ' CSV SUBSET VARIABLES
-Private queryFilters As Variant
 Private UB As Long
 Private LB As Long
+'////////////////////////////////////////////////////////////////////////////////////////////
+'#
+'////////////////////////////////////////////////////////////////////////////////////////////
+' Events:
+Public Event AfterExportRecord()
+Public Event AfterImportRecord()
+Public Event AfterLoadStream()
+Public Event AfterSort()
+Public Event AfterWriteStream()
 '////////////////////////////////////////////////////////////////////////////////////////////
 '#
 '////////////////////////////////////////////////////////////////////////////////////////////
@@ -172,14 +179,14 @@ Public Property Get importSuccess() As Boolean
 Attribute importSuccess.VB_Description = "Gets the status for the last import operation. Returns True if it was success."
     importSuccess = P_SUCCESSFUL_IMPORT
 End Property
-Public Property Get item(ParamArray Index() As Variant) As Variant
-Attribute item.VB_Description = "Gets a field, or an array with an entire record, from the result array on the current instance."
-Attribute item.VB_UserMemId = 0
+Public Property Get Item(ParamArray Index() As Variant) As Variant
+Attribute Item.VB_Description = "Gets a field, or an array with an entire record, from the result array on the current instance."
+Attribute Item.VB_UserMemId = 0
     Select Case UBound(Index)
         Case 0
-            item = P_CSV_DATA(CLng(Index(0)))
+            Item = P_CSV_DATA(CLng(Index(0)))
         Case Is >= 1
-            item = P_CSV_DATA(CLng(Index(0)))(CLng(Index(1)))
+            Item = P_CSV_DATA(CLng(Index(0)))(CLng(Index(1)))
     End Select
 End Property
 Public Property Get items() As CSVArrayList
@@ -230,9 +237,80 @@ Public Sub CloseSeqReader()
     Set static_tmpToken = Nothing
     Set static_outputList = Nothing
 End Sub
-Public Function CSVsubsetSplit(FilePath As String, _
-                                Optional subsetColumn As Long = 1, _
-                                Optional Headers As Boolean = True) As Collection
+''' <summary>
+''' Run a left outer join on the provided data tables.
+'''' 1) Use a string such as "{1-2,5,ID};{1-6}" as a predicate of the columns to
+'''' indicate the join of columns 1 to 2, 5 and ID of leftTable with
+'''' the columns 1 to 6 of rightTable.
+'''' 2) Use a string such as "{*};{1-3}" to indicate the union of ALL '''' columns of leftTable.
+'''' columns of leftTable with columns 1 to 3 of rightTable.
+''' 3) The predicate must use the dot syntax [t1.#][t1.fieldName] to.
+'''' indicate the fields of the table, where t1 refers to the leftTable.
+''' 4) The matchKeys predicate must be given as ''''#/$;#/$'''.
+''' </summary>
+''' <param name="nType">Join nature.</param>.
+''' <param name="leftTable">First table.</param>.
+''' <param name="rightTable">Second table.</param> ''' <param name="rightTable">Second table.
+''' <param name="columns">String that specifies the structure of the rows returned.</param>
+''' <param name="matchKeys">Priority and preference keys to be matched.</param>
+''' <param name="predicate">Condition that must be met when selecting rows.</param>
+''' <param name="pConfig">CSV parser configuration object.</param>
+''' All indexes must be given IN BASE 1.
+Public Function tJoin(ByVal nType As JoinType, _
+                    ByRef leftTable As CSVArrayList, _
+                    ByRef rightTable As CSVArrayList, _
+                    columns As String, _
+                    matchKeys As String, _
+                    Optional predicate As String = vbNullString, _
+                    Optional ByRef pConfig As CSVparserConfig) As CSVArrayList
+                            
+    Dim JoinHelper As CSVArrayList
+    Dim tConfig As CSVparserConfig
+    
+    Set JoinHelper = New CSVArrayList
+    If pConfig Is Nothing Then
+        Set tConfig = config
+    Else
+        Set tConfig = pConfig
+    End If
+    Select Case nType
+        Case JoinType.JT_LeftJoin
+            Set tJoin = JoinHelper.LeftJoin(leftTable, rightTable, _
+                                            columns, matchKeys, predicate, _
+                                            tConfig.Headers)
+        Case JoinType.JT_RightJoin
+            Set tJoin = JoinHelper.RightJoin(leftTable, rightTable, _
+                                            columns, matchKeys, predicate, _
+                                            tConfig.Headers)
+        Case Else
+            Set tJoin = JoinHelper.InnerJoin(leftTable, rightTable, _
+                                            columns, matchKeys, predicate, _
+                                            tConfig.Headers)
+    End Select
+End Function
+Private Function JoinKeys(ByRef tList As CSVArrayList, ByRef Keys As Variant, Index As Long) As String
+    If IsArray(Keys) Then
+        Dim i As Long
+        Dim tLLB As Long
+        Dim tLUB As Long
+        Dim tmpResult() As String
+        
+        tLLB = LBound(Keys)
+        tLUB = UBound(Keys)
+        ReDim tmpResult(tLLB To tLUB)
+        For i = tLLB To tLUB
+            tmpResult(i) = tList(Index)(Abs(Keys(i)) - 1)
+        Next i
+        JoinKeys = Join$(tmpResult, "-")
+    Else
+        JoinKeys = tList(Index)(Abs(Keys) - 1)
+    End If
+End Function
+Public Function CSVsubsetSplit(filePath As String, _
+                                Optional subsetColumns As Variant = 1, _
+                                Optional Headers As Boolean = True, _
+                                Optional repeatHeaders As Boolean = True, _
+                                Optional streamSize As Long = 20) As Collection
     Dim CreatedFiles As Collection
     Dim CSVhead As Variant
     Dim CSVreader As CSVinterface
@@ -240,80 +318,83 @@ Public Function CSVsubsetSplit(FilePath As String, _
     Dim CSVwriter As CSVinterface
     Dim curItems As CSVArrayList
     Dim ExportSubSet As CSVArrayList
-    Dim fExtension As String
+    Dim FExtension As String
     Dim fileCreatedFlag As Boolean
     Dim FileNameAndExtension() As String
     Dim fileOnPathFlag As Boolean
-    Dim fName As String
+    Dim FName As String
     Dim fRootPath As String
     Dim i As Long
-    Dim keyIndex As Long
-    Dim outputPath As String
+    Dim OutputPath As String
     Dim readerConf As CSVparserConfig
     Dim tmpVar As Variant
-    Dim usedFields As Long
     Dim writterConf As CSVparserConfig
-    
+
     Set CreatedFiles = New Collection
     Set CSVreader = New CSVinterface
     Set CSVwriter = New CSVinterface
     Set readerConf = CSVreader.parseConfig
-    Set CSVstream = New CSVTextStream
     Set ExportSubSet = New CSVArrayList
+    Set CSVstream = New CSVTextStream
     
     On Error GoTo CSVsubsetSplit_ErrHandler
-    If FilePath <> vbNullString Then
+    If filePath <> vbNullString Then
         '@----------------------------------------------------
         ' Check file
-        If FileExists(FilePath) Then
-            If FileLen(FilePath) = 0 Then
+        If FileExists(filePath) Then
+            If FileLen(filePath) = 0 Then
                 GoTo CSVsubsetSplit_EmptyCSVfile
             End If
         Else
             GoTo CSVsubsetSplit_MissingCSVfile
         End If
-        If subsetColumn >= 1 Then
-            keyIndex = subsetColumn - 1
-        Else
-            keyIndex = 0
-        End If
-        fRootPath = GetFilePath(FilePath)
-        FileNameAndExtension() = GetFileNameAndExtension(FilePath)
-        fName = FileNameAndExtension(0)
-        fExtension = FileNameAndExtension(1)
+        fRootPath = GetFilePath(filePath)
+        FileNameAndExtension() = GetFileNameAndExtension(filePath)
+        FName = FileNameAndExtension(0)
+        FExtension = FileNameAndExtension(1)
         fileCreatedFlag = False
         DoEvents
         '@----------------------------------------------------
         'Sequential reading from file
         With CSVstream
             .endStreamOnLineBreak = True
-            .OpenStream FilePath
+            .OpenStream filePath
             .utf8EncodedFile = readerConf.utf8EncodedFile
+            .bufferSize = streamSize
         End With
         '@----------------------------------------------------
         'Parser config
-        readerConf.path = FilePath
-        With CSVreader.parseConfig
+        readerConf.path = filePath
+        With readerConf
             Set .dialect = CSVreader.SniffDelimiters(readerConf)
         End With
-        Set writterConf = readerConf.CopyConfig
+        Set CSVreader.parseConfig = readerConf.CopyConfig
         '@----------------------------------------------------
         'Parse string
         With readerConf
-            .endingRecord = 1
-            CSVhead = CSVreader.ImportFromCSV(readerConf)(0)
-            .endingRecord = 0
             .Headers = Headers
+            .delimitersGuessing = True
+            If Headers Then
+                .endingRecord = 1
+                CSVhead = CSVreader.ImportFromCSV(readerConf)(0)
+                .endingRecord = 0
+            End If
         End With
-        usedFields = 0
-        outputPath = fRootPath & fName & "-subsets\"
+        OutputPath = fRootPath & FName & "-WorkDir\"
         '@----------------------------------------------------
         'Check directory
-        If LenB(Dir(outputPath, vbDirectory)) = 0 Then
-            MkDir outputPath
+        If LenB(Dir(OutputPath, vbDirectory)) = 0 Then
+            MkDir OutputPath
         End If
+        Set writterConf = readerConf.CopyConfig
         Do While Not CSVstream.atEndOfStream
             CSVstream.ReadText 'Read next CSV data chunk
+            RaiseEvent AfterLoadStream
+            If Headers Then
+                If fileCreatedFlag Then
+                    readerConf.Headers = False
+                End If
+            End If
             Set curItems = CSVreader.ImportFromCSVString(CSVstream.bufferString, readerConf).items
             If Not fileCreatedFlag Then
                 If Headers Then
@@ -324,35 +405,43 @@ Public Function CSVsubsetSplit(FilePath As String, _
             Else
                 i = 0
             End If
-            curItems.Sort i + 1, SortingKeys:=keyIndex + 1
-            tmpVar = curItems(i)(keyIndex)
-            writterConf.path = outputPath & CStr(tmpVar) & "." & fExtension
+            curItems.Sort i + 1, sortingKeys:=subsetColumns
+            RaiseEvent AfterSort
+            tmpVar = JoinKeys(curItems, subsetColumns, i)
+            writterConf.path = OutputPath & CStr(tmpVar) & "." & FExtension
             If Headers Then
                 '@----------------------------------------------------
                 'Check directory
                 fileOnPathFlag = FileExists(writterConf.path)
                 If Not fileOnPathFlag Then
-                    ExportSubSet.Add CSVhead
+                    If repeatHeaders Then
+                        ExportSubSet.Add CSVhead
+                        RaiseEvent AfterImportRecord
+                    End If
                 End If
             End If
             For i = i To curItems.count - 1
-                If tmpVar = curItems(i)(keyIndex) Then
+                If tmpVar = JoinKeys(curItems, subsetColumns, i) Then
                     ExportSubSet.Add curItems(i) 'Append data
+                    RaiseEvent AfterImportRecord
                 Else
+                    On Error Resume Next
                     CreatedFiles.Add writterConf.path, CStr(tmpVar)
                     ExportSubSet.ShrinkBuffer
                     CSVwriter.ExportToCSV ExportSubSet, writterConf, False, False
-                    fileCreatedFlag = True
                     ExportSubSet.Reinitialize ExportSubSet.count
-                    tmpVar = curItems(i)(keyIndex)
-                    writterConf.path = outputPath & CStr(tmpVar) & "." & fExtension
+                    tmpVar = JoinKeys(curItems, subsetColumns, i)
+                    writterConf.path = OutputPath & CStr(tmpVar) & "." & FExtension
                     If Headers Then
                         fileOnPathFlag = FileExists(writterConf.path)
                         If Not fileOnPathFlag Then
-                            ExportSubSet.Add CSVhead
+                            If repeatHeaders Then
+                                ExportSubSet.Add CSVhead
+                            End If
                         End If
                     End If
                     ExportSubSet.Add curItems(i) 'Append data
+                    RaiseEvent AfterImportRecord
                 End If
             Next i
             '@----------------------------------------------------
@@ -360,6 +449,7 @@ Public Function CSVsubsetSplit(FilePath As String, _
             CreatedFiles.Add writterConf.path, CStr(tmpVar)
             ExportSubSet.ShrinkBuffer
             CSVwriter.ExportToCSV ExportSubSet, writterConf, False, False
+            fileCreatedFlag = True
             ExportSubSet.Reinitialize ExportSubSet.count
         Loop
         Set CSVsubsetSplit = CreatedFiles
@@ -398,26 +488,24 @@ CSVsubsetSplit_MissingCSVfile:
     P_ERROR_SOURCE = "CSVinterface"
     GoTo CSVsubsetSplit_ErrHandler
 End Function
-Public Function Dedupe(keys As String) As CSVArrayList
+Public Function Dedupe(Keys As String) As CSVArrayList
     On Error GoTo ErrHandler_Dedupe
-    If P_SUCCESSFUL_IMPORT Then
-        Dim aIndexes() As String
-        aIndexes() = FieldsToOperate(keys)
-        If CheckForDupIndexes(aIndexes) Then
-            Dim IndexesCollection As Collection
-            Dim dRecCounter As Long
+    Dim aIndexes() As String
+    aIndexes() = FieldsToOperate(Keys)
+    If CheckForDupIndexes(aIndexes) Then
+        Dim IndexesCollection As Collection
+        Dim dRecCounter As Long
             
-            Set IndexesCollection = New Collection
-            For dRecCounter = 0 To P_CSV_DATA.count - 1
-                On Error Resume Next
-                IndexesCollection.Add dRecCounter, DedupeKeysMerge(dRecCounter, aIndexes)
-            Next dRecCounter
-            Dim colItem As Variant
-            Set Dedupe = New CSVArrayList
-            For Each colItem In IndexesCollection
-                Dedupe.Add P_CSV_DATA.item(CLng(colItem))
-            Next
-        End If
+        Set IndexesCollection = New Collection
+        For dRecCounter = 0 To P_CSV_DATA.count - 1
+            On Error Resume Next
+            IndexesCollection.Add dRecCounter, DedupeKeysMerge(dRecCounter, aIndexes)
+        Next dRecCounter
+        Dim colItem As Variant
+        Set Dedupe = New CSVArrayList
+        For Each colItem In IndexesCollection
+            Dedupe.Add P_CSV_DATA.Item(CLng(colItem))
+        Next
     End If
     Exit Function
 ErrHandler_Dedupe:
@@ -426,19 +514,19 @@ ErrHandler_Dedupe:
     P_ERROR_NUMBER = err.Number
     P_ERROR_SOURCE = "CSVinterface"
 End Function
-Private Function DedupeKeysMerge(aIndex As Long, keys As Variant) As String
+Private Function DedupeKeysMerge(aIndex As Long, Keys As Variant) As String
     Dim tmpResult() As Variant
     Dim kLB As Long
     Dim kUb As Long
     Dim keyCounter As Long
     Dim tgRecord() As Variant
     
-    kLB = LBound(keys)
-    kUb = UBound(keys)
+    kLB = LBound(Keys)
+    kUb = UBound(Keys)
     ReDim tmpResult(kLB To kUb)
-    tgRecord() = P_CSV_DATA.item(aIndex)
+    tgRecord() = P_CSV_DATA.Item(aIndex)
     For keyCounter = kLB To kUb
-        tmpResult(keyCounter) = tgRecord(CLng(keys(keyCounter)))
+        tmpResult(keyCounter) = tgRecord(CLng(Keys(keyCounter)))
     Next keyCounter
     DedupeKeysMerge = Join$(tmpResult, "|")
 End Function
@@ -465,7 +553,8 @@ End Sub
 Public Sub DumpToSheet(Optional WBookName As String, _
                         Optional SheetName As String, _
                         Optional rngName As String = "A1", _
-                        Optional ByRef DataSource As CSVArrayList = Nothing)
+                        Optional ByRef DataSource As CSVArrayList = Nothing, _
+                        Optional BlockAutoFormat As Boolean = True)
     On Error Resume Next
     Dim colNumber As Long
     
@@ -501,8 +590,7 @@ Public Sub DumpToSheet(Optional WBookName As String, _
         '@------------------------------------------------------
         'Dump the data
         Dim tmpOutputArray() As Variant
-        Dim UB1 As Long, UB2 As Long
-        Dim Counter1 As Long, Counter2 As Long
+        Dim UB1 As Long
         Dim OutPutArr() As Variant
         
         UB1 = DataSource.count - 1
@@ -517,7 +605,12 @@ Public Sub DumpToSheet(Optional WBookName As String, _
                             UB1 + 1, _
                             colNumber + 1 _
                             )
-        OutputRange.Value2 = OutPutArr
+        With OutputRange
+            If BlockAutoFormat Then
+                .NumberFormat = "@"
+            End If
+            .Value2 = OutPutArr
+        End With
         Erase tmpOutputArray
         Erase OutPutArr
         EnableOptimization False
@@ -574,7 +667,7 @@ Private Sub EscapeField(ByRef FieldString As String, _
     End If
 End Sub
 Public Sub ExportToCSV(ByRef csvArray As Variant, _
-                        Optional pconfig As CSVparserConfig = Nothing, _
+                        Optional pConfig As CSVparserConfig = Nothing, _
                         Optional PassControlToOS As Boolean = True, _
                         Optional enableDelimitersSniffing As Boolean = True, _
                         Optional EnforcedQuotation As Boolean = False)
@@ -584,10 +677,10 @@ Public Sub ExportToCSV(ByRef csvArray As Variant, _
         Dim curConfig As CSVparserConfig
         '@----------------------------------------------------------------------------
         'Open a conection to the file and seek its end
-        If pconfig Is Nothing Then
+        If pConfig Is Nothing Then
             Set curConfig = config
         Else
-            Set curConfig = pconfig
+            Set curConfig = pConfig
         End If
         Dim CSVstream As CSVTextStream
         Dim EOLB As EndLineChar
@@ -610,16 +703,22 @@ Public Sub ExportToCSV(ByRef csvArray As Variant, _
                 '@----------------------------------------------------------------------------
                 'Check line break at EOF
                 CSVstream.ReadText
+                RaiseEvent AfterLoadStream
                 If CSVstream.bufferString <> curConfig.dialect.recordsDelimiter Then
-                    Select Case curConfig.dialect.recordsDelimiter
-                        Case vbCrLf
-                            EOLB = EndLineChar.CRLF
-                        Case vbCr
-                            EOLB = EndLineChar.CR
+                    Select Case CSVstream.bufferString
+                        Case vbCrLf, vbCr, vbLf
+                            'Not needed to write endline char
                         Case Else
-                            EOLB = EndLineChar.LF
+                            Select Case curConfig.dialect.recordsDelimiter
+                                Case vbCrLf
+                                    EOLB = EndLineChar.CRLF
+                                Case vbCr
+                                    EOLB = EndLineChar.CR
+                                Case Else
+                                    EOLB = EndLineChar.LF
+                            End Select
+                            CSVstream.WriteBlankLines 1, EOLB
                     End Select
-                    CSVstream.WriteBlankLines 1, EOLB
                 End If
             End If
         Else
@@ -628,6 +727,7 @@ Public Sub ExportToCSV(ByRef csvArray As Variant, _
         '@----------------------------------------------------------------------------
         'Export
         CSVstream.WriteText JoinRecordsFields(csvArray, curConfig, EnforcedQuotation)
+        RaiseEvent AfterWriteStream
         Set CSVstream = Nothing
         If P_ERROR_NUMBER = 0& Then
             Close #FileHandled
@@ -649,8 +749,8 @@ ErrHandler_ExportToCSV:
     P_SUCCESSFUL_EXPORT = False
     P_ERROR_DESC = "[CSV file Export]: " & P_ERROR_DESC
 End Sub
-Private Function FileExists(ByVal FilePath As String) As Boolean
-    FileExists = CBool(LenB(Dir(FilePath, vbHidden + vbNormal + vbSystem + vbReadOnly + vbArchive)))
+Private Function FileExists(ByVal filePath As String) As Boolean
+    FileExists = CBool(LenB(Dir(filePath, vbHidden + vbNormal + vbSystem + vbReadOnly + vbArchive)))
 End Function
 ''' <summary>
 ''' Filter the target CSV file using expression evaluation.
@@ -658,13 +758,15 @@ End Function
 ''' <param name="Pattern">A valid string expression to evaluate when filtering records.</param>
 ''' <param name="FilePath">Full file path, including file extension.</param>
 ''' <param name="ExcludeFirstRecord">Used if the user wants to exclude the headers.</param>
-Public Function Filter(Pattern As String, Optional FilePath As String = vbNullString, _
-                            Optional ExcludeFirstRecord As Boolean = True) As CSVArrayList
+''' <param name="Exclude"> Exclude records matching "Pattern" if set to "True".</param>
+Public Function Filter(Pattern As String, Optional filePath As String = vbNullString, _
+                            Optional ExcludeFirstRecord As Boolean = True, _
+                            Optional Exclude As Boolean = False) As CSVArrayList
     
     Dim CSVparser As CSVinterface
     
     Set Filter = New CSVArrayList
-    If FilePath <> vbNullString Then 'Filter CSV file
+    If filePath <> vbNullString Then 'Filter CSV file
         Dim StreamReader As CSVTextStream
         Dim streamsCounter As Long
         
@@ -676,31 +778,30 @@ Public Function Filter(Pattern As String, Optional FilePath As String = vbNullSt
         End With
         With StreamReader
             .endStreamOnLineBreak = True
-            .OpenStream FilePath
+            .OpenStream filePath
             Do While Not .atEndOfStream
                 .ReadText
+                RaiseEvent AfterLoadStream
                 streamsCounter = streamsCounter + 1
                 CSVparser.ImportFromCSVString .bufferString, CSVparser.parseConfig
-                Filter.Concat2 CSVparser.items.Filter(Pattern, 1 + Abs(ExcludeFirstRecord And streamsCounter = 1))
+                Filter.Concat2 CSVparser.items.Filter(Pattern, 1 + Abs(ExcludeFirstRecord And streamsCounter = 1), Exclude)
             Loop
         End With
     Else
         Set CSVparser = Me
         If CSVparser.importSuccess Then
             ExcludeFirstRecord = (CSVparser.parseConfig.Headers = True)
-            Filter.Concat2 CSVparser.items.Filter(Pattern, 1 + Abs(ExcludeFirstRecord))
+            Filter.Concat2 CSVparser.items.Filter(Pattern, 1 + Abs(ExcludeFirstRecord), Exclude)
         End If
     End If
 End Function
-Private Function FilterAchievement(AValue As Variant, Pattern As Variant) As Boolean
-    FilterAchievement = AValue Like Pattern
-End Function
+
 Public Function GetDataFromCSV(csvPathAndFilename As String) As String
     
     On Error GoTo ErrHandler_GetDataFromCSV
     FileHandled = FreeFile
     Open csvPathAndFilename For Binary As #FileHandled
-    GetDataFromCSV = SPACE$(LOF(FileHandled))
+    GetDataFromCSV = Space$(LOF(FileHandled))
     Get #FileHandled, , GetDataFromCSV
     Close #FileHandled
 ErrHandler_GetDataFromCSV:
@@ -725,12 +826,11 @@ Private Function GetFileNameAndExtension(path As String) As String()
     End If
     GetFileNameAndExtension = tmpResult
 End Function
-Private Function GetLongFilters(ByRef tmpFilters() As Variant, _
+Private Function GetHeaderIndexes(ByRef tmpFilters() As Variant, _
                                 ByRef header As CSVArrayList) As Long()
     Dim tmpResult() As Long
     Dim tmpColl As Collection
     Dim trqidx As Long, arridx As Long
-    Dim filterCount As Long
     Dim matchFound As Boolean
 
     If Not header Is Nothing Then
@@ -754,11 +854,11 @@ Private Function GetLongFilters(ByRef tmpFilters() As Variant, _
         If tmpColl.count >= 1 Then
             ReDim tmpResult(0 To tmpColl.count - 1)
             For arridx = 0 To tmpColl.count - 1
-                tmpResult(arridx) = CLng(tmpColl.item(arridx + 1))
+                tmpResult(arridx) = CLng(tmpColl.Item(arridx + 1))
             Next arridx
         End If
         err.Clear
-        GetLongFilters = tmpResult
+        GetHeaderIndexes = tmpResult
     End If
 End Function
 Private Function GetFilePath(path As String)
@@ -860,6 +960,7 @@ Public Function GetRecord() As CSVArrayList
                                     'Load new stream
                                     With static_CSVstream
                                         .ReadText
+                                        RaiseEvent AfterLoadStream
                                         static_StreamWithQuotes = InStrB(1, .bufferString, static_QuoteChar)
                                         static_StreamEnd = .atEndOfStream
                                         If static_UseUnixEscapeSeq Then
@@ -1008,6 +1109,7 @@ Public Function GetRecord() As CSVArrayList
                                 'Advance stream
                                 With static_CSVstream
                                     .ReadText
+                                    RaiseEvent AfterLoadStream
                                     static_StreamWithQuotes = InStrB(1, .bufferString, static_QuoteChar)
                                     static_StreamEnd = .atEndOfStream
                                     If static_UseUnixEscapeSeq Then
@@ -1127,6 +1229,7 @@ Public Function GetRecord() As CSVArrayList
                                     'Load new stream
                                     With static_CSVstream
                                         .ReadText
+                                        RaiseEvent AfterLoadStream
                                         static_StreamWithQuotes = InStrB(1, .bufferString, static_QuoteChar)
                                         static_StreamEnd = .atEndOfStream
                                         If static_UseUnixEscapeSeq Then
@@ -1248,6 +1351,7 @@ Public Function GetRecord() As CSVArrayList
                             'Advance stream
                             With static_CSVstream
                                 .ReadText
+                                RaiseEvent AfterLoadStream
                                 static_StreamWithQuotes = InStrB(1, .bufferString, static_QuoteChar)
                                 static_StreamEnd = .atEndOfStream
                                 If static_UseUnixEscapeSeq Then
@@ -1316,6 +1420,7 @@ Public Function GetRecord() As CSVArrayList
             'Advance stream
             With static_CSVstream
                 .ReadText
+                RaiseEvent AfterLoadStream
                 static_StreamWithQuotes = InStrB(1, .bufferString, static_QuoteChar)
                 static_StreamEnd = .atEndOfStream
                 If static_UseUnixEscapeSeq Then
@@ -1516,7 +1621,7 @@ Public Function InsertField(aIndex As Long, Optional FieldName As String = vbNul
                 With P_CSV_DATA
                     headerRec = Me.parseConfig.Headers
                     For rCounter = 0 To .count - 1
-                        curRecord() = .item(rCounter)
+                        curRecord() = .Item(rCounter)
                         If headerRec Then
                             If FieldName <> vbNullString Then
                                 If rCounter = 0 Then
@@ -1537,7 +1642,7 @@ Public Function InsertField(aIndex As Long, Optional FieldName As String = vbNul
                                 cpRecord(fCounter + 1) = curRecord(fCounter)
                             End If
                         Next fCounter
-                        .item(rCounter) = cpRecord
+                        .Item(rCounter) = cpRecord
                     Next rCounter
                 End With
             Case Else
@@ -1571,7 +1676,6 @@ Public Function InsertRecord(aIndex As Long) As CSVinterface
         Select Case aIndex
             Case 0 To P_CSV_DATA.count
                 Dim cpRecord() As Variant
-                Dim rCounter As Long
                 
                 ReDim cpRecord(0 To P_VECTORS_REGULAR_BOUND)
                 With P_CSV_DATA
@@ -1614,11 +1718,12 @@ Private Function IsWorkbookOpen(WBookName As String) As Boolean
     On Error Resume Next
     For Each WBook In Workbooks
         BookMatching = (WBook.name = WBookName)
+        If BookMatching Then Exit For
     Next
     IsWorkbookOpen = BookMatching
 End Function
 Private Function JoinRecordsFields(ByRef RecordsArray As Variant, _
-                                    pconfig As CSVparserConfig, _
+                                    pConfig As CSVparserConfig, _
                                     Optional EnforcedQuotation As Boolean = False) As String
     Dim Buffer() As String
     Dim CoerceChr As String
@@ -1636,9 +1741,9 @@ Private Function JoinRecordsFields(ByRef RecordsArray As Variant, _
     Set ArrayHelper = New CSVArrayList
     '@----------------------------------------------------------------------------
     'Expand configuration object
-    QuoteT = pconfig.dialect.quoteToken
-    FldDelimiter = pconfig.dialect.fieldsDelimiter
-    recDelimiter = pconfig.dialect.recordsDelimiter
+    QuoteT = pConfig.dialect.quoteToken
+    FldDelimiter = pConfig.dialect.fieldsDelimiter
+    recDelimiter = pConfig.dialect.recordsDelimiter
     '@----------------------------------------------------------------------------
     'Set coerce char
     Select Case QuoteT
@@ -1651,7 +1756,7 @@ Private Function JoinRecordsFields(ByRef RecordsArray As Variant, _
     End Select
     '@----------------------------------------------------------------------------
     'Set the escape sequences
-    UseUnixEscapeSeq = (pconfig.dialect.escapeMode = unix)
+    UseUnixEscapeSeq = (pConfig.dialect.escapeMode = unix)
     UnixEscapeSeq = CHR_BACKSLASH & CoerceChr
     UnixEscapeSeqDel = CHR_BACKSLASH & FldDelimiter
     UnixEscapeSeqRec = CHR_BACKSLASH & recDelimiter
@@ -1682,6 +1787,7 @@ Private Function JoinRecordsFields(ByRef RecordsArray As Variant, _
                 End If
             Next jLCounter
             ConcatenatedArray(iLCounter) = Join$(Buffer, FldDelimiter)
+            RaiseEvent AfterExportRecord
         Next iLCounter
         '@----------------------------------------------------------------------------
         'Concatenate records
@@ -1713,6 +1819,7 @@ Private Function JoinRecordsFields(ByRef RecordsArray As Variant, _
                 End If
             Next jLCounter
             ConcatenatedArray(iLCounter) = Join$(Buffer, FldDelimiter)
+            RaiseEvent AfterExportRecord
         Next iLCounter
         '@----------------------------------------------------------------------------
         'Concatenate records
@@ -1743,6 +1850,7 @@ Private Function JoinRecordsFields(ByRef RecordsArray As Variant, _
                                 FldDelimiter, recDelimiter, EnforcedQuotation
                 End If
                 ConcatenatedArray(iLCounter) = Buffer(0)
+                RaiseEvent AfterExportRecord
             Next iLCounter
             '@----------------------------------------------------------------------------
             'Concatenate records
@@ -1773,6 +1881,7 @@ Private Function JoinRecordsFields(ByRef RecordsArray As Variant, _
                     End If
                 Next jLCounter
                 ConcatenatedArray(iLCounter) = Join$(Buffer, FldDelimiter)
+                RaiseEvent AfterExportRecord
             Next iLCounter
             '@----------------------------------------------------------------------------
             'Concatenate records
@@ -1795,6 +1904,7 @@ Private Sub LoadNewStream()
     'Load new stream
     With CSVstream
         .ReadText
+        RaiseEvent AfterLoadStream
         StreamWithQuotes = InStrB(1, .bufferString, QuoteChar)
         StreamEnd = .atEndOfStream
         If UseUnixEscapeSeq Then
@@ -1819,18 +1929,18 @@ Private Sub LoadNewStream()
     End If
 End Sub
 Private Function MaxIndexVal(ByRef values As Variant) As Long
-    Dim tmpVal As Long, idx0 As Long, idx As Long
+    Dim tmpVal As Long, idx0 As Long, Idx As Long
     
     idx0 = LBound(values)
-    idx = idx0
+    Idx = idx0
     tmpVal = values(idx0)
     For idx0 = idx0 + 1 To UBound(values)
         If values(idx0) > tmpVal Then
-            idx = idx0
+            Idx = idx0
             tmpVal = values(idx0)
         End If
     Next idx0
-    MaxIndexVal = idx
+    MaxIndexVal = Idx
 End Function
 Public Function MergeFields(indexes As String, CharToMergeWith As String) As CSVinterface
     Dim cpIndexes() As String
@@ -1842,6 +1952,206 @@ Public Function MergeFields(indexes As String, CharToMergeWith As String) As CSV
         Set MergeFields = Me
     End If
 End Function
+''' <summary>
+''' Returns a copy of the current instance.
+''' </summary>
+Public Function Clone() As Object
+    Set Clone = Me
+End Function
+Private Sub ClearDirectory(path As String)
+    On Error Resume Next
+    Kill path & "*.*"  ' delete all files in the folder
+End Sub
+''' <summary>
+''' Sorts an external CSV file on disk.
+''' </summary>
+''' <param name="filePath">CSV file path, including file extension.</param>
+''' <param name="sortingKeys">The columns/keys for the logical comparisons.</param>
+''' <param name="headers">Indicates if the CSV file has a header row.</param>
+''' <param name="streamSize">Single textstream factor size.</param>
+''' <param name="sortAlgorithm">Algorithm used to sort the data.</param>
+''' <param name="ExportationBunchSize">The amount of items to export in a single operation.</param>
+Public Function SortOnDisk(ByVal filePath As String, _
+                                Optional ByRef sortingKeys As Variant = 1, _
+                                Optional Headers As Boolean = True, _
+                                Optional streamSize As Single = 20, _
+                                Optional ByVal sortAlgorithm As SortingAlgorithms = SortingAlgorithms.SA_Quicksort, _
+                                Optional ByVal ExportationBunchSize As Long = 10000) As String
+                        
+    On Error GoTo Sort_Error_Handler:
+    
+    Dim CSV As CSVinterface
+    Dim iCounter As Long
+    Dim inputTextStream As CSVTextStream
+    Dim inputTextStreams() As CSVTextStream
+    Dim streamsConsumedItems() As Long
+    Dim streamsItemsCount() As Long
+    Dim tmpOutputPath As String
+    Dim OutPutFpath As String
+    Dim OutputPath As String
+    Dim sampledItems() As CSVinterface
+    Dim sortedFiles As CSVArrayList
+    Dim FirstStream As Boolean
+    Dim fileHeader As Object
+    Dim SortedCounter As Long
+    Dim exportConfig As CSVparserConfig
+    Dim sortedItems As CSVArrayList
+    Dim ComparisonList As CSVArrayList
+    Dim ItemIndex As Long
+    Dim importConfig As CSVparserConfig
+    
+    tmpOutputPath = GetFilePath(filePath) & "tmp-sorted" & Application.PathSeparator
+    If LenB(Dir(tmpOutputPath, vbDirectory)) > 0 Then 'Delete previous works
+        ClearDirectory tmpOutputPath
+    Else
+        MkDir tmpOutputPath
+    End If
+    '@--------------------------------------------------------------------------------
+    'Sort blocks of data with streamSize MB
+    Set inputTextStream = New CSVTextStream
+    FirstStream = True
+    Set CSV = New CSVinterface
+    With CSV.parseConfig
+        .Headers = Headers
+        .endingRecord = 1
+    End With
+    With inputTextStream
+        .bufferSize = streamSize
+        .endStreamOnLineBreak = True
+        .OpenStream filePath
+        .ReadText
+        'Set the dialect
+        Set CSV.parseConfig.dialect = CSV.SniffDelimiters(CSV.parseConfig, .bufferString)
+        '@--------------------------------------------------------------------------------
+        'Get header
+        Set fileHeader = CSV.ImportFromCSVString(.bufferString, CSV.parseConfig).items.Clone
+        '@--------------------------------------------------------------------------------
+        'Consume first stream
+        CSV.parseConfig.startingRecord = 2
+        CSV.parseConfig.endingRecord = 0
+        CSV.ImportFromCSVString .bufferString, CSV.parseConfig
+        CSV.parseConfig.startingRecord = 1
+        CSV.parseConfig.Headers = False
+        '@--------------------------------------------------------------------------------
+        'Sort and export
+        Set sortedFiles = New CSVArrayList
+        Set exportConfig = New CSVparserConfig
+        CSV.Sort sortingKeys:=sortingKeys, sortAlgorithm:=sortAlgorithm
+        SortedCounter = SortedCounter + 1
+        Set exportConfig.dialect = CSV.parseConfig.dialect
+        exportConfig.path = tmpOutputPath & "tmp_" & SortedCounter & ".csv"
+        CSV.ExportToCSV CSV.items, exportConfig, enableDelimitersSniffing:=False
+        sortedFiles.Add exportConfig.path
+        Do While Not .atEndOfStream
+            .ReadText
+            CSV.ImportFromCSVString .bufferString, CSV.parseConfig
+            CSV.Sort sortingKeys:=sortingKeys, sortAlgorithm:=sortAlgorithm
+            SortedCounter = SortedCounter + 1
+            exportConfig.path = tmpOutputPath & "tmp_" & SortedCounter & ".csv"
+            CSV.ExportToCSV CSV.items, exportConfig, enableDelimitersSniffing:=False
+            sortedFiles.Add exportConfig.path
+        Loop
+        .CloseStream
+    End With
+    '@--------------------------------------------------------------------------------
+    'Configure output
+    OutputPath = GetFilePath(filePath)
+    OutPutFpath = OutputPath & GetFileNameAndExtension(filePath)(0) & "-sorted.csv"
+    If FileExists(OutPutFpath) Then 'Delete prev sorted file
+        Kill OutPutFpath
+    End If
+    'Point to target file
+    exportConfig.path = OutPutFpath
+    'Export header
+    If Headers Then
+        CSV.ExportToCSV fileHeader, exportConfig, enableDelimitersSniffing:=False
+    End If
+    ReDim inputTextStreams(0 To sortedFiles.count - 1)
+    ReDim streamsItemsCount(0 To sortedFiles.count - 1)
+    ReDim sampledItems(0 To sortedFiles.count - 1)
+    Set ComparisonList = New CSVArrayList
+    'Configure import options
+    Set importConfig = exportConfig.CopyConfig
+    With importConfig
+        .path = vbNullString
+        .Headers = False
+    End With
+    'Configure readers and parsers
+    ComparisonList.Indexing = True
+    For iCounter = 0 To sortedFiles.count - 1
+        Set inputTextStreams(iCounter) = New CSVTextStream
+        Set sampledItems(iCounter) = New CSVinterface
+        With inputTextStreams(iCounter)
+            .endStreamOnLineBreak = True
+            .OpenStream sortedFiles(iCounter)
+            .ReadText
+        End With
+        With sampledItems(iCounter)
+            Set .parseConfig = importConfig
+            .ImportFromCSVString inputTextStreams(iCounter).bufferString, .parseConfig 'Import and store
+            streamsItemsCount(iCounter) = .count
+            'Append the first record to comparison list
+            ComparisonList.AddIndexedItem CStr(iCounter), .items(0)
+        End With
+    Next iCounter
+    ReDim streamsConsumedItems(0 To sortedFiles.count - 1)
+    '@--------------------------------------------------------------------------------
+    'Merge sorted data
+    Set sortedItems = New CSVArrayList
+    Do
+        With ComparisonList
+            .Sort sortingKeys:=sortingKeys
+            'Save to sorted items
+            sortedItems.Add .Item(0)
+            ItemIndex = CLng(.ItemKey(0)) 'Worked record key
+            'Export if needed
+            If sortedItems.count = ExportationBunchSize Then
+                CSV.ExportToCSV sortedItems, exportConfig, enableDelimitersSniffing:=False
+                sortedItems.Clear
+            End If
+            .Swap 0, .count - 1, True
+            .RemoveAt .count - 1  'Remove worked item
+            'Update the count of consumed items
+            streamsConsumedItems(ItemIndex) = streamsConsumedItems(ItemIndex) + 1
+            'Add new item from the target list, if there are any remaining items
+            If streamsConsumedItems(ItemIndex) = streamsItemsCount(ItemIndex) Then
+                If Not inputTextStreams(ItemIndex).atEndOfStream Then
+                    'Read new data block
+                    inputTextStreams(ItemIndex).ReadText
+                    sampledItems(ItemIndex).ImportFromCSVString _
+                                            inputTextStreams(ItemIndex).bufferString, _
+                                            sampledItems(ItemIndex).parseConfig 'Import and store
+                    streamsItemsCount(ItemIndex) = sampledItems(ItemIndex).count
+                    streamsConsumedItems(ItemIndex) = 0
+                Else
+                    inputTextStreams(ItemIndex).CloseStream 'Done with the file
+                    Set sampledItems(ItemIndex) = Nothing
+                End If
+            End If
+            If Not sampledItems(ItemIndex) Is Nothing Then
+                .AddIndexedItem CStr(ItemIndex), sampledItems(ItemIndex)(streamsConsumedItems(ItemIndex)) 'Next item
+            End If
+        End With
+    Loop While ComparisonList.count
+    If sortedItems.count > 0 Then 'Export remaining data
+        CSV.ExportToCSV sortedItems, exportConfig, enableDelimitersSniffing:=False
+        sortedItems.Clear
+    End If
+    ClearDirectory tmpOutputPath  ' delete all files in the folder
+    RmDir tmpOutputPath           ' delete folder
+    Set inputTextStream = Nothing
+    Erase inputTextStreams
+    Erase sampledItems
+    Erase streamsConsumedItems
+    Erase streamsItemsCount
+    SortOnDisk = OutPutFpath
+    Exit Function
+Sort_Error_Handler:
+    P_ERROR_NUMBER = err.Number
+    P_ERROR_DESC = "[BigCSVsort] " & err.Description
+    P_ERROR_SOURCE = err.Source
+End Function
+
 Private Function CheckForDupIndexes(aIndexes As Variant) As Boolean
     Dim aLB As Long
     Dim tmpCol As Collection
@@ -1883,7 +2193,7 @@ Private Function MergeFlds(CharToMergeWith As String, cpIndexes() As String) As 
                 tmpMergeRec.Reinitialize UB - LB
                 With P_CSV_DATA
                     For rCounter = 0 To .count - 1
-                        curRecord() = .item(rCounter)
+                        curRecord() = .Item(rCounter)
                         storedIndexes = 0
                         For fCounter = 0 To P_VECTORS_REGULAR_BOUND
                             If FiedlInMergeList(fCounter, cpIndexes) Then
@@ -1910,7 +2220,7 @@ Private Function MergeFlds(CharToMergeWith As String, cpIndexes() As String) As 
                                 IndexToSaveIn = cpIndexes(LB)
                         End Select
                         cpRecord(IndexToSaveIn) = Join$(tmpMergeRec.items, CharToMergeWith)
-                        .item(rCounter) = cpRecord
+                        .Item(rCounter) = cpRecord
                         tmpMergeRec.Clear
                     Next rCounter
                 End With
@@ -1962,20 +2272,7 @@ Private Function FiedlInMergeList(aIndex As Long, indexes() As String) As Boolea
     Loop While iDxFld <= UBound(indexes) And Not tmpBool
     FiedlInMergeList = tmpBool
 End Function
-Private Function MinIndexVal(ByRef values As Variant) As Long
-    Dim tmpVal As Double, idx0 As Long, idx As Long
-    
-    idx0 = LBound(values)
-    idx = idx0
-    tmpVal = values(idx0)
-    For idx0 = idx0 + 1 To UBound(values)
-        If values(idx0) < tmpVal Then
-            idx = idx0
-            tmpVal = values(idx0)
-        End If
-    Next idx0
-    MinIndexVal = idx
-End Function
+
 Public Sub OpenSeqReader(configObj As CSVparserConfig, _
                             ParamArray FilterColumns() As Variant)
     On Error GoTo OpenSeqReader_Error_Handler
@@ -2060,7 +2357,7 @@ Public Sub OpenSeqReader(configObj As CSVparserConfig, _
                 ReDim static_RequestedFieldsArray(0)
                 static_RequestedFieldsArray(0) = -1
             Case Else
-                static_RequestedFieldsArray() = GetLongFilters(static_tmpRequested, P_CSV_HEADER)
+                static_RequestedFieldsArray() = GetHeaderIndexes(static_tmpRequested, P_CSV_HEADER)
         End Select
     Else
         ReDim static_RequestedFieldsArray(0)
@@ -2095,6 +2392,7 @@ Public Sub OpenSeqReader(configObj As CSVparserConfig, _
     'Get CSV stream and populate a temp array
     With static_CSVstream
         .ReadText
+        RaiseEvent AfterLoadStream
         static_StreamWithQuotes = InStrB(1, .bufferString, static_QuoteChar)
         static_StreamEnd = .atEndOfStream
     End With
@@ -2106,6 +2404,7 @@ Public Sub OpenSeqReader(configObj As CSVparserConfig, _
             .bufferSize = configObj.bufferSize
             .RestartPointer
             .ReadText
+            RaiseEvent AfterLoadStream
             static_StreamWithQuotes = InStrB(1, .bufferString, static_QuoteChar)
             static_StreamEnd = .atEndOfStream
         Loop
@@ -2215,7 +2514,7 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
             ReDim RequestedFieldsArray(0)
             RequestedFieldsArray(0) = -1
         Case Else
-            RequestedFieldsArray() = GetLongFilters(tmpRequested, P_CSV_HEADER)
+            RequestedFieldsArray() = GetHeaderIndexes(tmpRequested, P_CSV_HEADER)
     End Select
     
     '@----------------------------------------------------------------------------
@@ -2563,7 +2862,6 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
                                 RecordEndReached = False
                                 tmpToken.Add LeftB$(tmpCSV(Index), TokenEndingPos) 'Store the Left most Token portion from the current Index
                                 Exit Do
-                            '**************************************************************************************************************
                             Else
                                 If Not UnixEscpedSep Then 'End of record
                                     If IncludeRecord Then
@@ -2575,7 +2873,6 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
                                         End Select
                                     End If
                                 End If
-                            '***********************************************************************************************************************
                             End If
                         Loop
                     Else
@@ -2662,6 +2959,7 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
         'Start saving on given record
         If IncludeRecord Then
             outputList.Add RecordToken.items
+            RaiseEvent AfterImportRecord
             RecordToken.Reinitialize P_VECTORS_REGULAR_BOUND + 1
         End If
         P_VARYING_LENGTHS = (P_VECTORS_REGULAR_BOUND <> (FieldID - 1))
@@ -2730,13 +3028,13 @@ Public Function RearrangeFields(FieldsOrder As String) As CSVinterface
             'Rearrange
             ReDim cpRecord(0 To P_VECTORS_REGULAR_BOUND)
             For rCounter = 0 To .count - 1
-                tmpRecord() = .item(rCounter)
+                tmpRecord() = .Item(rCounter)
                 iRecCnt = 0
                 For fCounter = LBound(tmpFldOrder) To UBound(tmpFldOrder)
-                    cpRecord(CDbl(tmpFldOrder(iRecCnt))) = tmpRecord(fCounter)
+                    cpRecord(CLng(tmpFldOrder(iRecCnt))) = tmpRecord(fCounter)
                     iRecCnt = iRecCnt + 1
                 Next fCounter
-                .item(rCounter) = cpRecord
+                .Item(rCounter) = cpRecord
             Next rCounter
         End With
     Else
@@ -2761,45 +3059,10 @@ Undefined_RearrangeFields:
     Resume ErrHandler_RearrangeFields
 End Function
 Private Function FieldsToOperate(fieldsString As String) As String()
-    Dim tmpFields() As String
+    Dim tmpArrList As CSVArrayList
     
-    If fieldsString Like "*-*" Then
-        Dim tmpResult As CSVArrayList
-        Dim tmpPreResult() As String
-        Dim rfICounter As Long
-        Dim rfJCounter As Long
-        Dim ROFields() As String
-        Dim ROFlb As Long
-        Dim ROFub As Long
-        Dim stepIdx As Long
-        
-        Set tmpResult = New CSVArrayList
-        tmpPreResult() = Split(fieldsString, ",")
-        For rfICounter = LBound(tmpPreResult) To UBound(tmpPreResult)
-            If InStrB(1, tmpPreResult(rfICounter), "-") Then
-                ROFields() = Split(tmpPreResult(rfICounter), "-")
-                ROFlb = CDbl(ROFields(LBound(ROFields)))
-                ROFub = CDbl(ROFields(LBound(ROFields) + 1))
-                If ROFlb < ROFub Then
-                    stepIdx = 1
-                Else
-                    stepIdx = -1
-                End If
-                For rfJCounter = ROFlb To ROFub Step stepIdx
-                    tmpResult.Add CStr(rfJCounter)
-                Next rfJCounter
-            Else
-                tmpResult.Add tmpPreResult(rfICounter)
-            End If
-        Next rfICounter
-        ReDim tmpFields(0 To tmpResult.count - 1)
-        For rfICounter = 0 To tmpResult.count - 1
-            tmpFields(rfICounter) = tmpResult.item(rfICounter)
-        Next rfICounter
-    Else
-        tmpFields() = Split(fieldsString, ",")
-    End If
-    FieldsToOperate = tmpFields
+    Set tmpArrList = New CSVArrayList
+    FieldsToOperate = tmpArrList.SplitFieldsOrderStr(fieldsString)
 End Function
 Private Function RearrangeCheckFieldsToOperate(fieldsToRearrange() As String) As Boolean
     Dim fldOcount As Long
@@ -2833,7 +3096,7 @@ Public Function RemoveField(aIndex As Long) As CSVinterface
                 ReDim cpRecord(0 To P_VECTORS_REGULAR_BOUND - 1)
                 With P_CSV_DATA
                     For rCounter = 0 To .count - 1
-                        curRecord() = .item(rCounter)
+                        curRecord() = .Item(rCounter)
                         For fCounter = 0 To P_VECTORS_REGULAR_BOUND
                             If fCounter < aIndex Then
                                 cpRecord(fCounter) = curRecord(fCounter)
@@ -2841,7 +3104,7 @@ Public Function RemoveField(aIndex As Long) As CSVinterface
                                 cpRecord(fCounter - 1) = curRecord(fCounter)
                             End If
                         Next fCounter
-                        .item(rCounter) = cpRecord
+                        .Item(rCounter) = cpRecord
                     Next rCounter
                 End With
             Case Else
@@ -2875,7 +3138,6 @@ Public Function RemoveRecords(aIndex As Long, Optional count As Long = 1) As CSV
         Select Case aIndex
             Case 0 To P_CSV_DATA.count - 1
                 Dim cpRecord() As Variant
-                Dim rCounter As Long
                 
                 ReDim cpRecord(0 To P_VECTORS_REGULAR_BOUND)
                 With P_CSV_DATA
@@ -2910,14 +3172,14 @@ Private Function RequestedField(ByVal fieldIndex As Long, _
         Case -1
             RequestedField = True
         Case Else
-            Dim idx As Long
+            Dim Idx As Long
             Dim tmpBool As Boolean
             
-            idx = 0
+            Idx = 0
             Do
-                tmpBool = (fieldIndex = RequestedFieldsArray(idx))
-                idx = idx + 1
-            Loop While Not tmpBool And idx <= mxReq
+                tmpBool = (fieldIndex = RequestedFieldsArray(Idx))
+                Idx = Idx + 1
+            Loop While Not tmpBool And Idx <= mxReq
             RequestedField = tmpBool
     End Select
 End Function
@@ -2927,14 +3189,14 @@ Private Function RequestedField2(ByVal fieldIndex As Long, _
         Case -1
             RequestedField2 = True
         Case Else
-            Dim idx As Long
+            Dim Idx As Long
             Dim tmpBool As Boolean
             
-            idx = 0
+            Idx = 0
             Do
-                tmpBool = (fieldIndex = static_RequestedFieldsArray(idx))
-                idx = idx + 1
-            Loop While Not tmpBool And idx <= mxReq
+                tmpBool = (fieldIndex = static_RequestedFieldsArray(Idx))
+                Idx = Idx + 1
+            Loop While Not tmpBool And Idx <= mxReq
             RequestedField2 = tmpBool
     End Select
 End Function
@@ -2970,9 +3232,9 @@ Private Sub SkipSpacesAndTabs()
             Loop
     End Select
 End Sub
-Private Sub SkipUnwantedLines(ByRef idx As Long, _
+Private Sub SkipUnwantedLines(ByRef Idx As Long, _
                                 ByRef MaxIdx As Long, _
-                                ByRef Arr() As String, _
+                                ByRef arr() As String, _
                                 ByVal CommentToken As Long, _
                                 Optional SkipComments As Boolean = True, _
                                 Optional skipEmptyLines As Boolean = True)
@@ -2982,16 +3244,16 @@ Private Sub SkipUnwantedLines(ByRef idx As Long, _
 
     '@----------------------------------------------------------------------------
     'Skip commented and empty lines if needed
-    If idx <= MaxIdx Then
+    If Idx <= MaxIdx Then
         Do
-            CurLength = LenB(Arr(idx))
+            CurLength = LenB(arr(Idx))
             UnwantedLine = False
             If CurLength = 0 Then  'Empty line found
                 If skipEmptyLines Then
                     UnwantedLine = True
                 End If
             Else
-                CharCode = AscW(Arr(idx))
+                CharCode = AscW(arr(Idx))
                 If CharCode = CommentToken Then 'Commented line found
                     If SkipComments Then
                         UnwantedLine = True
@@ -2999,9 +3261,9 @@ Private Sub SkipUnwantedLines(ByRef idx As Long, _
                 End If
             End If
             If UnwantedLine Then
-                idx = idx + 1&
+                Idx = Idx + 1&
             End If
-        Loop While UnwantedLine And idx <= MaxIdx
+        Loop While UnwantedLine And Idx <= MaxIdx
     End If
 End Sub
 Public Function ShiftField(aIndex As Long, Shift As Long) As CSVinterface
@@ -3027,13 +3289,13 @@ On Error GoTo ErrHandler_ShiftField
                 End If
                 With P_CSV_DATA
                     For rCounter = 0 To .count - 1
-                        curRecord() = .item(rCounter)
+                        curRecord() = .Item(rCounter)
                         cpRecord() = curRecord
                         cpRecord(aIndex + Shift) = curRecord(aIndex)
                         For fCounter = ShiftLB To ShiftUB
                             cpRecord(fCounter) = curRecord(fCounter + (1 * ShiftFactor))
                         Next fCounter
-                        .item(rCounter) = cpRecord
+                        .Item(rCounter) = cpRecord
                     Next rCounter
                 End With
             Case Else
@@ -3070,7 +3332,6 @@ On Error GoTo ErrHandler_ShiftRecord
                 Dim rCounter As Long
                 Dim ShiftLB As Long
                 Dim ShiftUB As Long
-                Dim fCounter As Long
                 Dim ShiftFactor As Long
                 
                 ShiftFactor = Sgn(Shift)
@@ -3082,11 +3343,11 @@ On Error GoTo ErrHandler_ShiftRecord
                     ShiftUB = aIndex + Shift - 1
                 End If
                 With P_CSV_DATA
-                    cpRecord() = .item(aIndex)
+                    cpRecord() = .Item(aIndex)
                     For rCounter = ShiftLB To ShiftUB Step ShiftFactor
-                        .item(rCounter) = .item(rCounter + (1 * ShiftFactor))
+                        .Item(rCounter) = .Item(rCounter + (1 * ShiftFactor))
                     Next rCounter
-                    .item(aIndex + Shift) = cpRecord
+                    .Item(aIndex + Shift) = cpRecord
                 End With
             Case Else
                 GoTo OutOfBounds_ShiftRecord
@@ -3126,6 +3387,7 @@ Public Function SniffDelimiters(ByRef confObject As CSVparserConfig, _
                 .utf8EncodedFile = confObject.utf8EncodedFile
                 .OpenStream confObject.path
                 .ReadText
+                RaiseEvent AfterLoadStream
                 Set SniffDelimiters = SniffInString(confObject, .bufferString, True)
                 Set StreamObj = Nothing
             End With
@@ -3144,7 +3406,6 @@ Private Function SniffInString(ByRef confObject As CSVparserConfig, _
     Dim EmptyParam() As Variant
     Dim GuesserHelper As CSVSniffer
     Dim GuessResults As CSVArrayList
-    Dim L0_FieldDelimiter As Long
     Dim L1_FieldDelimiter As Long
     Dim LinesEnds() As String
     Dim Quote As String
@@ -3244,25 +3505,26 @@ Private Function SniffInString(ByRef confObject As CSVparserConfig, _
     Erase UBlinesEnds
     Erase UBquoteChar
 End Function
-Public Function Sort(Optional ByVal FromIndex As Long = -1, _
-                        Optional ByVal ToIndex As Long = -1, _
-                        Optional ByVal SortingKeys As Variant = 1, _
-                        Optional ByVal SortAlgorithm As SortingAlgorithms = SortingAlgorithms.SA_IntroSort) As CSVinterface
+Public Function Sort(Optional ByVal fromIndex As Long = -1, _
+                        Optional ByVal toIndex As Long = -1, _
+                        Optional ByVal sortingKeys As Variant = 1, _
+                        Optional ByVal sortAlgorithm As SortingAlgorithms = SortingAlgorithms.SA_Quicksort) As CSVinterface
     
     On Error GoTo Sort_Error_Handler:
     
     If P_SUCCESSFUL_IMPORT Then
-        If FromIndex = -1 Then
+        If fromIndex = -1 Then
             If config.Headers And Not config.headersOmission Then
-                FromIndex = 2
+                fromIndex = 2
             Else
-                FromIndex = 1
+                fromIndex = 1
             End If
         End If
-        If ToIndex = -1 Then
-            ToIndex = P_CSV_DATA.count
+        If toIndex = -1 Then
+            toIndex = P_CSV_DATA.count
         End If
-        P_CSV_DATA.Sort FromIndex, ToIndex, SortingKeys, SortAlgorithm
+        P_CSV_DATA.Sort fromIndex, toIndex, sortingKeys, sortAlgorithm
+        RaiseEvent AfterSort
         Set Sort = Me
     End If
     Exit Function
@@ -3271,16 +3533,16 @@ Sort_Error_Handler:
     P_ERROR_DESC = "[Sort] " & err.Description
     P_ERROR_SOURCE = err.Source
 End Function
-Public Function SortByField(Optional ByVal FromIndex As Long = -1, _
-                            Optional ByVal ToIndex As Long = -1, _
+Public Function SortByField(Optional ByVal fromIndex As Long = -1, _
+                            Optional ByVal toIndex As Long = -1, _
                             Optional ByVal SortingKey As Long = 1, _
-                            Optional ByVal SortAlgorithm As SortingAlgorithms = SortingAlgorithms.SA_IntroSort) As CSVinterface
+                            Optional ByVal sortAlgorithm As SortingAlgorithms = SortingAlgorithms.SA_Quicksort) As CSVinterface
     
     On Error GoTo SortByField_Error_Handler:
     
     If P_SUCCESSFUL_IMPORT Then
-        If FromIndex = -1 Then
-            FromIndex = 1
+        If fromIndex = -1 Then
+            fromIndex = 1
         End If
         Dim CurField As CSVArrayList
         Dim CurFieldArray() As Variant
@@ -3288,14 +3550,15 @@ Public Function SortByField(Optional ByVal FromIndex As Long = -1, _
         
         Set CurField = New CSVArrayList
         CurFieldArray() = P_CSV_DATA(Abs(SortingKey) - 1)
-        If ToIndex = -1 Then
-            ToIndex = UBound(CurFieldArray) + 1
+        If toIndex = -1 Then
+            toIndex = UBound(CurFieldArray) + 1
         End If
         For sfIcounter = LBound(CurFieldArray) To UBound(CurFieldArray)
             CurField.Add2 CurFieldArray(sfIcounter)
         Next sfIcounter
         CurField.ShrinkBuffer
-        CurField.Sort FromIndex, ToIndex, Sgn(SortingKey) * 1, SortAlgorithm
+        CurField.Sort fromIndex, toIndex, Sgn(SortingKey) * 1, sortAlgorithm
+        RaiseEvent AfterSort
         RearrangeFields SortRearrangeGetStr(CurFieldArray, CurField)
         Set SortByField = Me
     End If
@@ -3337,7 +3600,6 @@ Public Function SplitField(aIndex As Long, CharToSplitWith As String) As CSVinte
                 Dim curRecord() As Variant
                 Dim cpRecord() As String
                 Dim tmpRecord() As Variant
-                Dim fCounter As Long
                 Dim rCounter As Long
                 Dim sfldIndex As Long
                 Dim sfldCPindex As Long
@@ -3345,7 +3607,7 @@ Public Function SplitField(aIndex As Long, CharToSplitWith As String) As CSVinte
                 
                 With P_CSV_DATA
                     For rCounter = 0 To .count - 1
-                        curRecord() = .item(rCounter)
+                        curRecord() = .Item(rCounter)
                         cpRecord() = Split(curRecord(aIndex), CharToSplitWith)
                         FldDiff = UBound(cpRecord) - LBound(cpRecord)
                         ReDim tmpRecord(0 To P_VECTORS_REGULAR_BOUND + FldDiff)
@@ -3359,7 +3621,7 @@ Public Function SplitField(aIndex As Long, CharToSplitWith As String) As CSVinte
                         For sfldIndex = aIndex + FldDiff + 1 To UBound(curRecord) + FldDiff
                             tmpRecord(sfldIndex) = curRecord(sfldIndex - FldDiff)
                         Next sfldIndex
-                        .item(rCounter) = tmpRecord
+                        .Item(rCounter) = tmpRecord
                     Next rCounter
                 End With
             Case Else
@@ -3463,7 +3725,7 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
             ReDim RequestedFieldsArray(0)
             RequestedFieldsArray(0) = -1
         Case Else
-            RequestedFieldsArray() = GetLongFilters(tmpRequested, P_CSV_HEADER)
+            RequestedFieldsArray() = GetHeaderIndexes(tmpRequested, P_CSV_HEADER)
     End Select
     '@----------------------------------------------------------------------------
     'Set variables
@@ -3516,6 +3778,7 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
     'Get CSV stream and populate a temp array
     With CSVstream
         .ReadText
+        RaiseEvent AfterLoadStream
         StreamWithQuotes = InStrB(1, .bufferString, QuoteChar)
         StreamEnd = .atEndOfStream
     End With
@@ -3527,6 +3790,7 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
             .bufferSize = configObj.bufferSize
             .RestartPointer
             .ReadText
+            RaiseEvent AfterLoadStream
             StreamWithQuotes = InStrB(1, .bufferString, QuoteChar)
             StreamEnd = .atEndOfStream
         Loop
@@ -3969,6 +4233,7 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
         'Start saving on given record
         If IncludeRecord Then
             outputList.Add RecordToken.items
+            RaiseEvent AfterImportRecord
             RecordToken.Reinitialize P_VECTORS_REGULAR_BOUND + 1
         End If
         P_VARYING_LENGTHS = (P_VECTORS_REGULAR_BOUND <> (FieldID - 1))
@@ -4026,9 +4291,9 @@ StreamParseCSV_NoSignificantData:
                                     "the file has only empty or commented lines that can be omitted."
     Resume StreamParseCSV_Error_Handler
 End Sub
-Private Sub StreamSkipUnwantedLines(ByRef idx As Long, _
+Private Sub StreamSkipUnwantedLines(ByRef Idx As Long, _
                                     ByRef Ostream As CSVTextStream, _
-                                    ByRef Arr() As String, _
+                                    ByRef arr() As String, _
                                     ByRef MaxIdx As Long, _
                                     ByRef recDelimiter As String, _
                                     ByVal CommentToken As Long, _
@@ -4042,16 +4307,16 @@ Private Sub StreamSkipUnwantedLines(ByRef idx As Long, _
 start:
     '@----------------------------------------------------------------------------
     'Skip commented and blank lines if needed
-    If idx <= MaxIdx Then
+    If Idx <= MaxIdx Then
         Do
-            CurLength = LenB(Arr(idx))
+            CurLength = LenB(arr(Idx))
             UnwantedLine = False
             If CurLength = 0 Then  'Empty line found
                 If skipEmptyLines Then
                     UnwantedLine = True
                 End If
             Else
-                CharCode = AscW(Arr(idx))
+                CharCode = AscW(arr(Idx))
                 If CharCode = CommentToken Then 'Commented line found
                     If SkipComments Then
                         UnwantedLine = True
@@ -4060,13 +4325,14 @@ start:
             End If
 AdvanceLine:
             If UnwantedLine Then
-                idx = idx + 1&
-                If idx > MaxIdx Then
+                Idx = Idx + 1&
+                If Idx > MaxIdx Then
                     If Not Ostream.atEndOfStream Then
                         '@----------------------------------------------
                         'Advance stream
                         With Ostream
                             .ReadText
+                            RaiseEvent AfterLoadStream
                             QuotedStreamVariable = InStrB(1, .bufferString, QuoteChar)
                             If UseUnixEscapeSeq Then
                                 tmpCSV() = Split(UnixToStandardEscapeSeq(.bufferString, UnixEscapeSeq, _
@@ -4075,26 +4341,27 @@ AdvanceLine:
                                 tmpCSV() = Split(.bufferString, RecordDelimiter)
                             End If
                         End With
-                        Arr() = Split(Ostream.bufferString, recDelimiter)
-                        idx = 0
-                        MaxIdx = UBound(Arr)
-                        If Arr(MaxIdx) = vbNullString Then
+                        arr() = Split(Ostream.bufferString, recDelimiter)
+                        Idx = 0
+                        MaxIdx = UBound(arr)
+                        If arr(MaxIdx) = vbNullString Then
                             MaxIdx = MaxIdx - 1
                         End If
                     End If
                 End If
             End If
-        Loop While UnwantedLine And idx <= MaxIdx
+        Loop While UnwantedLine And Idx <= MaxIdx
     Else
         If Not Ostream.atEndOfStream Then
             '@----------------------------------------------
             'Advance stream
             Ostream.ReadText
+            RaiseEvent AfterLoadStream
             QuotedStreamVariable = InStrB(1, Ostream.bufferString, CHR_DOUBLE_QUOTES)
-            Arr() = Split(Ostream.bufferString, recDelimiter)
-            idx = 0
-            MaxIdx = UBound(Arr)
-            If Arr(MaxIdx) = vbNullString Then
+            arr() = Split(Ostream.bufferString, recDelimiter)
+            Idx = 0
+            MaxIdx = UBound(arr)
+            If arr(MaxIdx) = vbNullString Then
                 MaxIdx = MaxIdx - 1
             End If
             GoTo start
@@ -4184,4 +4451,3 @@ Private Function UnixToStandardEscapeSeq(ByRef UnixEscapedString As String, _
         UnixToStandardEscapeSeq = UnixEscapedString
     End If
 End Function
-

@@ -24,11 +24,7 @@ Option Explicit
 '#
 '////////////////////////////////////////////////////////////////////////////////////////////
 ' CONSTANTS:
-Private Const CHR_COLON As String = ":"
 Private Const CHR_COMMA As String = ","
-Private Const CHR_SEMICOLON As String = ";"
-Private Const CHR_PIPE As String = "|"
-Private Const CHR_SPACE As String = " "
 '////////////////////////////////////////////////////////////////////////////////////////////
 '#
 '////////////////////////////////////////////////////////////////////////////////////////////
@@ -69,8 +65,8 @@ End Property
 Public Property Get quoteToken() As QuoteTokens
     quoteToken = P_QUOTETOKEN
 End Property
-Public Property Let quoteToken(ByVal Token As QuoteTokens)
-    P_QUOTETOKEN = Token
+Public Property Let quoteToken(ByVal token As QuoteTokens)
+    P_QUOTETOKEN = token
 End Property
 ''' <summary>
 ''' Gets or sets the fields delimiter.

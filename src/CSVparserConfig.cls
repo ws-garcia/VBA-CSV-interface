@@ -26,7 +26,6 @@ Private Const CHR_COLON As String = ":"
 Private Const CHR_COMMA As String = ","
 Private Const CHR_SEMICOLON As String = ";"
 Private Const CHR_PIPE As String = "|"
-Private Const CHR_SPACE As String = " "
 '////////////////////////////////////////////////////////////////////////////////////////////
 '#
 '////////////////////////////////////////////////////////////////////////////////////////////
@@ -75,9 +74,9 @@ End Property
 Public Property Get commentsToken() As String
     commentsToken = ChrW(P_COMMENTSTOKEN)
 End Property
-Public Property Let commentsToken(Token As String)
+Public Property Let commentsToken(token As String)
     Dim ascWTkn As Long
-    ascWTkn = AscW(Token)
+    ascWTkn = AscW(token)
     Select Case ascWTkn
         Case Is = 33, 35, 36, 37, 38
             P_COMMENTSTOKEN = ascWTkn
