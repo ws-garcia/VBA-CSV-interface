@@ -128,7 +128,6 @@ End Property
 ''' Gets all indexed Items from the current instance.
 ''' </summary>
 Public Property Get IndexedItems() As Variant
-Attribute IndexedItems.VB_Description = "Gets the indexed items stored in the current instance"
     Dim tmpResult() As Variant
     Dim iCounter As Long
     
@@ -143,7 +142,6 @@ End Property
 ''' Gets all indexed Items from the current instance.
 ''' </summary>
 Public Property Get Keys() As String()
-Attribute Keys.VB_Description = "Gets all the keys stored with indexed items stored in the current instance"
     Dim tmpResult() As String
     Dim iCounter As Long
     
@@ -158,7 +156,6 @@ End Property
 ''' Gets the key at given position.
 ''' </summary>
 Public Property Get ItemKey(aIndex As Long) As String
-Attribute ItemKey.VB_Description = "Gets the key stored in the given index from current instance"
     ItemKey = IndexedBuffer(aIndex).ItemKey
 End Property
 
@@ -261,17 +258,14 @@ Public Property Let Indexing(aOption As Boolean)
 End Property
 
 Public Property Get Indexing() As Boolean
-Attribute Indexing.VB_Description = "Induces to store or not indexed items, using keys, in the current instance"
     Indexing = P_INDEXING
 End Property
 
 Public Property Get IsSorted() As Boolean
-Attribute IsSorted.VB_Description = "Gets the current instance sorting status"
     IsSorted = SORTED_DATA
 End Property
 
 Public Property Get LastSortedIndex() As Long
-Attribute LastSortedIndex.VB_Description = "Current instance's last index used in sorting"
     LastSortedIndex = LAST_SORTED_FIELD
 End Property
 '////////////////////////////////////////////////////////////////////////////////////////////
@@ -341,7 +335,6 @@ End Sub
 ''' <param name="UpdateExistingItems">Udates items stored with the previous key.</param>
 Public Sub AddIndexedItem(Key As String, iValue As Variant, _
                             Optional UpdateExistingItems As Boolean = True)
-Attribute AddIndexedItem.VB_Description = "Appends a copy of the specified value to the indexed list of the current instance."
     Dim tmpItem As IndexedItem
     Dim tmpIdx As Long
     
@@ -457,7 +450,6 @@ End Sub
 ''' <param name="ArraySize">Max row index (base 0).</param>
 ''' <param name="VectorSize">Max column index (base 0).</param>
 Public Sub CreateJagged(ByRef ArrVar() As Variant, ArraySize As Long, VectorSize As Long)
-Attribute CreateJagged.VB_Description = "Creates an array of arrays."
     Dim Vector() As String
     Dim arrPointer As Long
     
@@ -541,7 +533,6 @@ End Function
 ''' <param name="Exclude"> Exclude records matching "Pattern" if set to "True".</param>
 Public Function Filter(Pattern As String, startIndex As Long, _
                         Optional Exclude As Boolean = False) As CSVArrayList
-Attribute Filter.VB_Description = "Filters the current instance using the given pattern. Indexed list are not supported"
     Dim Evaluator As CSVexpressions
     Dim rCounter As Long
     Dim TargetFields() As Long
@@ -760,10 +751,10 @@ End Function
 
 ''' <summary>
 ''' Concatenates the values from the current instance with the specified values.
+''' CSV generated storage expected
 ''' </summary>
 ''' <param name="AValues">Containing an arraylist or value to concatenate.</param>
 Public Function Concat2(ByRef aValues As CSVArrayList) As CSVArrayList
-Attribute Concat2.VB_Description = "Concatenates the values from the current instance with the specified values."
     On Error GoTo Concat_ErrHandler
     Dim tmpValues As Variant
     Dim jc2 As Long
@@ -843,7 +834,6 @@ End Function
 ''' </summary>
 ''' <param name="Key">Item's key.</param>
 Public Function GetIndexedItem(Key As String) As Variant
-Attribute GetIndexedItem.VB_Description = "Returns an indexed item from the current instance given its key."
     If Key <> vbNullString Then
         Dim tIndex As Long
             
@@ -866,7 +856,6 @@ Public Function Group(Table As CSVArrayList, By As Variant, OperateOn As Variant
                         Optional Alias As String = vbNullString, _
                         Optional AggregateFunct As AggregateFunctions = AggregateFunctions.AF_Summary, _
                         Optional Headers As Boolean = True) As CSVArrayList
-Attribute Group.VB_Description = "Returns the result after perform a group over the given table. Indexed lists are not supported."
     On Error GoTo grop_errHandler
     Dim deltaPos As Long
     Dim gAvg As Double
@@ -1049,7 +1038,6 @@ End Sub
 ''' <param name="Index">The index into which the Item'll be inserted.</param>
 ''' <param name="aValue">The value to be inserted.</param>
 Public Sub Insert(Index As Long, AValue As Variant)
-Attribute Insert.VB_Description = "Inserts the given item at the given position."
     Dim iCounter As Long
         
     Select Case Index
@@ -1237,12 +1225,11 @@ End Function
 
 ''' <summary>
 ''' Checks if a given field, of the current instance, exists on a record.
-''' Returns -1 when the key can not be found.
+''' Returns False when the key can not be found.
 ''' </summary>
 ''' <param name="key">The value to be searched.</param>
 ''' <param name="tIndex">The field to search in (base 1).</param>
-Public Function ItemExist(ByRef Key As Variant, tIndex As Long) As Long
-Attribute ItemExist.VB_Description = "Determines if the given item is stored in the current instance."
+Public Function ItemExist(ByRef Key As Variant, tIndex As Long) As Boolean
     ItemExist = (ItemIndex(Key, tIndex) > -1)
 End Function
 
@@ -1255,7 +1242,6 @@ End Function
 ''' <param name="StartRecord">The record to start the search in (base 1).</param>
 Public Function ItemIndex(ByRef Key As Variant, tIndex As Long, _
                         Optional StartRecord As Long = 1) As Long
-Attribute ItemIndex.VB_Description = "Returns the given item's index if stored in the current instance."
     If CurrentIndex > -1 Then
         ItemIndex = BinarySearch(Key, tIndex, StartRecord)
     Else
@@ -1264,7 +1250,6 @@ Attribute ItemIndex.VB_Description = "Returns the given item's index if stored i
 End Function
 
 Public Function SplitFieldsOrderStr(fieldsString As String) As String()
-Attribute SplitFieldsOrderStr.VB_Description = "Helper method to retrieve fields orders given as string."
     Dim rfICounter As Long
     Dim tmpFields() As String
     Dim tmpPreResult() As String
@@ -1481,12 +1466,11 @@ End Function
 ''' All indexes must be given IN BASE 1.
 Public Function LeftJoin(ByRef leftTable As CSVArrayList, _
                             ByRef rightTable As CSVArrayList, _
-                            columns As String, _
+                            Columns As String, _
                             matchKeys As String, _
                             Optional predicate As String = vbNullString, _
                             Optional Headers As Boolean = True) As CSVArrayList
-
-Attribute LeftJoin.VB_Description = "Performs a like SQL left join over given tables."                            
+                             
     Dim cColumns() As String
     Dim cKeys() As String
     Dim cKLBidx As Long
@@ -1515,7 +1499,7 @@ Attribute LeftJoin.VB_Description = "Performs a like SQL left join over given ta
     If leftTable.Indexing Or rightTable.Indexing Then Exit Function 'Not available for indexed lists
     Set LeftJoin = New CSVArrayList
     Set MatchesForCurrentKey = New CSVArrayList
-    cColumns() = Split(Join$(Split(columns, " "), vbNullString), d_semicolon)
+    cColumns() = Split(Join$(Split(Columns, " "), vbNullString), d_semicolon)
     lftTableReqFlds() = formatColumnPredicate( _
                                                 MidB$(cColumns(LBound(cColumns)), _
                                             3, LenB(cColumns(LBound(cColumns))) - 4), _
@@ -1642,11 +1626,10 @@ End Function
 ''' All indexes must be given IN BASE 1.
 Public Function RightJoin(ByRef leftTable As CSVArrayList, _
                             ByRef rightTable As CSVArrayList, _
-                            columns As String, _
+                            Columns As String, _
                             matchKeys As String, _
                             Optional predicate As String = vbNullString, _
                             Optional Headers As Boolean = True) As CSVArrayList
-Attribute RightJoin.VB_Description = "Performs a like SQL right join over given tables."     
     On Error GoTo join_errHandler
     Dim cColumns() As String
     Dim cKeys() As String
@@ -1675,7 +1658,7 @@ Attribute RightJoin.VB_Description = "Performs a like SQL right join over given 
     If leftTable.Indexing Or rightTable.Indexing Then Exit Function 'Not available for indexed lists
     Set RightJoin = New CSVArrayList
     Set MatchesForCurrentKey = New CSVArrayList
-    cColumns() = Split(Join$(Split(columns, " "), vbNullString), d_semicolon)
+    cColumns() = Split(Join$(Split(Columns, " "), vbNullString), d_semicolon)
     lftTableReqFlds() = formatColumnPredicate( _
                                                 MidB$(cColumns(LBound(cColumns)), _
                                             3, LenB(cColumns(LBound(cColumns))) - 4), _
@@ -1802,11 +1785,11 @@ End Function
 ''' All indexes must be given IN BASE 1.
 Public Function InnerJoin(ByRef leftTable As CSVArrayList, _
                             ByRef rightTable As CSVArrayList, _
-                            columns As String, _
+                            Columns As String, _
                             matchKeys As String, _
                             Optional predicate As String = vbNullString, _
                             Optional Headers As Boolean = True) As CSVArrayList
-Attribute InnerJoin.VB_Description = "Performs a like SQL inner join join over given tables."   
+                             
     Dim cColumns() As String
     Dim cKeys() As String
     Dim cKLBidx As Long
@@ -1834,7 +1817,7 @@ Attribute InnerJoin.VB_Description = "Performs a like SQL inner join join over g
     If leftTable.Indexing Or rightTable.Indexing Then Exit Function 'Not available for indexed lists
     Set InnerJoin = New CSVArrayList
     Set MatchesForCurrentKey = New CSVArrayList
-    cColumns() = Split(Join$(Split(columns, " "), vbNullString), d_semicolon)
+    cColumns() = Split(Join$(Split(Columns, " "), vbNullString), d_semicolon)
     lftTableReqFlds() = formatColumnPredicate( _
                                                 MidB$(cColumns(LBound(cColumns)), _
                                             3, LenB(cColumns(LBound(cColumns))) - 4), _
@@ -2591,7 +2574,6 @@ End Sub
 ''' <param name="ReductionExpression">The expression to eval and get reduction.</param>
 ''' <param name="StartIndex">The index to start filter records (base 1).</param>
 Public Function Reduce(ReductionExpression As String, startIndex As Long, endIndex As Long) As Variant()
-Attribute Reduce.VB_Description = "Reduces the specified range of records in the current instance by evaluate the reduction expression."
     Dim Evaluator As CSVexpressions
     Dim rCounter As Long
     Dim TargetFields() As Long
@@ -2623,7 +2605,6 @@ End Function
 ''' Reinitializes the current instance of the class and reserves user desired storage space.
 ''' </summary>
 Public Sub Reinitialize(bufferSize As Long)
-Attribute Reinitialize.VB_Description = "Reinitializes the current instance."
     Select Case bufferSize
         Case Is >= 0
             If Not P_INDEXING Then
@@ -2654,7 +2635,7 @@ End Sub
 ''' </summary>
 ''' <param name="Key">Item's key.</param>
 Public Sub RemoveIndexedItem(Key As String)
-Attribute RemoveIndexedItem.VB_Description = "Removes an indexed item at specified Index."
+Attribute RemoveIndexedItem.VB_Description = "Removes a range of Items starting at specified Index."
     Dim Index As Long
     Dim iCounter As Long
     Dim pointer As Long
@@ -2679,7 +2660,6 @@ End Sub
 ''' <param name="Index">The index of the first item to be deleted.</param>
 ''' <param name="Count">The number of item to be deleted.</param>
 Public Sub RemoveRange(Index As Long, count As Long)
-Attribute RemoveRange.VB_Description = "Removes a range of Items starting at specified Index."
     Dim iCounter As Long
     Dim pointer As Long
     Dim endIndex As Long
@@ -2731,7 +2711,7 @@ End Sub
 ''' <param name="EndIndex">The number of item to be reversed.</param>
 Public Function Reverse(Optional startIndex As Long = -1, _
                         Optional endIndex As Long = -1) As Boolean
-Attribute Reverse.VB_Description = "Reverses the order of the internal items."
+Attribute Reverse.VB_Description = "Reverse the order of the internal items."
     Dim i As Long
     
     On Error GoTo Reverse_ErrHandler
@@ -2765,7 +2745,7 @@ End Function
 Public Function Reverse2(ByRef TargetArr() As Variant, _
                             Optional startIndex As Long = -1, _
                             Optional endIndex As Long = -1) As Boolean
-Attribute Reverse2.VB_Description = "Reverses the order of items in the target array."
+Attribute Reverse2.VB_Description = "Reverse the order of items in the target array."
     Dim i As Long
     
     On Error GoTo Reverse_ErrHandler
@@ -2791,7 +2771,6 @@ End Function
 ''' </summary>
 ''' <param name="TargetKey">The key to be searched.</param>
 Public Function KeyExist(ByRef TargetKey As String) As Long
-Attribute KeyExist.VB_Description = "Determines if the given key is already in use by an indexed item."
     KeyExist = (KeyIndex(TargetKey) > -1)
 End Function
 ''' <summary>
@@ -2801,7 +2780,6 @@ End Function
 ''' </summary>
 ''' <param name="TargetKey">The key to be searched.</param>
 Public Function KeyIndex(ByRef TargetKey As String) As Long
-Attribute KeyIndex.VB_Description = "Returns the index of target key."
     If IndexedCurrentIndex = -1 Then 'No items found
         KeyIndex = -1
     Else
@@ -2875,7 +2853,6 @@ Public Function Sort(Optional ByVal fromIndex As Long = -1, _
                 Optional ByVal toIndex As Long = -1, _
                 Optional ByVal sortingKeys As Variant = 1, _
                 Optional ByVal sortAlgorithm As SortingAlgorithms = SortingAlgorithms.SA_Quicksort) As CSVArrayList
-Attribute Sort.VB_Description = "Sorts the current instance's records."
     On Error GoTo Sort_Error_Handler:
     Dim tmpIndex As Long
     
@@ -2960,7 +2937,7 @@ End Function
 ''' <param name="toIndex">The index of the last item to be sorted.</param>
 Public Sub SortKeys(Optional ByVal fromIndex As Long = -1, _
                 Optional ByVal toIndex As Long = -1)
-Attribute SortKeys.VB_Description = "Sorts records in the current instance, if indexed, using stored keys."
+                
     On Error GoTo Sort_Error_Handler:
     If IndexedMaxIndex + 1 > 0 Then
         If fromIndex = -1 Then
@@ -3132,7 +3109,6 @@ End Sub
 ''' </summary>
 Public Sub Swap(position1 As Long, position2 As Long, _
                 Optional Indexed As Boolean = False)
-Attribute Swap.VB_Description = "Swaps two items in current instance."
     If Not Indexed Then
         If CurrentIndex >= 0 Then
             tmpBuffer = Buffer(position1)
