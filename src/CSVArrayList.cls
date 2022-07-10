@@ -369,29 +369,36 @@ End Sub
 ''' <param name="Target">The value to be searched.</param>
 ''' <param name="fldIndex">The field to search in (base 1).</param>
 ''' <param name="StartRecord">The record to start the search in (base 1).</param>
+''' <param name="ReverseSearch">Backward matching. The search will end on the starting index</param>
 Private Function BinarySearch(ByRef Target As Variant, fldIndex As Long, _
-                                StartRecord As Long) As Long
+                                StartRecord As Long, _
+                                Optional ReverseSearch As Boolean = False) As Long
 
     If Not SORTED_DATA Or LAST_SORTED_FIELD <> Abs(fldIndex) Then
         Dim ThisClone As CSVArrayList
         
         Set ThisClone = Clone
         ThisClone.Sort sortingKeys:=Abs(fldIndex)
-        BinarySearch = ThisClone.ItemIndex(Target, fldIndex)
+        BinarySearch = ThisClone.ItemIndex(Target, fldIndex, ReverseSearch:=ReverseSearch)
         Set ThisClone = Nothing
     Else
         Dim tmpR As Boolean
-        Dim BottomIdx As Long
-        Dim TopIdx As Long
-        Dim MiddleIdx As Long
+        Dim BottomIdx As Double
+        Dim TopIdx As Double
+        Dim MiddleIdx As Double
         Dim Idx As Long
         
         Idx = Abs(fldIndex) - 1
         If StartRecord - 1 <= CurrentIndex Then
-            BottomIdx = StartRecord - 1
-            TopIdx = CurrentIndex
+            If Not ReverseSearch Then
+                BottomIdx = StartRecord - 1
+                TopIdx = CurrentIndex
+            Else
+                BottomIdx = 0
+                TopIdx = StartRecord - 1
+            End If
             Do
-                MiddleIdx = Floor((BottomIdx + TopIdx) / 2)
+                MiddleIdx = BottomIdx + Ceiling((TopIdx - BottomIdx) / 2)
                 tmpR = (Target = Buffer(MiddleIdx)(Idx))
                 If Target > Buffer(MiddleIdx)(Idx) Then
                     BottomIdx = MiddleIdx + 1
@@ -603,6 +610,13 @@ Private Function Floor(value As Double) As Long
     
     tmpResult = Fix(value)
     Floor = tmpResult + ((value <> tmpResult) And (value < 0))
+End Function
+
+Private Function Ceiling(ByRef value As Double) As Double
+    Dim tmpResult As Double
+    
+    tmpResult = Fix(value)
+    Ceiling = tmpResult - ((value <> tmpResult) And (value > 0))
 End Function
 
 ''' <summary>
@@ -1240,10 +1254,12 @@ End Function
 ''' <param name="key">The value to be searched.</param>
 ''' <param name="tIndex">The field to search in (base 1).</param>
 ''' <param name="StartRecord">The record to start the search in (base 1).</param>
+''' <param name="ReverseSearch">Backward matching. The search will end on the starting index</param>
 Public Function ItemIndex(ByRef Key As Variant, tIndex As Long, _
-                        Optional StartRecord As Long = 1) As Long
+                        Optional StartRecord As Long = 1, _
+                        Optional ReverseSearch As Boolean = False) As Long
     If CurrentIndex > -1 Then
-        ItemIndex = BinarySearch(Key, tIndex, StartRecord)
+        ItemIndex = BinarySearch(Key, tIndex, StartRecord, ReverseSearch)
     Else
         ItemIndex = -1
     End If
@@ -1494,6 +1510,7 @@ Public Function LeftJoin(ByRef leftTable As CSVArrayList, _
     Dim rgtTableReqFlds() As Long
     Dim rightIdxDelta As Long
     Dim sCounter As Long
+    Dim tmpIndex As Long
     
     On Error GoTo join_errHandler
     If leftTable.Indexing Or rightTable.Indexing Then Exit Function 'Not available for indexed lists
@@ -1543,15 +1560,23 @@ Public Function LeftJoin(ByRef leftTable As CSVArrayList, _
             MatchesForCurrentKey.Clear
             MatchCounter = 0
             lJoinIndex = -1
-            Do
-                lJoinIndex = refTable.ItemIndex(leftTable(rCounter)(CLng(cKeys(cKLBidx)) + leftIdxDelta - 1), _
+            'Find a key occurrence
+            tmpIndex = refTable.ItemIndex(leftTable(rCounter)(CLng(cKeys(cKLBidx)) + leftIdxDelta - 1), _
                                             CLng(cKeys(cKLBidx + 1)) + rightIdxDelta, lJoinIndex + 2)
-                If lJoinIndex > -1 Then
-                    MatchesForCurrentKey.Add lJoinIndex
-                Else
-                    Exit Do
-                End If
+            'Find the first occurrence of the key
+            Do While tmpIndex > -1
+                lJoinIndex = tmpIndex
+                tmpIndex = refTable.ItemIndex(leftTable(rCounter)(CLng(cKeys(cKLBidx)) + leftIdxDelta - 1), _
+                                            CLng(cKeys(cKLBidx + 1)) + rightIdxDelta, tmpIndex, True)
             Loop
+            If lJoinIndex > -1 Then
+                'Save all occurrences
+                Do
+                    MatchesForCurrentKey.Add lJoinIndex
+                    lJoinIndex = lJoinIndex + 1
+                Loop While leftTable(rCounter)(CLng(cKeys(cKLBidx)) + leftIdxDelta - 1) _
+                            = refTable(lJoinIndex)(CLng(cKeys(cKLBidx + 1)) + rightIdxDelta - 1)
+            End If
             MatchesCount = MatchesForCurrentKey.count
             If MatchesCount = 0 Then
                 MatchesForCurrentKey.Add -1
@@ -1654,6 +1679,7 @@ Public Function RightJoin(ByRef leftTable As CSVArrayList, _
     Dim rgtTableReqFlds() As Long
     Dim rightIdxDelta As Long
     Dim sCounter As Long
+    Dim tmpIndex As Long
     
     If leftTable.Indexing Or rightTable.Indexing Then Exit Function 'Not available for indexed lists
     Set RightJoin = New CSVArrayList
@@ -1702,15 +1728,23 @@ Public Function RightJoin(ByRef leftTable As CSVArrayList, _
             MatchesForCurrentKey.Clear
             MatchCounter = 0
             lJoinIndex = -1
-            Do
-                lJoinIndex = refTable.ItemIndex(rightTable(rCounter)(CLng(cKeys(cKLBidx + 1)) + rightIdxDelta - 1), _
+            'Find a key occurrence
+            tmpIndex = refTable.ItemIndex(rightTable(rCounter)(CLng(cKeys(cKLBidx + 1)) + rightIdxDelta - 1), _
                                             CLng(cKeys(cKLBidx)) + leftIdxDelta, lJoinIndex + 2)
-                If lJoinIndex > -1 Then
-                    MatchesForCurrentKey.Add lJoinIndex
-                Else
-                    Exit Do
-                End If
+            'Find the first occurrence of the key
+            Do While tmpIndex > -1
+                lJoinIndex = tmpIndex
+                tmpIndex = refTable.ItemIndex(rightTable(rCounter)(CLng(cKeys(cKLBidx + 1)) + rightIdxDelta - 1), _
+                                            CLng(cKeys(cKLBidx)) + leftIdxDelta, tmpIndex, True)
             Loop
+            If lJoinIndex > -1 Then
+                'Save all occurrences
+                Do
+                    MatchesForCurrentKey.Add lJoinIndex
+                    lJoinIndex = lJoinIndex + 1
+                Loop While rightTable(rCounter)(CLng(cKeys(cKLBidx)) + rightIdxDelta - 1) _
+                            = refTable(lJoinIndex)(CLng(cKeys(cKLBidx + 1)) + leftIdxDelta - 1)
+            End If
             MatchesCount = MatchesForCurrentKey.count
             If MatchesCount = 0 Then
                 MatchesForCurrentKey.Add -1
@@ -1813,6 +1847,7 @@ Public Function InnerJoin(ByRef leftTable As CSVArrayList, _
     Dim rgtTableReqFlds() As Long
     Dim rightIdxDelta As Long
     Dim sCounter As Long
+    Dim tmpIndex As Long
     
     If leftTable.Indexing Or rightTable.Indexing Then Exit Function 'Not available for indexed lists
     Set InnerJoin = New CSVArrayList
@@ -1861,15 +1896,23 @@ Public Function InnerJoin(ByRef leftTable As CSVArrayList, _
             MatchesForCurrentKey.Clear
             MatchCounter = 0
             lJoinIndex = -1
-            Do
-                lJoinIndex = refTable.ItemIndex(leftTable(rCounter)(CLng(cKeys(cKLBidx)) + leftIdxDelta - 1), _
+            'Find a key occurrence
+            tmpIndex = refTable.ItemIndex(leftTable(rCounter)(CLng(cKeys(cKLBidx)) + leftIdxDelta - 1), _
                                             CLng(cKeys(cKLBidx + 1)) + rightIdxDelta, lJoinIndex + 2)
-                If lJoinIndex > -1 Then
-                    MatchesForCurrentKey.Add lJoinIndex
-                Else
-                    Exit Do
-                End If
+            'Find the first occurrence of the key
+            Do While tmpIndex > -1
+                lJoinIndex = tmpIndex
+                tmpIndex = refTable.ItemIndex(leftTable(rCounter)(CLng(cKeys(cKLBidx)) + leftIdxDelta - 1), _
+                                            CLng(cKeys(cKLBidx + 1)) + rightIdxDelta, tmpIndex, True)
             Loop
+            If lJoinIndex > -1 Then
+                'Save all occurrences
+                Do
+                    MatchesForCurrentKey.Add lJoinIndex
+                    lJoinIndex = lJoinIndex + 1
+                Loop While leftTable(rCounter)(CLng(cKeys(cKLBidx)) + leftIdxDelta - 1) _
+                            = refTable(lJoinIndex)(CLng(cKeys(cKLBidx + 1)) + rightIdxDelta - 1)
+            End If
             MatchesCount = MatchesForCurrentKey.count
             If MatchesCount = 0 Then
                 MatchesForCurrentKey.Add -1
@@ -2794,7 +2837,7 @@ Public Function KeyIndex(ByRef TargetKey As String) As Long
         BottomIdx = 0
         TopIdx = IndexedCurrentIndex
         Do
-            MiddleIdx = Floor((BottomIdx + TopIdx) / 2)
+            MiddleIdx = BottomIdx + ((TopIdx - BottomIdx) / 2)
             tmpR = (TargetKey = IndexedBuffer(MiddleIdx).ItemKey)
             If TargetKey > IndexedBuffer(MiddleIdx).ItemKey Then
                 BottomIdx = MiddleIdx + 1
