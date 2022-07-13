@@ -233,15 +233,19 @@ Public Property Let items(AValue As Variant)
                 Next Dim2Pointer
                 Add tmpRow
             Next Dim1Pointer
-        Else 'Jagged or 1D array expected
-            If IsJaggedArray(AValue) Then
+        Else
+            If IsJaggedArray(AValue) Then 'Jagged array
                 For Dim1Pointer = LBound(AValue) To UBound(AValue)
                     Add AValue(Dim1Pointer)
                 Next Dim1Pointer
             Else
-                For Dim1Pointer = LBound(AValue) To UBound(AValue)
-                    Add2 AValue(Dim1Pointer) '1D array
-                Next Dim1Pointer
+                If IsArray(AValue) Then
+                    For Dim1Pointer = LBound(AValue) To UBound(AValue)
+                        Add2 AValue(Dim1Pointer) '1D array
+                    Next Dim1Pointer
+                Else 'Value
+                    Add2 AValue
+                End If
             End If
         End If
     Else
@@ -938,12 +942,12 @@ Public Function Group(Table As CSVArrayList, By As Variant, OperateOn As Variant
     'Sort the data if needed
     If Table.IsSorted Then
         If LAST_SORTED_FIELD <> GroupFIdx Then 'Sorting required
-            tmpData = Table.Clone.Sort(fromIndex:=1 + Abs(Headers), sortingKeys:=GroupFIdx + deltaPos).items
+            tmpData = Table.Copy.Sort(fromIndex:=1 + Abs(Headers), sortingKeys:=GroupFIdx + deltaPos).items
         Else
-            tmpData = Table.Clone.items
+            tmpData = Table.Copy.items
         End If
     Else
-        tmpData = Table.Clone.Sort(fromIndex:=1 + Abs(Headers), sortingKeys:=GroupFIdx + deltaPos).items
+        tmpData = Table.Copy.Sort(fromIndex:=1 + Abs(Headers), sortingKeys:=GroupFIdx + deltaPos).items
     End If
     'Compute agregates
     If Headers Then
@@ -1540,7 +1544,7 @@ Public Function LeftJoin(ByRef leftTable As CSVArrayList, _
     rightIdxDelta = LBound(rightTable(0))
     FillReqFlds fullReqFields, lftTableReqFlds, leftIdxDelta, leftIdxDelta
     FillReqFlds fullReqFields, rgtTableReqFlds, LftTblENDidx + 1, leftIdxDelta
-    Set refTable = rightTable.Clone
+    Set refTable = rightTable.Copy
     refTable.Sort 1 + Abs(Headers), sortingKeys:=CLng(cKeys(UBound(cKeys))) + rightIdxDelta  'Sort the right table
     Set exprHelper = New CSVexpressions
     With exprHelper
@@ -1708,7 +1712,7 @@ Public Function RightJoin(ByRef leftTable As CSVArrayList, _
     rightIdxDelta = LBound(rightTable(0))
     FillReqFlds fullReqFields, lftTableReqFlds, leftIdxDelta, leftIdxDelta
     FillReqFlds fullReqFields, rgtTableReqFlds, LftTblENDidx + 1, leftIdxDelta
-    Set refTable = leftTable.Clone
+    Set refTable = leftTable.Copy
     refTable.Sort 1 + Abs(Headers), sortingKeys:=CLng(cKeys(LBound(cKeys))) + leftIdxDelta  'Sort the left table
     Set exprHelper = New CSVexpressions
     With exprHelper
@@ -1876,7 +1880,7 @@ Public Function InnerJoin(ByRef leftTable As CSVArrayList, _
     rightIdxDelta = LBound(rightTable(0))
     FillReqFlds fullReqFields, lftTableReqFlds, leftIdxDelta, leftIdxDelta
     FillReqFlds fullReqFields, rgtTableReqFlds, LftTblENDidx + 1, leftIdxDelta
-    Set refTable = rightTable.Clone
+    Set refTable = rightTable.Copy
     refTable.Sort 1 + Abs(Headers), sortingKeys:=CLng(cKeys(UBound(cKeys))) + rightIdxDelta  'Sort the right table
     Set exprHelper = New CSVexpressions
     With exprHelper
