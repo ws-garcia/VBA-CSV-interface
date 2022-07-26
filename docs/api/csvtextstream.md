@@ -5,10 +5,7 @@ nav_order: 8
 ---
 
 # CSVTextStream
-{: .d-inline-block }
-
-New
-{: .label .label-purple }
+{: .fs-6 }
 
 Easy-to-use class module developed to enable I/O operations over "big" text files, at high speed, from VBA. The module hasn’t reference to any external API library and has the ability to read and write UTF-8 encoded files.
 {: .fs-4 .fw-300 }

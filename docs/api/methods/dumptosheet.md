@@ -15,7 +15,7 @@ Dumps data from a source, or from the current instance, to an Excel WorkSheet.
 
 ## Syntax
 
-*expression*.`DumpToSheet`*(\[WBookName\], \[SheetName\], \[RngName:= "A1"\], \[DataSource:= `Nothing`\])*
+*expression*.`DumpToSheet`*(\[WBookName\], \[SheetName\], \[RngName:= "A1"\], \[DataSource:= `Nothing`\], \[BlockAutoFormat:= `True`\])*
 
 ### Parameters
 
@@ -43,6 +43,10 @@ Dumps data from a source, or from the current instance, to an Excel WorkSheet.
 <td style="text-align: left;"><em>DataSource</em></td>
 <td style="text-align: left;">Optional. Identifier specifying a <code>CSVArrayList</code> object variable representing the data to copy from.</td>
 </tr>
+<tr>
+<td style="text-align: left;"><em>BlockAutoFormat</em></td>
+<td style="text-align: left;">Optional. Identifier specifying a <code>Boolean</code> Type variable.</td>
+</tr>
 </tbody>
 </table>
 
@@ -62,7 +66,7 @@ See also
 
 ## Behavior
 
-When the *WBookName* parameter is omitted the data is dumped into the Workbook that holds the CSV interface's *VBAProject*. Omitting the *SheetName* parameter adds a new Worksheet to the desired Workbook. Also, if the *RngName* parameter is omitted the data will dumped starting on the "A1" named cell in the desired Worksheet.
+When the *WBookName* parameter is omitted the data is dumped into the Workbook that holds the CSV interface's *VBAProject*. Omitting the *SheetName* parameter adds a new Worksheet to the desired Workbook. Also, if the *RngName* parameter is omitted the data will dumped starting on the "A1" named cell in the desired Worksheet. Use the *BlockAutoFormat* parameter if you believe that the target CSV data may induce some sort of [injection to your machine](http://georgemauer.net/2017/10/07/csv-injection.html).
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }

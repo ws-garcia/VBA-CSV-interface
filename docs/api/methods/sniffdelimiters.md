@@ -6,10 +6,7 @@ nav_order: 26
 ---
 
 # SniffDelimiters
-{: .d-inline-block }
-
-New
-{: .label .label-purple }
+{: .fs-6 }
 
 Returns a CSV dialect after run an analysis over a String variable or in the CSV/TSV file indicated in the `.path` property of the configuration object.
 {: .fs-4 .fw-300 }

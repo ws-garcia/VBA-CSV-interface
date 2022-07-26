@@ -5,12 +5,9 @@ nav_order: 5
 ---
 
 # CSVArrayList
-{: .d-inline-block }
+{: .fs-6 }
 
-New
-{: .label .label-purple }
-
-Class module developed to emulate some functionalities from the `ArrayList` present in some most modern languages. The `CSVArrayList` serve as a container for all the data read from CSV files and can be used to manipulate the stored items, or to store data that does not come from a CSV file, according to the user's request.
+Class module developed to emulate some functionalities from the `ArrayList` present in some most modern languages. The `CSVArrayList` serves as a container for all the data read from CSV files and can be used to manipulate the stored items, or to store data that does not come from a CSV file, according to the user's request.
 {: .fs-4 .fw-300 }
 
 ---
@@ -35,6 +32,11 @@ Class module developed to emulate some functionalities from the `ArrayList` pres
 <td style="text-align: left; color:blue;"><em>Add2</em></td>
 <td style="text-align: left;">Method</td>
 <td style="text-align: left;">Appends a copy of the specified values to the current instance. In contrast to the <code>Add</code> method, the data is operated on before being stored, so if the values to be appended to the current instance are not one-dimensional arrays, they will be properly stored as one-dimensional array. In this way, the user will be able to use the data sorting methods provided by the class as long as no multi-dimensional arrays are stored in the current instance.</td>
+</tr>
+<tr>
+<td style="text-align: left; color:blue;"><em>AddIndexedItem</em></td>
+<td style="text-align: left;">Method</td>
+<td style="text-align: left;">Appends a copy of the specified values to the current instance using a string-type key. This allows access to the elements by providing an index or a key. If the key exist, the item will be modified only if the <code>UpdateExistingItems</code> parameter is ser to <code>True</code>.</td>
 </tr>
 <tr>
 <td style="text-align: left; color:blue;"><em>Clear</em></td>
@@ -82,6 +84,31 @@ Class module developed to emulate some functionalities from the `ArrayList` pres
 <td style="text-align: left;">Returns a filtered array list using the <code>CSVexpressions</code> class module.</td>
 </tr>
 <tr>
+<td style="text-align: left; color:blue;"><em>GetIndexedItem</em></td>
+<td style="text-align: left;">Method</td>
+<td style="text-align: left;">Gets an indexed Item, by its key, from the current instance.</td>
+</tr>
+<tr>
+<td style="text-align: left; color:blue;"><em>Group</em></td>
+<td style="text-align: left;">Method</td>
+<td style="text-align: left;">Groups rows having the same values into a summary.</td>
+</tr>
+<tr>
+<td style="text-align: left; color:blue;"><em>IndexedItems</em></td>
+<td style="text-align: left;">Property</td>
+<td style="text-align: left;">Gets all indexed Items from the current instance.</td>
+</tr>
+<tr>
+<td style="text-align: left; color:blue;"><em>Indexing</em></td>
+<td style="text-align: left;">Property</td>
+<td style="text-align: left;">Indicates whether the current instance is used to store indexed elements.</td>
+</tr>
+<tr>
+<td style="text-align: left; color:blue;"><em>Inner, Left and Right Join</em></td>
+<td style="text-align: left;">Method</td>
+<td style="text-align: left;">Run a like SQL join on the provided data tables.<br>1) Use a string such as <code>{1-2,5,ID};{1-6}</code> as a predicate of the columns to indicate the join of columns 1 to 2, 5 and ID of leftTable with the columns 1 to 6 of rightTable.<br>2) Use a string such as <code>{*};{1-3}</code> to indicate the union of ALL columns of leftTable with columns 1 to 3 of rightTable.<br>3) The predicate must use the dot syntax <code>[t1.#][t1.fieldName]</code> to indicate the fields of the table, where t1 refers to the leftTable.<br>4) The matchKeys predicate must be given as <code>#/$;#/$</code></td>
+</tr>
+<tr>
 <td style="text-align: left; color:blue;"><em>Insert</em></td>
 <td style="text-align: left;">Method</td>
 <td style="text-align: left;">Inserts an Item, at the given Index, in the current instance of the class.</td>
@@ -97,6 +124,21 @@ Class module developed to emulate some functionalities from the `ArrayList` pres
 <td style="text-align: left;">Gets or sets an Item, by its index, from the current instance. This is the default property, so the user can use abbreviated expressions such as <code>expression(i)</code> to access the Item <code>i</code>, where <code>expression</code> represents a <code>CSVArrayList</code> object.</td>
 </tr>
 <tr>
+<td style="text-align: left; color:blue;"><em>ItemExist</em></td>
+<td style="text-align: left;">Method</td>
+<td style="text-align: left;">Checks if a given field exists in a record of the current instance. Returns <code>False</code> when the key can not be found.</td>
+</tr>
+<tr>
+<td style="text-align: left; color:blue;"><em>ItemIndex</em></td>
+<td style="text-align: left;">Method</td>
+<td style="text-align: left;">Performs a search, on a given field, and retrieves the index of the target record. USE ONLY WITH SORTED DATA.</td>
+</tr>
+<tr>
+<td style="text-align: left; color:blue;"><em>ItemKey</em></td>
+<td style="text-align: left;">Method</td>
+<td style="text-align: left;">Gets the key at given position.</td>
+</tr>
+<tr>
 <td style="text-align: left; color:blue;"><em>items</em></td>
 <td style="text-align: left;">Property</td>
 <td style="text-align: left;">Gets or sets the collection of elements from or to the current instance. To set the elements, the <code>AValue</code> parameter must be an array.</td>
@@ -107,9 +149,29 @@ Class module developed to emulate some functionalities from the `ArrayList` pres
 <td style="text-align: left;">Turns a jagged array into a two dim array. The method will successively deconstruct and delete the jagged array, passing its contents to the specified two-dimensional array.</td>
 </tr>
 <tr>
+<td style="text-align: left; color:blue;"><em>KeyExist</em></td>
+<td style="text-align: left;">Method</td>
+<td style="text-align: left;">Searches for a key in the internal indexed records and returns <code>True</code> when found.</td>
+</tr>
+<tr>
+<td style="text-align: left; color:blue;"><em>KeyIndex</em></td>
+<td style="text-align: left;">Method</td>
+<td style="text-align: left;">Searches for an element in the internal indexed records, using a key, in the current instance (ONLY when the data is already sorted in ascending order). Returns the index of the element when found and -1 when the key is not found.</td>
+</tr>
+<tr>
+<td style="text-align: left; color:blue;"><em>Keys</em></td>
+<td style="text-align: left;">Property</td>
+<td style="text-align: left;">Gets all indexed Items from the current instance.</td>
+</tr>
+<tr>
 <td style="text-align: left; color:blue;"><em>MultiDimensional</em></td>
 <td style="text-align: left;">Method</td>
 <td style="text-align: left;">Checks if an array has more than one dimension and returns <code>True</code> or <code>False</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left; color:blue;"><em>Reduce</em></td>
+<td style="text-align: left;">Method</td>
+<td style="text-align: left;">Reduces the internal array list to the result by evaluate the <code>ReductionExpression</code> parameter over all items.</td>
 </tr>
 <tr>
 <td style="text-align: left; color:blue;"><em>Reinitialize</em></td>
@@ -120,6 +182,11 @@ Class module developed to emulate some functionalities from the `ArrayList` pres
 <td style="text-align: left; color:blue;"><em>RemoveAt</em></td>
 <td style="text-align: left;">Method</td>
 <td style="text-align: left;">Removes the Item at specified Index.</td>
+</tr>
+<tr>
+<td style="text-align: left; color:blue;"><em>RemoveIndexedItem</em></td>
+<td style="text-align: left;">Method</td>
+<td style="text-align: left;">Removes an indexed Item using the specified key.</td>
 </tr>
 <tr>
 <td style="text-align: left; color:blue;"><em>RemoveRange</em></td>

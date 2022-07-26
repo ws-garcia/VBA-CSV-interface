@@ -6,10 +6,7 @@ nav_order: 17
 ---
 
 # InsertRecord
-{: .d-inline-block }
-
-New
-{: .label .label-purple }
+{: .fs-6 }
 
 Inserts a new record, at the specified position, in the imported CSV data.
 {: .fs-4 .fw-300 }

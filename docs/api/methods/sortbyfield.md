@@ -15,7 +15,7 @@ Sorts the imported CSV/TSV data.
 
 ## Syntax
 
-*expression*.`SortByField`*(\[fromIndex:= -1\], \[toIndex:= -1\], \[SortingKey:= 1\], \[SortAlgorithm:= SortingAlgorithms.SA_IntroSort\])*
+*expression*.`SortByField`*(\[fromIndex:= -1\], \[toIndex:= -1\], \[SortingKey:= 1\], \[SortAlgorithm:= SortingAlgorithms.SA_Quicksort\])*
 
 ### Parameters
 

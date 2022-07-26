@@ -15,7 +15,7 @@ Sorts the imported CSV/TSV data.
 
 ## Syntax
 
-*expression*.`Sort`*(\[fromIndex:= -1\], \[toIndex:= -1\], \[SortingKeys:= 1\], \[SortAlgorithm:= SortingAlgorithms.SA_IntroSort\])*
+*expression*.`Sort`*(\[fromIndex:= -1\], \[toIndex:= -1\], \[SortingKeys:= 1\], \[SortAlgorithm:= SortingAlgorithms.SA_Quicksort\])*
 
 ### Parameters
 
@@ -82,7 +82,7 @@ Sub Sort()
         .Sort SortingKeys:=SortKeys, SortAlgorithm:=SA_Quicksort                'Sort the data in descending order on column 1,
                                                                                 'then sort in ascending order on column 5 and
                                                                                 'sort in descending order on column 11. This
-                                                                                'multi-level is "stable".
+                                                                                'multi-level sorting is "stable".
         .DumpToSheet
     End With
     Set CSVint = Nothing
