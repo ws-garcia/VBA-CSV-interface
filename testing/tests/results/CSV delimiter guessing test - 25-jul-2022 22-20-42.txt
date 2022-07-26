@@ -1,0 +1,21 @@
+=== Delimiters guessing test ===
++ Mixed comma and semicolon
++ File with multi-line field
++ Optional quoted fields
++ Mixed comma and semicolon - file B
++ Geometric CSV
++ Table embedded in the last record
++ Table embedded in the second record
++ Multiple commas in fields
++ Uncommon char as field delimiter
++ Wrong delimiters have been added to guessing operation
++ FEC data - [clevercsv issue #15]
++ Mixed comma and colon - [clevercsv issue #35]
++ Json data type - [clevercsv issue #37]
++ Undefined field delimiter
++ Rainbow CSV [issue #92]
++ Pipe character is more frequent than the comma
++ Pipe character is more frequent than the semicolon
++ Short pipe separated table embedded
+= PASS (18 of 18 passed) = 25/7/2022 10:20:42 p. m. =
+
