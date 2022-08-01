@@ -343,7 +343,7 @@ Sub DelimitersGuessing()
 End Sub
 ```
 
-With a VBA CSV interface, many things can be done, for example, an user can perform like SQL joins such as:
+With VBA CSV interface, many things can be done, for example, an user can perform like SQL joins such as:
 
 ```
 Sub JoinTwoTables()
