@@ -5,7 +5,7 @@
 
 ## Introductory words
 
-The most powerful and comprehensive CSV/[TSV](https://www.iana.org/assignments/media-types/text/tab-separated-values)/[DSV](https://www.linuxtopia.org/online_books/programming_books/art_of_unix_programming/ch05s02.html) data management library for VBA, providing parsing/writing capabilities compliant with RFC-4180 specifications and a complete set of tools for manipulating records and fields: [dedupe](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/dedupe.html), [sort](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/sort.html) and [filter](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/filter.html) records; [rearrange](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/rearrangefields.html), [shift](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/shiftfield.html), [merge](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/mergefields.html) and [split](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/splitfield.html) fields; and much more!
+The most powerful and comprehensive CSV/[TSV](https://www.iana.org/assignments/media-types/text/tab-separated-values)/[DSV](https://www.linuxtopia.org/online_books/programming_books/art_of_unix_programming/ch05s02.html) data management library for VBA, providing parsing/writing capabilities compliant with RFC-4180 specifications and a complete set of tools for manipulating records and fields: [dedupe](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/dedupe.html), [sort](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/sort.html) and [filter](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/filter.html) records; [rearrange](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/rearrangefields.html), [shift](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/shiftfield.html), [merge](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/mergefields.html) and [split](https://ws-garcia.github.io/VBA-CSV-interface/api/methods/splitfield.html) fields. Is your data spread over two or more CSV files? Don't worry, here you will find [Left, Right and Inner](https://ws-garcia.github.io/VBA-CSV-interface/api/csvarraylist.html) joins, and much more!
 
 ## Advantages
 * __RFC-4180 specs compliant__.
@@ -343,25 +343,30 @@ Sub DelimitersGuessing()
 End Sub
 ```
 
-With a CSV file parser you can do many things, for example, an user can parse the contents of the Windows clipboard and dump it to an Excel Worksheet with a procedure like the following (thanks to @OlimilO1402 [for the `CBGetText` function code](https://github.com/OlimilO1402/XL_ClipboardReader/blob/main/Modules/MClipboard.bas)):
+With a VBA CSV interface, many things can be done, for example, an user can perform like SQL joins such as:
 
 ```
-Sub ImportFromClipBoard()
-    Dim CSVint As CSVinterface
-    Dim CSVstring As String
-    Dim SPACE_CHR As String
+Sub JoinTwoTables()
+    Dim WB As Workbook
+    Dim WS As Worksheet
+    Dim t1 As CSVArrayList
+    Dim t2 As CSVArrayList
+    Dim arrT1() As Variant
+    Dim arrT2() As Variant
+    Dim rTable As CSVArrayList
     
-    SPACE_CHR = " "
-    CSVstring = Join$(Split(CBGetText, SPACE_CHR), vbTab)   ' Replace all space char with Tab char
-    Set CSVint = New CSVinterface
-    With CSVint.parseConfig
-        .dialect.fieldsDelimiter = vbTab                    ' Columns delimiter
-        .dialect.recordsDelimiter = vbCrLf                  ' Rows delimiter
-    End With
-    With CSVint
-        .ImportFromCSVString CSVstring, .parseConfig        ' Import the CSV to internal object
-        .DumpToSheet
-    End With
+    Set WB = ThisWorkbook
+    Set WS = WB.Sheets("Orders"): arrT1() = WS.Range("A1:G21").Value2
+    Set WS = WB.Sheets("Ships and sales"): arrT2() = WS.Range("A1:F27").Value2
+    Set t1 = New CSVArrayList: t1.items = arrT1
+	 Set t2 = New CSVArrayList: t2.items = arrT2
+	 ' Join 1st, "Region", and 3th to 5th fields of left table with "Total_Revenue" field from the right table,
+	 ' on "Order_ID" of both tables and Total_Revenue, from the right table, is  greater than 3000000
+	 ' and Region, from the left table, is equal to "Central America and the Caribbean"
+    Set rTable = t1.LeftJoin(t1, t2, _
+                "{1,Region,3-5};{Total_Revenue}", _
+                "Order_ID;Order_ID", _
+                "t2.Total_Revenue>3000000 & t1.Region='Central America and the Caribbean'")
 End Sub
 ```
 
