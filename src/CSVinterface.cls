@@ -3031,7 +3031,7 @@ Public Function RearrangeFields(FieldsOrder As String) As CSVinterface
                 tmpRecord() = .Item(rCounter)
                 iRecCnt = 0
                 For fCounter = LBound(tmpFldOrder) To UBound(tmpFldOrder)
-                    cpRecord(CLng(tmpFldOrder(iRecCnt))) = tmpRecord(fCounter)
+                    cpRecord(iRecCnt) = tmpRecord(CLng(tmpFldOrder(iRecCnt)) - 1)
                     iRecCnt = iRecCnt + 1
                 Next fCounter
                 .Item(rCounter) = cpRecord
@@ -3071,10 +3071,10 @@ Private Function RearrangeCheckFieldsToOperate(fieldsToRearrange() As String) As
     Dim definedIdx As Long
     
     For fldOcount = LBound(fieldsToRearrange) To UBound(fieldsToRearrange)
-        jkl = 0
+        jkl = -1
         Do
-            tmpBool = CLng(fieldsToRearrange(fldOcount)) = jkl
             jkl = jkl + 1
+            tmpBool = CLng(fieldsToRearrange(fldOcount)) = jkl
         Loop While jkl <= P_VECTORS_REGULAR_BOUND And Not tmpBool
         If tmpBool Then
             definedIdx = definedIdx + 1
