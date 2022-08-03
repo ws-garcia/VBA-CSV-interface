@@ -238,7 +238,7 @@ Public Sub CloseSeqReader()
     Set static_outputList = Nothing
 End Sub
 ''' <summary>
-''' Run a left outer join on the provided data tables.
+''' Run a left, right outer or inner join on the provided data tables.
 '''' 1) Use a string such as "{1-2,5,ID};{1-6}" as a predicate of the columns to
 '''' indicate the join of columns 1 to 2, 5 and ID of leftTable with
 '''' the columns 1 to 6 of rightTable.
@@ -254,38 +254,31 @@ End Sub
 ''' <param name="columns">String that specifies the structure of the rows returned.</param>
 ''' <param name="matchKeys">Priority and preference keys to be matched.</param>
 ''' <param name="predicate">Condition that must be met when selecting rows.</param>
-''' <param name="pConfig">CSV parser configuration object.</param>
+''' <param name="headers">Indicates if the tables have headers.</param>
 ''' All indexes must be given IN BASE 1.
 Public Function tJoin(ByVal nType As JoinType, _
                     ByRef leftTable As CSVArrayList, _
                     ByRef rightTable As CSVArrayList, _
-                    columns As String, _
+                    Columns As String, _
                     matchKeys As String, _
                     Optional predicate As String = vbNullString, _
-                    Optional ByRef pConfig As CSVparserConfig) As CSVArrayList
+                    Optional headers As Boolean = True) As CSVArrayList
                             
     Dim JoinHelper As CSVArrayList
-    Dim tConfig As CSVparserConfig
-    
-    Set JoinHelper = New CSVArrayList
-    If pConfig Is Nothing Then
-        Set tConfig = config
-    Else
-        Set tConfig = pConfig
-    End If
+
     Select Case nType
         Case JoinType.JT_LeftJoin
             Set tJoin = JoinHelper.LeftJoin(leftTable, rightTable, _
-                                            columns, matchKeys, predicate, _
-                                            tConfig.Headers)
+                                            Columns, matchKeys, predicate, _
+                                            headers)
         Case JoinType.JT_RightJoin
             Set tJoin = JoinHelper.RightJoin(leftTable, rightTable, _
-                                            columns, matchKeys, predicate, _
-                                            tConfig.Headers)
+                                            Columns, matchKeys, predicate, _
+                                            headers)
         Case Else
             Set tJoin = JoinHelper.InnerJoin(leftTable, rightTable, _
-                                            columns, matchKeys, predicate, _
-                                            tConfig.Headers)
+                                            Columns, matchKeys, predicate, _
+                                            headers)
     End Select
 End Function
 Private Function JoinKeys(ByRef tList As CSVArrayList, ByRef Keys As Variant, Index As Long) As String
@@ -308,7 +301,7 @@ Private Function JoinKeys(ByRef tList As CSVArrayList, ByRef Keys As Variant, In
 End Function
 Public Function CSVsubsetSplit(filePath As String, _
                                 Optional subsetColumns As Variant = 1, _
-                                Optional Headers As Boolean = True, _
+                                Optional headers As Boolean = True, _
                                 Optional repeatHeaders As Boolean = True, _
                                 Optional streamSize As Long = 20) As Collection
     Dim CreatedFiles As Collection
@@ -372,9 +365,9 @@ Public Function CSVsubsetSplit(filePath As String, _
         '@----------------------------------------------------
         'Parse string
         With readerConf
-            .Headers = Headers
+            .headers = headers
             .delimitersGuessing = True
-            If Headers Then
+            If headers Then
                 .endingRecord = 1
                 CSVhead = CSVreader.ImportFromCSV(readerConf)(0)
                 .endingRecord = 0
@@ -390,14 +383,14 @@ Public Function CSVsubsetSplit(filePath As String, _
         Do While Not CSVstream.atEndOfStream
             CSVstream.ReadText 'Read next CSV data chunk
             RaiseEvent AfterLoadStream
-            If Headers Then
+            If headers Then
                 If fileCreatedFlag Then
-                    readerConf.Headers = False
+                    readerConf.headers = False
                 End If
             End If
             Set curItems = CSVreader.ImportFromCSVString(CSVstream.bufferString, readerConf).items
             If Not fileCreatedFlag Then
-                If Headers Then
+                If headers Then
                     i = 1
                 Else
                     i = 0
@@ -409,7 +402,7 @@ Public Function CSVsubsetSplit(filePath As String, _
             RaiseEvent AfterSort
             tmpVar = JoinKeys(curItems, subsetColumns, i)
             writterConf.path = OutputPath & CStr(tmpVar) & "." & FExtension
-            If Headers Then
+            If headers Then
                 '@----------------------------------------------------
                 'Check directory
                 fileOnPathFlag = FileExists(writterConf.path)
@@ -432,7 +425,7 @@ Public Function CSVsubsetSplit(filePath As String, _
                     ExportSubSet.Reinitialize ExportSubSet.count
                     tmpVar = JoinKeys(curItems, subsetColumns, i)
                     writterConf.path = OutputPath & CStr(tmpVar) & "." & FExtension
-                    If Headers Then
+                    If headers Then
                         fileOnPathFlag = FileExists(writterConf.path)
                         If Not fileOnPathFlag Then
                             If repeatHeaders Then
@@ -790,7 +783,7 @@ Public Function Filter(Pattern As String, Optional filePath As String = vbNullSt
     Else
         Set CSVparser = Me
         If CSVparser.importSuccess Then
-            ExcludeFirstRecord = (CSVparser.parseConfig.Headers = True)
+            ExcludeFirstRecord = (CSVparser.parseConfig.headers = True)
             Filter.Concat2 CSVparser.items.Filter(Pattern, 1 + Abs(ExcludeFirstRecord), Exclude)
         End If
     End If
@@ -1492,7 +1485,7 @@ Public Function ImportFromCSV(configObj As CSVparserConfig, _
                     Set configObj.dialect = SniffDelimiters(configObj)
                 End If
                 tmpRequested() = FilterColumns
-                If .Headers Then
+                If .headers Then
                     '@--------------------------------------------------------------------------------
                     'Read the whole header
                     Set P_CSV_HEADER = New CSVArrayList
@@ -1560,7 +1553,7 @@ Public Function ImportFromCSVString(ByRef CSVstring As String, _
                 Set configObj.dialect = SniffDelimiters(configObj, CSVstring)
             End If
             tmpRequested() = FilterColumns
-            If .Headers Then
+            If .headers Then
                 '@--------------------------------------------------------------------------------
                 'Read the header
                 Set P_CSV_HEADER = New CSVArrayList
@@ -1619,7 +1612,7 @@ Public Function InsertField(aIndex As Long, Optional FieldName As String = vbNul
                 'Reserve storage
                 ReDim cpRecord(0 To P_VECTORS_REGULAR_BOUND + 1)
                 With P_CSV_DATA
-                    headerRec = Me.parseConfig.Headers
+                    headerRec = Me.parseConfig.headers
                     For rCounter = 0 To .count - 1
                         curRecord() = .Item(rCounter)
                         If headerRec Then
@@ -1973,7 +1966,7 @@ End Sub
 ''' <param name="ExportationBunchSize">The amount of items to export in a single operation.</param>
 Public Function SortOnDisk(ByVal filePath As String, _
                                 Optional ByRef sortingKeys As Variant = 1, _
-                                Optional Headers As Boolean = True, _
+                                Optional headers As Boolean = True, _
                                 Optional streamSize As Single = 20, _
                                 Optional ByVal sortAlgorithm As SortingAlgorithms = SortingAlgorithms.SA_Quicksort, _
                                 Optional ByVal ExportationBunchSize As Long = 10000) As String
@@ -2012,7 +2005,7 @@ Public Function SortOnDisk(ByVal filePath As String, _
     FirstStream = True
     Set CSV = New CSVinterface
     With CSV.parseConfig
-        .Headers = Headers
+        .headers = headers
         .endingRecord = 1
     End With
     With inputTextStream
@@ -2031,7 +2024,7 @@ Public Function SortOnDisk(ByVal filePath As String, _
         CSV.parseConfig.endingRecord = 0
         CSV.ImportFromCSVString .bufferString, CSV.parseConfig
         CSV.parseConfig.startingRecord = 1
-        CSV.parseConfig.Headers = False
+        CSV.parseConfig.headers = False
         '@--------------------------------------------------------------------------------
         'Sort and export
         Set sortedFiles = New CSVArrayList
@@ -2063,7 +2056,7 @@ Public Function SortOnDisk(ByVal filePath As String, _
     'Point to target file
     exportConfig.path = OutPutFpath
     'Export header
-    If Headers Then
+    If headers Then
         CSV.ExportToCSV fileHeader, exportConfig, enableDelimitersSniffing:=False
     End If
     ReDim inputTextStreams(0 To sortedFiles.count - 1)
@@ -2074,7 +2067,7 @@ Public Function SortOnDisk(ByVal filePath As String, _
     Set importConfig = exportConfig.CopyConfig
     With importConfig
         .path = vbNullString
-        .Headers = False
+        .headers = False
     End With
     'Configure readers and parsers
     ComparisonList.Indexing = True
@@ -2290,7 +2283,7 @@ Public Sub OpenSeqReader(configObj As CSVparserConfig, _
                     Set configObj.dialect = SniffDelimiters(configObj)
                 End If
                 static_tmpRequested() = FilterColumns
-                If .Headers Then
+                If .headers Then
                     '@--------------------------------------------------------------------------------
                     'Read the whole header
                     Set P_CSV_HEADER = New CSVArrayList
@@ -2339,7 +2332,7 @@ Public Sub OpenSeqReader(configObj As CSVparserConfig, _
         static_dynamicType = .dynamicTyping
         static_dTTemplate() = .dTypingTemplate
         static_dTTargets() = .dTypingLinks
-        static_Headers = .Headers
+        static_Headers = .headers
         static_IgnoreCommentLines = .skipCommentLines
         static_IgnoreEmptyLines = .skipEmptyLines
         static_IgnoreLines = (static_IgnoreCommentLines Or static_IgnoreEmptyLines)
@@ -2351,7 +2344,7 @@ Public Sub OpenSeqReader(configObj As CSVparserConfig, _
     End With
     static_TokenEndReached = False
     static_RecordEndReached = False
-    If configObj.Headers Then
+    If configObj.headers Then
         Select Case UBound(static_tmpRequested)
             Case -1
                 ReDim static_RequestedFieldsArray(0)
@@ -2537,7 +2530,7 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
             ImportDepth = EndRecord - StartRecord + 1&
     End Select
     If StartRecord = 1& Then
-        If configObj.headersOmission And configObj.Headers Then
+        If configObj.headersOmission And configObj.headers Then
             If ImportDepth > 1& Or EndRecord = 0& Then
                 StartRecord = 2&
                 ImportDepth = ImportDepth - 1&
@@ -3514,7 +3507,7 @@ Public Function Sort(Optional ByVal fromIndex As Long = -1, _
     
     If P_SUCCESSFUL_IMPORT Then
         If fromIndex = -1 Then
-            If config.Headers And Not config.headersOmission Then
+            If config.headers And Not config.headersOmission Then
                 fromIndex = 2
             Else
                 fromIndex = 1
@@ -3747,7 +3740,7 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
             ImportDepth = EndRecord - StartRecord + 1&
     End Select
     If StartRecord = 1& Then
-        If configObj.headersOmission And configObj.Headers Then
+        If configObj.headersOmission And configObj.headers Then
             If ImportDepth > 1& Or EndRecord = 0& Then
                 StartRecord = 2&
                 ImportDepth = ImportDepth - 1&
@@ -4451,3 +4444,4 @@ Private Function UnixToStandardEscapeSeq(ByRef UnixEscapedString As String, _
         UnixToStandardEscapeSeq = UnixEscapedString
     End If
 End Function
+
