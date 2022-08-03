@@ -562,7 +562,7 @@ Public Function Filter(Pattern As String, startIndex As Long, _
             .Eval GetValuesForVariables(rCounter, TargetFields)
             If .ErrorType = ExpressionErrors.errNone Then
                 If err.Number = 0 Then
-                    If CBool(.Result) Then
+                    If CBool(.result) Then
                         If Not Exclude Then
                             Filter.Add Buffer(rCounter) 'Append current record
                         End If
@@ -910,7 +910,7 @@ Public Function Group(Table As CSVArrayList, By As Variant, OperateOn As Variant
             GroupFIdx = 1 'Base 1 input
         End If
     Else
-        GroupFIdx = Abs(By) - deltaPos + 1
+        GroupFIdx = Abs(By)
     End If
     If Not IsNumeric(OperateOn) Then
         If Headers Then
@@ -919,7 +919,7 @@ Public Function Group(Table As CSVArrayList, By As Variant, OperateOn As Variant
             OperateFidx = 1 'Base 1 input
         End If
     Else
-        OperateFidx = Abs(OperateOn) - deltaPos + 1
+        OperateFidx = Abs(OperateOn)
     End If
     'Save first row
     If Headers Then
@@ -1276,6 +1276,7 @@ Public Function SplitFieldsOrderStr(fieldsString As String) As String()
     Dim tmpResult As CSVArrayList
     
     Set tmpResult = New CSVArrayList
+    tmpResult.Indexing = True
     tmpPreResult() = Split(Join$(Split(fieldsString, " "), vbNullString), d_comma)
     If fieldsString Like "*-*" Then
         Dim rfJCounter As Long
@@ -1296,31 +1297,25 @@ Public Function SplitFieldsOrderStr(fieldsString As String) As String()
                 End If
                 With tmpResult
                     For rfJCounter = ROFlb To ROFub Step stepIdx
-                        If .ItemIndex(CStr(rfJCounter), 1) = -1 Then
-                            .Add2 CStr(rfJCounter)
-                        End If
+                        .AddIndexedItem CStr(rfJCounter), CStr(rfJCounter)
                     Next rfJCounter
                 End With
             Else
                 With tmpResult
-                    If Not .ItemExist(tmpPreResult(rfICounter), 1) Then
-                        .Add2 tmpPreResult(rfICounter)
-                    End If
+                    .AddIndexedItem tmpPreResult(rfICounter), tmpPreResult(rfICounter)
                 End With
             End If
         Next rfICounter
     Else
         With tmpResult
             For rfICounter = LBound(tmpPreResult) To UBound(tmpPreResult)
-                If .ItemIndex(CStr(rfJCounter), 1) = -1 Then
-                    tmpResult.Add2 tmpPreResult(rfICounter)
-                End If
+                .AddIndexedItem tmpPreResult(rfICounter), tmpPreResult(rfICounter)
             Next rfICounter
         End With
     End If
     ReDim tmpFields(0 To tmpResult.count - 1)
     For rfICounter = 0 To tmpResult.count - 1
-        tmpFields(rfICounter) = tmpResult.Item(rfICounter)(0)
+        tmpFields(rfICounter) = tmpResult(rfICounter)
     Next rfICounter
     SplitFieldsOrderStr = tmpFields
     Set tmpResult = Nothing
@@ -1601,7 +1596,7 @@ Public Function LeftJoin(ByRef leftTable As CSVArrayList, _
                     .Eval GetValuesForVariables(rCounter, FilterFields, False, evalRecord)
                     If .ErrorType = ExpressionErrors.errNone Then
                         If err.Number = 0 Then
-                            If CBool(.Result) Then
+                            If CBool(.result) Then
                                 'Fill in the data in the table on the left only if the join and predicate are satisfied.
                                 If lJoinIndex > -1 Then
                                     For sCounter = LftTblENDidx + 1 To UBound(resultRecord)
@@ -1769,7 +1764,7 @@ Public Function RightJoin(ByRef leftTable As CSVArrayList, _
                     .Eval GetValuesForVariables(rCounter, FilterFields, False, evalRecord)
                     If .ErrorType = ExpressionErrors.errNone Then
                         If err.Number = 0 Then
-                            If CBool(.Result) Then
+                            If CBool(.result) Then
                                 'Fill in the data in the table on the left only if the join and predicate are satisfied.
                                 If lJoinIndex > -1 Then
                                     For sCounter = 0 To LftTblENDidx
@@ -1932,7 +1927,7 @@ Public Function InnerJoin(ByRef leftTable As CSVArrayList, _
                     .Eval GetValuesForVariables(rCounter, FilterFields, False, evalRecord)
                     If .ErrorType = ExpressionErrors.errNone Then
                         If err.Number = 0 Then
-                            If CBool(.Result) Then
+                            If CBool(.result) Then
                                 'Fill in the data in the table.
                                 If lJoinIndex > -1 Then
                                     For sCounter = 0 To LftTblENDidx
@@ -2640,7 +2635,7 @@ Public Function Reduce(ReductionExpression As String, startIndex As Long, endInd
         For rCounter = startIndex - 1 To endIndex - 1
             On Error Resume Next
             .Eval GetValuesForVariables(rCounter, TargetFields)
-            tmpResult(0 + rCounter - startIndex + 1) = .Result  'reduce
+            tmpResult(0 + rCounter - startIndex + 1) = .result  'reduce
         Next rCounter
     End With
     Reduce = tmpResult
@@ -2817,7 +2812,7 @@ End Function
 ''' Searches for a key in the internal indexed records
 ''' </summary>
 ''' <param name="TargetKey">The key to be searched.</param>
-Public Function KeyExist(ByRef TargetKey As String) As Long
+Public Function KeyExist(ByRef TargetKey As String) As Boolean
     KeyExist = (KeyIndex(TargetKey) > -1)
 End Function
 ''' <summary>
@@ -2841,7 +2836,7 @@ Public Function KeyIndex(ByRef TargetKey As String) As Long
         BottomIdx = 0
         TopIdx = IndexedCurrentIndex
         Do
-            MiddleIdx = BottomIdx + ((TopIdx - BottomIdx) / 2)
+            MiddleIdx = BottomIdx + Ceiling((TopIdx - BottomIdx) / 2)
             tmpR = (TargetKey = IndexedBuffer(MiddleIdx).ItemKey)
             If TargetKey > IndexedBuffer(MiddleIdx).ItemKey Then
                 BottomIdx = MiddleIdx + 1
