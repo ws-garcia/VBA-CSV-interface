@@ -6,10 +6,7 @@ nav_order: 4
 ---
 
 # Dedupe
-{: .d-inline-block }
-
-New
-{: .label .label-purple }
+{: .fs-6 }
 
 Returns a list of records as a result of the deduplication of the imported CSV data.
 {: .fs-4 .fw-300 }

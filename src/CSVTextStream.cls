@@ -25,9 +25,7 @@ Option Explicit
 '////////////////////////////////////////////////////////////////////////////////////////////
 ' CONSTANTS:
 Private Const DualLFchar As String = vbLf & vbLf
-Private Const InverseCRLF As String = vbLf & vbCr
-Private Const SizeFactor As Long = 524288
-Private Const WhiteSpace As String = " "
+Private Const sizeFactor As Long = 524288
 '////////////////////////////////////////////////////////////////////////////////////////////
 '#
 '////////////////////////////////////////////////////////////////////////////////////////////
@@ -39,6 +37,7 @@ Private P_ENDSTREAMONLINEBREAK As Boolean '--------If true, each stream ends on 
 Private P_ISOPENSTREAM As Boolean '----------------Indicates if the object is linked to a file
 Private P_LINEBREAK As String '--------------------Holds the char used to end a Stream.
 Private P_LINEBREAKMATCHINGBEHAVIOR As EndLineMatchingBehavior 'How to find the next line break.
+Private P_PATH As String '-------------------------File path for currente stream.
 Private P_UNIFIEDLFOUTPUT As Boolean '-------------If true, the buffer string will be returned _
                                                    with the LF char as Line Break.
 Private P_STREAMLENGTH As Long '-------------------File len.
@@ -96,8 +95,8 @@ Attribute bufferSize.VB_Description = "Gets or sets the buffer’s size, in MB, fo
 End Property
 Public Property Let bufferSize(value As Single)
     P_BUFFERSIZE = value
-    P_BUFFERLENGTH = CLng(P_BUFFERSIZE * SizeFactor)
-    Buffer = SPACE$(P_BUFFERLENGTH)
+    P_BUFFERLENGTH = CLng(P_BUFFERSIZE * sizeFactor)
+    Buffer = Space$(P_BUFFERLENGTH)
 End Property
 Public Property Get bufferString() As String
 Attribute bufferString.VB_Description = "Gets the text data stored in the buffer."
@@ -120,15 +119,18 @@ End Property
 Public Property Get isOpenStream() As Boolean
     isOpenStream = P_ISOPENSTREAM
 End Property
-Public Property Get lineBreak() As String
-Attribute lineBreak.VB_Description = "Returns the character used to end the last received stream. The value is vbNullString when the last stream is not forced to end on line break."
-    lineBreak = P_LINEBREAK
+Public Property Get LineBreak() As String
+Attribute LineBreak.VB_Description = "Returns the character used to end the last received stream. The value is vbNullString when the last stream is not forced to end on line break."
+    LineBreak = P_LINEBREAK
 End Property
 Public Property Get linebreakMatchingBehavior() As EndLineMatchingBehavior
     linebreakMatchingBehavior = P_LINEBREAKMATCHINGBEHAVIOR
 End Property
 Public Property Let linebreakMatchingBehavior(value As EndLineMatchingBehavior)
     P_LINEBREAKMATCHINGBEHAVIOR = value
+End Property
+Public Property Get path() As String
+    path = P_PATH
 End Property
 Public Property Get pointerPosition() As Long
 Attribute pointerPosition.VB_Description = "Gets the overall pointer position over the current text file."
@@ -165,24 +167,24 @@ Attribute CloseStream.VB_Description = "Closes the current text file stream."
     If P_ISOPENSTREAM Then
         Close #FileHandled
         P_ISOPENSTREAM = False
+        P_PATH = vbNullString
     End If
 End Sub
 Private Sub DoubleBufferSize()
     Dim LCSt As Long
     P_BUFFERSIZE = 2 * P_BUFFERSIZE
-    P_BUFFERLENGTH = CLng(P_BUFFERSIZE * SizeFactor)
+    P_BUFFERLENGTH = CLng(P_BUFFERSIZE * sizeFactor)
     LCSt = P_STREAMLENGTH - P_BUFFERLENGTH
     Select Case LCSt
         Case Is > 0
-            Buffer = SPACE$(P_BUFFERLENGTH)
+            Buffer = Space$(P_BUFFERLENGTH)
         Case Else
-            Buffer = SPACE$(P_STREAMLENGTH)
+            Buffer = Space$(P_STREAMLENGTH)
     End Select
 End Sub
 Private Sub FindEOLcharacter()
     Dim CrCharInStream As Boolean
     Dim LfCharInStream  As Boolean
-    Dim EOLchr As EndLineChar
     Dim missingEOLchar As Boolean
     Dim EOStream As Boolean
     
@@ -269,13 +271,16 @@ Private Sub NormalizeLineBreaks()
     Loop
     P_LINEBREAK = vbLf
 End Sub
-Public Sub OpenStream(FilePath As String)
+Public Sub OpenStream(filePath As String)
 Attribute OpenStream.VB_Description = "Opens a stream over a text file."
-    FileHandled = FreeFile
-    Open FilePath For Binary As #FileHandled
-    P_ISOPENSTREAM = True
-    P_STREAMLENGTH = LOF(FileHandled)
-    StartVariables
+    If P_PATH <> filePath Then
+        FileHandled = FreeFile
+        Open filePath For Binary As #FileHandled
+        P_ISOPENSTREAM = True
+        P_STREAMLENGTH = LOF(FileHandled)
+        P_PATH = filePath
+        StartVariables
+    End If
 End Sub
 Public Sub ReadText()
 Attribute ReadText.VB_Description = "Reads a number of characters from the stream file and saves the result to the current instance."
@@ -299,7 +304,7 @@ Attribute ReadText.VB_Description = "Reads a number of characters from the strea
                     P_TEXT = Buffer
                 End If
             Case Else
-                Buffer = SPACE$(LCS + 1)
+                Buffer = Space$(LCS + 1)
                 Get #FileHandled, , Buffer
                 NullCharPos = InStrB(Buffer, NullChar)
                 If NullCharPos Then
@@ -332,8 +337,8 @@ Attribute SeekPointer.VB_Description = "Moves the pointer, over the target file,
 End Sub
 Private Sub StartVariables()
     CorrectedPos = 0
-    P_BUFFERLENGTH = CLng(P_BUFFERSIZE * SizeFactor)
-    Buffer = SPACE$(P_BUFFERLENGTH)
+    P_BUFFERLENGTH = CLng(P_BUFFERSIZE * sizeFactor)
+    Buffer = Space$(P_BUFFERLENGTH)
     LCS = P_STREAMLENGTH
     P_ATENDOFSTREAM = False
 End Sub
@@ -370,20 +375,20 @@ End Function
 Public Sub WriteBlankLines(Lines As Long, Optional EndLineMark As EndLineChar = 0)
 Attribute WriteBlankLines.VB_Description = "Inserts a specified number of blank lines into the current opened text file."
     If P_ISOPENSTREAM Then
-        Dim idx As Long
+        Dim Idx As Long
         Select Case EndLineMark
             Case 0
-                For idx = 1 To Lines
+                For Idx = 1 To Lines
                     WriteText vbCrLf
-                Next idx
+                Next Idx
             Case 1
-                For idx = 1 To Lines
+                For Idx = 1 To Lines
                     WriteText vbCr
-                Next idx
+                Next Idx
             Case 2
-                For idx = 1 To Lines
+                For Idx = 1 To Lines
                     WriteText vbLf
-                Next idx
+                Next Idx
         End Select
         P_STREAMLENGTH = LOF(FileHandled)
     End If
@@ -405,12 +410,12 @@ End Sub
 '////////////////////////////////////////////////////////////////////////////////////////////
 Private Sub Class_Initialize()
     P_BUFFERSIZE = 0.5
-    P_BUFFERLENGTH = CLng(P_BUFFERSIZE * SizeFactor)
+    P_BUFFERLENGTH = CLng(P_BUFFERSIZE * sizeFactor)
     P_ENDSTREAMONLINEBREAK = False
     P_UTF8ENCODED = False
     P_LINEBREAKMATCHINGBEHAVIOR = EndLineMatchingBehavior.Bidirectional
     P_UNIFIEDLFOUTPUT = False
-    Buffer = SPACE$(P_BUFFERLENGTH)
+    Buffer = Space$(P_BUFFERLENGTH)
     NullChar = ChrW(0)
 End Sub
 Private Sub Class_Terminate()

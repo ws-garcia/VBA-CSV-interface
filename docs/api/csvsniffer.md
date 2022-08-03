@@ -5,10 +5,7 @@ nav_order: 7
 ---
 
 # CSVSniffer
-{: .d-inline-block }
-
-New
-{: .label .label-purple }
+{: .fs-6 }
 
 Class module developed as an attempt to sniff/guess CSV dialects without user intervention. In some preliminary tests, the sniffer was 100% accurate, but there is always the risk of facing ambiguous cases that can only be solved with human intervention. This class is inspired by the [work of scientist Till Roman Döhmen](https://homepages.cwi.nl/~boncz/msc/2016-Doehmen.pdf), with some improvements to disambiguate the most complicated cases.
 {: .fs-4 .fw-300 }

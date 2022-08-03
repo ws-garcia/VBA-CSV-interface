@@ -487,7 +487,6 @@ Private Function RecordScore(ByRef StrArray As Variant) As Double
     Dim L0 As Long
     Dim tmpSUM As Double
     Dim FielCount As Long
-    Dim StdDev As Double
     
     FielCount = 1 + UBound(StrArray) - LBound(StrArray)
     tmpSUM = 0

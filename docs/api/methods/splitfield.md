@@ -2,14 +2,11 @@
 title: SplitField
 parent: Methods
 grand_parent: API
-nav_order: 29
+nav_order: 30
 ---
 
 # SplitField
-{: .d-inline-block }
-
-New
-{: .label .label-purple }
+{: .fs-6 }
 
 Splits the specified field in the imported CSV data.
 {: .fs-4 .fw-300 }

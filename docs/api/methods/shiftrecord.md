@@ -6,10 +6,7 @@ nav_order: 25
 ---
 
 # ShiftRecord
-{: .d-inline-block }
-
-New
-{: .label .label-purple }
+{: .fs-6 }
 
 Moves the Record the specified number of times in the current instance.
 {: .fs-4 .fw-300 }

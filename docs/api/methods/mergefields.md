@@ -6,10 +6,7 @@ nav_order: 18
 ---
 
 # MergeFields
-{: .d-inline-block }
-
-New
-{: .label .label-purple }
+{: .fs-6 }
 
 Merges the specified fields in the imported CSV data.
 {: .fs-4 .fw-300 }

@@ -6,10 +6,7 @@ nav_order: 24
 ---
 
 # ShiftField
-{: .d-inline-block }
-
-New
-{: .label .label-purple }
+{: .fs-6 }
 
 Moves the field the specified number of times in all records of the current instance.
 {: .fs-4 .fw-300 }

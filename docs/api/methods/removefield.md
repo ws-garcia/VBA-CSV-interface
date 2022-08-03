@@ -6,10 +6,7 @@ nav_order: 21
 ---
 
 # RemoveField
-{: .d-inline-block }
-
-New
-{: .label .label-purple }
+{: .fs-6 }
 
 Removes a field, at the specified position, from the imported CSV data.
 {: .fs-4 .fw-300 }

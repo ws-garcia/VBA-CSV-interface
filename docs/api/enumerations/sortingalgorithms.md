@@ -20,11 +20,10 @@ Provides a list of constants to configure the sorting algorithm used when sortin
 
 |**_Constant_**|**_Member name_**|
 |:----------|:----------|
-|0|*SA_IntroSort*|
-|1|*SA_Quicksort*|
-|2|*SA_TimSort*|
-|3|*SA_HeapSort*|
-|4|*SA_MergeSort*|
+|0|*SA_Quicksort*|
+|1|*SA_TimSort*|
+|2|*SA_HeapSort*|
+|3|*SA_MergeSort*|
 
 ---
 
@@ -34,7 +33,7 @@ Provides a list of constants to configure the sorting algorithm used when sortin
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->The default value for the `SortingAlgorithms` enumeration is `SA_IntroSort` which is a variant of Quicksort.
+>The default value for the `SortingAlgorithms` enumeration is `SA_Quicksort` which is a variant of the classic Quicksort.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 See also

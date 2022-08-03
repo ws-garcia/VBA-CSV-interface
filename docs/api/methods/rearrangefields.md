@@ -6,10 +6,7 @@ nav_order: 20
 ---
 
 # RearrangeFields
-{: .d-inline-block }
-
-New
-{: .label .label-purple }
+{: .fs-6 }
 
 Rearranges the fields of the imported CSV data.
 {: .fs-4 .fw-300 }

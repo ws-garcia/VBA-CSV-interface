@@ -6,10 +6,7 @@ nav_order: 10
 ---
 
 # Filter
-{: .d-inline-block }
-
-New
-{: .label .label-purple }
+{: .fs-6 }
 
 Returns a list of records as a result of applying filters on the target CSV file or imported CSV data using expression evaluation.
 {: .fs-4 .fw-300 }
@@ -18,7 +15,7 @@ Returns a list of records as a result of applying filters on the target CSV file
 
 ## Syntax
 
-*expression*.`Filter`*(Pattern, [FilePath], [ExcludeFirstRecord])*
+*expression*.`Filter`*(Pattern, [FilePath], [ExcludeFirstRecord], [Exclude])*
 
 ### Parameters
 
@@ -41,6 +38,10 @@ Returns a list of records as a result of applying filters on the target CSV file
 <tr>
 <td style="text-align: left;"><em>ExcludeFirstRecord</em></td>
 <td style="text-align: left;">Optional. Identifier specifying a <code>Boolean</code> Type variable. When <code>True</code>, the file headers will be excluded.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><em>Exclude</em></td>
+<td style="text-align: left;">Optional. Identifier specifying a <code>Boolean</code> Type variable. When <code>True</code>, all records matching the given pattern will be excluded.</td>
 </tr>
 </tbody>
 </table>

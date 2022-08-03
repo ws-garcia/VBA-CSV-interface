@@ -15,7 +15,7 @@ Splits the CSV data into a set of files in which each piece has a related portio
 
 ## Syntax
 
-*expression*.`CSVsubsetSplit`*(filePath, \[subsetColumn:= 1\], \[headers:= True\])*
+*expression*.`CSVsubsetSplit`*(filePath, \[subsetColumns:= 1\], \[headers:= True\], \[repeatHeaders:= True\], \[streamSize:= 20])*
 
 ### Parameters
 
@@ -32,12 +32,20 @@ Splits the CSV data into a set of files in which each piece has a related portio
 <td style="text-align: left;">Required. Identifier specifying a <code>String</code> Type variable representing the full path to the target CSV file.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><em>subsetColumn</em></td>
-<td style="text-align: left;">Optional. Identifier specifying a <code>Long</code> Type variable representing the index of the field on which the creation of the data groups will take place.</td>
+<td style="text-align: left;"><em>subsetColumns</em></td>
+<td style="text-align: left;">Optional. Identifier specifying a <code>Variant</code> Type variable representing the indexes of the fields on which the data groups will be created.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><em>headers</em></td>
 <td style="text-align: left;">Optional. Identifier specifying a <code>Boolean</code> Type variable indicating whether the target CSV file has a header record.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><em>repeatHeaders</em></td>
+<td style="text-align: left;">Optional. Identifier specifying a <code>Boolean</code> Type variable indicating whether the header record, from the target CSV file, will be copied to all created files.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><em>streamSize</em></td>
+<td style="text-align: left;">Optional. Identifier specifying a <code>Long</code> Type variable representing the buffer size factor used to read the target CSV file.</td>
 </tr>
 </tbody>
 </table>
@@ -50,11 +58,11 @@ Splits the CSV data into a set of files in which each piece has a related portio
 
 ## Behavior
 
-The `CSVsubsetSplit` method will create a file for each different value (data grouping) in the field at the *subsetColumn* position, then all related data is appended to the respective file. Use the *headers* parameter to include a header record in each new CSV file. When the CSV file has a header record and the user sets the *header* parameter to `False`, the header row is saved in a separate file and the rest of CSV files will have no header record.
+The `CSVsubsetSplit` method will create a file for each different value (data grouping) in the fields at the *subsetColumns* position, then all related data is appended to the respective file. Use the *headers* parameter to include a header record in each new CSV file. The *subsetColumns* parameter can be a single value or an array of `Long` values.  When the CSV file has a header record and the user sets the *header* parameter to `False`, the header row is saved in a separate file and the rest of CSV files will have no header record. The user can control when to include the headers by using the *repeatHeaders* parameter.
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
->The result subsets will be saved in a folder named [\*-subsets], where (\*) denotes the name of the source CSV file.
+>The result subsets will be saved in a folder named [\*-WorkDir], where (\*) denotes the name of the source CSV file.
 {: .text-grey-dk-300 .bg-grey-lt-000 }
 
 ### ☕Example

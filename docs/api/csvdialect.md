@@ -5,10 +5,7 @@ nav_order: 6
 ---
 
 # CSVdialect
-{: .d-inline-block }
-
-New
-{: .label .label-purple }
+{: .fs-6 }
 
 Class module developed to share CSV dialects, or group of specific and related configuration, which instructs the parser on how to interpret the character set read from a CSV file. This container travels through the parsing and sniffer methods.
 {: .fs-4 .fw-300 }
