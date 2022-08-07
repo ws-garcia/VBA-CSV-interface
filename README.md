@@ -346,27 +346,48 @@ End Sub
 With VBA CSV interface, many things can be done, for example, an user can perform like SQL joins such as:
 
 ```
-Sub JoinTwoTables()
-    Dim WB As Workbook
-    Dim WS As Worksheet
-    Dim t1 As CSVArrayList
-    Dim t2 As CSVArrayList
-    Dim arrT1() As Variant
-    Dim arrT2() As Variant
+Sub JoinTwoCSV()
+    Dim csv1 As CSVinterface
+    Dim csv2 As CSVinterface
     Dim rTable As CSVArrayList
     
-    Set WB = ThisWorkbook
-    Set WS = WB.Sheets("Orders"): arrT1() = WS.Range("A1:G21").Value2
-    Set WS = WB.Sheets("Ships and sales"): arrT2() = WS.Range("A1:F27").Value2
-    Set t1 = New CSVArrayList: t1.items = arrT1
-	 Set t2 = New CSVArrayList: t2.items = arrT2
-	 ' Join 1st, "Region", and 3th to 5th fields of left table with "Total_Revenue" field from the right table,
-	 ' on "Order_ID" of both tables and Total_Revenue, from the right table, is  greater than 3000000
-	 ' and Region, from the left table, is equal to "Central America and the Caribbean"
-    Set rTable = t1.LeftJoin(t1, t2, _
-                "{1,Region,3-5};{Total_Revenue}", _
-                "Order_ID;Order_ID", _
-                "t2.Total_Revenue>3000000 & t1.Region='Central America and the Caribbean'")
+    '@--------------------------------------------------
+    ' Import data from CSV files
+    Set csv1 = New CSVinterface
+    With csv1
+        .parseConfig.delimitersGuessing = True
+        .parseConfig.path = Environ("USERPROFILE") & "\Desktop\Sales details.csv"
+        .ImportFromCSV .parseConfig
+    End With
+    Set csv2 = New CSVinterface
+    With csv2
+        .parseConfig.delimitersGuessing = True
+        .parseConfig.path = Environ("USERPROFILE") & "\Desktop\Sales revenues.csv"
+        .ImportFromCSV .parseConfig
+    End With
+    '@--------------------------------------------------
+    ' Perform a like SQL Left join on imported data.
+    With csv1.items
+    	 ' Join 1st, "Region", and 3th to 5th fields of left table with "Total_Revenue" field from the right table,
+	 ' on "Order_ID" of both tables if Total_Revenue is  greater than 3000000
+	 ' and Region is equal to "Central America and the Caribbean"
+        Set rTable = .LeftJoin(csv1.items, csv2.items, _
+                   	"{1,Region,3-5};{Total_Revenue}", _
+                	"Order_ID;Order_ID", _
+                	"t2.Total_Revenue>3000000 & t1.Region='Central America and the Caribbean'")
+			
+        ' The "*" symbol can be used to retrieve all fields
+        ' from a given table like this.
+        
+            'Set rTable = .LeftJoin(csv1.items, csv2.items, _
+                        "{*};{Total_Revenue}", _
+                        "Order_ID;Order_ID", _
+                        "t2.Total_Revenue>3000000 & t1.Region='Central America and the Caribbean'")
+                        
+    End With
+    '@--------------------------------------------------
+    ' Write the result in a spreadsheet.
+    csv1.DumpToSheet DataSource:=rTable
 End Sub
 ```
 
