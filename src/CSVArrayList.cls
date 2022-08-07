@@ -873,7 +873,7 @@ End Function
 Public Function Group(Table As CSVArrayList, By As Variant, OperateOn As Variant, _
                         Optional Alias As String = vbNullString, _
                         Optional AggregateFunct As AggregateFunctions = AggregateFunctions.AF_Summary, _
-                        Optional Headers As Boolean = True) As CSVArrayList
+                        Optional headers As Boolean = True) As CSVArrayList
     On Error GoTo grop_errHandler
     Dim deltaPos As Long
     Dim gAvg As Double
@@ -904,7 +904,7 @@ Public Function Group(Table As CSVArrayList, By As Variant, OperateOn As Variant
     Set Group = New CSVArrayList
     'Save fields indexes
     If Not IsNumeric(By) Then
-        If Headers Then
+        If headers Then
             GroupFIdx = GetColumnIndex(CStr(By), Table.Item(0)) - deltaPos + 1
         Else
             GroupFIdx = 1 'Base 1 input
@@ -913,7 +913,7 @@ Public Function Group(Table As CSVArrayList, By As Variant, OperateOn As Variant
         GroupFIdx = Abs(By)
     End If
     If Not IsNumeric(OperateOn) Then
-        If Headers Then
+        If headers Then
             OperateFidx = GetColumnIndex(CStr(OperateOn), Table.Item(0)) - deltaPos + 1
         Else
             OperateFidx = 1 'Base 1 input
@@ -922,7 +922,7 @@ Public Function Group(Table As CSVArrayList, By As Variant, OperateOn As Variant
         OperateFidx = Abs(OperateOn)
     End If
     'Save first row
-    If Headers Then
+    If headers Then
         tmpRow(0) = Table.Item(0)(GroupFIdx + deltaPos - 1)
         If AggregateFunct <> AggregateFunctions.AF_Summary Then
             If Alias <> vbNullString Then
@@ -942,15 +942,15 @@ Public Function Group(Table As CSVArrayList, By As Variant, OperateOn As Variant
     'Sort the data if needed
     If Table.IsSorted Then
         If LAST_SORTED_FIELD <> GroupFIdx Then 'Sorting required
-            tmpData = Table.Copy.Sort(fromIndex:=1 + Abs(Headers), sortingKeys:=GroupFIdx + deltaPos).items
+            tmpData = Table.Copy.Sort(fromIndex:=1 + Abs(headers), sortingKeys:=GroupFIdx + deltaPos).items
         Else
             tmpData = Table.Copy.items
         End If
     Else
-        tmpData = Table.Copy.Sort(fromIndex:=1 + Abs(Headers), sortingKeys:=GroupFIdx + deltaPos).items
+        tmpData = Table.Copy.Sort(fromIndex:=1 + Abs(headers), sortingKeys:=GroupFIdx + deltaPos).items
     End If
     'Compute agregates
-    If Headers Then
+    If headers Then
         iCounter = LBound(tmpData) + 1 'Headers worked yet
     Else
         iCounter = LBound(tmpData)
@@ -1484,7 +1484,7 @@ Public Function LeftJoin(ByRef leftTable As CSVArrayList, _
                             Columns As String, _
                             matchKeys As String, _
                             Optional predicate As String = vbNullString, _
-                            Optional Headers As Boolean = True) As CSVArrayList
+                            Optional headers As Boolean = True) As CSVArrayList
                              
     Dim cColumns() As String
     Dim cKeys() As String
@@ -1510,6 +1510,7 @@ Public Function LeftJoin(ByRef leftTable As CSVArrayList, _
     Dim rightIdxDelta As Long
     Dim sCounter As Long
     Dim tmpIndex As Long
+    Dim WrittenHeaders As Boolean
     
     On Error GoTo join_errHandler
     If leftTable.Indexing Or rightTable.Indexing Then Exit Function 'Not available for indexed lists
@@ -1540,7 +1541,7 @@ Public Function LeftJoin(ByRef leftTable As CSVArrayList, _
     FillReqFlds fullReqFields, lftTableReqFlds, leftIdxDelta, leftIdxDelta
     FillReqFlds fullReqFields, rgtTableReqFlds, LftTblENDidx + 1, leftIdxDelta
     Set refTable = rightTable.Copy
-    refTable.Sort 1 + Abs(Headers), sortingKeys:=CLng(cKeys(UBound(cKeys))) + rightIdxDelta  'Sort the right table
+    refTable.Sort 1 + Abs(headers), sortingKeys:=CLng(cKeys(UBound(cKeys))) + rightIdxDelta  'Sort the right table
     Set exprHelper = New CSVexpressions
     With exprHelper
         If predicate <> vbNullString Then
@@ -1554,7 +1555,7 @@ Public Function LeftJoin(ByRef leftTable As CSVArrayList, _
             .Create cPredicate
             FilterFields() = GetIndexesFromVarList(.CurrentVariables)
         End If
-        For rCounter = Abs(Headers) To leftTable.count - 1
+        For rCounter = Abs(headers) To leftTable.count - 1
             'Initial configurations
             MatchesForCurrentKey.Clear
             MatchCounter = 0
@@ -1581,6 +1582,23 @@ Public Function LeftJoin(ByRef leftTable As CSVArrayList, _
                 MatchesForCurrentKey.Add -1
             End If
             Do
+                If headers Then
+                    If Not WrittenHeaders Then
+                        ' Fill headers on left
+                        For sCounter = 0 To LftTblENDidx
+                            resultRecord(sCounter) = leftTable(0)(lftTableReqFlds(sCounter) _
+                                                    + leftIdxDelta - 1)
+                        Next sCounter
+                        ' Fill headers on right
+                        For sCounter = LftTblENDidx + 1 To UBound(resultRecord)
+                            resultRecord(sCounter) = refTable(0)(rgtTableReqFlds(sCounter - _
+                                                    (LftTblENDidx + 1)) + rightIdxDelta - 1)
+                        Next sCounter
+                        LeftJoin.Add resultRecord 'Append current record
+                        WrittenHeaders = True
+                        resultRecord() = resultRecord_BK
+                    End If
+                End If
                 'Fill left table data
                 For sCounter = 0 To LftTblENDidx
                     resultRecord(sCounter) = leftTable(rCounter)(lftTableReqFlds(sCounter) _
@@ -1597,7 +1615,7 @@ Public Function LeftJoin(ByRef leftTable As CSVArrayList, _
                     If .ErrorType = ExpressionErrors.errNone Then
                         If err.Number = 0 Then
                             If CBool(.result) Then
-                                'Fill in the data in the table on the left only if the join and predicate are satisfied.
+                                'Fill in the data in the table on the right only if the join and predicate are satisfied.
                                 If lJoinIndex > -1 Then
                                     For sCounter = LftTblENDidx + 1 To UBound(resultRecord)
                                         resultRecord(sCounter) = refTable(lJoinIndex)(rgtTableReqFlds(sCounter - _
@@ -1610,7 +1628,7 @@ Public Function LeftJoin(ByRef leftTable As CSVArrayList, _
                         End If
                     End If
                 Else
-                    'Fill in the data in the table on the left only if the join is satisfied.
+                    'Fill in the data in the table on the right only if the join is satisfied.
                     If lJoinIndex > -1 Then
                         For sCounter = LftTblENDidx + 1 To UBound(resultRecord)
                             resultRecord(sCounter) = refTable(lJoinIndex)(rgtTableReqFlds(sCounter - _
@@ -1653,7 +1671,7 @@ Public Function RightJoin(ByRef leftTable As CSVArrayList, _
                             Columns As String, _
                             matchKeys As String, _
                             Optional predicate As String = vbNullString, _
-                            Optional Headers As Boolean = True) As CSVArrayList
+                            Optional headers As Boolean = True) As CSVArrayList
     On Error GoTo join_errHandler
     Dim cColumns() As String
     Dim cKeys() As String
@@ -1679,6 +1697,7 @@ Public Function RightJoin(ByRef leftTable As CSVArrayList, _
     Dim rightIdxDelta As Long
     Dim sCounter As Long
     Dim tmpIndex As Long
+    Dim WrittenHeaders As Boolean
     
     If leftTable.Indexing Or rightTable.Indexing Then Exit Function 'Not available for indexed lists
     Set RightJoin = New CSVArrayList
@@ -1708,7 +1727,7 @@ Public Function RightJoin(ByRef leftTable As CSVArrayList, _
     FillReqFlds fullReqFields, lftTableReqFlds, leftIdxDelta, leftIdxDelta
     FillReqFlds fullReqFields, rgtTableReqFlds, LftTblENDidx + 1, leftIdxDelta
     Set refTable = leftTable.Copy
-    refTable.Sort 1 + Abs(Headers), sortingKeys:=CLng(cKeys(LBound(cKeys))) + leftIdxDelta  'Sort the left table
+    refTable.Sort 1 + Abs(headers), sortingKeys:=CLng(cKeys(LBound(cKeys))) + leftIdxDelta  'Sort the left table
     Set exprHelper = New CSVexpressions
     With exprHelper
         If predicate <> vbNullString Then
@@ -1722,7 +1741,7 @@ Public Function RightJoin(ByRef leftTable As CSVArrayList, _
             .Create cPredicate
             FilterFields() = GetIndexesFromVarList(.CurrentVariables)
         End If
-        For rCounter = Abs(Headers) To rightTable.count - 1
+        For rCounter = Abs(headers) To rightTable.count - 1
             'Initial configurations
             MatchesForCurrentKey.Clear
             MatchCounter = 0
@@ -1749,6 +1768,23 @@ Public Function RightJoin(ByRef leftTable As CSVArrayList, _
                 MatchesForCurrentKey.Add -1
             End If
             Do
+                If headers Then
+                    If Not WrittenHeaders Then
+                        ' Fill headers on right
+                        For sCounter = LftTblENDidx + 1 To UBound(resultRecord)
+                            resultRecord(sCounter) = rightTable(0)(rgtTableReqFlds(sCounter - _
+                                                        (LftTblENDidx + 1)) + rightIdxDelta - 1)
+                        Next sCounter
+                        ' Fill headers on left
+                        For sCounter = 0 To LftTblENDidx
+                            resultRecord(sCounter) = refTable(0)(lftTableReqFlds(sCounter) _
+                                                    + leftIdxDelta - 1)
+                        Next sCounter
+                        RightJoin.Add resultRecord 'Append current record
+                        WrittenHeaders = True
+                        resultRecord() = resultRecord_BK
+                    End If
+                End If
                 'Fill right table data
                 For sCounter = LftTblENDidx + 1 To UBound(resultRecord)
                     resultRecord(sCounter) = rightTable(rCounter)(rgtTableReqFlds(sCounter - _
@@ -1821,7 +1857,7 @@ Public Function InnerJoin(ByRef leftTable As CSVArrayList, _
                             Columns As String, _
                             matchKeys As String, _
                             Optional predicate As String = vbNullString, _
-                            Optional Headers As Boolean = True) As CSVArrayList
+                            Optional headers As Boolean = True) As CSVArrayList
                              
     Dim cColumns() As String
     Dim cKeys() As String
@@ -1847,6 +1883,7 @@ Public Function InnerJoin(ByRef leftTable As CSVArrayList, _
     Dim rightIdxDelta As Long
     Dim sCounter As Long
     Dim tmpIndex As Long
+    Dim WrittenHeaders As Boolean
     
     If leftTable.Indexing Or rightTable.Indexing Then Exit Function 'Not available for indexed lists
     Set InnerJoin = New CSVArrayList
@@ -1876,7 +1913,7 @@ Public Function InnerJoin(ByRef leftTable As CSVArrayList, _
     FillReqFlds fullReqFields, lftTableReqFlds, leftIdxDelta, leftIdxDelta
     FillReqFlds fullReqFields, rgtTableReqFlds, LftTblENDidx + 1, leftIdxDelta
     Set refTable = rightTable.Copy
-    refTable.Sort 1 + Abs(Headers), sortingKeys:=CLng(cKeys(UBound(cKeys))) + rightIdxDelta  'Sort the right table
+    refTable.Sort 1 + Abs(headers), sortingKeys:=CLng(cKeys(UBound(cKeys))) + rightIdxDelta  'Sort the right table
     Set exprHelper = New CSVexpressions
     With exprHelper
         If predicate <> vbNullString Then
@@ -1890,7 +1927,7 @@ Public Function InnerJoin(ByRef leftTable As CSVArrayList, _
             .Create cPredicate
             FilterFields() = GetIndexesFromVarList(.CurrentVariables)
         End If
-        For rCounter = Abs(Headers) To leftTable.count - 1
+        For rCounter = Abs(headers) To leftTable.count - 1
                         'Initial configurations
             MatchesForCurrentKey.Clear
             MatchCounter = 0
@@ -1917,6 +1954,23 @@ Public Function InnerJoin(ByRef leftTable As CSVArrayList, _
                 MatchesForCurrentKey.Add -1
             End If
             Do
+                If headers Then
+                    If Not WrittenHeaders Then
+                        ' Fill headers on left
+                        For sCounter = 0 To LftTblENDidx
+                            resultRecord(sCounter) = leftTable(0)(lftTableReqFlds(sCounter) _
+                                                    + leftIdxDelta - 1)
+                        Next sCounter
+                        ' Fill headers on right
+                        For sCounter = LftTblENDidx + 1 To UBound(resultRecord)
+                            resultRecord(sCounter) = refTable(0)(rgtTableReqFlds(sCounter - _
+                                                    (LftTblENDidx + 1)) + rightIdxDelta - 1)
+                        Next sCounter
+                        InnerJoin.Add resultRecord 'Append current record
+                        WrittenHeaders = True
+                        resultRecord() = resultRecord_BK
+                    End If
+                End If
                 lJoinIndex = MatchesForCurrentKey(MatchCounter)
                 If predicate <> vbNullString Then
                     FillReqFlds evalRecord, leftTable(rCounter), leftIdxDelta, leftIdxDelta
