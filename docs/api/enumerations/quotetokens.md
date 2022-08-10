@@ -2,7 +2,7 @@
 title: QuoteTokens
 parent: Enumerations
 grand_parent: API
-nav_order: 3
+nav_order: 5
 ---
 
 # QuoteTokens Enum
@@ -25,7 +25,7 @@ Provides a list of constants to configure the char used as escape character.
 
 ## Syntax
 
-*variable* = `QuoteTokens`.*Constant*
+*variable* = `QuoteTokens`.*MemberName*
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }

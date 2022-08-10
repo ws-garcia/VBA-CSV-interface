@@ -2,7 +2,7 @@
 title: EscapeStyle
 parent: Enumerations
 grand_parent: API
-nav_order: 2
+nav_order: 3
 ---
 
 # EscapeStyle Enum
@@ -24,7 +24,7 @@ Provides a list of constants to configure the escape mechanism used when parsing
 
 ## Syntax
 
-*variable* = `EscapeStyle`.*Constant*
+*variable* = `EscapeStyle`.*MemberName*
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }

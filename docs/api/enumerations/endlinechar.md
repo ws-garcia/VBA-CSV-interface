@@ -2,7 +2,7 @@
 title: EndLineChar
 parent: Enumerations
 grand_parent: API
-nav_order: 1
+nav_order: 2
 ---
 
 # EndLineChar Enum
@@ -25,7 +25,7 @@ Provides a list of constants to configure the `WriteBlankLines` method of the `C
 
 ## Syntax
 
-*variable* = `EndLineChar`.*Constant*
+*variable* = `EndLineChar`.*MemberName*
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }

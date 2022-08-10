@@ -2,7 +2,7 @@
 title: SortingAlgorithms
 parent: Enumerations
 grand_parent: API
-nav_order: 4
+nav_order: 6
 ---
 
 # SortingAlgorithms Enum
@@ -29,7 +29,7 @@ Provides a list of constants to configure the sorting algorithm used when sortin
 
 ## Syntax
 
-*variable* = `SortingAlgorithms`.*Constant*
+*variable* = `SortingAlgorithms`.*MemberName*
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }

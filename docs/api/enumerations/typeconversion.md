@@ -2,7 +2,7 @@
 title: TypeConversion
 parent: Enumerations
 grand_parent: API
-nav_order: 5
+nav_order: 7
 ---
 
 # TypeConversion Enum
@@ -27,7 +27,7 @@ Provides a list of constants to configure the Dynamic Typing conversion behavior
 
 ## Syntax
 
-*variable* = `TypeConversion`.*Constant*
+*variable* = `TypeConversion`.*MemberName*
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
