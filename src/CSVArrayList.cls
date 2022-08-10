@@ -203,13 +203,19 @@ End Property
 ''' </summary>
 Public Property Get items() As Variant
 Attribute items.VB_Description = "Gets an array with all the Items from the current instance."
-    If CurrentIndex >= 0 Then
-        Dim tmpResult() As Variant
-        tmpResult = Buffer
-        If MaxIndex <> CurrentIndex Then
-            ReDim Preserve tmpResult(0 To CurrentIndex)
+    If Not P_INDEXING Then
+        If CurrentIndex >= 0 Then
+            Dim tmpResult() As Variant
+            tmpResult = Buffer
+            If MaxIndex <> CurrentIndex Then
+                ReDim Preserve tmpResult(0 To CurrentIndex)
+            End If
+            items = tmpResult
         End If
-        items = tmpResult
+    Else
+        If IndexedCurrentIndex >= 0 Then
+            items = IndexedItems
+        End If
     End If
 End Property
 
