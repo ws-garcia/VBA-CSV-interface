@@ -13,3 +13,6 @@ In order to make your contribution happen in the best way, follow this instructi
 - Fork the repository and work on your changes.
 - Submit a pull request. 
 - Your changes will be merged, when the review is done.
+
+**NOTE**: Due to the philosophy of this project, pull requests must be free of external dependencies such as `Scripting runtime`.
+ 
