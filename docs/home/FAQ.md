@@ -72,4 +72,4 @@ Another limitation that has been broken in the most recent versions of the VBA C
 
 ### Where can I find the documentation for parser options?
 
-All available options reside in the `parseConfig` property of the parser and are fully documented in the [API documentation](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/csvparserconfig.html). 
+All available options reside in the `parseConfig` property of the parser and are fully documented in the [API documentation](https://ws-garcia.github.io/VBA-CSV-interface/api/properties/parseconf.html). 
