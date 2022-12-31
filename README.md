@@ -406,6 +406,7 @@ The library is composed of the following class modules:
 * [`CSVcallBack`](https://github.com/ws-garcia/VBA-Expressions)
 * `CSVdialect`
 * [`CSVexpressions`](https://github.com/ws-garcia/VBA-Expressions)
+* [`CSVexpressionsScope`](https://github.com/ws-garcia/VBA-Expressions)
 * `CSVinterface`
 * `CSVparserConfig`
 * `CSVSniffer`
