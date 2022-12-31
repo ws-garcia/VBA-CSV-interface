@@ -112,7 +112,7 @@ Option Explicit
 ' However, the array function needs to take care of creating arrays from a string, the ArrayFromString
 ' method can be used for this purpose.
 '
-' For illustration pourposes, the UDFunctions.cls module has an implementation of the DET function
+' For illustration pourposes, the CSVudFunctions.cls module has an implementation of the DET function
 ' with a usage example of the array handle function. As well, the GCD function is implemented as demo.
 '
 '///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -145,28 +145,32 @@ Private Const d_rCurly As String = "}"
 Private Const d_lParenthesis As String = "("
 Private Const d_rParenthesis As String = ")"
 Private Const d_Apostrophe As String = "'"
+Private Const d_Space As String = " "
+Private Const e_ValueError As String = "#VALUE!"
+Private Const TINY As Double = 1E-20
 '#
 '///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ' VARIABLES:
 Private AssignedExpression As Boolean
-Private Const BuildinFunctIDList As String = "abs;floor;asin;acos;atn;avg;ceil;cos;exp;gamma;log;lgn;ln;max;min;percent;pow;sgn;sin;sqr;tan"
-Private Const BuildinFunctNameList As String = "Absolute;aFloor;ArcSin;ArcCos;ArcTan;Average;aCeiling;Cosin;ExpEuler;Gamma;Logarithm;LgN;LN;Max;Min;Percent;Power;Sign;Sine;SquareRoot;Tangent"
+Private BuildinFunctIDList As String
+Private BuildinFunctNameList As String
 Private ComputedTree As Boolean
 Private EvalTree() As ClusterTree
 Private ExprToEval As String
-Private ExprVariables As ClusterBuffer
 Private FunctionsId() As String
 Private FunctionsName() As String
 Private GeneratedTree As Boolean
 Private IsUDFFunction As Boolean
 Private LIndexConstruc(0 To 2) As String
-Private P_CONSTANTS As ClusterBuffer
 Private P_DEGREES As Boolean
 Private P_ERRORDESC As String
 Private P_ERRTYPE As ExpressionErrors
 Private P_EXPRESSION As String
+Private P_FORCE_BOOLEAN As Boolean
+Private P_FORMATRESULT As Boolean
 Private P_GALLOPING_MODE As Boolean
 Private P_RESULT As Variant
+Private P_SCOPE As CSVexpressionsScope
 Private P_SEPARATORCHAR As String
 Private SubTreeData() As String
 Private UserDefFunctions As ClusterBuffer
@@ -201,6 +205,10 @@ Public Enum ExpressionErrors
     errEvalError = 3
     errVariableNotAssigned = 4
 End Enum
+'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+'#
+'///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+' TYPES:
 Private Type Argument
     DefString As String
     FactorialIn As Boolean
@@ -234,18 +242,19 @@ Private Type ClusterTree
     CompArrCluster As Boolean
     CompCluster As Boolean
     EvalResult As String
-    Index As Long
+    index As Long
+    resulstMap As String
     Storage() As token
 End Type
 Private Type ClusterItem
-    Index As Long
+    index As Long
     name As String
     value As String
     Assigned As Boolean
 End Type
 Private Type ClusterBuffer
     Capacity As Long
-    Index As Long
+    index As Long
     Storage() As ClusterItem
 End Type
 
@@ -260,14 +269,23 @@ Private Sub Class_Initialize()
     e = Exp(1)
     P_SEPARATORCHAR = ";"
     P_GALLOPING_MODE = False
+    P_FORMATRESULT = False
+    BuildinFunctIDList = "abs;floor;asin;acos;asc;atn;array;avg;ceil;chr;cos;choose;date;dateadd;datediff" & _
+                            ";datepart;dateserial;datevalue;day;ddb;det;exp;format;fv;fzero;gamma;hour;iff;inverse;ipmt" & _
+                            ";irr;lcase;left;len;log;lgn;ln;ludecomp;lusolve;max;mid;min;minute;mirr;mmult;month;monthname;now" & _
+                            ";nper;npv;percent;pmt;ppmt;pow;pv;rate;replace;right;sgn;sin;sln;solve;sqr;switch" & _
+                            ";syd;tan;timeserial;timevalue;trim;ucase;weekday;weekdayname;year"
+    BuildinFunctNameList = "Absolute;aFloor;ArcSin;ArcCos;ASCII;ArcTan;strArray;Average;aCeiling;ASCIIchr;Cosin" & _
+                            ";aChoose;aDate;aDateAdd;aDateDiff;aDatePart;aDateSerial;aDateValue;aDay;aDDB;MatrixDeterminant" & _
+                            ";ExpEuler;aFormat;aFV;FunctionZero;Gamma;aHour;aIff;InverseMatrix;aIPMT;aIRR;LowerCase;aLeft;aLen;Logarithm" & _
+                            ";LgN;LN;LUdecomposition;LUSolveLinearSystem;Max;Middle;Min;aMinute;aMIRR;MatrixMult;aMonth;aMonthName;aNow;aNPER;aNPV;Percent;aPMT;aPPMT;Power;aPV" & _
+                            ";aRATE;aReplace;aRight;Sign;Sine;aSLN;SolveLinearSystem;SquareRoot;aSwitch;aSYD;Tangent;aTimeSerial;aTimeValue" & _
+                            ";aTrim;aUcase;aWweekDay;aWeekDayName;aYear"
     FunctionsId() = Split(BuildinFunctIDList, ";")
     FunctionsName() = Split(BuildinFunctNameList, ";")
-    InitCBbuffer P_CONSTANTS
+    Set P_SCOPE = New CSVexpressionsScope
+    P_FORCE_BOOLEAN = False
     InitCBbuffer UserDefFunctions
-    '@--------------------------------------------------------------------
-    ' Save predefined constants
-    AppendToCBbuffer P_CONSTANTS, "pi", CStr(PI)
-    AppendToCBbuffer P_CONSTANTS, "e", CStr(e)
     '@--------------------------------------------------------------------
     ' Populate linked index constructor
     LIndexConstruc(0) = d_lCurly
@@ -275,10 +293,10 @@ Private Sub Class_Initialize()
     '@--------------------------------------------------------------------
     ' Populate building UDFs
     Dim UDFnames() As Variant
-    UDFnames() = Array("GCD", "DET", "Concat")
-    DeclareUDF UDFnames, "UserDefFunctions"                 'Declare the Greatest Common Divisor, matrix Determinant and
-                                                            'the string concatenation functions defined in the UDfunctions
-                                                            'class module. This needan instance in the VBAcallBack class module.
+    UDFnames() = Array("GCD", "Concat")
+    DeclareUDF UDFnames, "UserDefFunctions"                 ' Declare the Greatest Common Divisor and the string concatenation
+                                                            ' functions defined in the CSVudFunctions class module.
+                                                            ' This need an instance in the CSVcallBack class module.
     '@--------------------------------------------------------------------
     ' Initialize error messages
     InitializeErrHandler
@@ -292,75 +310,59 @@ End Sub
 ''' <summary>
 ''' Gets the constants collection. By default this is pre-populated with PI and e.
 ''' </summary>
-Public Property Get Constants() As Collection
-    Dim i As Long
-    
-    Set Constants = New Collection
-    For i = 0 To P_CONSTANTS.Index
-        Constants.Add P_CONSTANTS.Storage(i).value, P_CONSTANTS.Storage(i).name
-    Next i
+Public Property Get constants() As Collection
+    Set constants = P_SCOPE.constants
 End Property
 
 ''' <summary>
 ''' Gets a string with the variables values used for the last evaluation.
 ''' </summary>
-Public Property Get CurrentVarValues() As String
-    Dim i As Long
-    Dim tmpResult As String
-    
-    For i = 0 To ExprVariables.Index
-        If tmpResult = vbNullString Then
-            tmpResult = ExprVariables.Storage(i).name & " = " & _
-                        ExprVariables.Storage(i).value
-        Else
-            tmpResult = tmpResult & "; " & ExprVariables.Storage(i).name & " = " & _
-                        ExprVariables.Storage(i).value
-        End If
-    Next i
-    CurrentVarValues = tmpResult
+Public Property Get currentVarValues() As String
+    currentVarValues = P_SCOPE.currentVarValues
 End Property
 
 ''' <summary>
 ''' Gets a string with the variables values used for the last evaluation.
 ''' </summary>
-Public Property Get CurrentVariables() As String
-    Dim i As Long
-    Dim tmpResult As String
-    
-    For i = 0 To ExprVariables.Index
-        If tmpResult = vbNullString Then
-            tmpResult = ExprVariables.Storage(i).name
-        Else
-            tmpResult = tmpResult & "; " & ExprVariables.Storage(i).name
-        End If
-    Next i
-    CurrentVariables = tmpResult
+Public Property Get currentVariables() As String
+    currentVariables = P_SCOPE.currentVariables
 End Property
 
 ''' <summary>
 ''' Gets or sets the behavior when calculating trigonometric functions. If True, the program
 ''' will assume argument passed in degrees for all trigonometric functions.
 ''' </summary>
-Public Property Get Degrees() As Boolean
-    Degrees = P_DEGREES
+Public Property Get degrees() As Boolean
+    degrees = P_DEGREES
 End Property
 
-Public Property Let Degrees(AValue As Boolean)
-    P_DEGREES = AValue
+Public Property Let degrees(aValue As Boolean)
+    P_DEGREES = aValue
 End Property
 
 ''' <summary>
 ''' Returns the last error message generated.
 ''' </summary>
-Public Property Get ErrorDesc() As String
-    ErrorDesc = P_ERRORDESC
+Public Property Get errorDesc() As String
+    errorDesc = P_ERRORDESC
 End Property
 
 ''' <summary>
 ''' Returns the type of the last error message generated.
 ''' </summary>
-Public Property Get ErrorType() As ExpressionErrors
-    ErrorType = P_ERRTYPE
+Public Property Get errorType() As ExpressionErrors
+    errorType = P_ERRTYPE
+End Property
+
+''' <summary>
+''' Sets/gets the scope for the current expression.
+''' </summary>
+Public Property Get evalScope() As CSVexpressionsScope
+    Set evalScope = P_SCOPE
+End Property
+
+Public Property Set evalScope(aObject As CSVexpressionsScope)
+    Set P_SCOPE = aObject
 End Property
 
 ''' <summary>
@@ -371,65 +373,81 @@ Public Property Get expression() As String
 End Property
 
 ''' <summary>
+''' When True, a False is returned on evaluation errors.
+''' This can be useful when evaluating piecewise functions.
+''' </summary>
+Public Property Let forceBoolean(aValue As Boolean)
+    P_FORCE_BOOLEAN = aValue
+End Property
+
+Public Property Get forceBoolean() As Boolean
+    forceBoolean = P_FORCE_BOOLEAN
+End Property
+
+''' <summary>
+''' Indicates if the results will be converted to standard VBA strings
+''' </summary>
+Public Property Get formatResult() As Boolean
+    formatResult = P_FORMATRESULT
+End Property
+
+Public Property Let formatResult(aValue As Boolean)
+    P_FORMATRESULT = aValue
+End Property
+
+''' <summary>
 ''' Gets or sets the evaluation in galloping mode. When set
 ''' to True, the evaluator will discriminate constant tokens
 ''' from variable tokens.
 ''' </summary>
-Public Property Get GallopingMode() As Boolean
-    GallopingMode = P_GALLOPING_MODE
+Public Property Get gallopingMode() As Boolean
+    gallopingMode = P_GALLOPING_MODE
 End Property
 
-Public Property Let GallopingMode(AValue As Boolean)
-    P_GALLOPING_MODE = AValue
+Public Property Let gallopingMode(aValue As Boolean)
+    P_GALLOPING_MODE = aValue
 End Property
 
 ''' <summary>
 ''' Gets the parsed status of the actual expression.
 ''' </summary>
-Public Property Get ReadyToEval() As Boolean
-    ReadyToEval = GeneratedTree
+Public Property Get readyToEval() As Boolean
+    readyToEval = GeneratedTree
 End Property
 
 ''' <summary>
 ''' Gets the result aftter evaluate the give  expression.
 ''' </summary>
-Public Property Get Result() As String
-    Result = P_RESULT
+Public Property Get result() As String
+    If P_FORMATRESULT Then
+        result = FormatLiteralString(CStr(P_RESULT), True)
+    Else
+        result = P_RESULT
+    End If
 End Property
 
 ''' <summary>
 ''' Gets or sets the character used as functions argumnets, array elements, separator. By
 ''' default the char used is the semicolon ";".
 ''' </summary>
-Public Property Get SeparatorChar() As String
-    SeparatorChar = P_SEPARATORCHAR
+Public Property Get separatorChar() As String
+    separatorChar = P_SEPARATORCHAR
 End Property
 
-Public Property Let SeparatorChar(AValue As String)
-    P_SEPARATORCHAR = AValue
+Public Property Let separatorChar(aValue As String)
+    P_SEPARATORCHAR = aValue
 End Property
 
 ''' <summary>
 ''' Gets or sets the current value from/to the given variable.
 ''' </summary>
-Public Property Get VarValue(aVarName As String) As String
-    Dim ValueIdx As Long
-    
-    ValueIdx = GetCBItemIdx(ExprVariables, aVarName)
-    If ValueIdx > -1 Then
-        VarValue = ExprVariables.Storage(ValueIdx).value
-    End If
+Public Property Get varValue(aVarName As String) As String
+    varValue = P_SCOPE.varValue(aVarName)
 End Property
 
-Public Property Let VarValue(aVarName As String, aVarValue As String)
+Public Property Let varValue(aVarName As String, aVarValue As String)
     If GeneratedTree Then
-        Dim ValueIdx As Long
-        
-        ValueIdx = GetCBItemIdx(ExprVariables, aVarName)
-        If ValueIdx > -1 Then
-            ExprVariables.Storage(ValueIdx).value = aVarValue
-            ExprVariables.Storage(ValueIdx).Assigned = True
-        End If
+        P_SCOPE.varValue(aVarName) = aVarValue
     End If
 End Property
 
@@ -444,28 +462,19 @@ Private Function aCeiling(ByRef expression As String) As Double
     aCeiling = Ceiling(CDbl(expression))
 End Function
 
-Public Sub AddConstant(AValue As String, aKey As String)
-    Dim ConstIdx As Long
-    
-    ConstIdx = GetCBItemIdx(P_CONSTANTS, aKey)
-    If ConstIdx = -1 Then 'Ensure uniqueness
-        AppendToCBbuffer P_CONSTANTS, aKey, AValue
-    End If
+Public Sub AddConstant(aValue As String, aKey As String)
+    P_SCOPE.AddConstant aValue, aKey
 End Sub
 
-Private Sub AddVariable(ByRef variable As String, ByRef aKey As String)
-    Dim VarIdx As Long
-    
-    aKey = CastCase(variable)
-    VarIdx = GetCBItemIdx(ExprVariables, aKey)
-    If VarIdx = -1 Then 'Ensure uniqueness
-        AppendToCBbuffer ExprVariables, aKey
-        VarIdx = GetCBItemIdx(P_CONSTANTS, aKey)
-        If VarIdx > -1 Then 'Assign the value from constants
-            ExprVariables.Storage(ExprVariables.Index).value = P_CONSTANTS.Storage(VarIdx).value
-            ExprVariables.Storage(ExprVariables.Index).Assigned = True
-        End If
+Private Sub AddToMap(aValue As Long, aTarget As ClusterTree)
+    If aTarget.resulstMap = vbNullString Then
+        aTarget.resulstMap = CStr(aValue)
+    Else
+        aTarget.resulstMap = aTarget.resulstMap & P_SEPARATORCHAR & aValue
     End If
+End Sub
+Private Sub AddVariable(ByRef variable As String, ByRef aKey As String)
+    P_SCOPE.AddVariable variable, aKey
 End Sub
 
 Private Function aFloor(ByRef expression As String) As Double
@@ -473,31 +482,31 @@ Private Function aFloor(ByRef expression As String) As Double
 End Function
 
 Private Sub AppendToBuffer(ByRef aBuffer As ClusterTree, ByRef aToken As token)
-    aBuffer.Index = aBuffer.Index + 1
+    aBuffer.index = aBuffer.index + 1
     On Error GoTo BufferAppend_errHandler
-    aBuffer.Storage(aBuffer.Index) = aToken
+    aBuffer.Storage(aBuffer.index) = aToken
     Exit Sub
 BufferAppend_errHandler:
     err.Clear
     ExpandBuffer aBuffer
-    aBuffer.Storage(aBuffer.Index) = aToken
+    aBuffer.Storage(aBuffer.index) = aToken
 End Sub
 
 Private Sub AppendToCBbuffer(ByRef aBuffer As ClusterBuffer, ByRef ItemName As String, Optional ByRef ItemValue As String = vbNullString)
-    aBuffer.Index = aBuffer.Index + 1
+    aBuffer.index = aBuffer.index + 1
     On Error GoTo BufferAppend_errHandler
-    aBuffer.Storage(aBuffer.Index).Index = aBuffer.Index
-    aBuffer.Storage(aBuffer.Index).Assigned = (ItemValue <> vbNullString)
-    aBuffer.Storage(aBuffer.Index).name = ItemName
-    aBuffer.Storage(aBuffer.Index).value = ItemValue
+    aBuffer.Storage(aBuffer.index).index = aBuffer.index
+    aBuffer.Storage(aBuffer.index).Assigned = (ItemValue <> vbNullString)
+    aBuffer.Storage(aBuffer.index).name = ItemName
+    aBuffer.Storage(aBuffer.index).value = ItemValue
     Exit Sub
 BufferAppend_errHandler:
     err.Clear
     ExpandCBbuffer aBuffer
-    aBuffer.Storage(aBuffer.Index).Index = aBuffer.Index
-    aBuffer.Storage(aBuffer.Index).Assigned = (ItemValue <> vbNullString)
-    aBuffer.Storage(aBuffer.Index).name = ItemName
-    aBuffer.Storage(aBuffer.Index).value = ItemValue
+    aBuffer.Storage(aBuffer.index).index = aBuffer.index
+    aBuffer.Storage(aBuffer.index).Assigned = (ItemValue <> vbNullString)
+    aBuffer.Storage(aBuffer.index).name = ItemName
+    aBuffer.Storage(aBuffer.index).value = ItemValue
 End Sub
 
 Private Function ApplyLawOfSigns(ByRef expression As String) As String
@@ -546,18 +555,35 @@ Private Function ArcTan(ByRef expression As String) As Double
     ArcTan = tmpEval
 End Function
 
+Private Function Array_(expression As String) As String
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    Dim iCounter As Long
+    
+    tmpData() = SplitArgs(expression)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    tmpEval = tmpData(iCounter)
+    For iCounter = LB + 1 To UB
+        tmpEval = tmpEval & P_SEPARATORCHAR & tmpData(iCounter)
+    Next iCounter
+    Array_ = d_lCurly & tmpEval & d_rCurly
+End Function
+
 ''' <summary>
-''' Turns a like Java array string ({{*};{*}}) into a 2D VBA array with n rows and m columns.
+''' Turns a like Java array string ({{*};{*}}) into a 1D  or 2D VBA array with n rows and m columns.
 ''' </summary>
 ''' <param name="StrArray">The string definition used to create the array.</param>
 ''' <param name="OutStrArray">The array to return in.</param>
-Public Function ArrayFromString(ByRef StrArray As String) As String()
+Public Function ArrayFromString(ByRef strArray As String) As String()
     Dim aIndex As Long
     Dim arrCapacity As Long
     Dim curChar As String
     Dim i As Long, j As Long
     Dim NumCols As Long
     Dim NumRows As Long
+    Dim OneDarr As Boolean
     Dim OutStrArray() As String
     Dim StrCopy As String
     Dim StrLen As Long
@@ -567,7 +593,7 @@ Public Function ArrayFromString(ByRef StrArray As String) As String()
     Dim VectorStartPos As Long
     Dim OpenCBrackets As Long
     
-    StrCopy = ReconstructLiteralStrings(StrArray, Join$(Split(StrArray, " "), vbNullString))
+    StrCopy = ReconstructLiteralStrings(strArray, Join$(Split(strArray, d_Space), vbNullString))
     StrLen = LenB(StrCopy) - 4
     If MidB$(StrCopy, StrLen + 1, 4) <> "}}" Then 'Missed "}" from input
         Exit Function
@@ -579,14 +605,14 @@ Public Function ArrayFromString(ByRef StrArray As String) As String()
     ReDim tmpStr(0 To arrCapacity - 1)
     Do
         curChar = MidB$(StrCopy, i, 2)
-        Do While Not curChar = "{"
+        Do While Not curChar = d_lCurly
             i = i + 2
             If i > StrLen Then
                 Exit Do
             End If
             curChar = MidB$(StrCopy, i, 2)
         Loop
-        VectorOpenFlag = (curChar = "{")
+        VectorOpenFlag = (curChar = d_lCurly)
         If VectorOpenFlag Then
             VectorStartPos = i + 2
             OpenCBrackets = OpenCBrackets + 1
@@ -594,14 +620,14 @@ Public Function ArrayFromString(ByRef StrArray As String) As String()
         Do While VectorOpenFlag
             i = i + 2
             curChar = MidB$(StrCopy, i, 2)
-            If curChar = "{" Then
+            If curChar = d_lCurly Then
                 OpenCBrackets = OpenCBrackets + 1
             Else
-                If curChar = "}" Then
+                If curChar = d_rCurly Then
                     OpenCBrackets = OpenCBrackets - 1
                 End If
             End If
-            VectorOpenFlag = Not (curChar = "}") Or OpenCBrackets
+            VectorOpenFlag = Not (curChar = d_rCurly) Or OpenCBrackets
         Loop
         VectorEndPos = i
         i = i + 2
@@ -614,10 +640,19 @@ Public Function ArrayFromString(ByRef StrArray As String) As String()
     Loop While i <= StrLen
     NumRows = aIndex
     NumCols = UBound(tmpStr(aIndex))
-    ReDim OutStrArray(0 To NumRows, 0 To NumCols)
+    OneDarr = (NumRows = 0)
+    If OneDarr Then
+        ReDim OutStrArray(0 To NumCols)
+    Else '2D array
+        ReDim OutStrArray(0 To NumRows, 0 To NumCols)
+    End If
     For i = 0 To NumRows
         For j = 0 To NumCols
-            OutStrArray(i, j) = tmpStr(i)(j)
+            If OneDarr Then
+                OutStrArray(j) = tmpStr(i)(j)
+            Else
+                OutStrArray(i, j) = tmpStr(i)(j)
+            End If
         Next j
     Next i
     ArrayFromString = OutStrArray
@@ -646,19 +681,19 @@ Public Function ArrayToString(ByRef InputArray As Variant) As String
         For i = LB To UB
             For j = LB2 To UB2
                 If j = LB2 Then
-                    tmpData = tmpData & "{" & GetArrItm(InputArray, MultiDimArr, i, j)
+                    tmpData = tmpData & d_lCurly & GetArrItm(InputArray, MultiDimArr, i, j)
                 Else
                     tmpData = tmpData & P_SEPARATORCHAR & GetArrItm(InputArray, MultiDimArr, i, j)
                 End If
                 If j = UB2 Then
-                    tmpData = tmpData & "}"
+                    tmpData = tmpData & d_rCurly
                 End If
             Next j
             If i < UB Then
                 tmpData = tmpData & P_SEPARATORCHAR
             End If
         Next i
-        ArrayToString = "{" & tmpData & "}"
+        ArrayToString = d_lCurly & tmpData & d_rCurly
     End If
 End Function
 
@@ -683,6 +718,9 @@ Private Function Array1DFrom2DArr(ByRef InputArray() As String) As String()
     Next i
     Array1DFrom2DArr = tmpData
 End Function
+Private Function Asc_(ByRef expression As String) As Long
+    Asc_ = AscW(FormatLiteralString(expression, True))
+End Function
 Private Function average(ByRef expression As String) As Double
     Dim g As Long
     Dim tmpData() As String
@@ -698,6 +736,7 @@ Private Function average(ByRef expression As String) As Double
 End Function
 
 Private Sub BottomLevelEval(ByRef aToken As token)
+    On Error GoTo BLevelEval_errHanlder
     If aToken.OperationToken < 100 Then 'Arithmetic operators
         Select Case aToken.OperationToken
             Case OperatorToken.otSum
@@ -731,12 +770,12 @@ Private Sub BottomLevelEval(ByRef aToken As token)
                 If aToken.Logical Then
                     If aToken.Arg1.NegationFlagOn Then
                         If AscW(aToken.Arg1.Operand) <> 126 Then '"~"
-                            aToken.EvalResult = Not CBool(aToken.Arg1.Operand)
+                            aToken.EvalResult = CBool(CastOPtype(aToken.Arg1.Operand, aToken.Arg1.NegationFlagOn))
                         Else
-                            aToken.EvalResult = Not CBool(MidB$(aToken.Arg1.Operand, 3))
+                            aToken.EvalResult = CBool(MidB$(CastOPtype(aToken.Arg1.Operand, aToken.Arg1.NegationFlagOn), 3))
                         End If
                     Else
-                        aToken.EvalResult = CBool(aToken.Arg1.Operand)
+                        aToken.EvalResult = CBool(CastOPtype(aToken.Arg1.Operand, aToken.Arg1.NegationFlagOn))
                     End If
                 Else
                     aToken.EvalResult = aToken.Arg1.Operand
@@ -782,10 +821,18 @@ Private Sub BottomLevelEval(ByRef aToken As token)
             End Select
         End If
     End If
+    Exit Sub
+BLevelEval_errHanlder:
+    If Not P_FORCE_BOOLEAN Then
+        aToken.EvalResult = e_ValueError
+    Else
+        aToken.EvalResult = False
+    End If
+    P_ERRTYPE = errEvalError
 End Sub
 
-Private Sub BuildErrMessage(ErrorType As ExpressionErrors, Optional AditionalContext As String)
-    P_ERRTYPE = ErrorType
+Private Sub BuildErrMessage(errorType As ExpressionErrors, Optional AditionalContext As String)
+    P_ERRTYPE = errorType
     Select Case P_ERRTYPE
         Case Is = errUnbalancedBrackets
             P_ERRORDESC = "The expression cannot be evaluated due to unbalanced parenthesis count. " & AditionalContext
@@ -858,21 +905,32 @@ Private Function CheckArgument(ByRef ArgDefStr As String, ByRef IsFactorial As B
 End Function
 
 Private Function CheckVarValues() As Boolean
-    If ExprVariables.Index > -1 And AssignedExpression Then
-        Dim i As Long
-        Dim cviCounter As Long
-        
-        For i = 0 To ExprVariables.Index
-            If ExprVariables.Storage(i).Assigned Then
-                cviCounter = cviCounter + 1
-            End If
-        Next i
-        CheckVarValues = (cviCounter = ExprVariables.Index + 1)
+    If AssignedExpression Then
+        CheckVarValues = P_SCOPE.DefinedScope
     Else
         CheckVarValues = True
     End If
 End Function
 
+Private Function Choose(ByRef expression As String) As String
+    Dim LB As Long
+    Dim UB As Long
+    Dim tmpData() As String
+    Dim index As Long
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    index = Fix(CDbl(tmpData(LB))) + LB
+    If index > LB And (index <= UB) Then
+        Choose = tmpData(index)
+    Else
+        Choose = e_ValueError
+    End If
+End Function
+Private Function Chr_(ByRef expression As String) As String
+    Chr_ = ToLiteralString(ChrW(CLng(expression))) 'Expected numeric value
+End Function
 ''' <summary>
 ''' Traverses and evaluates the current parse tree.
 ''' </summary>
@@ -888,7 +946,7 @@ Private Function Compute() As String
     BaseIndex = UBound(SubTreeData) + 1
     For b = LBound(EvalTree) To UBound(EvalTree)              'Loop all subexpressions
         OperationIndex = BaseIndex
-        For t = 0 To EvalTree(b).Index                         'Loop all tokens
+        For t = 0 To EvalTree(b).index                         'Loop all tokens
             OperationIndex = OperationIndex + 1
             If Not EvalTree(b).Storage(t).ConstantToken Then   'Gallop
                 If P_GALLOPING_MODE Then
@@ -907,11 +965,11 @@ Private Function Compute() As String
             EvalTree(b).EvalResult = EvalTree(b).Storage(t - 1).EvalResult
         Else            'The ClusterTree contains a composite function args as expression
             Dim tmpResult() As String
-            ReDim tmpResult(0 To EvalTree(b).Index)
+            tmpResult() = Split(EvalTree(b).resulstMap, P_SEPARATORCHAR)
             '@--------------------------------------------------------------------
             ' Loop all sub-expression tokens results
-            For i = 0 To EvalTree(b).Index
-                tmpResult(i) = EvalTree(b).Storage(i).EvalResult
+            For i = LBound(tmpResult) To UBound(tmpResult)
+                tmpResult(i) = EvalTree(b).Storage(CLng(tmpResult(i))).EvalResult
             Next i
             If Not EvalTree(b).CompArrCluster Then   'Function Argument
                 EvalTree(b).EvalResult = Join$(tmpResult, P_SEPARATORCHAR)
@@ -950,8 +1008,8 @@ End Function
 
 Public Function Create(ByRef aExpression As Variant) As CSVexpressions
     If aExpression <> vbNullString Then
-        ExprToEval = RemoveDupNegation(ApplyLawOfSigns(ReconstructLiteralStrings(CStr(aExpression), Join$(Split(aExpression, " "), vbNullString))))
-        If ExprToEval <> RemoveDupNegation(ApplyLawOfSigns(ReconstructLiteralStrings(CStr(P_EXPRESSION), Join$(Split(P_EXPRESSION, " "), vbNullString)))) Then
+        ExprToEval = FormatEntry(CStr(aExpression))
+        If ExprToEval <> FormatEntry(P_EXPRESSION) Then
             P_EXPRESSION = aExpression
             VariablesInit ExprToEval
             Parse ExprToEval
@@ -960,7 +1018,164 @@ Public Function Create(ByRef aExpression As Variant) As CSVexpressions
     End If
     Set Create = Me
 End Function
-
+Private Function Date_(ByRef expression As String) As String
+    Date_ = ToLiteralString(Date)
+End Function
+Private Function DateAdd_(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 3
+            tmpEval = ToLiteralString(DateAdd( _
+                                FormatLiteralString(tmpData(LB), True), _
+                                CDbl(FormatLiteralString(tmpData(LB + 1), True)), _
+                                FormatLiteralString(tmpData(UB), True) _
+                                ))
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    DateAdd_ = tmpEval
+End Function
+Private Function DateDiff_(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 3
+            tmpEval = DateDiff( _
+                                FormatLiteralString(tmpData(LB), True), _
+                                FormatLiteralString(tmpData(LB + 1), True), _
+                                FormatLiteralString(tmpData(UB), True) _
+                                )
+        Case 4
+            tmpEval = DateDiff( _
+                                FormatLiteralString(tmpData(LB), True), _
+                                FormatLiteralString(tmpData(LB + 1), True), _
+                                FormatLiteralString(tmpData(LB + 2), True), _
+                                CLng(FormatLiteralString(tmpData(UB), True)) _
+                                )
+        Case 5
+            tmpEval = DateDiff( _
+                                FormatLiteralString(tmpData(LB), True), _
+                                FormatLiteralString(tmpData(LB + 1), True), _
+                                FormatLiteralString(tmpData(LB + 2), True), _
+                                CLng(FormatLiteralString(tmpData(LB + 3), True)), _
+                                CLng(FormatLiteralString(tmpData(UB), True)) _
+                                )
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    DateDiff_ = tmpEval
+End Function
+Private Function DatePart_(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 2
+            tmpEval = DatePart( _
+                                FormatLiteralString(tmpData(LB), True), _
+                                FormatLiteralString(tmpData(UB), True) _
+                                )
+        Case 3
+            tmpEval = DatePart( _
+                                FormatLiteralString(tmpData(LB), True), _
+                                FormatLiteralString(tmpData(LB + 1), True), _
+                                CLng(FormatLiteralString(tmpData(UB), True)) _
+                                )
+        Case 4
+            tmpEval = DatePart( _
+                                FormatLiteralString(tmpData(LB), True), _
+                                FormatLiteralString(tmpData(LB + 1), True), _
+                                CLng(FormatLiteralString(tmpData(LB + 2), True)), _
+                                CLng(FormatLiteralString(tmpData(UB), True)) _
+                                )
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    DatePart_ = tmpEval
+End Function
+Private Function DateSerial_(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 3
+            tmpEval = ToLiteralString(DateSerial( _
+                                CLng(FormatLiteralString(tmpData(LB), True)), _
+                                CLng(FormatLiteralString(tmpData(LB + 1), True)), _
+                                CLng(FormatLiteralString(tmpData(UB), True)) _
+                                ))
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    DateSerial_ = tmpEval
+End Function
+Private Function DateValue_(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 1
+            tmpEval = ToLiteralString(DateValue( _
+                                FormatLiteralString(tmpData(LB), True) _
+                                ))
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    DateValue_ = tmpEval
+End Function
+Private Function Day_(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 1
+            tmpEval = Day( _
+                            FormatLiteralString(tmpData(LB), True) _
+                            )
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    Day_ = tmpEval
+End Function
 Public Sub DeclareUDF(ByRef UDFname As Variant, Optional ByRef UDFlib As String = "UserDefFunctions")
     If IsArray(UDFname) Then
         Dim i As Long
@@ -971,6 +1186,34 @@ Public Sub DeclareUDF(ByRef UDFname As Variant, Optional ByRef UDFlib As String 
         StoreUDF UserDefFunctions, CStr(UDFname), UDFlib
     End If
 End Sub
+
+Private Function DDB_(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 4
+            tmpEval = DDB(CDbl(FormatLiteralString(tmpData(LB), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 1), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 2), True)), _
+                        CDbl((FormatLiteralString(tmpData(UB), True))))
+        Case 5
+            tmpEval = DDB(CDbl(FormatLiteralString(tmpData(LB), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 1), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 2), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 3), True)), _
+                        CDbl((FormatLiteralString(tmpData(UB), True))))
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    DDB_ = tmpEval
+End Function
 
 ''' <summary>
 ''' Evaluate a math expression.
@@ -989,7 +1232,7 @@ Attribute Eval.VB_UserMemId = 0
             End If
             If Not ComputedTree Then
                 If Not CheckVarValues Then 'Only eval if each variables has its value
-                    BuildErrMessage errVariableNotAssigned, "The values of the current variables are: " & CurrentVarValues()
+                    BuildErrMessage errVariableNotAssigned, "The values of the current variables are: " & currentVarValues()
                     Exit Function
                 End If
             End If
@@ -997,7 +1240,11 @@ Attribute Eval.VB_UserMemId = 0
             P_RESULT = Compute()
         End If
     End If
-    Eval = P_RESULT
+    If P_FORMATRESULT Then 'Format: trim ['] chars
+        Eval = FormatLiteralString(CStr(P_RESULT), True)
+    Else
+        Eval = P_RESULT
+    End If
     Exit Function
 Eval_errHandler:
     P_RESULT = vbNullString
@@ -1006,6 +1253,7 @@ Eval_errHandler:
 End Function
 
 Private Function EvalFunction(ByRef Argument As String, ByRef FunctionName As String, Optional IsUDF As Boolean = False) As String
+    On Error GoTo EvalFunction_errHandler
     If Not IsUDF Then
         Select Case FunctionName
             Case "Absolute"
@@ -1016,46 +1264,158 @@ Private Function EvalFunction(ByRef Argument As String, ByRef FunctionName As St
                 EvalFunction = ArcCos(Argument)
             Case "ArcTan"
                 EvalFunction = ArcTan(Argument)
+            Case "strArray"
+                EvalFunction = Array_(Argument)
+            Case "ASCII"
+                EvalFunction = Asc_(Argument)
             Case "Average"
                 EvalFunction = average(Argument)
             Case "Cosin"
                 EvalFunction = Cosin(Argument)
+            Case "aChoose"
+                EvalFunction = Choose(Argument)
+            Case "ASCIIchr"
+                EvalFunction = Chr_(Argument)
             Case "aCeiling"
                 EvalFunction = aCeiling(Argument)
+            Case "aDate"
+                EvalFunction = Date_(Argument)
+            Case "aDateAdd"
+                EvalFunction = DateAdd_(Argument)
+            Case "aDateDiff"
+                EvalFunction = DateDiff_(Argument)
+            Case "aDatePart"
+                EvalFunction = DatePart_(Argument)
+            Case "aDateSerial"
+                EvalFunction = DateSerial_(Argument)
+            Case "aDateValue"
+                EvalFunction = DateValue_(Argument)
+            Case "aDay"
+                EvalFunction = Day_(Argument)
+            Case "aDDB"
+                EvalFunction = DDB_(Argument)
+            Case "MatrixDeterminant"
+                EvalFunction = Determinant(Argument)
             Case "ExpEuler"
                 EvalFunction = ExpEuler(Argument)
             Case "aFloor"
                 EvalFunction = aFloor(Argument)
+            Case "aFormat"
+                EvalFunction = Format_(Argument)
+            Case "aFV"
+                EvalFunction = FV_(Argument)
+            Case "FunctionZero"
+                EvalFunction = Zero(Argument)
             Case "Gamma"
                 EvalFunction = tGamma(Argument)
+            Case "aHour"
+                EvalFunction = Hour_(Argument)
+            Case "aIff"
+                EvalFunction = Iff_(Argument)
+            Case "InverseMatrix"
+                EvalFunction = InverseMatrix(Argument)
+            Case "aIPMT"
+                EvalFunction = IPMT_(Argument)
+            Case "aIRR"
+                EvalFunction = IRR_(Argument)
+            Case "aLeft"
+                EvalFunction = Left_(Argument)
+            Case "aLen"
+                EvalFunction = Len_(Argument)
+            Case "LowerCase"
+                EvalFunction = LCase_(Argument)
             Case "Logarithm"
                 EvalFunction = Logarithm(Argument)
             Case "LgN"
                 EvalFunction = LgN(Argument)
+            Case "LUdecomposition"
+                EvalFunction = LUdecomposition(Argument)
+            Case "LUSolveLinearSystem"
+                EvalFunction = LUsolve(Argument)
             Case "LN"
                 EvalFunction = LN(Argument)
             Case "Max"
                 EvalFunction = max(Argument)
+            Case "Middle"
+                EvalFunction = Mid_(Argument)
             Case "Min"
                 EvalFunction = Min(Argument)
+            Case "aMinute"
+                EvalFunction = Minute_(Argument)
+            Case "aMIRR"
+                EvalFunction = MIRR_(Argument)
+            Case "MatrixMult"
+                EvalFunction = MMult(Argument)
+            Case "aMonthName"
+                EvalFunction = MonthName_(Argument)
+            Case "aMonth"
+                EvalFunction = Month_(Argument)
+            Case "aNow"
+                EvalFunction = Now_(Argument)
+            Case "aNPER"
+                EvalFunction = NPER_(Argument)
+            Case "aNPV"
+                EvalFunction = NPV_(Argument)
             Case "Percent"
                 EvalFunction = Percent(Argument)
+            Case "aPMT"
+                EvalFunction = PMT_(Argument)
+            Case "aPPMT"
+                EvalFunction = PPMT_(Argument)
             Case "Power"
                 EvalFunction = Power(Argument)
+            Case "aPV"
+                EvalFunction = PV_(Argument)
+            Case "aRATE"
+                EvalFunction = RATE_(Argument)
+            Case "aReplace"
+                EvalFunction = Replace_(Argument)
+            Case "aRight"
+                EvalFunction = Right_(Argument)
             Case "Sign"
                 EvalFunction = Sign(Argument)
             Case "Sine"
                 EvalFunction = Sine(Argument)
+            Case "SolveLinearSystem"
+                EvalFunction = Solve(Argument)
+            Case "aSLN"
+                EvalFunction = SLN_(Argument)
             Case "SquareRoot"
                 EvalFunction = SquareRoot(Argument)
             Case "Tangent"
                 EvalFunction = Tangent(Argument)
+            Case "aSwitch"
+                EvalFunction = Switch_(Argument)
+            Case "aSYD"
+                EvalFunction = SYD_(Argument)
+            Case "aTimeSerial"
+                EvalFunction = TimeSerial_(Argument)
+            Case "aTimeValue"
+                EvalFunction = TimeValue_(Argument)
+            Case "aTrim"
+                EvalFunction = Trim_(Argument)
+            Case "aUcase"
+                EvalFunction = UCase_(Argument)
+            Case "aWweekDay"
+                EvalFunction = WeekDay_(Argument)
+            Case "aWeekDayName"
+                EvalFunction = WeekDayName_(Argument)
+            Case "aYear"
+                EvalFunction = Year_(Argument)
             Case Else
                 'Rise an error for not found function
         End Select
     Else
         EvalFunction = EvalUDF(FunctionName, Argument)
     End If
+    Exit Function
+EvalFunction_errHandler:
+    If Not P_FORCE_BOOLEAN Then
+        EvalFunction = e_ValueError
+    Else
+        EvalFunction = False
+    End If
+    P_ERRTYPE = errEvalError
 End Function
 
 Private Function EvalUDF(ByRef UDFname As String, ByRef expression As String) As String
@@ -1103,7 +1463,48 @@ Private Function Factorial(ByRef expression As String) As String
         'Code here to rise an error
     End If
 End Function
-
+Private Function Format_(ByRef expression As String) As String
+     Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 1
+            tmpEval = ToLiteralString(tmpData(LB))
+        Case 2
+            tmpEval = ToLiteralString( _
+                                        Format( _
+                                                FormatLiteralString(tmpData(LB), True), _
+                                                FormatLiteralString(tmpData(UB), True) _
+                                                ) _
+                                    )
+        Case 3
+            tmpEval = ToLiteralString( _
+                                        Format( _
+                                                FormatLiteralString(tmpData(LB), True), _
+                                                FormatLiteralString(tmpData(LB + 1), True), _
+                                                CLng(FormatLiteralString(tmpData(UB), True)) _
+                                                ) _
+                                    )
+        Case 4
+            tmpEval = ToLiteralString( _
+                                        Format( _
+                                                FormatLiteralString(tmpData(LB), True), _
+                                                FormatLiteralString(tmpData(LB + 1), True), _
+                                                CLng(FormatLiteralString(tmpData(LB + 2), True)), _
+                                                CLng(FormatLiteralString(tmpData(UB), True)) _
+                                                ) _
+                                    )
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    Format_ = tmpEval
+End Function
 Private Function Floor(ByRef value As Double) As Double
     Dim tmpResult As Double
     
@@ -1111,9 +1512,356 @@ Private Function Floor(ByRef value As Double) As Double
     Floor = tmpResult + ((value <> tmpResult) And (value < 0))
 End Function
 
-Private Function FormatLiteralString(ByRef LiteralString As String) As String
-    FormatLiteralString = MidB$(LiteralString, 3, LenB(LiteralString) - 4)
+Private Function FormatLiteralString(ByRef aString As String, _
+                                        Optional AutoCheckFormating As Boolean = False) As String
+    If Not AutoCheckFormating Then
+        FormatLiteralString = MidB$(aString, 3, LenB(aString) - 4)
+    Else
+        If IsLiteralString(aString) Then
+            FormatLiteralString = MidB$(aString, 3, LenB(aString) - 4)
+        Else
+            FormatLiteralString = aString
+        End If
+    End If
 End Function
+Private Function FormatEntry(expression As String) As String
+    FormatEntry = ReplaceImpliedMult( _
+                                Replace(Replace(Replace(RemoveDupNegation(ApplyLawOfSigns _
+                                (ReconstructLiteralStrings(CStr(expression), _
+                                Join$(Split(expression, d_Space), vbNullString)))), "()", "('')"), "{{", "({{"), "}}", "}})") _
+                                )
+End Function
+
+Private Function ToLiteralString(ByRef aString As String) As String
+    If Not IsLiteralString(aString) Then
+        ToLiteralString = d_Apostrophe & aString & d_Apostrophe
+    Else
+        ToLiteralString = aString
+    End If
+End Function
+
+Private Function FV_(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 3
+            tmpEval = FV(CDbl(FormatLiteralString(tmpData(LB), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 1), True)), _
+                        CDbl((FormatLiteralString(tmpData(UB), True))))
+        Case 4
+            tmpEval = FV(CDbl(FormatLiteralString(tmpData(LB), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 1), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 2), True)), _
+                        CDbl((FormatLiteralString(tmpData(UB), True))))
+        Case 5
+            tmpEval = FV(CDbl(FormatLiteralString(tmpData(LB), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 1), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 2), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 3), True)), _
+                        CLng((FormatLiteralString(tmpData(UB), True))))
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    FV_ = tmpEval
+End Function
+
+''' <summary>
+''' Find roots of a univariate function ussing the bisection method.
+''' at the interval a <= x <= b.
+''' </summary>
+''' <param name="aFunction">Inline function.</param>
+''' <param name="a">Leftmost interval value.</param>
+''' <param name="b">Rightmost interval value.</param>
+''' <param name="inc">Increment used in calculations.</param>
+''' <param name="epsilon">Tolerance (relative error limit).</param>
+Public Function fRoots(ByRef aFunction As String, a As Double, _
+                        b As Double, Optional inc As Double = 1, _
+                        Optional epsilon As Double = 0.0000000001) As String
+    Dim tmpRoot As String
+    Dim tmpResult As String
+    Dim lx As Double, ux As Double
+    
+    If inc <> 1 Then
+        inc = Abs(inc)
+    End If
+    If a > b Then
+        fRoots = e_ValueError
+        Exit Function
+    End If
+    tmpRoot = fZero(aFunction, a, b, epsilon, False)
+    If tmpRoot <> e_ValueError Then      'Function with at least one root
+        lx = a
+        ux = a + inc
+        Do While ux <= b
+            On Error Resume Next
+            tmpRoot = fZeroMBM(aFunction, lx, ux, epsilon, False)
+            If tmpRoot <> e_ValueError Then
+                If tmpResult <> vbNullString Then
+                    tmpResult = tmpResult & "; " & tmpRoot
+                Else
+                    tmpResult = tmpRoot
+                End If
+            End If
+            lx = lx + inc
+            ux = ux + inc
+        Loop
+        fRoots = d_lCurly & tmpResult & d_rCurly
+    Else
+        fRoots = tmpRoot
+    End If
+End Function
+
+Public Function fZero(ByRef aFunction As String, ByVal a As Double, _
+                        ByVal b As Double, Optional epsilon As Double = 0.0000000001, _
+                        Optional includeVarNames As Boolean = True, _
+                        Optional useBisectionMethod As Boolean = False, _
+                        Optional printDebugINFO As Boolean = False) As String
+    If Not useBisectionMethod Then
+        fZero = fZeroMRF(aFunction, a, b, epsilon, includeVarNames, printDebugINFO)
+    Else
+        fZero = fZeroMBM(aFunction, a, b, epsilon, includeVarNames, printDebugINFO)
+    End If
+End Function
+
+''' <summary>
+''' Find a zero of a univariate function ussing a modified bisection method.
+''' aFunction must be a continuous function f(x) for the interval a <= x <= b.
+''' </summary>
+''' <param name="aFunction">Inline function.</param>
+''' <param name="a">Leftmost interval value.</param>
+''' <param name="b">Rightmost interval value.</param>
+''' <param name="epsilon">Tolerance (relative error limit).</param>
+''' <param name="IncludeVarNames">Include variable name in result.</param>
+''' <param name="printDebugINFO">Print information like iteraction count.</param>
+Private Function fZeroMBM(ByRef aFunction As String, ByVal a As Double, _
+                        ByVal b As Double, Optional epsilon As Double = 0.0000000001, _
+                        Optional includeVarNames As Boolean = True, _
+                        Optional printDebugINFO As Boolean = False) As String
+    Dim absFC As Double, absFD As Double
+    Dim aZero As Double
+    Dim c As Double, d As Double   'Intermediate points |a---:c:----:d:---b|
+    Dim evalCounter As Long
+    Dim fa As Double, fb As Double
+    Dim fc As Double, fd As Double
+    Dim fEvalHelper As CSVexpressions
+    Dim i As Long
+    Dim k As Double
+    Dim segmentLen As Double
+    Dim tmpFzeroEval As Double
+    Dim tmpResult As Double
+    Dim tmpVar() As String
+    Dim toleranceFlag As Boolean
+    Dim varCounter As Long
+    Dim varIdx As Long
+    Dim varLB As Long
+    
+    On Error GoTo fZeroMBM_errHandler
+    If a > b Then Exit Function
+    Set fEvalHelper = New CSVexpressions
+    aZero = 10 * epsilon
+    With fEvalHelper
+        .Create aFunction
+        tmpVar() = Split(.currentVariables, "; ")
+        varLB = LBound(tmpVar)
+        If UBound(tmpVar) - varLB > 0 Then  'Reject multivariate functions
+            For i = varLB To UBound(tmpVar)
+                If Not IsConstant(tmpVar(i)) Then
+                    varCounter = varCounter + 1
+                    varIdx = i
+                End If
+            Next i
+            If varCounter > 1 Then
+                fZeroMBM = e_ValueError
+                Exit Function
+            End If
+        End If
+        k = 0
+        'Evaluate the function at a, b
+        .varValue(tmpVar(varIdx)) = a
+        fa = CDbl(.Eval): evalCounter = evalCounter + 1
+        .varValue(tmpVar(varIdx)) = b
+        fb = CDbl(.Eval): evalCounter = evalCounter + 1
+        Do
+            'Divide the interval into three segments, assumes a < b
+            segmentLen = (b - a) / 3
+            c = a + segmentLen
+            d = b - segmentLen
+            'Evaluate the function at c, d
+            .varValue(tmpVar(varIdx)) = c
+            fc = CDbl(.Eval): evalCounter = evalCounter + 1
+            .varValue(tmpVar(varIdx)) = d
+            fd = CDbl(.Eval): evalCounter = evalCounter + 1
+            If fc = 0 Or fd = 0 Then
+                Exit Do
+            End If
+            If fa * fc < 0 Then 'Root in interval a-c
+                b = c
+                fb = fc
+            ElseIf fc * fd < 0 Then
+                a = c
+                fa = fc
+                b = d
+                fb = fd
+            ElseIf fd * fb < 0 Then
+                a = d
+                fa = fd
+            Else        'The interval does not satisfy the condition fa*fb<0.
+                fZeroMBM = e_ValueError
+                GoTo fZeroMBM_terminate
+            End If
+            absFC = Abs(fc)
+            absFD = Abs(fd)
+            If absFC < absFD Then
+                toleranceFlag = (absFC > epsilon) ': Debug.Print c
+            Else
+                toleranceFlag = (absFD > epsilon) ': Debug.Print d
+            End If
+            k = k + 1
+        Loop While toleranceFlag And k < 100
+        If absFC < absFD Then
+            tmpResult = c
+            tmpFzeroEval = fc
+        Else
+            tmpResult = d
+            tmpFzeroEval = fd
+        End If
+        .varValue(tmpVar(varIdx)) = tmpResult
+        If Round(tmpFzeroEval, Len(CStr(1 / aZero)) - 1) = 0 Then
+            If includeVarNames Then
+                fZeroMBM = .currentVarValues
+            Else
+                fZeroMBM = tmpResult
+            End If
+        Else
+            fZeroMBM = e_ValueError
+        End If
+    End With
+fZeroMBM_terminate:
+    Set fEvalHelper = Nothing
+    If printDebugINFO Then
+        Debug.Print "fZeroMBM: " & vbCrLf & vbTab & vbTab & "Evaluations:"; evalCounter; "; Iteractions:"; k
+    End If
+    Exit Function
+fZeroMBM_errHandler:
+    fZeroMBM = e_ValueError
+End Function
+
+''' <summary>
+''' Find a zero of a univariate function ussing a modified regula falsi method.
+''' aFunction must be a continuous function f(x) for the interval a <= x <= b.
+''' Credits: A NeamvonK [https://www.ajouronline.com/index.php/AJAS/article/view/2982]
+''' </summary>
+''' <param name="aFunction">Inline function.</param>
+''' <param name="a">Leftmost interval value.</param>
+''' <param name="b">Rightmost interval value.</param>
+''' <param name="epsilon">Tolerance (relative error limit).</param>
+''' <param name="IncludeVarNames">Include variable name in result.</param>
+''' <param name="printDebugINFO">Print information like iteraction count.</param>
+Private Function fZeroMRF(ByRef aFunction As String, ByVal a As Double, _
+                        ByVal b As Double, Optional epsilon As Double = 0.0000000001, _
+                        Optional includeVarNames As Boolean = True, _
+                        Optional printDebugINFO As Boolean = False) As String
+    Dim aZero As Double
+    Dim c As Double, d As Double
+    Dim evalCounter As Long
+    Dim fa As Double, fb As Double
+    Dim fc As Double, fd As Double
+    Dim fEvalHelper As CSVexpressions
+    Dim i As Long
+    Dim k As Double, ck As Double
+    Dim tmpVar() As String
+    Dim toleranceFlag As Boolean
+    Dim varCounter As Long
+    Dim varIdx As Long
+    Dim varLB As Long
+    
+    On Error GoTo fZeroMRF_errHandler
+    If a > b Then Exit Function
+    Set fEvalHelper = New CSVexpressions
+    aZero = 10 * epsilon
+    With fEvalHelper
+        .Create aFunction
+        tmpVar() = Split(.currentVariables, "; ")
+        varLB = LBound(tmpVar)
+        If UBound(tmpVar) - varLB > 0 Then  'Reject multivariate functions
+            For i = varLB To UBound(tmpVar)
+                If Not IsConstant(tmpVar(i)) Then
+                    varCounter = varCounter + 1
+                    varIdx = i
+                End If
+            Next i
+            If varCounter > 1 Then
+                fZeroMRF = e_ValueError
+                Exit Function
+            End If
+        End If
+        k = 0
+        Do
+            'Evaluate the function at a, b
+            .varValue(tmpVar(varIdx)) = a
+            fa = CDbl(.Eval): evalCounter = evalCounter + 1
+            .varValue(tmpVar(varIdx)) = b
+            fb = CDbl(.Eval): evalCounter = evalCounter + 1
+            'Compute approximation point of the root
+            c = (a * fb - b * fa) / (fb - fa)
+            'Evaluate the function at approximation
+            .varValue(tmpVar(varIdx)) = c
+            fc = CDbl(.Eval): evalCounter = evalCounter + 1
+            If fa * fc < 0 Then 'Root in interval a-c
+                'Projection
+                ck = Abs(2 * fc / (b - c))
+                d = ((1 + ck) * a * fb - b * fa) / ((1 + ck) * fb - fa)
+                'Evaluate the function at projection
+                .varValue(tmpVar(varIdx)) = d
+                fd = CDbl(.Eval): evalCounter = evalCounter + 1
+                If fd * fa < 0 Then
+                    b = d
+                Else
+                    b = c
+                    a = d
+                End If
+            ElseIf fa * fc > 0 Then
+                ck = Abs(0.5 * fc / (b - c))
+                d = ((1 + ck) * b * fa - a * fb) / ((1 + ck) * fa - fb)
+                .varValue(tmpVar(varIdx)) = d
+                fd = CDbl(.Eval): evalCounter = evalCounter + 1
+                If fd * fa > 0 Then
+                    a = d
+                Else
+                    a = c
+                    b = d
+                End If
+            End If
+            toleranceFlag = (Abs(fd) > epsilon)
+            k = k + 1
+        Loop While toleranceFlag And k < 100
+        If Round(fd, Len(CStr(1 / aZero)) - 1) = 0 Then
+            If includeVarNames Then
+                fZeroMRF = .currentVarValues
+            Else
+                fZeroMRF = d
+            End If
+        Else
+            fZeroMRF = e_ValueError
+        End If
+    End With
+fZeroMRF_terminate:
+    Set fEvalHelper = Nothing
+    If printDebugINFO Then
+        Debug.Print "fZeroMRF: " & vbCrLf & vbTab & vbTab & "Evaluations:"; evalCounter; "; Iteractions:"; k
+    End If
+    Exit Function
+fZeroMRF_errHandler:
+    fZeroMRF = e_ValueError
+End Function
+
 Private Function Gamma(ByRef x As Double) As Double
     'Copyright © 2004, Leonardo Volpi & Foxes Team.
     Dim mantissa As Double, Expo As Double, z As Double
@@ -1320,12 +2068,12 @@ Private Function GetCBItemIdx(ByRef cbBuffer As ClusterBuffer, ByRef ItemName As
             Case Else
                 tmpItemName = ItemName
         End Select
-        If cbBuffer.Index > -1 Then
+        If cbBuffer.index > -1 Then
             i = 0
             Do
                 tmpResult = (cbBuffer.Storage(i).name = tmpItemName)
                 i = i + 1
-            Loop While i <= cbBuffer.Index And Not tmpResult
+            Loop While i <= cbBuffer.index And Not tmpResult
         End If
         If tmpResult Then
             GetCBItemIdx = i - 1
@@ -1337,7 +2085,7 @@ Private Function GetCBItemIdx(ByRef cbBuffer As ClusterBuffer, ByRef ItemName As
     End If
 End Function
 
-Private Function GetRParentPos(ByRef expression As String, ByRef Index As Long) As Long
+Private Function GetRParentPos(ByRef expression As String, ByRef index As Long) As Long
     Dim tmpCounter As Long
     Dim SearchIndex As Long
     Dim OpenedSum As Long
@@ -1355,7 +2103,7 @@ Private Function GetRParentPos(ByRef expression As String, ByRef Index As Long) 
             End If
         End If
         SearchIndex = SearchIndex + 2
-    Loop While SearchIndex <= Index
+    Loop While SearchIndex <= index
     SearchIndex = 1
     tmpCounter = 0
     Do
@@ -1368,7 +2116,7 @@ Private Function GetRParentPos(ByRef expression As String, ByRef Index As Long) 
             End If
         End If
         SearchIndex = SearchIndex + 2
-    Loop Until (tmpCounter = OpenedSum - 1) And (SearchIndex > Index)
+    Loop Until (tmpCounter = OpenedSum - 1) And (SearchIndex > index)
     GetRParentPos = SearchIndex - 2
 End Function
 
@@ -1404,8 +2152,16 @@ Private Function GetEvalToken(ByRef expression As String) As token
         GetEvalToken.Arg2.FunctionIn = (GetEvalToken.Arg2.funcName <> vbNullString) Or GetEvalToken.Arg2.UDFFunctionIn
         GetEvalToken.Arg1.LinkedIndex = GetIndex(GetEvalToken.Arg1.DefString)
         GetEvalToken.Arg2.LinkedIndex = GetIndex(GetEvalToken.Arg2.DefString)
-        GetEvalToken.Arg1.LinkedVar = GetCBItemIdx(ExprVariables, CastCase(GetEvalToken.Arg1.DefString))
-        GetEvalToken.Arg2.LinkedVar = GetCBItemIdx(ExprVariables, CastCase(GetEvalToken.Arg2.DefString))
+        If Not GetEvalToken.Arg1.NegationFlagOn Then
+            GetEvalToken.Arg1.LinkedVar = P_SCOPE.VarIndex(CastCase(GetEvalToken.Arg1.DefString))
+        Else
+            GetEvalToken.Arg1.LinkedVar = P_SCOPE.VarIndex(CastCase(MidB$(GetEvalToken.Arg1.DefString, 3)))
+        End If
+        If Not GetEvalToken.Arg2.NegationFlagOn Then
+            GetEvalToken.Arg2.LinkedVar = P_SCOPE.VarIndex(CastCase(GetEvalToken.Arg2.DefString))
+        Else
+            GetEvalToken.Arg2.LinkedVar = P_SCOPE.VarIndex(CastCase(MidB$(GetEvalToken.Arg2.DefString, 3)))
+        End If
         GetEvalToken.Arg1.Implicit = (GetEvalToken.Arg1.LinkedIndex >= 0)
         GetEvalToken.Arg2.Implicit = (GetEvalToken.Arg2.LinkedIndex >= 0)
         GetEvalToken.Arg1.FactorialIn = (InStrB(1, GetEvalToken.Arg1.DefString, op_Factorial) = LenB(GetEvalToken.Arg1.DefString) - 1)
@@ -1419,7 +2175,11 @@ Private Function GetEvalToken(ByRef expression As String) As token
         GetEvalToken.Arg1.UDFFunctionIn = IsUDFFunction
         GetEvalToken.Arg1.FunctionIn = (GetEvalToken.Arg1.funcName <> vbNullString) Or GetEvalToken.Arg1.UDFFunctionIn
         GetEvalToken.Arg1.LinkedIndex = GetIndex(GetEvalToken.Arg1.DefString)
-        GetEvalToken.Arg1.LinkedVar = GetCBItemIdx(ExprVariables, CastCase(GetEvalToken.Arg1.DefString))
+        If Not GetEvalToken.Arg1.NegationFlagOn Then
+            GetEvalToken.Arg1.LinkedVar = P_SCOPE.VarIndex(CastCase(GetEvalToken.Arg1.DefString))
+        Else
+            GetEvalToken.Arg1.LinkedVar = P_SCOPE.VarIndex(CastCase(MidB$(GetEvalToken.Arg1.DefString, 3)))
+        End If
         GetEvalToken.Arg1.Implicit = (GetEvalToken.Arg1.LinkedIndex >= 0)
         GetEvalToken.Arg1.FactorialIn = (InStrB(1, GetEvalToken.Arg1.DefString, op_Factorial) = LenB(GetEvalToken.Arg1.DefString) - 1)
     End If
@@ -1446,7 +2206,7 @@ Private Function GetFunctionName(ByRef expression As String) As String
         IsUDFFunction = False
     Else 'Check for UDFs
         Dim i As Long
-        For i = 0 To UserDefFunctions.Index
+        For i = 0 To UserDefFunctions.index
             tmpPos = InStrB(1, ExpCopy, UserDefFunctions.Storage(i).name)
             If tmpPos Then
                 GFNbool = ValidFuntionName(ExpCopy, UserDefFunctions.Storage(i).name, tmpPos)
@@ -1665,9 +2425,9 @@ Private Sub GetOperand(ByRef CurArg As Argument, _
     Else     'Explicit function or data
         If CurArg.LinkedVar > -1 Then     'Variable substitution
             If CurArg.FactorialIn Then            'Operate factorials
-                CurArg.Operand = Factorial(ExprVariables.Storage(CurArg.LinkedVar).value)
+                CurArg.Operand = Factorial(P_SCOPE.varValue(CurArg.LinkedVar))
             Else
-                CurArg.Operand = ExprVariables.Storage(CurArg.LinkedVar).value
+                CurArg.Operand = P_SCOPE.varValue(CurArg.LinkedVar)
             End If
             If AscW(CurArg.DefString) = 45 Then
                 CurArg.Operand = ApplyLawOfSigns(op_minus + CurArg.Operand)
@@ -1708,6 +2468,7 @@ Private Function IsSymbolInLiteralString(ByRef expression As String, SymbolPos A
     End If
     IsSymbolInLiteralString = flagCounter And 1
 End Function
+
 Private Function GetOPeratorSymbolPos(ByRef expression As String, _
                                     ByRef OperatorSymbol As String, _
                                     Optional StartPosition As Long = 1) As Long
@@ -1797,19 +2558,21 @@ Private Sub GetRootedTree(ByRef SubExpression As String, ByRef tmpReplacement As
                 OperandInBundle = (InStrB(1, op_AllItems, PrevChar))
             Loop
         End If
-        SubExpression = MidB$(SubExpression, 1, tmpPos - 1) & tmpReplacement & MidB$(SubExpression, tmpPos + LenB(vToken.DefString))
+        If tmpPos > 0 Then
+            SubExpression = MidB$(SubExpression, 1, tmpPos - 1) & tmpReplacement & MidB$(SubExpression, tmpPos + LenB(vToken.DefString))
+        Else
+            SubExpression = tmpReplacement
+        End If
         AppendToBuffer outBuffer, vToken 'Save to target token ClusterTree
         Switch = (SubExpression <> tmpReplacement)
-        If Switch Then
-            OperationIndex = OperationIndex + 1
-            tmpReplacement = GetSubstStr(OperationIndex)
-        End If
+        OperationIndex = OperationIndex + 1
+        tmpReplacement = GetSubstStr(OperationIndex)
     Loop While Switch
 End Sub
 
-Private Function GetSubstStr(ByRef AValue As Long) As String
-    If AValue >= 0 Then
-        LIndexConstruc(1) = AValue
+Private Function GetSubstStr(ByRef aValue As Long) As String
+    If aValue >= 0 Then
+        LIndexConstruc(1) = aValue
         GetSubstStr = Join$(LIndexConstruc, vbNullString)
     End If
 End Function
@@ -1858,6 +2621,7 @@ Private Function GetSubTreeData(ByRef expression As String) As String()
         Loop While tgOpenP > 0
         Dim curIdx As Long
         Dim fpIdx As Long
+        
         ReDim Preserve PSerial(LBound(PSerial) To Uspace - 1)
         FSerial() = PSerial
         For curIdx = UBound(PSerial) To LBound(PSerial) Step -1
@@ -1962,6 +2726,10 @@ Private Function GetTokenInfo(ByRef expression As String) As TokenInfo
             Else
                 If expression Like "*[Ff][Aa][Ll][Ss][Ee]" Then
                     tmpResult.LogicalToken = True
+                Else
+                    If expression Like "~*" Then
+                        tmpResult.LogicalToken = True
+                    End If
                 End If
             End If
         End If
@@ -2036,6 +2804,162 @@ Private Function GoBackToOpSymbol(ByRef expression As String, ByRef VarStartPos 
     GoBackToOpSymbol = tmpResult
 End Function
 
+Private Function Hour_(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 1
+            tmpEval = Hour( _
+                            FormatLiteralString(tmpData(LB), True) _
+                            )
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    Hour_ = tmpEval
+End Function
+Private Function Iff_(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As Boolean
+    Dim LB As Long, UB As Long
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 3
+            tmpEval = CBool( _
+                            FormatLiteralString(tmpData(LB), True) _
+                            )
+        Case Else
+            Iff_ = e_ValueError
+            Exit Function
+    End Select
+    If tmpEval Then    'Return the TRUE part
+        Iff_ = tmpData(LB + 1)
+    Else
+        Iff_ = tmpData(UB)
+    End If
+End Function
+
+Private Function IPMT_(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 4
+            tmpEval = IPmt(CDbl(FormatLiteralString(tmpData(LB), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 1), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 2), True)), _
+                        CDbl((FormatLiteralString(tmpData(UB), True))))
+        Case 5
+            tmpEval = IPmt(CDbl(FormatLiteralString(tmpData(LB), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 1), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 2), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 3), True)), _
+                        CDbl((FormatLiteralString(tmpData(UB), True))))
+        Case 6
+            tmpEval = IPmt(CDbl(FormatLiteralString(tmpData(LB), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 1), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 2), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 3), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 4), True)), _
+                        CDbl((FormatLiteralString(tmpData(UB), True))))
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    IPMT_ = tmpEval
+End Function
+Private Function DefineIRRfunction(ByRef strArray() As String) As String
+    Dim arrLB As Long
+    Dim idx As Long
+    Dim tmpResult As String
+    
+    arrLB = LBound(strArray)
+    tmpResult = strArray(arrLB)
+    For idx = arrLB + 1 To UBound(strArray)
+        tmpResult = tmpResult & op_plus & _
+                    "(" & FormatLiteralString(strArray(idx), True) _
+                    & op_div & "(1+iRate)" & op_power & idx - arrLB & ")"
+    Next idx
+    DefineIRRfunction = tmpResult
+End Function
+
+''' <summary>
+''' Returns the determinant for the given matrix
+''' </summary>
+Private Function Determinant(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = SplitArgs(expression)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 1
+            Dim aArray() As Double
+            Dim pivotingIdx() As Long
+            Dim d As Double             'Interchages parity
+            Dim i As Long
+            
+            aArray() = StringTodblArray(ArrayFromString(tmpData(LB)))
+            LUdecomp aArray(), pivotingIdx, d
+            For i = LBound(aArray) To UBound(aArray)
+                d = d * aArray(i, i)
+            Next i
+            tmpEval = d
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    Determinant = tmpEval
+End Function
+
+Private Function IRR_(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    Dim strArray() As String
+    
+    tmpData() = SplitArgs(expression)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    strArray() = ArrayFromString(tmpData(LB)) 'Get array of data
+    Select Case argsCount
+        Case 1, 2
+            'Attempt to arrive at a positive IRR solution.
+            tmpEval = fZeroMBM(DefineIRRfunction(strArray), -0.2, 0.99, 0.00001, False)
+            If argsCount = 2 Then
+                If CBool(tmpData(UB)) Then
+                    If tmpEval = e_ValueError Then 'Positive IRR not found
+                        tmpEval = fZeroMBM(DefineIRRfunction(strArray), -0.99, -0.19, 0.00001, False)
+                    End If
+                End If
+            End If
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    IRR_ = tmpEval
+End Function
+
 Private Function ImplicitMultFlag(ByRef Char As String) As Boolean
     If LenB(Char) Then
         Select Case AscW(Char)
@@ -2047,16 +2971,31 @@ Private Function ImplicitMultFlag(ByRef Char As String) As Boolean
     End If
 End Function
 
+Public Property Let ImplicitVarValue(aVarName As String, aVarValue As String)
+    If GeneratedTree Then
+        Dim exprHelper As CSVexpressions
+        
+        Set exprHelper = New CSVexpressions
+        With exprHelper
+            .Create aVarValue
+            If .errorType = errNone Then
+                Set .evalScope = .evalScope.CopyScope(P_SCOPE)
+                P_SCOPE.varValue(aVarName) = .Eval
+            End If
+        End With
+    End If
+End Property
+
 Private Sub InitBuffer(ByRef aBuffer As ClusterTree)
     aBuffer.Capacity = 128
     ReDim aBuffer.Storage(0 To aBuffer.Capacity - 1)
-    aBuffer.Index = -1
+    aBuffer.index = -1
 End Sub
 
 Private Sub InitCBbuffer(ByRef aBuffer As ClusterBuffer)
     aBuffer.Capacity = 128
     ReDim aBuffer.Storage(0 To aBuffer.Capacity - 1)
-    aBuffer.Index = -1
+    aBuffer.index = -1
 End Sub
 
 Private Sub InitializeErrHandler()
@@ -2073,6 +3012,64 @@ Private Function InitializedArray(ByRef arr As Variant) As Boolean
     Exit Function
 err_handler:
     InitializedArray = False
+End Function
+
+Private Function Inverse(ByRef a() As Double, ByRef indx() As Long, _
+                        ByRef d As Double) As Double()
+'@----------------------------------------------------------------------------------------
+' Numerical recipes in C: the art of scientific computing / William H. Press [et al.]
+' - 2nd ed. (p.48)
+'-----------------------------------------------------------------------------------------
+    Dim y() As Double
+    Dim col() As Double
+    Dim i As Long
+    Dim j As Long
+    Dim aUB As Long
+    Dim aLB As Long
+    Dim n As Long
+    
+    aUB = UBound(a)
+    aLB = LBound(a)
+    n = aUB - aLB + 1
+    ReDim y(1 To n, 1 To n)
+    ReDim col(1 To n)
+    LUdecomp a, indx, d
+    For j = 1 To n
+        For i = 1 To n
+            col(i) = 0
+        Next i
+        col(j) = 1
+        LUbkSub a, indx, col
+        For i = 1 To n
+            If Abs(col(i)) = 0 Then col(i) = 0      'Avoid VBA -0 value
+            y(i, j) = col(i)
+        Next i
+    Next j
+    Inverse = y
+End Function
+
+Private Function InverseMatrix(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = SplitArgs(expression)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 1
+            Dim aArray() As Double
+            Dim pivotingIdx() As Long
+            Dim d As Double             'Interchages parity
+            
+            aArray() = StringTodblArray(ArrayFromString(tmpData(LB)))
+            tmpEval = ArrayToString(Inverse(aArray, pivotingIdx, d))
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    InverseMatrix = tmpEval
 End Function
 
 Private Function Is2Darray(arr As Variant) As Boolean
@@ -2103,7 +3100,9 @@ Private Function IsBoolean(ByRef expression As String) As Boolean
         IsBoolean = (expression = "false")
     End If
 End Function
-
+Public Function IsConstant(aVarName As String) As Boolean
+    IsConstant = P_SCOPE.IsConstant(aVarName)
+End Function
 Private Function IsDigit(ByRef Char As String) As Boolean
     If LenB(Char) Then
         Select Case AscW(Char)
@@ -2174,43 +3173,327 @@ Private Function JoinArrFunctArg(ByRef DecompArray() As String, ByRef MaxRowInde
     Dim tmpResult As String
     Dim i As Long, j As Long
     
-    For i = 0 To MaxRowIndex
-        For j = 0 To MaxColIndex
-            If j = 0 Then
-                tmpResult = tmpResult & d_lCurly & DecompArray(j + (i * (MaxColIndex + 1)))
-            Else
-                tmpResult = tmpResult & P_SEPARATORCHAR & DecompArray(j + (i * (MaxColIndex + 1)))
+    If MaxColIndex > -1 Then
+        For i = 0 To MaxRowIndex
+            For j = 0 To MaxColIndex
+                If j = 0 Then
+                    tmpResult = tmpResult & d_lCurly & DecompArray(j + (i * (MaxColIndex + 1)))
+                Else
+                    tmpResult = tmpResult & P_SEPARATORCHAR & DecompArray(j + (i * (MaxColIndex + 1)))
+                End If
+                If j = MaxColIndex Then
+                    tmpResult = tmpResult & d_rCurly
+                End If
+            Next j
+            If i < MaxRowIndex Then
+                tmpResult = tmpResult & P_SEPARATORCHAR
             End If
-            If j = MaxColIndex Then
-                tmpResult = tmpResult & d_rCurly
-            End If
-        Next j
-        If i < MaxRowIndex Then
-            tmpResult = tmpResult & P_SEPARATORCHAR
-        End If
-    Next i
+        Next i
+    Else
+        tmpResult = d_lCurly & Join$(DecompArray, P_SEPARATORCHAR) & d_rCurly
+    End If
     JoinArrFunctArg = d_lCurly & tmpResult & d_rCurly
 End Function
 
 Private Function LgN(ByRef expression As String) As Double
     Dim tmpData() As String
     Dim tmpEval As Double
+    Dim LB As Long, UB As Long
     
     tmpEval = 0
     tmpData() = Split(expression, P_SEPARATORCHAR)
-    tmpEval = Log(CDbl(tmpData(LBound(tmpData)))) _
-                / Log(CDbl(tmpData(UBound(tmpData))))    'Log(x)/Log(N)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    If UB - LB = 1 Then
+        tmpEval = Log(CDbl(tmpData(LB))) _
+                    / Log(CDbl(tmpData(UB)))    'Log(x)/Log(N)
+    Else
+        tmpEval = e_ValueError
+    End If
     LgN = tmpEval
 End Function
 
 Private Function LN(ByRef expression As String) As Double
     LN = Log(CDbl(expression))
 End Function
-
+Private Function LCase_(ByRef expression As String) As String
+    LCase_ = ToLiteralString(LCase(expression))
+End Function
+Private Function Len_(ByRef expression As String) As Long
+    If IsLiteralString(expression) Then
+        Len_ = Len(FormatLiteralString(expression))
+    Else
+        Len_ = Len(expression)
+    End If
+End Function
+Private Function Left_(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 1
+            tmpEval = ToLiteralString(Left(FormatLiteralString(tmpData(LB), True), 1))
+        Case 2
+            tmpEval = ToLiteralString( _
+                                        Left( _
+                                                FormatLiteralString(tmpData(LB), True), _
+                                                CLng(FormatLiteralString(tmpData(UB), True)) _
+                                                ) _
+                                    )
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    Left_ = tmpEval
+End Function
 Private Function Logarithm(ByRef expression As String) As Double
     Logarithm = Log(CDbl(expression)) / Log(10)
 End Function
 
+''' <summary>
+''' Solves the set of n linear equations A.X = B. Here
+''' a[1,...,n][1,...,n] is input, not as the matrix A but
+''' rather as its LU decomposition, determined by the routine
+''' LUdecomp. indx[1,...,n] is input as the permutation vector
+''' returned from LUdecomp. b[1,...,n] is input as the right-hand
+''' side vector B, and returns with the solution vector X
+''' </summary>
+Private Sub LUbkSub(ByRef a() As Double, ByRef indx() As Long, ByRef b() As Double)
+'@----------------------------------------------------------------------------------------
+' Numerical recipes in C: the art of scientific computing / William H. Press [et al.]
+' - 2nd ed. (p.47)
+'-----------------------------------------------------------------------------------------
+    Dim i As Long
+    Dim ii As Long
+    Dim ip As Long
+    Dim j As Long
+    Dim n As Long
+    Dim sum As Double
+    Dim aLB As Long
+    Dim aUB As Long
+    Dim bLB As Long
+    
+    aUB = UBound(a)
+    aLB = LBound(a)
+    bLB = LBound(b)
+    n = aUB - aLB + 1
+    ii = 0
+    For i = 1 To n
+        ip = indx(i)
+        sum = b(ip + bLB - 1)
+        b(ip + bLB - 1) = b(i + bLB - 1)
+        If ii Then
+            For j = ii To i - 1
+                sum = sum - a(i + aLB - 1, j + aLB - 1) * b(j + bLB - 1)
+            Next j
+        ElseIf sum Then
+            ii = i
+        End If
+        b(i + bLB - 1) = sum
+    Next i
+    For i = n To 1 Step -1
+        sum = b(i + bLB - 1)
+        For j = i + 1 To n
+            sum = sum - a(i + aLB - 1, j + aLB - 1) * b(j + bLB - 1)
+        Next j
+        b(i + bLB - 1) = sum / a(i + aLB - 1, i + aLB - 1)
+    Next i
+End Sub
+
+''' <summary>
+''' Given a matrix a[1,...,n][1,...,n], this routine replaces
+''' it by the LU decomposition of a rowwise permutation of
+''' itself. a is input. a is output, indx[1,...,n] is
+''' an output vector that records the rows permutation effected
+''' by the partial pivoting; d is output +-1 depending whether
+''' the number of row interchanges was even or odd, respectively.
+''' This routine is used in combination with LUbkSub to solve
+''' linear equations or invert matrix.
+''' </summary>
+Private Sub LUdecomp(ByRef a() As Double, ByRef indx() As Long, _
+                        ByRef d As Double)
+'@----------------------------------------------------------------------------------------
+' Numerical recipes in C: the art of scientific computing / William H. Press [et al.]
+' - 2nd ed. (p.46-47)
+'-----------------------------------------------------------------------------------------
+    Dim n As Long
+    Dim i As Long
+    Dim imax As Long
+    Dim j As Long
+    Dim k As Long
+    Dim big As Double
+    Dim dum As Double
+    Dim sum As Double
+    Dim temp As Double
+    Dim vv() As Double         'vv stores the implicit scaling of each row
+    Dim aLB As Long
+    Dim aUB As Long
+    
+    aUB = UBound(a)
+    aLB = LBound(a)
+    n = aUB - aLB + 1
+    ReDim vv(1 To n)
+    ReDim indx(1 To n)
+    d = 1                       'No row interchanges yet
+    For i = 1 To n              'Loop rows to get the implicit scaling information
+        big = 0
+        For j = 1 To n
+            temp = Abs(a(i + aLB - 1, j + aLB - 1))
+            If temp > big Then big = temp
+        Next j
+        If big = 0 Then         'a is a singular matrix
+            Exit Sub
+        End If
+        'No nonzero largest element
+        vv(i) = 1 / big          'Save the scaling
+    Next i
+    For j = 1 To n               'Loop over columns of Crout's method
+        For i = 1 To j - 1
+            sum = a(i + aLB - 1, j + aLB - 1)
+            For k = 1 To i - 1
+                sum = sum - a(i + aLB - 1, k + aLB - 1) * a(k + aLB - 1, j + aLB - 1)
+            Next k
+            a(i + aLB - 1, j + aLB - 1) = sum
+        Next i
+        big = 0                  'Initialize for search the largest pivot element
+        For i = j To n
+            sum = a(i + aLB - 1, j + aLB - 1)
+            For k = 1 To j - 1
+                sum = sum - a(i + aLB - 1, k + aLB - 1) * a(k + aLB - 1, j + aLB - 1)
+            Next k
+            a(i + aLB - 1, j + aLB - 1) = sum
+            dum = vv(i) * Abs(sum)
+            If dum >= big Then
+                big = dum
+                imax = i
+            End If
+        Next i
+        If j <> imax Then         'Need rows interchange?
+            For k = 1 To n
+                dum = a(imax + aLB - 1, k + aLB - 1)
+                a(imax + aLB - 1, k + aLB - 1) = a(j + aLB - 1, k + aLB - 1)
+                a(j + aLB - 1, k + aLB - 1) = dum
+            Next k
+            d = -1 * d           'Change parity
+            vv(imax) = vv(j)     'Change scale factor
+        End If
+        indx(j) = imax
+        If a(j + aLB - 1, j + aLB - 1) = 0 Then    'Avoid division by zero in singular matrix
+            a(j + aLB - 1, j + aLB - 1) = TINY
+        End If
+        If j <> n Then           'Divide by the pivot element
+            dum = 1 / a(j + aLB - 1, j + aLB - 1)
+            For i = j + 1 To n
+                a(i + aLB - 1, j + aLB - 1) = a(i + aLB - 1, j + aLB - 1) * dum
+            Next i
+        End If
+    Next j
+    Erase vv
+End Sub
+
+''' <summary>
+''' Return the LU decomposition for the given matrix
+''' </summary>
+Private Function LUdecomposition(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = SplitArgs(expression)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 1
+            Dim aArray() As Double
+            Dim pivotingIdx() As Long
+            Dim d As Double             'Interchages parity
+            
+            aArray() = StringTodblArray(ArrayFromString(tmpData(LB)))
+            LUdecomp aArray(), pivotingIdx, d
+            tmpEval = ArrayToString(aArray)
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    LUdecomposition = tmpEval
+End Function
+
+''' <summary>
+''' Solves the linear system AX = B using LU decomposition. The function
+''' requires that the <expression> argument be composed of the following:
+'''                     1-) An array in text form containing the coefficients of all equations.
+'''                     2-) An one dimentional array containing the name of each variable
+'''                         (the first name will be applied to the first column of coefficients,
+'''                         the second name to the second column and so on).
+'''                     3-) An one dimentional array containing the right-hand side of each equation,
+'''                         (the first name will be applied to the first column of coefficients,
+'''                         the second name to the second column and so on).
+'''                     4-) A True or False parameter to decide when to include the variable names
+'''                         in the result set.
+''' </summary>
+Private Function LUsolve(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = SplitArgs(expression)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 3, 4
+            Dim aArray() As Double
+            Dim eqCount As Long
+            Dim iCounter As Long
+            Dim includeNames As Boolean
+            Dim mLB As Long
+            Dim mUB As Long
+            Dim xArray() As String
+            Dim bArray() As Double
+            Dim pivotingIdx() As Long
+            Dim d As Double             'Interchages parity
+            Dim tmpElement As String
+            
+            aArray() = StringTodblArray(ArrayFromString(tmpData(LB)))
+            bArray() = StringTodblArray(ArrayFromString(tmpData(LB + 2)))
+            mLB = LBound(aArray)
+            mUB = UBound(aArray)
+            
+            eqCount = mUB - mLB + 1
+            LUdecomp aArray, pivotingIdx, d             'LU decomposition
+            LUbkSub aArray, pivotingIdx, bArray         'Back substitution, returning in bArray
+            If argsCount = 4 Then
+                xArray() = ArrayFromString(tmpData(LB + 1))
+                includeNames = CBool(tmpData(UB))
+            End If
+            For iCounter = mLB To mUB
+                If iCounter > mLB Then
+                    tmpEval = tmpEval & P_SEPARATORCHAR & d_Space
+                End If
+                If includeNames Then
+                    tmpElement = FormatLiteralString(xArray(iCounter)) _
+                                & d_Space & op_equal & d_Space _
+                                & bArray(iCounter)
+                Else
+                    tmpElement = bArray(iCounter)
+                End If
+                tmpEval = tmpEval & tmpElement
+            Next iCounter
+            If Not includeNames Then
+                tmpEval = d_lCurly & d_lCurly & tmpEval & d_rCurly & d_rCurly
+            End If
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    LUsolve = tmpEval
+End Function
 Private Function max(ByRef expression As String) As Double
     Dim g As Long
     Dim tmpData() As String
@@ -2226,6 +3509,38 @@ Private Function max(ByRef expression As String) As Double
         End If
     Next g
     max = tmpEval
+End Function
+
+Private Function Mid_(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 2
+            tmpEval = ToLiteralString( _
+                                        Mid( _
+                                                FormatLiteralString(tmpData(LB), True), _
+                                                CLng(FormatLiteralString(tmpData(UB), True)) _
+                                                ) _
+                                    )
+        Case 3
+            tmpEval = ToLiteralString( _
+                                        Mid( _
+                                                FormatLiteralString(tmpData(LB), True), _
+                                                CLng(FormatLiteralString(tmpData(LB + 1), True)), _
+                                                CLng(FormatLiteralString(tmpData(UB), True)) _
+                                                ) _
+                                    )
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    Mid_ = tmpEval
 End Function
 
 Private Function Min(ByRef expression As String) As Double
@@ -2270,6 +3585,182 @@ Private Function MinNonZero(ParamArray values() As Variant) As Long
     MinNonZero = minTmp
 End Function
 
+Private Function Minute_(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 1
+            tmpEval = Minute( _
+                            FormatLiteralString(tmpData(LB), True) _
+                            )
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    Minute_ = tmpEval
+End Function
+
+Private Function MIRR_(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    Dim idx As Long
+    Dim strArray() As String
+    Dim dblArray() As Double
+    
+    tmpData() = SplitArgs(expression)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    strArray() = ArrayFromString(tmpData(LB)) 'Get array of data
+    ReDim dblArray(LBound(strArray) To UBound(strArray))
+    For idx = LBound(strArray) To UBound(strArray) 'Copy to double array
+        dblArray(idx) = CDbl(FormatLiteralString(strArray(idx), True))
+    Next idx
+    Select Case argsCount
+        Case 3
+            tmpEval = MIRR(dblArray, _
+                         CDbl(FormatLiteralString(tmpData(LB + 1), True)), _
+                         CDbl(FormatLiteralString(tmpData(UB), True)))
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    MIRR_ = tmpEval
+End Function
+
+''' <summary>
+''' Multiplies 2 matrices A and B when A has multiple
+''' rows and columns. Matrix B can be a column vector.
+''' </summary>
+Private Function MMult(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = SplitArgs(expression)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 2
+            tmpEval = ArrayToString(MMult_( _
+                                StringTodblArray(ArrayFromString(tmpData(LB))), _
+                                StringTodblArray(ArrayFromString(tmpData(UB)))) _
+                                )
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    MMult = tmpEval
+End Function
+
+Private Function MMult_(ByRef a() As Double, ByRef b() As Double) As Double()
+    Dim c() As Double
+    Dim LBa As Long
+    Dim LBa2 As Long
+    Dim LBb As Long
+    Dim LBb2 As Long
+    Dim UBb As Long
+    Dim m As Long
+    Dim n As Long
+    Dim l As Long
+    Dim IsVectorb As Boolean
+    Dim i As Long
+    Dim j As Long
+    Dim k As Long
+    Dim sum As Double
+    
+    LBa = LBound(a)
+    LBa2 = LBound(a, 2)
+    LBb = LBound(b)
+    UBb = UBound(b)
+    n = UBound(a) - LBa + 1
+    m = UBound(a, 2) - LBa2 + 1
+    If UBb - LBb + 1 <> m Then Exit Function    'Required columns from a equal to rows of b
+    IsVectorb = Not Is2Darray(b)
+    If Not IsVectorb Then
+        LBb2 = LBound(b, 2)
+        l = UBound(b, 2) - LBb2 + 1
+        ReDim c(LBa To n + LBa - 1, LBb2 To l + LBb2 - 1)
+    Else
+        ReDim c(LBa To n + LBa - 1, LBb To LBb)
+    End If
+    For i = 1 To n
+        If Not IsVectorb Then
+            For j = 1 To l
+                sum = 0
+                For k = 1 To m
+                    sum = sum + a(i + LBa - 1, k + LBa2 - 1) * b(k + LBb - 1, j + LBb2 - 1)
+                Next k
+                c(i + LBa - 1, j + LBb2 - 1) = sum
+            Next j
+        Else
+            For j = 1 To 1 'One column vector
+                sum = 0
+                For k = 1 To m
+                    sum = sum + a(i + LBa - 1, k + LBa2 - 1) * b(k + LBb - 1)
+                Next k
+                c(i + LBa - 1, j + LBb - 1) = sum
+            Next j
+        End If
+    Next i
+    MMult_ = c
+End Function
+
+Private Function Month_(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 1
+            tmpEval = Month( _
+                            FormatLiteralString(tmpData(LB), True) _
+                            )
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    Month_ = tmpEval
+End Function
+
+Private Function MonthName_(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 1
+            tmpEval = ToLiteralString(MonthName( _
+                                            CLng(FormatLiteralString(tmpData(LB), True)) _
+                                            ))
+        Case 2
+            tmpEval = ToLiteralString(MonthName( _
+                                            CLng(FormatLiteralString(tmpData(LB), True)), _
+                                            CBool(FormatLiteralString(tmpData(UB), True)) _
+                                            ))
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    MonthName_ = tmpEval
+End Function
+
 ''' <summary>
 ''' Takes a list of values of type Long and
 ''' returns true if one of then is a non-zero value.
@@ -2289,8 +3780,73 @@ Private Function NonZero(ParamArray values() As Variant) As Boolean
     NonZero = tmpResult
 End Function
 
-Private Function NotIsPI(ByRef VarName As String) As Boolean
-    NotIsPI = Not VarName Like "[Pp][Ii]"
+Private Function NPER_(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 3
+            tmpEval = NPer(CDbl(FormatLiteralString(tmpData(LB), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 1), True)), _
+                        CDbl((FormatLiteralString(tmpData(UB), True))))
+        Case 4
+            tmpEval = NPer(CDbl(FormatLiteralString(tmpData(LB), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 1), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 2), True)), _
+                        CDbl((FormatLiteralString(tmpData(UB), True))))
+        Case 5
+            tmpEval = NPer(CDbl(FormatLiteralString(tmpData(LB), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 1), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 2), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 3), True)), _
+                        CLng((FormatLiteralString(tmpData(UB), True))))
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    NPER_ = tmpEval
+End Function
+
+Private Function NPV_(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As Double
+    Dim iRate As Double
+    Dim pCounter As Long
+    Dim LB As Long, UB As Long
+    Dim cLooper As Long
+    Dim strArray() As String
+    
+    tmpData() = SplitArgs(expression)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 2
+            strArray() = ArrayFromString(tmpData(UB)) 'Get array of data
+            iRate = CDbl(tmpData(LB))
+            pCounter = 1
+            For cLooper = LBound(strArray) To UBound(strArray)
+                tmpEval = tmpEval + CDbl(strArray(cLooper)) / ((1 + iRate) ^ pCounter)
+                pCounter = pCounter + 1
+            Next cLooper
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    NPV_ = tmpEval
+End Function
+
+Private Function NotIsPI(ByRef varName As String) As Boolean
+    NotIsPI = Not varName Like "[Pp][Ii]"
+End Function
+
+Private Function Now_(ByRef expression As String) As String
+    Now_ = ToLiteralString(Now)
 End Function
 
 Private Function OPsymbolInArgument(ByRef ArgDefStr As String, ByRef Pattrn As String) As Boolean
@@ -2439,26 +3995,291 @@ Private Sub ParseVariables(ByRef expression As String)
 End Sub
 
 Private Function PatternToCheckOn(ByRef ArgDefStr As String) As String
-    Select Case AscW(ArgDefStr)
-        Case 43, 45
-            PatternToCheckOn = op_AllNotUnaryItems
-        Case Else
-            PatternToCheckOn = op_AllItems
-    End Select
+    If LenB(ArgDefStr) Then
+        Select Case AscW(ArgDefStr)
+            Case 43, 45
+                PatternToCheckOn = op_AllNotUnaryItems
+            Case Else
+                PatternToCheckOn = op_AllItems
+        End Select
+    Else
+        PatternToCheckOn = op_AllItems
+    End If
 End Function
 
 Private Function Percent(ByRef expression As String) As Double
     Percent = CDbl(expression) / 100
 End Function
 
+Private Function PMT_(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 3
+            tmpEval = Pmt(CDbl(FormatLiteralString(tmpData(LB), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 1), True)), _
+                        CDbl((FormatLiteralString(tmpData(UB), True))))
+        Case 4
+            tmpEval = Pmt(CDbl(FormatLiteralString(tmpData(LB), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 1), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 2), True)), _
+                        CDbl((FormatLiteralString(tmpData(UB), True))))
+        Case 5
+            tmpEval = Pmt(CDbl(FormatLiteralString(tmpData(LB), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 1), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 2), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 3), True)), _
+                        CLng((FormatLiteralString(tmpData(UB), True))))
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    PMT_ = tmpEval
+End Function
+
+Private Function PPMT_(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 4
+            tmpEval = PPmt(CDbl(FormatLiteralString(tmpData(LB), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 1), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 2), True)), _
+                        CDbl((FormatLiteralString(tmpData(UB), True))))
+        Case 5
+            tmpEval = PPmt(CDbl(FormatLiteralString(tmpData(LB), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 1), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 2), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 3), True)), _
+                        CDbl((FormatLiteralString(tmpData(UB), True))))
+        Case 6
+            tmpEval = PPmt(CDbl(FormatLiteralString(tmpData(LB), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 1), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 2), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 3), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 4), True)), _
+                        CLng((FormatLiteralString(tmpData(UB), True))))
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    PPMT_ = tmpEval
+End Function
+
 Private Function Power(ByRef expression As String) As Double
     Dim tmpData() As String
     Dim tmpEval As Double
+    Dim LB As Long, UB As Long
     
     tmpData() = Split(expression, P_SEPARATORCHAR)
-    tmpEval = CDbl(tmpData(LBound(tmpData))) ^ _
-                    CDbl(tmpData(LBound(tmpData) + 1))
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    If UB - LB = 1 Then
+        tmpEval = CDbl(tmpData(LB)) ^ _
+                        CDbl(tmpData(UB))
+    Else
+        tmpEval = e_ValueError
+    End If
     Power = tmpEval
+End Function
+
+Private Function PV_(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 3
+            tmpEval = PV(CDbl(FormatLiteralString(tmpData(LB), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 1), True)), _
+                        CDbl((FormatLiteralString(tmpData(UB), True))))
+        Case 4
+            tmpEval = PV(CDbl(FormatLiteralString(tmpData(LB), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 1), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 2), True)), _
+                        CDbl((FormatLiteralString(tmpData(UB), True))))
+        Case 5
+            tmpEval = PV(CDbl(FormatLiteralString(tmpData(LB), True)), _
+                        CDbl(FormatLiteralString(tmpData(LB + 1), True)), _
+                        CDbl(FormatLiteralString(tmpData(LB + 2), True)), _
+                        CDbl(FormatLiteralString(tmpData(LB + 3), True)), _
+                        CLng((FormatLiteralString(tmpData(UB), True))))
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    PV_ = tmpEval
+End Function
+
+Private Function RATE_(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 3
+            tmpEval = Rate(CDbl(FormatLiteralString(tmpData(LB), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 1), True)), _
+                        CDbl((FormatLiteralString(tmpData(UB), True))))
+        Case 4
+            tmpEval = Rate(CDbl(FormatLiteralString(tmpData(LB), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 1), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 2), True)), _
+                        CDbl((FormatLiteralString(tmpData(UB), True))))
+        Case 5
+            tmpEval = Rate(CDbl(FormatLiteralString(tmpData(LB), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 1), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 2), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 3), True)), _
+                        CLng((FormatLiteralString(tmpData(UB), True))))
+        Case 6
+            tmpEval = Rate(CDbl(FormatLiteralString(tmpData(LB), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 1), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 2), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 3), True)), _
+                         CLng(FormatLiteralString(tmpData(LB + 4), True)), _
+                        CDbl((FormatLiteralString(tmpData(UB), True))))
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    RATE_ = tmpEval
+End Function
+
+Private Function Replace_(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 3
+            tmpEval = ToLiteralString( _
+                                        Replace( _
+                                                FormatLiteralString(tmpData(LB), True), _
+                                                FormatLiteralString(tmpData(LB + 1), True), _
+                                                FormatLiteralString(tmpData(UB), True) _
+                                                ) _
+                                    )
+        Case 4
+            tmpEval = ToLiteralString( _
+                                        Replace( _
+                                                FormatLiteralString(tmpData(LB), True), _
+                                                FormatLiteralString(tmpData(LB + 1), True), _
+                                                FormatLiteralString(tmpData(LB + 2), True), _
+                                                CLng(FormatLiteralString(tmpData(UB), True)) _
+                                                ) _
+                                    )
+        Case 5
+            tmpEval = ToLiteralString( _
+                                        Replace( _
+                                                FormatLiteralString(tmpData(LB), True), _
+                                                FormatLiteralString(tmpData(LB + 1), True), _
+                                                FormatLiteralString(tmpData(LB + 2), True), _
+                                                CLng(FormatLiteralString(tmpData(LB + 3), True)), _
+                                                CLng(FormatLiteralString(tmpData(UB), True)) _
+                                                ) _
+                                    )
+        Case 6
+            tmpEval = ToLiteralString( _
+                                        Replace( _
+                                                FormatLiteralString(tmpData(LB), True), _
+                                                FormatLiteralString(tmpData(LB + 1), True), _
+                                                FormatLiteralString(tmpData(LB + 2), True), _
+                                                CLng(FormatLiteralString(tmpData(LB + 3), True)), _
+                                                CLng(FormatLiteralString(tmpData(LB + 4), True)), _
+                                                CLng(FormatLiteralString(tmpData(UB), True)) _
+                                                ) _
+                                    )
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    Replace_ = tmpEval
+End Function
+
+Private Function ReplaceImpliedMult(expression As String) As String
+    Dim tmpPos As Long
+    Dim tmpStr As String
+    Dim LookupPos As Long
+    Dim tmpVar As String
+    Dim tmpVarInitPos As Long
+    
+    LookupPos = 1
+    tmpStr = expression
+    tmpPos = InStrB(LookupPos, tmpStr, d_lParenthesis)
+    Do While tmpPos
+        If tmpPos > 2 Then
+            If InStr(1, op_AllItems, MidB(tmpStr, tmpPos - 2, 2)) = 0 Then
+                tmpVarInitPos = tmpPos
+                Do While tmpVarInitPos > 1
+                    If (InStrB(1, op_AllItems, MidB$(tmpStr, tmpVarInitPos - 2, 2)) <> 0) Then
+                        Exit Do
+                    End If
+                    tmpVarInitPos = tmpVarInitPos - 2
+                Loop
+                tmpVar = MidB$(tmpStr, tmpVarInitPos, tmpPos - tmpVarInitPos)
+                If GetFunctionName(LCase$(tmpVar)) = vbNullString Then 'Implied multiplication found
+                    tmpStr = MidB(tmpStr, 1, tmpPos - 1) & op_mult & MidB(tmpStr, tmpPos)
+                End If
+            End If
+            LookupPos = tmpPos + 4
+            tmpPos = InStrB(LookupPos, tmpStr, d_lParenthesis)
+        Else
+            LookupPos = tmpPos + 2
+            tmpPos = InStrB(LookupPos, tmpStr, d_lParenthesis)
+        End If
+    Loop
+    ReplaceImpliedMult = tmpStr
+End Function
+
+Private Function Right_(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 1
+            tmpEval = ToLiteralString(Right(FormatLiteralString(tmpData(LB), True), 1))
+        Case 2
+            tmpEval = ToLiteralString( _
+                                        Right( _
+                                                FormatLiteralString(tmpData(LB), True), _
+                                                CLng(FormatLiteralString(tmpData(UB), True)) _
+                                                ) _
+                                    )
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    Right_ = tmpEval
 End Function
 
 Private Function ReconstructLiteralStrings(InputExpr As String, StoredExp As String) As String
@@ -2470,6 +4291,7 @@ Private Function ReconstructLiteralStrings(InputExpr As String, StoredExp As Str
     Dim closingMarkStored As Long
     Dim tmpResult As String
     
+    On Error GoTo Reconstruct_errHandler
     lastPosInput = 1
     lastPosStored = -1
     curPosInput = InStrB(lastPosInput, InputExpr, d_Apostrophe)
@@ -2487,6 +4309,8 @@ Private Function ReconstructLiteralStrings(InputExpr As String, StoredExp As Str
         curPosInput = InStrB(lastPosInput, InputExpr, d_Apostrophe)
     Loop
     ReconstructLiteralStrings = tmpResult
+    Exit Function
+Reconstruct_errHandler:
 End Function
 
 Private Function RemoveDupNegation(ByRef expression As String) As String
@@ -2499,17 +4323,17 @@ Private Function RemoveDupNegation(ByRef expression As String) As String
     RemoveDupNegation = tmpResult
 End Function
 
-Private Function ReservedToken(ByRef VarName As String) As Boolean
+Private Function ReservedToken(ByRef varName As String) As Boolean
     ReservedToken = True
-    If Not IsBoolean(LCase$(VarName)) Then 'Exclude logical values
-        If IsLikeSciNot(VarName) Then ' Like "E#*"
-            If Not IsDigit(MidB$(VarName, LenB(VarName) - 1)) Then 'Exclude Sci notation exp
-                If Not AscW(VarName) = 69 Then  'Exclude Sci notation token E
+    If Not IsBoolean(LCase$(varName)) Then 'Exclude logical values
+        If IsLikeSciNot(varName) Then ' Like "E#*"
+            If Not IsDigit(MidB$(varName, LenB(varName) - 1)) Then 'Exclude Sci notation exp
+                If Not AscW(varName) = 69 Then  'Exclude Sci notation token E
                     ReservedToken = False
                 End If
             End If
         Else
-            If Not AscW(VarName) = 69 Then  'Exclude Sci notation token E
+            If Not AscW(varName) = 69 Then  'Exclude Sci notation token E
                 ReservedToken = False
             End If
         End If
@@ -2541,8 +4365,8 @@ Private Function SerializeSubTree(ByRef expression As String, ByRef SubExpressio
 End Function
 
 Private Sub ShrinkBuffer(ByRef aBuffer As ClusterTree)
-    If aBuffer.Index > -1 Then
-        aBuffer.Capacity = aBuffer.Index
+    If aBuffer.index > -1 Then
+        aBuffer.Capacity = aBuffer.index
         ReDim Preserve aBuffer.Storage(0 To aBuffer.Capacity)
     End If
 End Sub
@@ -2556,6 +4380,27 @@ Private Sub SignSubstitution(ByRef expression As String, FindStr As String, Repl
         expression = Replace(expression, FindStr, Replacement)
     End If
 End Sub
+
+Private Function SLN_(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 3
+            tmpEval = SLN(CDbl(FormatLiteralString(tmpData(LB), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 1), True)), _
+                        CDbl((FormatLiteralString(tmpData(UB), True))))
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    SLN_ = tmpEval
+End Function
 
 Private Function Sine(ByRef expression As String) As Double
     Dim tmpEval As Double
@@ -2581,9 +4426,15 @@ Private Function SplitArrBranch(ByRef Argument As String, ByRef outArr() As Stri
     
     tmpArr() = ArrayFromString(Argument)
     If InitializedArray(tmpArr) Then 'Transform success
-        outArr = Array1DFrom2DArr(tmpArr)
-        tmpResult(0) = UBound(tmpArr)   'Rows in the array
-        tmpResult(1) = UBound(tmpArr, 2)  'Columns in each row
+        If Is2Darray(tmpArr) Then
+            outArr = Array1DFrom2DArr(tmpArr)
+            tmpResult(0) = UBound(tmpArr)   'Rows in the array
+            tmpResult(1) = UBound(tmpArr, 2)  'Columns in each row
+        Else
+            outArr = tmpArr
+            tmpResult(0) = UBound(tmpArr)
+            tmpResult(1) = -1
+        End If
     Else
         tmpResult(0) = -1   'Return error values
         tmpResult(1) = -1
@@ -2591,27 +4442,140 @@ Private Function SplitArrBranch(ByRef Argument As String, ByRef outArr() As Stri
     SplitArrBranch = tmpResult
 End Function
 
+''' <summary>
+''' Solves the linear system AX = B using Over Relaxation (SOR)
+''' iteration. The function requires that the <expression> argument be composed
+''' of the following:
+'''                     1-) An array in text form containing the coefficients of all equations.
+'''                     2-) An one dimentional array containing the name of each variable
+'''                         (the first name will be applied to the first column of coefficients,
+'''                         the second name to the second column and so on).
+'''                     3-) An one dimentional array containing the right-hand side of each equation,
+'''                         (the first name will be applied to the first column of coefficients,
+'''                         the second name to the second column and so on).
+'''                     4-) A True or False parameter to decide when to include the variable names
+'''                         in the result set.
+''' The program will iterate until the solution is approximated to 9
+''' significant digits or until 500 iterations are completed, whichever comes first.
+''' </summary>
+Private Function Solve(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    Dim tolerance As Double
+    
+    tmpData() = SplitArgs(expression)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 3, 4
+            Dim cArray() As Double
+            Dim eqCount As Long
+            Dim iCounter As Long
+            Dim includeNames As Boolean
+            Dim mLB As Long
+            Dim mUB As Long
+            Dim nArray() As String
+            Dim rArray() As Double
+            Dim tmpElement As String
+            Dim significantDigits As Long
+            Dim xArray() As Double
+            
+            tolerance = 0.0000000001
+            significantDigits = Len(CStr(1 / tolerance)) - 1
+            cArray() = StringTodblArray(ArrayFromString(tmpData(LB)))
+            rArray() = StringTodblArray(ArrayFromString(tmpData(LB + 2)))
+            mLB = LBound(cArray)
+            mUB = UBound(cArray)
+            
+            ReDim xArray(mLB To mUB)
+            eqCount = mUB - mLB + 1
+            SORiteration eqCount, cArray, rArray, xArray, 500, tolerance, 1
+            If argsCount = 4 Then
+                nArray() = ArrayFromString(tmpData(LB + 1))
+                includeNames = CBool(tmpData(UB))
+            End If
+            For iCounter = mLB To mUB
+                If iCounter > mLB Then
+                    tmpEval = tmpEval & P_SEPARATORCHAR & d_Space
+                End If
+                If includeNames Then
+                    tmpElement = FormatLiteralString(nArray(iCounter)) _
+                                & d_Space & op_equal & d_Space _
+                                & Round(xArray(iCounter), significantDigits)
+                Else
+                    tmpElement = Round(xArray(iCounter), significantDigits)
+                End If
+                tmpEval = tmpEval & tmpElement
+            Next iCounter
+            If Not includeNames Then
+                tmpEval = d_lCurly & d_lCurly & tmpEval & d_rCurly & d_rCurly
+            End If
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    Solve = tmpEval
+End Function
+Private Sub SORiteration(n As Long, ByRef a() As Double, ByRef b() As Double, _
+                         ByRef x() As Double, iter As Long, tol As Double, omega As Double)
+''' Hoffman, J. D. (2001). Numerical methods for engineers and scientists (2nd ed., rev.expanded). Marcel Dekker.
+    Dim it As Long
+    Dim i As Long, j As Long
+    Dim dxmax As Double
+    Dim residual As Double
+    Dim colLB As Long, rowLB As Long
+    
+    colLB = LBound(a, 2)
+    rowLB = LBound(a)
+    For it = 1 To iter
+        dxmax = 0
+        For i = 1 To n
+            residual = b(i + rowLB - 1)
+            For j = 1 To n
+                residual = residual - a(i + rowLB - 1, j + colLB - 1) * x(j + rowLB - 1)
+            Next j
+            If Abs(residual) > dxmax Then dxmax = Abs(residual)
+            x(i + rowLB - 1) = x(i + rowLB - 1) + omega * residual / a(i + rowLB - 1, i + colLB - 1)
+        Next i
+        If dxmax < tol Then Exit For
+    Next it
+End Sub
+
 Private Function SplitArgs(ByRef args As String) As String()
     Dim tmpPos As Long
-    Dim ArrStartIdx As Long
-    Dim ArrEndIdx As Long
+    Dim curChar As String
     Dim SargStart As Long
     Dim SargEnd As Long
     Dim tmpResult As String
     Dim LenArgsStr As Long
+    Dim VectorOpenFlag As Boolean
+    Dim OpenCBrackets As Long
+    Dim i As Long
     
     tmpPos = 1
     LenArgsStr = LenB(args)
     Do
-        ArrStartIdx = InStrB(tmpPos, args, "{{")
-        If ArrStartIdx = tmpPos Then 'Currrent argument is an array
-            ArrEndIdx = InStrB(ArrStartIdx, args, "}}")
-            tmpPos = ArrEndIdx + 6
-            If tmpResult <> vbNullString Then
-                tmpResult = tmpResult & "?" & MidB$(args, ArrStartIdx, ArrEndIdx - ArrStartIdx + 4)
-            Else
-                tmpResult = MidB$(args, ArrStartIdx, ArrEndIdx - ArrStartIdx + 4)
-            End If
+        VectorOpenFlag = (InStrB(tmpPos, args, d_lCurly) = tmpPos)
+        If VectorOpenFlag Then 'Currrent argument is an array
+            i = tmpPos
+            OpenCBrackets = 1
+            Do While VectorOpenFlag And i <= LenArgsStr
+                i = i + 2
+                curChar = MidB$(args, i, 2)
+                If curChar = d_lCurly Then
+                    OpenCBrackets = OpenCBrackets + 1
+                Else
+                    If curChar = d_rCurly Then
+                        OpenCBrackets = OpenCBrackets - 1
+                    End If
+                End If
+                VectorOpenFlag = Not (curChar = d_rCurly) Or OpenCBrackets
+            Loop
+            SargStart = tmpPos
+            SargEnd = i + 2
+            tmpPos = i + 4
         Else
             SargStart = tmpPos
             SargEnd = InStrB(tmpPos, args, P_SEPARATORCHAR)
@@ -2619,11 +4583,11 @@ Private Function SplitArgs(ByRef args As String) As String()
                 SargEnd = LenArgsStr + 1
             End If
             tmpPos = SargEnd + 2
-            If tmpResult <> vbNullString Then
-                tmpResult = tmpResult & "?" & MidB$(args, SargStart, SargEnd - SargStart)
-            Else
-                tmpResult = MidB$(args, SargStart, SargEnd - SargStart)
-            End If
+        End If
+        If tmpResult <> vbNullString Then
+            tmpResult = tmpResult & "?" & MidB$(args, SargStart, SargEnd - SargStart)
+        Else
+            tmpResult = MidB$(args, SargStart, SargEnd - SargStart)
         End If
     Loop While tmpPos < LenArgsStr
     SplitArgs = Split(tmpResult, "?")
@@ -2657,6 +4621,87 @@ Private Function SquareRoot(ByRef expression As String) As Double
     SquareRoot = Sqr(CDbl(expression))
 End Function
 
+Public Function StringTodblArray(ByRef StringArray() As String) As Double()
+    Dim i As Long, LB As Long, UB As Long
+    Dim j As Long, LB2 As Long, UB2 As Long
+    Dim tmpResult() As Double
+    Dim IsVector As Boolean
+    
+    LB = LBound(StringArray)
+    UB = UBound(StringArray)
+    IsVector = Not Is2Darray(StringArray)
+    If Not IsVector Then
+        LB2 = LBound(StringArray, 2)
+        UB2 = UBound(StringArray, 2)
+        ReDim tmpResult(LB To UB, LB2 To UB2)
+    Else
+        ReDim tmpResult(LB To UB)
+    End If
+    For i = LB To UB
+        If IsVector Then
+            tmpResult(i) = CDbl(StringArray(i))
+        Else
+            For j = LB2 To UB2
+                tmpResult(i, j) = CDbl(StringArray(i, j))
+            Next j
+        End If
+    Next i
+    StringTodblArray = tmpResult
+End Function
+
+Private Function Switch_(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim idx As Long
+    Dim LB As Long, UB As Long
+    Dim tmpData() As String
+    Dim tmpEval As Boolean
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount And 1
+        Case 0
+            idx = LB
+            Do
+                tmpEval = CBool( _
+                            FormatLiteralString(tmpData(idx), True) _
+                            )
+                idx = idx + 2
+            Loop While Not tmpEval And idx <= UB - 1
+        Case Else
+            Switch_ = e_ValueError
+            Exit Function
+    End Select
+    If tmpEval Then    'Return the TRUE part
+        Switch_ = tmpData(idx - 1)
+    Else
+        Switch_ = "#Null!"
+    End If
+End Function
+
+Private Function SYD_(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 4
+            tmpEval = SYD(CDbl(FormatLiteralString(tmpData(LB), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 1), True)), _
+                         CDbl(FormatLiteralString(tmpData(LB + 2), True)), _
+                        CDbl((FormatLiteralString(tmpData(UB), True))))
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    SYD_ = tmpEval
+End Function
+
 Private Function Tangent(ByRef expression As String) As Double
     Dim tmpEval As Double
 
@@ -2667,6 +4712,57 @@ Private Function Tangent(ByRef expression As String) As Double
     Tangent = Tan(tmpEval)
 End Function
 
+Private Function TimeSerial_(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 3
+            tmpEval = ToLiteralString(TimeSerial( _
+                                CLng(FormatLiteralString(tmpData(LB), True)), _
+                                CLng(FormatLiteralString(tmpData(LB + 1), True)), _
+                                CLng(FormatLiteralString(tmpData(UB), True)) _
+                                ))
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    TimeSerial_ = tmpEval
+End Function
+
+Private Function TimeValue_(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 1
+            tmpEval = ToLiteralString(TimeValue( _
+                                FormatLiteralString(tmpData(LB), True) _
+                                ))
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    TimeValue_ = tmpEval
+End Function
+
+Private Function Trim_(ByRef expression As String) As String
+    Trim_ = ToLiteralString(Trim(FormatLiteralString(expression, True)))
+End Function
+
+Private Function UCase_(ByRef expression As String) As String
+    UCase_ = ToLiteralString(UCase(expression))
+End Function
 Private Sub StoreUDF(ByRef targetBuffer As ClusterBuffer, _
                     ByRef UDFname As String, ByRef UDFlib As String)
     Dim UDFidx As Long
@@ -2706,6 +4802,7 @@ Private Sub TokenizeSubExpr(ByRef expression As String, ByRef SubExpressionsData
                 tmpArgs() = Split(ExpCopy, P_SEPARATORCHAR)
                 For taIcounter = LBound(tmpArgs) To UBound(tmpArgs)
                     GetRootedTree tmpArgs(taIcounter), tmpReplacement, OperationIndex, outBuffer
+                    AddToMap outBuffer.index, outBuffer
                 Next taIcounter
                 outBuffer.CompCluster = True
                 outBuffer.CompArrCluster = False
@@ -2715,6 +4812,7 @@ Private Sub TokenizeSubExpr(ByRef expression As String, ByRef SubExpressionsData
         If outBuffer.ClusterArrBounds(0) <> -1 Then 'Splitting argument success
             For taIcounter = LBound(tmpArgs) To UBound(tmpArgs)
                 GetRootedTree tmpArgs(taIcounter), tmpReplacement, OperationIndex, outBuffer
+                AddToMap outBuffer.index, outBuffer
             Next taIcounter
             outBuffer.CompCluster = True
             outBuffer.CompArrCluster = True
@@ -2723,7 +4821,6 @@ Private Sub TokenizeSubExpr(ByRef expression As String, ByRef SubExpressionsData
         End If
     End If
 End Sub
-
 Private Function UnicToken(ByRef Source() As String, ByRef value As String) As Boolean
     Dim UTiCounter As Long
     Dim UTjCounter As Long
@@ -2775,7 +4872,7 @@ Private Function ValidTree() As Boolean
                 End If
             End If
             t = t + 1
-        Loop While t <= EvalTree(b).Index And tmpResult
+        Loop While t <= EvalTree(b).index And tmpResult
         b = b + 1
     Loop While b <= c And tmpResult
     If Not tmpResult Then
@@ -2794,34 +4891,130 @@ Private Sub VariableAssignment(ByRef vString As String)
     Dim tmpAssignment() As String
     Dim tmpValues() As String
     Dim avIcounter As Long
-    Dim VarIdx As Long
+    Dim UB As Long
     
-    tmpAssignment() = Split(ReconstructLiteralStrings(vString, Join$(Split(vString, " "), vbNullString)), P_SEPARATORCHAR)
+    tmpAssignment() = Split(ReconstructLiteralStrings(vString, Join$(Split(vString, d_Space), vbNullString)), P_SEPARATORCHAR)
     For avIcounter = LBound(tmpAssignment) To UBound(tmpAssignment)
         tmpValues() = Split(tmpAssignment(avIcounter), "=")
-        If tmpValues(UBound(tmpValues)) <> vbNullString Then
-            If IsNumeric(tmpValues(UBound(tmpValues))) Or IsLiteralString(tmpValues(UBound(tmpValues))) Then
-                VarIdx = GetCBItemIdx(ExprVariables, tmpValues(LBound(tmpValues)))
-                If VarIdx > -1 Then
-                    ExprVariables.Storage(VarIdx).value = tmpValues(UBound(tmpValues))
-                    ExprVariables.Storage(VarIdx).Assigned = True
-                End If
+        UB = UBound(tmpValues)
+        If tmpValues(UB) <> vbNullString Then
+            If IsNumeric(tmpValues(UB)) Or IsBoolean(tmpValues(UB)) Or IsLiteralString(tmpValues(UB)) Then
+                P_SCOPE.varValue(tmpValues(LBound(tmpValues))) = tmpValues(UB)
             End If
         End If
     Next avIcounter
 End Sub
 
 Private Sub VariablesInit(ByRef expression As String)
-    Dim i As Long
-    Dim tmpIdx As Long
-    
-    InitCBbuffer ExprVariables
+    P_SCOPE.VariablesInit
     ParseVariables expression
-    For i = 0 To ExprVariables.Index
-        tmpIdx = GetCBItemIdx(P_CONSTANTS, ExprVariables.Storage(i).name)
-        If tmpIdx > -1 Then 'The variable is a defined constant
-            ExprVariables.Storage(i).value = P_CONSTANTS.Storage(tmpIdx).value
-            ExprVariables.Storage(i).Assigned = True
-        End If
-    Next i
+    P_SCOPE.FillPredefinedVars
 End Sub
+
+Private Function WeekDay_(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 1
+            tmpEval = Weekday( _
+                            FormatLiteralString(tmpData(LB), True) _
+                            )
+        Case 2
+            tmpEval = Weekday( _
+                            FormatLiteralString(tmpData(LB), True), _
+                            CLng(FormatLiteralString(tmpData(UB), True)) _
+                            )
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    WeekDay_ = tmpEval
+End Function
+
+Private Function WeekDayName_(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 1
+            tmpEval = ToLiteralString(WeekdayName( _
+                            CLng(FormatLiteralString(tmpData(LB), True)) _
+                            ))
+        Case 2
+            tmpEval = ToLiteralString(WeekdayName( _
+                            CLng(FormatLiteralString(tmpData(LB), True)), _
+                            CBool(FormatLiteralString(tmpData(UB), True)) _
+                            ))
+        Case 3
+            tmpEval = ToLiteralString(WeekdayName( _
+                            CLng(FormatLiteralString(tmpData(LB), True)), _
+                            CBool(FormatLiteralString(tmpData(LB + 1), True)), _
+                            CLng(FormatLiteralString(tmpData(UB), True)) _
+                            ))
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    WeekDayName_ = tmpEval
+End Function
+
+Private Function Year_(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 1
+            tmpEval = Year( _
+                            FormatLiteralString(tmpData(LB), True) _
+                            )
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    Year_ = tmpEval
+End Function
+
+Private Function Zero(ByRef expression As String) As String
+    Dim argsCount As Long
+    Dim tmpData() As String
+    Dim tmpEval As String
+    Dim LB As Long, UB As Long
+    
+    tmpData() = Split(expression, P_SEPARATORCHAR)
+    LB = LBound(tmpData)
+    UB = UBound(tmpData)
+    argsCount = UB - LB + 1
+    Select Case argsCount
+        Case 3
+            tmpEval = fZeroMBM( _
+                            FormatLiteralString(tmpData(LB), True) _
+                            , CDbl(FormatLiteralString(tmpData(LB + 1), True)) _
+                            , CDbl(FormatLiteralString(tmpData(UB), True)))
+        Case 4
+            tmpEval = fZeroMBM( _
+                            FormatLiteralString(tmpData(LB), True) _
+                            , CDbl(FormatLiteralString(tmpData(LB + 1), True)) _
+                            , CDbl(FormatLiteralString(tmpData(LB + 2), True)), _
+                            CBool(FormatLiteralString(tmpData(UB), True)))
+        Case Else
+            tmpEval = e_ValueError
+    End Select
+    Zero = tmpEval
+End Function
+
