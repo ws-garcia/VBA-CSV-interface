@@ -91,7 +91,7 @@ Class module developed to emulate some functionalities from the `ArrayList` pres
 <tr>
 <td style="text-align: left; color:blue;"><em>FromString</em></td>
 <td style="text-align: left;">Method</td>
-<td style="text-align: left;">Main constructor method. Populates the current instance using values passed as a Java array string (<code>{{*};{*}}</code>).</td>
+<td style="text-align: left;">Main constructor method. Populates the current instance using values passed as a Java array string (<code>\{\{*\};\{*\}\}</code>).</td>
 </tr>
 <tr>
 <td style="text-align: left; color:blue;"><em>GetIndexedItem</em></td>
