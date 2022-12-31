@@ -375,20 +375,20 @@ End Function
 Public Sub WriteBlankLines(Lines As Long, Optional EndLineMark As EndLineChar = 0)
 Attribute WriteBlankLines.VB_Description = "Inserts a specified number of blank lines into the current opened text file."
     If P_ISOPENSTREAM Then
-        Dim Idx As Long
+        Dim idx As Long
         Select Case EndLineMark
             Case 0
-                For Idx = 1 To Lines
+                For idx = 1 To Lines
                     WriteText vbCrLf
-                Next Idx
+                Next idx
             Case 1
-                For Idx = 1 To Lines
+                For idx = 1 To Lines
                     WriteText vbCr
-                Next Idx
+                Next idx
             Case 2
-                For Idx = 1 To Lines
+                For idx = 1 To Lines
                     WriteText vbLf
-                Next Idx
+                Next idx
         End Select
         P_STREAMLENGTH = LOF(FileHandled)
     End If

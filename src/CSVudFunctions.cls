@@ -61,11 +61,11 @@ Private Function minor(a() As Double, x As Integer, y As Integer) As Double()
 End Function
 
 'Adapted from: https://rosettacode.org/wiki/Determinant_and_permanent#VBA
-Public Function DET(StrArray As Variant) As Double 'Expected an one element string array
+Public Function DET(strArray As Variant) As Double 'Expected an one element string array
     Dim a() As Double
     Dim ArrayHelper As New CSVexpressions
     
-    a() = StringTodblArray(ArrayHelper.ArrayFromString(CStr(StrArray(LBound(StrArray)))))
+    a() = StringTodblArray(ArrayHelper.ArrayFromString(CStr(strArray(LBound(strArray)))))
     DET = DET_(a)
 End Function
 
@@ -121,9 +121,15 @@ Public Function Concat(List As Variant) As String
     joinString = MidB$(List(endIdx), 3, LenB(List(endIdx)) - 4)
     tmpResult = MidB$(List(startIdx), 3, LenB(List(startIdx)) - 4)
     For i = startIdx + 1 To endIdx - 1
+        If AscW(List(i)) = 39 Then  ' [']
             tmpResult = tmpResult & _
             joinString & _
             MidB$(List(i), 3, LenB(List(i)) - 4)
+        Else
+            tmpResult = tmpResult & _
+            joinString & _
+            List(i)
+        End If
     Next i
     Concat = Apostrophe & tmpResult & Apostrophe
 End Function

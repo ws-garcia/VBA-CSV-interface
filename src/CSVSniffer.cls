@@ -483,15 +483,15 @@ End Function
 ''' 0 < x <= 20 for single UnKnown data type field.
 ''' </summary>
 ''' <param name="strArray">One-dimensional record array.</param>
-Private Function RecordScore(ByRef StrArray As Variant) As Double
+Private Function RecordScore(ByRef strArray As Variant) As Double
     Dim L0 As Long
     Dim tmpSUM As Double
     Dim FielCount As Long
     
-    FielCount = 1 + UBound(StrArray) - LBound(StrArray)
+    FielCount = 1 + UBound(strArray) - LBound(strArray)
     tmpSUM = 0
-    For L0 = LBound(StrArray) To UBound(StrArray)
-        Select Case DetectDataType(StrArray(L0))
+    For L0 = LBound(strArray) To UBound(strArray)
+        Select Case DetectDataType(strArray(L0))
             Case FieldDataType.Known
                 tmpSUM = tmpSUM + 100
             Case Else

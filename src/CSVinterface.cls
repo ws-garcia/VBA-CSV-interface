@@ -59,7 +59,7 @@ Private EscapeSequence_Delim As String '---Classic or unix escape sequence in fi
 Private FDAscW As Long '-------------------AscW() applied to the field delimiter char
 Private FileHandled As Integer '-----------Pointer to the actual CSV file
 Private IgnoreEmptyLines As Boolean '------Skip empty lines
-Private Index As Long '--------------------Pointer to the actual record or chunk of record
+Private index As Long '--------------------Pointer to the actual record or chunk of record
 Private LenCurrentIndex As Long '----------Length of the actual record or chunk of record
 Private MaxIndex As Long '-----------------Maximum number of records or chunks of records
 Private OpenedToken As Boolean '-----------Multiline field indicator
@@ -134,10 +134,6 @@ Private static_UnixEscapeSeq As String
 Private static_UseUnixEscapeSeq As Boolean
 Private static_fieldsBound As Long
 Private static_fieldsMaxBound As Long
-'@------------------------------------------------------
-' CSV SUBSET VARIABLES
-Private UB As Long
-Private LB As Long
 '////////////////////////////////////////////////////////////////////////////////////////////
 '#
 '////////////////////////////////////////////////////////////////////////////////////////////
@@ -179,14 +175,14 @@ Public Property Get importSuccess() As Boolean
 Attribute importSuccess.VB_Description = "Gets the status for the last import operation. Returns True if it was success."
     importSuccess = P_SUCCESSFUL_IMPORT
 End Property
-Public Property Get Item(ParamArray Index() As Variant) As Variant
-Attribute Item.VB_Description = "Gets a field, or an array with an entire record, from the result array on the current instance."
-Attribute Item.VB_UserMemId = 0
-    Select Case UBound(Index)
+Public Property Get item(ParamArray index() As Variant) As Variant
+Attribute item.VB_Description = "Gets a field, or an array with an entire record, from the result array on the current instance."
+Attribute item.VB_UserMemId = 0
+    Select Case UBound(index)
         Case 0
-            Item = P_CSV_DATA(CLng(Index(0)))
+            item = P_CSV_DATA(CLng(index(0)))
         Case Is >= 1
-            Item = P_CSV_DATA(CLng(Index(0)))(CLng(Index(1)))
+            item = P_CSV_DATA(CLng(index(0)))(CLng(index(1)))
     End Select
 End Property
 Public Property Get items() As CSVArrayList
@@ -262,7 +258,7 @@ Public Function tJoin(ByVal nType As JoinType, _
                     Columns As String, _
                     matchKeys As String, _
                     Optional predicate As String = vbNullString, _
-                    Optional headers As Boolean = True) As CSVArrayList
+                    Optional Headers As Boolean = True) As CSVArrayList
                             
     Dim JoinHelper As CSVArrayList
 
@@ -270,38 +266,38 @@ Public Function tJoin(ByVal nType As JoinType, _
         Case JoinType.JT_LeftJoin
             Set tJoin = JoinHelper.LeftJoin(leftTable, rightTable, _
                                             Columns, matchKeys, predicate, _
-                                            headers)
+                                            Headers)
         Case JoinType.JT_RightJoin
             Set tJoin = JoinHelper.RightJoin(leftTable, rightTable, _
                                             Columns, matchKeys, predicate, _
-                                            headers)
+                                            Headers)
         Case Else
             Set tJoin = JoinHelper.InnerJoin(leftTable, rightTable, _
                                             Columns, matchKeys, predicate, _
-                                            headers)
+                                            Headers)
     End Select
 End Function
-Private Function JoinKeys(ByRef tList As CSVArrayList, ByRef Keys As Variant, Index As Long) As String
-    If IsArray(Keys) Then
+Private Function JoinKeys(ByRef tList As CSVArrayList, ByRef keys As Variant, index As Long) As String
+    If IsArray(keys) Then
         Dim i As Long
         Dim tLLB As Long
         Dim tLUB As Long
         Dim tmpResult() As String
         
-        tLLB = LBound(Keys)
-        tLUB = UBound(Keys)
+        tLLB = LBound(keys)
+        tLUB = UBound(keys)
         ReDim tmpResult(tLLB To tLUB)
         For i = tLLB To tLUB
-            tmpResult(i) = tList(Index)(Abs(Keys(i)) - 1)
+            tmpResult(i) = tList(index)(Abs(keys(i)) - 1)
         Next i
         JoinKeys = Join$(tmpResult, "-")
     Else
-        JoinKeys = tList(Index)(Abs(Keys) - 1)
+        JoinKeys = tList(index)(Abs(keys) - 1)
     End If
 End Function
 Public Function CSVsubsetSplit(filePath As String, _
                                 Optional subsetColumns As Variant = 1, _
-                                Optional headers As Boolean = True, _
+                                Optional Headers As Boolean = True, _
                                 Optional repeatHeaders As Boolean = True, _
                                 Optional streamSize As Long = 20) As Collection
     Dim CreatedFiles As Collection
@@ -365,9 +361,9 @@ Public Function CSVsubsetSplit(filePath As String, _
         '@----------------------------------------------------
         'Parse string
         With readerConf
-            .headers = headers
+            .Headers = Headers
             .delimitersGuessing = True
-            If headers Then
+            If Headers Then
                 .endingRecord = 1
                 CSVhead = CSVreader.ImportFromCSV(readerConf)(0)
                 .endingRecord = 0
@@ -383,14 +379,14 @@ Public Function CSVsubsetSplit(filePath As String, _
         Do While Not CSVstream.atEndOfStream
             CSVstream.ReadText 'Read next CSV data chunk
             RaiseEvent AfterLoadStream
-            If headers Then
+            If Headers Then
                 If fileCreatedFlag Then
-                    readerConf.headers = False
+                    readerConf.Headers = False
                 End If
             End If
             Set curItems = CSVreader.ImportFromCSVString(CSVstream.bufferString, readerConf).items
             If Not fileCreatedFlag Then
-                If headers Then
+                If Headers Then
                     i = 1
                 Else
                     i = 0
@@ -402,7 +398,7 @@ Public Function CSVsubsetSplit(filePath As String, _
             RaiseEvent AfterSort
             tmpVar = JoinKeys(curItems, subsetColumns, i)
             writterConf.path = OutputPath & CStr(tmpVar) & "." & FExtension
-            If headers Then
+            If Headers Then
                 '@----------------------------------------------------
                 'Check directory
                 fileOnPathFlag = FileExists(writterConf.path)
@@ -425,7 +421,7 @@ Public Function CSVsubsetSplit(filePath As String, _
                     ExportSubSet.Reinitialize ExportSubSet.count
                     tmpVar = JoinKeys(curItems, subsetColumns, i)
                     writterConf.path = OutputPath & CStr(tmpVar) & "." & FExtension
-                    If headers Then
+                    If Headers Then
                         fileOnPathFlag = FileExists(writterConf.path)
                         If Not fileOnPathFlag Then
                             If repeatHeaders Then
@@ -481,47 +477,16 @@ CSVsubsetSplit_MissingCSVfile:
     P_ERROR_SOURCE = "CSVinterface"
     GoTo CSVsubsetSplit_ErrHandler
 End Function
-Public Function Dedupe(Keys As String) As CSVArrayList
+Public Function Dedupe(keys As String) As CSVArrayList
     On Error GoTo ErrHandler_Dedupe
-    Dim aIndexes() As String
-    aIndexes() = FieldsToOperate(Keys)
-    If CheckForDupIndexes(aIndexes) Then
-        Dim IndexesCollection As Collection
-        Dim dRecCounter As Long
-            
-        Set IndexesCollection = New Collection
-        For dRecCounter = 0 To P_CSV_DATA.count - 1
-            On Error Resume Next
-            IndexesCollection.Add dRecCounter, DedupeKeysMerge(dRecCounter, aIndexes)
-        Next dRecCounter
-        Dim colItem As Variant
-        Set Dedupe = New CSVArrayList
-        For Each colItem In IndexesCollection
-            Dedupe.Add P_CSV_DATA.Item(CLng(colItem))
-        Next
-    End If
+    Set Dedupe = New CSVArrayList
+    Dedupe.Dedupe keys, parseConfig.Headers
     Exit Function
 ErrHandler_Dedupe:
     Set Dedupe = Nothing
     P_ERROR_DESC = "[CSV Dedupe]: " & err.Description
     P_ERROR_NUMBER = err.Number
     P_ERROR_SOURCE = "CSVinterface"
-End Function
-Private Function DedupeKeysMerge(aIndex As Long, Keys As Variant) As String
-    Dim tmpResult() As Variant
-    Dim kLB As Long
-    Dim kUb As Long
-    Dim keyCounter As Long
-    Dim tgRecord() As Variant
-    
-    kLB = LBound(Keys)
-    kUb = UBound(Keys)
-    ReDim tmpResult(kLB To kUb)
-    tgRecord() = P_CSV_DATA.Item(aIndex)
-    For keyCounter = kLB To kUb
-        tmpResult(keyCounter) = tgRecord(CLng(Keys(keyCounter)))
-    Next keyCounter
-    DedupeKeysMerge = Join$(tmpResult, "|")
 End Function
 Public Sub DumpToArray(OutPutArray() As Variant, _
                         Optional ByRef DataSource As CSVArrayList = Nothing)
@@ -783,7 +748,7 @@ Public Function Filter(Pattern As String, Optional filePath As String = vbNullSt
     Else
         Set CSVparser = Me
         If CSVparser.importSuccess Then
-            ExcludeFirstRecord = (CSVparser.parseConfig.headers = True)
+            ExcludeFirstRecord = (CSVparser.parseConfig.Headers = True)
             Filter.Concat2 CSVparser.items.Filter(Pattern, 1 + Abs(ExcludeFirstRecord), Exclude)
         End If
     End If
@@ -847,7 +812,7 @@ Private Function GetHeaderIndexes(ByRef tmpFilters() As Variant, _
         If tmpColl.count >= 1 Then
             ReDim tmpResult(0 To tmpColl.count - 1)
             For arridx = 0 To tmpColl.count - 1
-                tmpResult(arridx) = CLng(tmpColl.Item(arridx + 1))
+                tmpResult(arridx) = CLng(tmpColl.item(arridx + 1))
             Next arridx
         End If
         err.Clear
@@ -1485,7 +1450,7 @@ Public Function ImportFromCSV(configObj As CSVparserConfig, _
                     Set configObj.dialect = SniffDelimiters(configObj)
                 End If
                 tmpRequested() = FilterColumns
-                If .headers Then
+                If .Headers Then
                     '@--------------------------------------------------------------------------------
                     'Read the whole header
                     Set P_CSV_HEADER = New CSVArrayList
@@ -1553,7 +1518,7 @@ Public Function ImportFromCSVString(ByRef CSVstring As String, _
                 Set configObj.dialect = SniffDelimiters(configObj, CSVstring)
             End If
             tmpRequested() = FilterColumns
-            If .headers Then
+            If .Headers Then
                 '@--------------------------------------------------------------------------------
                 'Read the header
                 Set P_CSV_HEADER = New CSVArrayList
@@ -1598,46 +1563,14 @@ ImportFromCSV_EmptyString:
                     Description:="The specified source String is empty. Please check and try again."
     Resume ErrHandler_ImportFromString
 End Function
-Public Function InsertField(aIndex As Long, Optional FieldName As String = vbNullString) As CSVinterface
+Public Function InsertField(aIndex As Long, _
+                            Optional FieldName As String = vbNullString, _
+                            Optional Formula As String = vbNullString) As CSVinterface
     On Error GoTo ErrHandler_InsertField
     If P_SUCCESSFUL_IMPORT And Not P_VARYING_LENGTHS Then
         Select Case aIndex
             Case 0 To P_VECTORS_REGULAR_BOUND + 1
-                Dim curRecord() As Variant
-                Dim cpRecord() As Variant
-                Dim fCounter As Long
-                Dim rCounter As Long
-                Dim headerRec As Boolean
-                '@--------------------------------------------------------------------------------
-                'Reserve storage
-                ReDim cpRecord(0 To P_VECTORS_REGULAR_BOUND + 1)
-                With P_CSV_DATA
-                    headerRec = Me.parseConfig.headers
-                    For rCounter = 0 To .count - 1
-                        curRecord() = .Item(rCounter)
-                        If headerRec Then
-                            If FieldName <> vbNullString Then
-                                If rCounter = 0 Then
-                                    '@--------------------------------------------------------------------------------
-                                    'Add header name
-                                    cpRecord(aIndex) = FieldName
-                                Else
-                                    If rCounter = 1 Then
-                                        cpRecord(aIndex) = Empty
-                                    End If
-                                End If
-                            End If
-                        End If
-                        For fCounter = 0 To P_VECTORS_REGULAR_BOUND
-                            If fCounter < aIndex Then
-                                cpRecord(fCounter) = curRecord(fCounter)
-                            ElseIf fCounter >= aIndex Then
-                                cpRecord(fCounter + 1) = curRecord(fCounter)
-                            End If
-                        Next fCounter
-                        .Item(rCounter) = cpRecord
-                    Next rCounter
-                End With
+                P_CSV_DATA.InsertField aIndex, FieldName, parseConfig.Headers, Formula
             Case Else
                 GoTo OutOfBounds_InsertField
         End Select
@@ -1669,10 +1602,17 @@ Public Function InsertRecord(aIndex As Long) As CSVinterface
         Select Case aIndex
             Case 0 To P_CSV_DATA.count
                 Dim cpRecord() As Variant
+                Dim cIndex As Long
                 
+                cIndex = aIndex
+                If aIndex = 0 Then
+                    If parseConfig.Headers Then 'Insert on top only if there is no headers
+                        cIndex = 1
+                    End If
+                End If
                 ReDim cpRecord(0 To P_VECTORS_REGULAR_BOUND)
                 With P_CSV_DATA
-                    .Insert aIndex, cpRecord
+                    .Insert cIndex, cpRecord
                 End With
             Case Else
                 GoTo OutOfBounds_InsertRecord
@@ -1907,7 +1847,7 @@ Private Sub LoadNewStream()
             tmpCSV() = Split(.bufferString, RecordDelimiter)
         End If
     End With
-    Index = 0
+    index = 0
     MaxIndex = UBound(tmpCSV)
     If Not StreamEnd Then
         If tmpCSV(MaxIndex) = vbNullString Then 'Streams lefts empty value when splited
@@ -1922,28 +1862,22 @@ Private Sub LoadNewStream()
     End If
 End Sub
 Private Function MaxIndexVal(ByRef values As Variant) As Long
-    Dim tmpVal As Long, idx0 As Long, Idx As Long
+    Dim tmpVal As Long, idx0 As Long, idx As Long
     
     idx0 = LBound(values)
-    Idx = idx0
+    idx = idx0
     tmpVal = values(idx0)
     For idx0 = idx0 + 1 To UBound(values)
         If values(idx0) > tmpVal Then
-            Idx = idx0
+            idx = idx0
             tmpVal = values(idx0)
         End If
     Next idx0
-    MaxIndexVal = Idx
+    MaxIndexVal = idx
 End Function
 Public Function MergeFields(indexes As String, CharToMergeWith As String) As CSVinterface
-    Dim cpIndexes() As String
-    
-    cpIndexes() = FieldsToOperate(indexes)
-    If CheckForDupIndexes(cpIndexes) Then
-        Set MergeFields = MergeFlds(CharToMergeWith, cpIndexes)
-    Else
-        Set MergeFields = Me
-    End If
+    P_CSV_DATA.MergeFields indexes, CharToMergeWith
+    Set MergeFields = Me
 End Function
 ''' <summary>
 ''' Returns a copy of the current instance.
@@ -1966,7 +1900,7 @@ End Sub
 ''' <param name="ExportationBunchSize">The amount of items to export in a single operation.</param>
 Public Function SortOnDisk(ByVal filePath As String, _
                                 Optional ByRef sortingKeys As Variant = 1, _
-                                Optional headers As Boolean = True, _
+                                Optional Headers As Boolean = True, _
                                 Optional streamSize As Single = 20, _
                                 Optional ByVal sortAlgorithm As SortingAlgorithms = SortingAlgorithms.SA_Quicksort, _
                                 Optional ByVal ExportationBunchSize As Long = 10000) As String
@@ -2005,7 +1939,7 @@ Public Function SortOnDisk(ByVal filePath As String, _
     FirstStream = True
     Set CSV = New CSVinterface
     With CSV.parseConfig
-        .headers = headers
+        .Headers = Headers
         .endingRecord = 1
     End With
     With inputTextStream
@@ -2024,7 +1958,7 @@ Public Function SortOnDisk(ByVal filePath As String, _
         CSV.parseConfig.endingRecord = 0
         CSV.ImportFromCSVString .bufferString, CSV.parseConfig
         CSV.parseConfig.startingRecord = 1
-        CSV.parseConfig.headers = False
+        CSV.parseConfig.Headers = False
         '@--------------------------------------------------------------------------------
         'Sort and export
         Set sortedFiles = New CSVArrayList
@@ -2056,7 +1990,7 @@ Public Function SortOnDisk(ByVal filePath As String, _
     'Point to target file
     exportConfig.path = OutPutFpath
     'Export header
-    If headers Then
+    If Headers Then
         CSV.ExportToCSV fileHeader, exportConfig, enableDelimitersSniffing:=False
     End If
     ReDim inputTextStreams(0 To sortedFiles.count - 1)
@@ -2067,10 +2001,10 @@ Public Function SortOnDisk(ByVal filePath As String, _
     Set importConfig = exportConfig.CopyConfig
     With importConfig
         .path = vbNullString
-        .headers = False
+        .Headers = False
     End With
     'Configure readers and parsers
-    ComparisonList.Indexing = True
+    ComparisonList.indexing = True
     For iCounter = 0 To sortedFiles.count - 1
         Set inputTextStreams(iCounter) = New CSVTextStream
         Set sampledItems(iCounter) = New CSVinterface
@@ -2095,8 +2029,8 @@ Public Function SortOnDisk(ByVal filePath As String, _
         With ComparisonList
             .Sort sortingKeys:=sortingKeys
             'Save to sorted items
-            sortedItems.Add .Item(0)
-            ItemIndex = CLng(.ItemKey(0)) 'Worked record key
+            sortedItems.Add .item(0)
+            ItemIndex = CLng(.itemKey(0)) 'Worked record key
             'Export if needed
             If sortedItems.count = ExportationBunchSize Then
                 CSV.ExportToCSV sortedItems, exportConfig, enableDelimitersSniffing:=False
@@ -2145,127 +2079,6 @@ Sort_Error_Handler:
     P_ERROR_SOURCE = err.Source
 End Function
 
-Private Function CheckForDupIndexes(aIndexes As Variant) As Boolean
-    Dim aLB As Long
-    Dim tmpCol As Collection
-    
-    Set tmpCol = New Collection
-    On Error GoTo err_handler
-    For aLB = LBound(aIndexes) To UBound(aIndexes)
-        tmpCol.Add aIndexes(aLB), CStr(aIndexes(aLB))
-    Next aLB
-    CheckForDupIndexes = True
-    Exit Function
-err_handler:
-    CheckForDupIndexes = False
-End Function
-Private Function MergeFlds(CharToMergeWith As String, cpIndexes() As String) As CSVinterface
-    On Error GoTo ErrHandler_MergeFields
-    If P_SUCCESSFUL_IMPORT And Not P_VARYING_LENGTHS Then
-        Select Case FielsToMergeAreValid(cpIndexes)
-            Case True
-                Dim curRecord() As Variant
-                Dim cpRecord() As Variant
-                Dim fCounter As Long
-                Dim rCounter As Long
-                Dim tmpMergeRec As CSVArrayList
-                Dim LB As Long
-                Dim UB As Long
-                Dim storedIndexes As Long
-                Dim IndexToSaveIn As Long
-                Dim tmpIndex As Long
-                
-                LB = LBound(cpIndexes)
-                UB = UBound(cpIndexes)
-                '@--------------------------------------------------------------------------------
-                'Shrink storage
-                ReDim cpRecord(0 To P_VECTORS_REGULAR_BOUND - UB + LB)
-                '@--------------------------------------------------------------------------------
-                'Reserve storage
-                Set tmpMergeRec = New CSVArrayList
-                tmpMergeRec.Reinitialize UB - LB
-                With P_CSV_DATA
-                    For rCounter = 0 To .count - 1
-                        curRecord() = .Item(rCounter)
-                        storedIndexes = 0
-                        For fCounter = 0 To P_VECTORS_REGULAR_BOUND
-                            If FiedlInMergeList(fCounter, cpIndexes) Then
-                                tmpMergeRec.Add curRecord(cpIndexes(storedIndexes))
-                                storedIndexes = storedIndexes + 1
-                            Else
-                                '@--------------------------------------------------------------------------------
-                                'Check field position
-                                tmpIndex = fCounter - storedIndexes
-                                Select Case tmpIndex
-                                    Case Is < cpIndexes(LB)
-                                        cpRecord(tmpIndex) = curRecord(fCounter)
-                                    Case Else
-                                        cpRecord(tmpIndex + 1) = curRecord(fCounter)
-                                End Select
-                            End If
-                        Next fCounter
-                        Select Case cpIndexes(LB)
-                            '@--------------------------------------------------------------------------------
-                            'Take care of bounds
-                            Case Is > UBound(cpRecord)
-                                IndexToSaveIn = P_VECTORS_REGULAR_BOUND - UB + LB
-                            Case Else
-                                IndexToSaveIn = cpIndexes(LB)
-                        End Select
-                        cpRecord(IndexToSaveIn) = Join$(tmpMergeRec.items, CharToMergeWith)
-                        .Item(rCounter) = cpRecord
-                        tmpMergeRec.Clear
-                    Next rCounter
-                End With
-            Case Else
-                GoTo OutOfBounds_MergeFields
-        End Select
-    Else
-        P_ERROR_DESC = "[CSV Fields Merge]: Cannot merge the fields in the current instance." _
-                        & " This is because there is no imported data or the records do not " _
-                        & "have the same number of fields."
-        P_ERROR_NUMBER = vbObjectError + 9022
-        P_ERROR_SOURCE = "CSVinterface"
-    End If
-    P_VECTORS_REGULAR_BOUND = P_VECTORS_REGULAR_BOUND - UB + LB
-    P_VECTORS_MAX_BOUND = P_VECTORS_MAX_BOUND - UB + LB
-    Set MergeFlds = Me
-    Set tmpMergeRec = Nothing
-    Exit Function
-ErrHandler_MergeFields:
-    P_ERROR_DESC = "[CSV Fields Merge]: " & err.Description
-    P_ERROR_NUMBER = err.Number
-    P_ERROR_SOURCE = "CSVinterface"
-    Exit Function
-OutOfBounds_MergeFields:
-    err.Raise Number:=vbObjectError + 9016, _
-                    Source:="CSVinterface Class", _
-                    Description:="The specified index is out of bounds. Please check and try again."
-    Resume ErrHandler_MergeFields
-End Function
-Private Function FielsToMergeAreValid(indexes() As String) As Boolean
-    Dim iDxFld As Long
-    Dim tmpBool As Boolean
-    
-    iDxFld = LBound(indexes)
-    Do
-        tmpBool = CDbl(indexes(iDxFld)) >= 0 And CDbl(indexes(iDxFld)) <= P_VECTORS_REGULAR_BOUND
-        iDxFld = iDxFld + 1
-    Loop While iDxFld <= UBound(indexes) And tmpBool
-    FielsToMergeAreValid = tmpBool
-End Function
-Private Function FiedlInMergeList(aIndex As Long, indexes() As String) As Boolean
-    Dim iDxFld As Long
-    Dim tmpBool As Boolean
-    
-    iDxFld = LBound(indexes)
-    Do
-        tmpBool = CDbl(indexes(iDxFld)) = aIndex
-        iDxFld = iDxFld + 1
-    Loop While iDxFld <= UBound(indexes) And Not tmpBool
-    FiedlInMergeList = tmpBool
-End Function
-
 Public Sub OpenSeqReader(configObj As CSVparserConfig, _
                             ParamArray FilterColumns() As Variant)
     On Error GoTo OpenSeqReader_Error_Handler
@@ -2283,7 +2096,7 @@ Public Sub OpenSeqReader(configObj As CSVparserConfig, _
                     Set configObj.dialect = SniffDelimiters(configObj)
                 End If
                 static_tmpRequested() = FilterColumns
-                If .headers Then
+                If .Headers Then
                     '@--------------------------------------------------------------------------------
                     'Read the whole header
                     Set P_CSV_HEADER = New CSVArrayList
@@ -2332,7 +2145,7 @@ Public Sub OpenSeqReader(configObj As CSVparserConfig, _
         static_dynamicType = .dynamicTyping
         static_dTTemplate() = .dTypingTemplate
         static_dTTargets() = .dTypingLinks
-        static_Headers = .headers
+        static_Headers = .Headers
         static_IgnoreCommentLines = .skipCommentLines
         static_IgnoreEmptyLines = .skipEmptyLines
         static_IgnoreLines = (static_IgnoreCommentLines Or static_IgnoreEmptyLines)
@@ -2344,7 +2157,7 @@ Public Sub OpenSeqReader(configObj As CSVparserConfig, _
     End With
     static_TokenEndReached = False
     static_RecordEndReached = False
-    If configObj.headers Then
+    If configObj.Headers Then
         Select Case UBound(static_tmpRequested)
             Case -1
                 ReDim static_RequestedFieldsArray(0)
@@ -2530,7 +2343,7 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
             ImportDepth = EndRecord - StartRecord + 1&
     End Select
     If StartRecord = 1& Then
-        If configObj.headersOmission And configObj.headers Then
+        If configObj.headersOmission And configObj.Headers Then
             If ImportDepth > 1& Or EndRecord = 0& Then
                 StartRecord = 2&
                 ImportDepth = ImportDepth - 1&
@@ -2556,7 +2369,7 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
     EscapeAscW = AscW(QuoteChar)
     FDAscW = AscW(FieldDelimiter)
     Set RecordToken = New CSVArrayList
-    Index = 0
+    index = 0
     '@----------------------------------------------------------------------------
     'Populate a temp array
     StreamWithQuotes = InStrB(1, CSVtext, QuoteChar)
@@ -2578,10 +2391,10 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
     If IgnoreLines Then
         '@----------------------------------------------------------------------------
         'Skip lines if needed
-        SkipUnwantedLines Index, MaxIndex, tmpCSV, commToken, _
+        SkipUnwantedLines index, MaxIndex, tmpCSV, commToken, _
                             IgnoreCommentLines, IgnoreEmptyLines
     End If
-    EndOfString = (Index > MaxIndex)
+    EndOfString = (index > MaxIndex)
     If EndOfString Then 'The file has no significant data
         GoTo ParseCSVstring_NoSignificantData
     End If
@@ -2589,7 +2402,7 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
     'Loop through CSV
     Do
         IsHeader = (StartRecord = 1 And RecordsCount = 0)
-        LenCurrentIndex = LenB(tmpCSV(Index))
+        LenCurrentIndex = LenB(tmpCSV(index))
         '@----------------------------------------------------------------------------
         'Restart pointers
         RecordEndReached = False
@@ -2603,7 +2416,7 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
             If StreamWithQuotes Then
                 Select Case OverStringPointer
                     Case Is < LenCurrentIndex
-                        ASCIIcharw = AscW(MidB$(tmpCSV(Index), OverStringPointer, 2))
+                        ASCIIcharw = AscW(MidB$(tmpCSV(index), OverStringPointer, 2))
                         '@----------------------------------------------------------------------------
                         'Ignore spaces & tabs
                         SkipSpacesAndTabs
@@ -2620,7 +2433,7 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
                 EscapeChrCount = EscapeChrCount + 1&
                 TokenBeginningPos = OverStringPointer + 2&
                 SearchBeginningMark = TokenBeginningPos
-                hpointer = InStrB(SearchBeginningMark, tmpCSV(Index), QuoteChar) 'EOFld marker
+                hpointer = InStrB(SearchBeginningMark, tmpCSV(index), QuoteChar) 'EOFld marker
                 If hpointer Then EscapeChrCount = EscapeChrCount + 1&
                 Do While (Not TokenEndReached And Not EndOfString)
                     '@----------------------------------------------------------------------------
@@ -2631,19 +2444,19 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
                             If IncludeRecord Then
                                 Select Case SearchBeginningMark
                                     Case 1 'Store the full Token from the current Index
-                                        tmpToken.Add tmpCSV(Index)
+                                        tmpToken.Add tmpCSV(index)
                                     Case Else 'Store the Right most Token portion from the current Index
-                                        tmpToken.Add RightB$(tmpCSV(Index), LenCurrentIndex - SearchBeginningMark + 1)
+                                        tmpToken.Add RightB$(tmpCSV(index), LenCurrentIndex - SearchBeginningMark + 1)
                                 End Select
                             End If
                             SplittedToken = True
-                            tmpCSV(Index) = vbNullString
-                            Index = Index + 1&
-                            EndOfString = (Index > MaxIndex)
+                            tmpCSV(index) = vbNullString
+                            index = index + 1&
+                            EndOfString = (index > MaxIndex)
                             If Not EndOfString Then
-                                LenCurrentIndex = LenB(tmpCSV(Index))
+                                LenCurrentIndex = LenB(tmpCSV(index))
                                 SearchBeginningMark = 1
-                                hpointer = InStrB(SearchBeginningMark, tmpCSV(Index), QuoteChar) 'Find quote char
+                                hpointer = InStrB(SearchBeginningMark, tmpCSV(index), QuoteChar) 'Find quote char
                                 If hpointer Then EscapeChrCount = EscapeChrCount + 1&
                             Else
                                 hpointer = 0&
@@ -2653,7 +2466,7 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
                         OverStringPointer = hpointer + 2&
                         NotEvenEscapeChrNumber = (EscapeChrCount And 1)
                         If OverStringPointer < LenCurrentIndex Then
-                            ASCIIcharw = AscW(MidB$(tmpCSV(Index), OverStringPointer, 2))
+                            ASCIIcharw = AscW(MidB$(tmpCSV(index), OverStringPointer, 2))
                             '@----------------------------------------------------------------------------
                             'Ignore spaces & tabs
                             SkipSpacesAndTabs
@@ -2661,7 +2474,7 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
                             'Check if we are at the end of the field
                             If UseUnixEscapeSeq Then
                                 EscapedWFS = (ASCIIcharw = FDAscW) And (Not NotEvenEscapeChrNumber) And _
-                                                (Not (AscW(MidB$(tmpCSV(Index), OverStringPointer - 2, 2)) = ASCW_CHR_BACKSLASH))
+                                                (Not (AscW(MidB$(tmpCSV(index), OverStringPointer - 2, 2)) = ASCW_CHR_BACKSLASH))
                             Else
                                 EscapedWFS = (ASCIIcharw = FDAscW) And (Not NotEvenEscapeChrNumber)
                             End If
@@ -2673,7 +2486,7 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
                         '@----------------------------------------------------------------------------
                         'Advance the search
                         If Not IsWellEscapedField Then
-                            hpointer = InStrB(hpointer + 2&, tmpCSV(Index), QuoteChar) 'EOFld marker
+                            hpointer = InStrB(hpointer + 2&, tmpCSV(index), QuoteChar) 'EOFld marker
                             If hpointer Then EscapeChrCount = EscapeChrCount + 1&
                         End If
                     Loop While Not IsWellEscapedField
@@ -2689,18 +2502,18 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
                                     If RequestedField(FieldID + 1&, MaxReqIndex) Then 'Filter fields
                                         Select Case dynamicType
                                             Case False
-                                                RecordToken.Add UnescapeField(MidB$(tmpCSV(Index), TokenBeginningPos, _
+                                                RecordToken.Add UnescapeField(MidB$(tmpCSV(index), TokenBeginningPos, _
                                                                                 TokenEndingPos - TokenBeginningPos + 1), _
                                                                             QuoteChar, EscapeSequence)
                                             Case Else
-                                                RecordToken.Add TypeData(UnescapeField(MidB$(tmpCSV(Index), TokenBeginningPos, _
+                                                RecordToken.Add TypeData(UnescapeField(MidB$(tmpCSV(index), TokenBeginningPos, _
                                                                                         TokenEndingPos - TokenBeginningPos + 1), _
                                                                                     QuoteChar, EscapeSequence), _
                                                                         FieldID, IsHeader)
                                         End Select
                                     End If
                                 Case Else 'The Token is stored on tmpToken object
-                                    tmpToken.Add LeftB$(tmpCSV(Index), TokenEndingPos)
+                                    tmpToken.Add LeftB$(tmpCSV(index), TokenEndingPos)
                                     If RequestedField(FieldID + 1&, MaxReqIndex) Then 'Filter fields
                                         RecordToken.Add UnescapeField(Join$(tmpToken.items, RecordDelimiter), _
                                                                     QuoteChar, EscapeSequence) 'Save whole Token
@@ -2726,18 +2539,18 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
                                         If RequestedField(FieldID + 1&, MaxReqIndex) Then 'Filter fields
                                             Select Case dynamicType
                                                 Case False
-                                                    RecordToken.Add UnescapeField(MidB$(tmpCSV(Index), TokenBeginningPos, _
+                                                    RecordToken.Add UnescapeField(MidB$(tmpCSV(index), TokenBeginningPos, _
                                                                                         TokenEndingPos - TokenBeginningPos + 1), _
                                                                                 QuoteChar, EscapeSequence)
                                                 Case Else
-                                                    RecordToken.Add TypeData(UnescapeField(MidB$(tmpCSV(Index), TokenBeginningPos, _
+                                                    RecordToken.Add TypeData(UnescapeField(MidB$(tmpCSV(index), TokenBeginningPos, _
                                                                                                 TokenEndingPos - TokenBeginningPos + 1), _
                                                                                         QuoteChar, EscapeSequence), _
                                                                                 FieldID, IsHeader)
                                             End Select
                                         End If
                                     Case Else 'The Token is stored on tmpToken array
-                                        tmpToken.Add LeftB$(tmpCSV(Index), OverStringPointer - 3)
+                                        tmpToken.Add LeftB$(tmpCSV(index), OverStringPointer - 3)
                                         If RequestedField(FieldID + 1&, MaxReqIndex) Then 'Filter fields
                                             RecordToken.Add UnescapeField(Join$(tmpToken.items, RecordDelimiter), _
                                                                         FieldDelimiter, EscapeSequence_Delim) 'Save whole Token
@@ -2746,18 +2559,18 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
                                 End Select
                             End If
                             SplittedToken = False 'Restart Token status
-                            tmpCSV(Index) = vbNullString
-                            Index = Index + 1&
-                            EndOfString = (Index > MaxIndex)
+                            tmpCSV(index) = vbNullString
+                            index = index + 1&
+                            EndOfString = (index > MaxIndex)
                             OverStringPointer = 1&
                         Else
                             If IncludeRecord Then
                                 If SplittedToken Then 'Store the Left most Token portion from the current Index
-                                    tmpToken.Add LeftB$(tmpCSV(Index), OverStringPointer - 1)
+                                    tmpToken.Add LeftB$(tmpCSV(index), OverStringPointer - 1)
                                 End If
                             End If
                             SearchBeginningMark = OverStringPointer
-                            hpointer = InStrB(SearchBeginningMark, tmpCSV(Index), QuoteChar) 'Find quote char
+                            hpointer = InStrB(SearchBeginningMark, tmpCSV(index), QuoteChar) 'Find quote char
                             If hpointer Then EscapeChrCount = EscapeChrCount + 1&
                             TokenEndReached = False
                         End If
@@ -2766,12 +2579,12 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
             Else
                 '@----------------------------------------------------------------------------
                 'Try to mark the Starting and Ending position for the field
-                hpointer = InStrB(OverStringPointer, tmpCSV(Index), FieldDelimiter)
+                hpointer = InStrB(OverStringPointer, tmpCSV(index), FieldDelimiter)
                 If UseUnixEscapeSeq Then
                     Do While hpointer
-                        UnixEscpedSep = (AscW(MidB$(tmpCSV(Index), hpointer - 2, 2)) = ASCW_CHR_BACKSLASH)
+                        UnixEscpedSep = (AscW(MidB$(tmpCSV(index), hpointer - 2, 2)) = ASCW_CHR_BACKSLASH)
                         If UnixEscpedSep Then
-                            hpointer = InStrB(hpointer + 1, tmpCSV(Index), FieldDelimiter)
+                            hpointer = InStrB(hpointer + 1, tmpCSV(index), FieldDelimiter)
                         Else
                             Exit Do
                         End If
@@ -2791,23 +2604,23 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
                             Select Case dynamicType
                                 Case False
                                     If UseUnixEscapeSeq Then
-                                        RecordToken.Add UnescapeField(UnescapeField(MidB$(tmpCSV(Index), TokenBeginningPos, _
+                                        RecordToken.Add UnescapeField(UnescapeField(MidB$(tmpCSV(index), TokenBeginningPos, _
                                                                         TokenEndingPos - TokenBeginningPos + 1), _
                                                                     FieldDelimiter, EscapeSequence_Delim), _
                                                                 QuoteChar, EscapeSequence)
                                     Else
-                                        RecordToken.Add MidB$(tmpCSV(Index), TokenBeginningPos, _
+                                        RecordToken.Add MidB$(tmpCSV(index), TokenBeginningPos, _
                                                             TokenEndingPos - TokenBeginningPos + 1)
                                     End If
                                 Case Else
                                     If UseUnixEscapeSeq Then
-                                        RecordToken.Add TypeData(UnescapeField(UnescapeField(MidB$(tmpCSV(Index), TokenBeginningPos, _
+                                        RecordToken.Add TypeData(UnescapeField(UnescapeField(MidB$(tmpCSV(index), TokenBeginningPos, _
                                                                                 TokenEndingPos - TokenBeginningPos + 1), _
                                                                             FieldDelimiter, EscapeSequence_Delim), _
                                                                     QuoteChar, EscapeSequence), _
                                                             FieldID, IsHeader)
                                     Else
-                                        RecordToken.Add TypeData(MidB$(tmpCSV(Index), TokenBeginningPos, _
+                                        RecordToken.Add TypeData(MidB$(tmpCSV(index), TokenBeginningPos, _
                                                                     TokenEndingPos - TokenBeginningPos + 1), _
                                                             FieldID, IsHeader)
                                     End If
@@ -2816,30 +2629,30 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
                     End If
                 Else 'Missing fields delimiter char
                     If UseUnixEscapeSeq Then
-                        Do While Not EndOfString And (AscW(RightB$(tmpCSV(Index), 2)) = ASCW_CHR_BACKSLASH) 'Unix escaped Record delimiter
+                        Do While Not EndOfString And (AscW(RightB$(tmpCSV(index), 2)) = ASCW_CHR_BACKSLASH) 'Unix escaped Record delimiter
                             SplittedToken = True
                             If IncludeRecord Then
                                 Select Case SearchBeginningMark
                                     Case 1 'Store the full Token from the current Index
-                                        tmpToken.Add MidB$(tmpCSV(Index), 1, LenCurrentIndex - 1)
+                                        tmpToken.Add MidB$(tmpCSV(index), 1, LenCurrentIndex - 1)
                                     Case Else 'Store the Right most Token portion from the current Index
-                                        tmpToken.Add MidB$(tmpCSV(Index), TokenBeginningPos, LenCurrentIndex - TokenBeginningPos - 1)
+                                        tmpToken.Add MidB$(tmpCSV(index), TokenBeginningPos, LenCurrentIndex - TokenBeginningPos - 1)
                                 End Select
                             End If
-                            tmpCSV(Index) = vbNullString
-                            Index = Index + 1&
+                            tmpCSV(index) = vbNullString
+                            index = index + 1&
                             OverStringPointer = 1&
-                            EndOfString = (Index > MaxIndex)
+                            EndOfString = (index > MaxIndex)
                             If Not EndOfString Then
-                                LenCurrentIndex = LenB(tmpCSV(Index))
+                                LenCurrentIndex = LenB(tmpCSV(index))
                                 SearchBeginningMark = 1
                                 '@----------------------------------------------------------------------------
                                 'Try to mark the Starting and Ending position for the field
-                                hpointer = InStrB(OverStringPointer, tmpCSV(Index), FieldDelimiter)
+                                hpointer = InStrB(OverStringPointer, tmpCSV(index), FieldDelimiter)
                                 Do While hpointer
-                                    UnixEscpedSep = (AscW(MidB$(tmpCSV(Index), hpointer - 2, 2)) = ASCW_CHR_BACKSLASH)
+                                    UnixEscpedSep = (AscW(MidB$(tmpCSV(index), hpointer - 2, 2)) = ASCW_CHR_BACKSLASH)
                                     If UnixEscpedSep Then
-                                        hpointer = InStrB(hpointer + 1, tmpCSV(Index), FieldDelimiter)
+                                        hpointer = InStrB(hpointer + 1, tmpCSV(index), FieldDelimiter)
                                     Else
                                         Exit Do
                                     End If
@@ -2853,16 +2666,16 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
                                 OverStringPointer = hpointer + 2&
                                 SearchBeginningMark = OverStringPointer
                                 RecordEndReached = False
-                                tmpToken.Add LeftB$(tmpCSV(Index), TokenEndingPos) 'Store the Left most Token portion from the current Index
+                                tmpToken.Add LeftB$(tmpCSV(index), TokenEndingPos) 'Store the Left most Token portion from the current Index
                                 Exit Do
                             Else
                                 If Not UnixEscpedSep Then 'End of record
                                     If IncludeRecord Then
                                         Select Case SearchBeginningMark
                                             Case 1 'Store the full Token from the current Index
-                                                tmpToken.Add MidB$(tmpCSV(Index), 1, LenCurrentIndex)
+                                                tmpToken.Add MidB$(tmpCSV(index), 1, LenCurrentIndex)
                                             Case Else 'Store the Right most Token portion from the current Index
-                                                tmpToken.Add MidB$(tmpCSV(Index), TokenBeginningPos, LenCurrentIndex - TokenBeginningPos)
+                                                tmpToken.Add MidB$(tmpCSV(index), TokenBeginningPos, LenCurrentIndex - TokenBeginningPos)
                                         End Select
                                     End If
                                 End If
@@ -2884,23 +2697,23 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
                                     Select Case dynamicType
                                         Case False
                                             If UseUnixEscapeSeq Then
-                                                RecordToken.Add UnescapeField(UnescapeField(RightB$(tmpCSV(Index), LenCurrentIndex _
+                                                RecordToken.Add UnescapeField(UnescapeField(RightB$(tmpCSV(index), LenCurrentIndex _
                                                                                 - TokenBeginningPos + 1), _
                                                                             FieldDelimiter, EscapeSequence_Delim), _
                                                                         QuoteChar, EscapeSequence)
                                             Else
-                                                RecordToken.Add RightB$(tmpCSV(Index), LenCurrentIndex _
+                                                RecordToken.Add RightB$(tmpCSV(index), LenCurrentIndex _
                                                                     - TokenBeginningPos + 1)
                                             End If
                                         Case Else
                                             If UseUnixEscapeSeq Then
-                                                RecordToken.Add TypeData(UnescapeField(UnescapeField(RightB$(tmpCSV(Index), LenCurrentIndex _
+                                                RecordToken.Add TypeData(UnescapeField(UnescapeField(RightB$(tmpCSV(index), LenCurrentIndex _
                                                                             - TokenBeginningPos + 1), _
                                                                             FieldDelimiter, EscapeSequence_Delim), _
                                                                         QuoteChar, EscapeSequence), _
                                                                     FieldID, IsHeader)
                                             Else
-                                                RecordToken.Add TypeData(RightB$(tmpCSV(Index), LenCurrentIndex _
+                                                RecordToken.Add TypeData(RightB$(tmpCSV(index), LenCurrentIndex _
                                                                             - TokenBeginningPos + 1), _
                                                                     FieldID, IsHeader)
                                             End If
@@ -2921,9 +2734,9 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
                         End Select
                     End If
                     If RecordEndReached Then
-                        tmpCSV(Index) = vbNullString
-                        Index = Index + 1&
-                        EndOfString = (Index > MaxIndex)
+                        tmpCSV(index) = vbNullString
+                        index = index + 1&
+                        EndOfString = (index > MaxIndex)
                         OverStringPointer = 1&
                     End If
                 End If
@@ -2959,10 +2772,10 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
         If IgnoreLines Then
             '@----------------------------------------------------------------------------
             'Skip lines if needed
-            SkipUnwantedLines Index, MaxIndex, tmpCSV, commToken, _
+            SkipUnwantedLines index, MaxIndex, tmpCSV, commToken, _
                                 IgnoreCommentLines, IgnoreEmptyLines
         End If
-        EndOfString = (Index > MaxIndex)
+        EndOfString = (index > MaxIndex)
         Select Case KnownEnding
             Case False
                 ImportSwitch = EndOfString
@@ -3003,33 +2816,7 @@ End Sub
 Public Function RearrangeFields(FieldsOrder As String) As CSVinterface
     On Error GoTo ErrHandler_RearrangeFields
     If P_SUCCESSFUL_IMPORT And Not P_VARYING_LENGTHS Then
-        Dim tmpFldOrder() As String
-        Dim cpRecord() As Variant
-        Dim tmpRecord() As Variant
-        Dim fCounter As Long
-        Dim rCounter As Long
-        Dim iRecCnt As Long
-        
-        '@----------------------------------------------------------------------------
-        'Check given fields arrange
-        tmpFldOrder() = FieldsToOperate(FieldsOrder)
-        If Not RearrangeCheckFieldsToOperate(tmpFldOrder) Then
-            GoTo Undefined_RearrangeFields
-        End If
-        With P_CSV_DATA
-            '@----------------------------------------------------------------------------
-            'Rearrange
-            ReDim cpRecord(0 To P_VECTORS_REGULAR_BOUND)
-            For rCounter = 0 To .count - 1
-                tmpRecord() = .Item(rCounter)
-                iRecCnt = 0
-                For fCounter = LBound(tmpFldOrder) To UBound(tmpFldOrder)
-                    cpRecord(iRecCnt) = tmpRecord(CLng(tmpFldOrder(iRecCnt)) - 1)
-                    iRecCnt = iRecCnt + 1
-                Next fCounter
-                .Item(rCounter) = cpRecord
-            Next rCounter
-        End With
+        P_CSV_DATA.RearrangeFields FieldsOrder
     Else
         P_ERROR_DESC = "[CSV Fields Rearrange]: Cannot rearrange the fields in the current instance." _
                         & " This is because there is no imported data or the records do not " _
@@ -3051,55 +2838,13 @@ Undefined_RearrangeFields:
                     & "Please enter all field indexes before continuing."
     Resume ErrHandler_RearrangeFields
 End Function
-Private Function FieldsToOperate(fieldsString As String) As String()
-    Dim tmpArrList As CSVArrayList
-    
-    Set tmpArrList = New CSVArrayList
-    FieldsToOperate = tmpArrList.SplitFieldsOrderStr(fieldsString)
-End Function
-Private Function RearrangeCheckFieldsToOperate(fieldsToRearrange() As String) As Boolean
-    Dim fldOcount As Long
-    Dim jkl As Long
-    Dim tmpBool As Boolean
-    Dim definedIdx As Long
-    
-    For fldOcount = LBound(fieldsToRearrange) To UBound(fieldsToRearrange)
-        jkl = -1
-        Do
-            jkl = jkl + 1
-            tmpBool = CLng(fieldsToRearrange(fldOcount)) = jkl
-        Loop While jkl <= P_VECTORS_REGULAR_BOUND And Not tmpBool
-        If tmpBool Then
-            definedIdx = definedIdx + 1
-        End If
-    Next fldOcount
-    RearrangeCheckFieldsToOperate = (P_VECTORS_REGULAR_BOUND = definedIdx - 1)
-End Function
+
 Public Function RemoveField(aIndex As Long) As CSVinterface
     On Error GoTo ErrHandler_RemoveField
     If P_SUCCESSFUL_IMPORT And Not P_VARYING_LENGTHS Then
         Select Case aIndex
             Case 0 To P_VECTORS_REGULAR_BOUND
-                Dim curRecord() As Variant
-                Dim cpRecord() As Variant
-                Dim fCounter As Long
-                Dim rCounter As Long
-                '@--------------------------------------------------------------------------------
-                'Shrink storage
-                ReDim cpRecord(0 To P_VECTORS_REGULAR_BOUND - 1)
-                With P_CSV_DATA
-                    For rCounter = 0 To .count - 1
-                        curRecord() = .Item(rCounter)
-                        For fCounter = 0 To P_VECTORS_REGULAR_BOUND
-                            If fCounter < aIndex Then
-                                cpRecord(fCounter) = curRecord(fCounter)
-                            ElseIf fCounter > aIndex Then
-                                cpRecord(fCounter - 1) = curRecord(fCounter)
-                            End If
-                        Next fCounter
-                        .Item(rCounter) = cpRecord
-                    Next rCounter
-                End With
+                P_CSV_DATA.RemoveField aIndex
             Case Else
                 GoTo OutOfBounds_RemoveField
         End Select
@@ -3165,14 +2910,14 @@ Private Function RequestedField(ByVal fieldIndex As Long, _
         Case -1
             RequestedField = True
         Case Else
-            Dim Idx As Long
+            Dim idx As Long
             Dim tmpBool As Boolean
             
-            Idx = 0
+            idx = 0
             Do
-                tmpBool = (fieldIndex = RequestedFieldsArray(Idx))
-                Idx = Idx + 1
-            Loop While Not tmpBool And Idx <= mxReq
+                tmpBool = (fieldIndex = RequestedFieldsArray(idx))
+                idx = idx + 1
+            Loop While Not tmpBool And idx <= mxReq
             RequestedField = tmpBool
     End Select
 End Function
@@ -3182,14 +2927,14 @@ Private Function RequestedField2(ByVal fieldIndex As Long, _
         Case -1
             RequestedField2 = True
         Case Else
-            Dim Idx As Long
+            Dim idx As Long
             Dim tmpBool As Boolean
             
-            Idx = 0
+            idx = 0
             Do
-                tmpBool = (fieldIndex = static_RequestedFieldsArray(Idx))
-                Idx = Idx + 1
-            Loop While Not tmpBool And Idx <= mxReq
+                tmpBool = (fieldIndex = static_RequestedFieldsArray(idx))
+                idx = idx + 1
+            Loop While Not tmpBool And idx <= mxReq
             RequestedField2 = tmpBool
     End Select
 End Function
@@ -3215,17 +2960,17 @@ Private Sub SkipSpacesAndTabs()
             Do While ASCIIcharw = 32 Or ASCIIcharw = 9
                 OverStringPointer = OverStringPointer + 2&
                 If OverStringPointer > LenCurrentIndex Then Exit Do
-                ASCIIcharw = AscW(MidB$(tmpCSV(Index), OverStringPointer, 2))
+                ASCIIcharw = AscW(MidB$(tmpCSV(index), OverStringPointer, 2))
             Loop
         Case Else
             Do While ASCIIcharw = 32
                 OverStringPointer = OverStringPointer + 2&
                 If OverStringPointer > LenCurrentIndex Then Exit Do
-                ASCIIcharw = AscW(MidB$(tmpCSV(Index), OverStringPointer, 2))
+                ASCIIcharw = AscW(MidB$(tmpCSV(index), OverStringPointer, 2))
             Loop
     End Select
 End Sub
-Private Sub SkipUnwantedLines(ByRef Idx As Long, _
+Private Sub SkipUnwantedLines(ByRef idx As Long, _
                                 ByRef MaxIdx As Long, _
                                 ByRef arr() As String, _
                                 ByVal CommentToken As Long, _
@@ -3237,16 +2982,16 @@ Private Sub SkipUnwantedLines(ByRef Idx As Long, _
 
     '@----------------------------------------------------------------------------
     'Skip commented and empty lines if needed
-    If Idx <= MaxIdx Then
+    If idx <= MaxIdx Then
         Do
-            CurLength = LenB(arr(Idx))
+            CurLength = LenB(arr(idx))
             UnwantedLine = False
             If CurLength = 0 Then  'Empty line found
                 If skipEmptyLines Then
                     UnwantedLine = True
                 End If
             Else
-                CharCode = AscW(arr(Idx))
+                CharCode = AscW(arr(idx))
                 If CharCode = CommentToken Then 'Commented line found
                     If SkipComments Then
                         UnwantedLine = True
@@ -3254,9 +2999,9 @@ Private Sub SkipUnwantedLines(ByRef Idx As Long, _
                 End If
             End If
             If UnwantedLine Then
-                Idx = Idx + 1&
+                idx = idx + 1&
             End If
-        Loop While UnwantedLine And Idx <= MaxIdx
+        Loop While UnwantedLine And idx <= MaxIdx
     End If
 End Sub
 Public Function ShiftField(aIndex As Long, Shift As Long) As CSVinterface
@@ -3264,33 +3009,7 @@ On Error GoTo ErrHandler_ShiftField
     If P_SUCCESSFUL_IMPORT And Not P_VARYING_LENGTHS Then
         Select Case aIndex + Shift
             Case 0 To P_VECTORS_REGULAR_BOUND
-                Dim curRecord() As Variant
-                Dim cpRecord() As Variant
-                Dim rCounter As Long
-                Dim ShiftLB As Long
-                Dim ShiftUB As Long
-                Dim fCounter As Long
-                Dim ShiftFactor As Long
-                
-                ShiftFactor = 1 * Sgn(Shift)
-                If ShiftFactor < 0 Then 'Shift to left
-                    ShiftLB = aIndex + Shift + 1
-                    ShiftUB = aIndex
-                Else 'Shift to right
-                    ShiftLB = aIndex
-                    ShiftUB = aIndex + Shift - 1
-                End If
-                With P_CSV_DATA
-                    For rCounter = 0 To .count - 1
-                        curRecord() = .Item(rCounter)
-                        cpRecord() = curRecord
-                        cpRecord(aIndex + Shift) = curRecord(aIndex)
-                        For fCounter = ShiftLB To ShiftUB
-                            cpRecord(fCounter) = curRecord(fCounter + (1 * ShiftFactor))
-                        Next fCounter
-                        .Item(rCounter) = cpRecord
-                    Next rCounter
-                End With
+               P_CSV_DATA.ShiftField aIndex, Shift
             Case Else
                 GoTo OutOfBounds_ShiftField
         End Select
@@ -3321,27 +3040,7 @@ On Error GoTo ErrHandler_ShiftRecord
     If P_SUCCESSFUL_IMPORT And Not P_VARYING_LENGTHS Then
         Select Case aIndex + Shift
             Case 0 To P_CSV_DATA.count - 1
-                Dim cpRecord() As Variant
-                Dim rCounter As Long
-                Dim ShiftLB As Long
-                Dim ShiftUB As Long
-                Dim ShiftFactor As Long
-                
-                ShiftFactor = Sgn(Shift)
-                If ShiftFactor < 0 Then 'Shift up
-                    ShiftLB = aIndex
-                    ShiftUB = aIndex + Shift + 1
-                Else 'Shift down
-                    ShiftLB = aIndex
-                    ShiftUB = aIndex + Shift - 1
-                End If
-                With P_CSV_DATA
-                    cpRecord() = .Item(aIndex)
-                    For rCounter = ShiftLB To ShiftUB Step ShiftFactor
-                        .Item(rCounter) = .Item(rCounter + (1 * ShiftFactor))
-                    Next rCounter
-                    .Item(aIndex + Shift) = cpRecord
-                End With
+                P_CSV_DATA.ShiftRecord aIndex, Shift
             Case Else
                 GoTo OutOfBounds_ShiftRecord
         End Select
@@ -3507,7 +3206,7 @@ Public Function Sort(Optional ByVal fromIndex As Long = -1, _
     
     If P_SUCCESSFUL_IMPORT Then
         If fromIndex = -1 Then
-            If config.headers And Not config.headersOmission Then
+            If config.Headers And Not config.headersOmission Then
                 fromIndex = 2
             Else
                 fromIndex = 1
@@ -3534,25 +3233,8 @@ Public Function SortByField(Optional ByVal fromIndex As Long = -1, _
     On Error GoTo SortByField_Error_Handler:
     
     If P_SUCCESSFUL_IMPORT Then
-        If fromIndex = -1 Then
-            fromIndex = 1
-        End If
-        Dim CurField As CSVArrayList
-        Dim CurFieldArray() As Variant
-        Dim sfIcounter As Long
-        
-        Set CurField = New CSVArrayList
-        CurFieldArray() = P_CSV_DATA(Abs(SortingKey) - 1)
-        If toIndex = -1 Then
-            toIndex = UBound(CurFieldArray) + 1
-        End If
-        For sfIcounter = LBound(CurFieldArray) To UBound(CurFieldArray)
-            CurField.Add2 CurFieldArray(sfIcounter)
-        Next sfIcounter
-        CurField.ShrinkBuffer
-        CurField.Sort fromIndex, toIndex, Sgn(SortingKey) * 1, sortAlgorithm
+        P_CSV_DATA.SortByField fromIndex, toIndex, SortingKey, sortAlgorithm
         RaiseEvent AfterSort
-        RearrangeFields SortRearrangeGetStr(CurFieldArray, CurField)
         Set SortByField = Me
     End If
     Exit Function
@@ -3561,62 +3243,14 @@ SortByField_Error_Handler:
     P_ERROR_DESC = "[SortByField] " & err.Description
     P_ERROR_SOURCE = err.Source
 End Function
-Private Function SortRearrangeGetStr(FieldArray() As Variant, SortedFieldList As CSVArrayList) As String
-    Dim srgIcounter As Long
-    Dim srgJcounter As Long
-    Dim srgTmpBool As Boolean
-    Dim tmpData() As Variant
-    Dim fldPos As Long
-    Dim tmpResult As CSVArrayList
-    
-    tmpData() = SortedFieldList.items
-    Set tmpResult = New CSVArrayList
-    For srgIcounter = LBound(FieldArray) To UBound(FieldArray)
-        srgJcounter = LBound(tmpData)
-        fldPos = 0
-        Do
-            srgTmpBool = (tmpData(srgJcounter)(0) = FieldArray(srgIcounter))
-            If Not srgTmpBool Then
-                fldPos = fldPos + 1
-            End If
-            srgJcounter = srgJcounter + 1
-        Loop While Not srgTmpBool And srgJcounter <= UBound(tmpData)
-        tmpResult.Add fldPos
-    Next srgIcounter
-    SortRearrangeGetStr = Join$(tmpResult.items, ",")
-End Function
 Public Function SplitField(aIndex As Long, CharToSplitWith As String) As CSVinterface
+    Dim FldDiff As Long
+    
     On Error GoTo ErrHandler_SplitField
     If P_SUCCESSFUL_IMPORT And Not P_VARYING_LENGTHS Then
         Select Case aIndex
             Case 0 To P_VECTORS_REGULAR_BOUND
-                Dim curRecord() As Variant
-                Dim cpRecord() As String
-                Dim tmpRecord() As Variant
-                Dim rCounter As Long
-                Dim sfldIndex As Long
-                Dim sfldCPindex As Long
-                Dim FldDiff As Long
-                
-                With P_CSV_DATA
-                    For rCounter = 0 To .count - 1
-                        curRecord() = .Item(rCounter)
-                        cpRecord() = Split(curRecord(aIndex), CharToSplitWith)
-                        FldDiff = UBound(cpRecord) - LBound(cpRecord)
-                        ReDim tmpRecord(0 To P_VECTORS_REGULAR_BOUND + FldDiff)
-                        For sfldIndex = 0 To aIndex - 1
-                            tmpRecord(sfldIndex) = curRecord(sfldIndex)
-                        Next sfldIndex
-                        For sfldCPindex = LBound(cpRecord) To UBound(cpRecord)
-                            tmpRecord(sfldIndex) = cpRecord(sfldCPindex)
-                            sfldIndex = sfldIndex + 1
-                        Next sfldCPindex
-                        For sfldIndex = aIndex + FldDiff + 1 To UBound(curRecord) + FldDiff
-                            tmpRecord(sfldIndex) = curRecord(sfldIndex - FldDiff)
-                        Next sfldIndex
-                        .Item(rCounter) = tmpRecord
-                    Next rCounter
-                End With
+                P_CSV_DATA.SplitField aIndex, CharToSplitWith
             Case Else
                 GoTo OutOfBounds_SplitField
         End Select
@@ -3627,6 +3261,7 @@ Public Function SplitField(aIndex As Long, CharToSplitWith As String) As CSVinte
         P_ERROR_NUMBER = vbObjectError + 9023
         P_ERROR_SOURCE = "CSVinterface"
     End If
+    FldDiff = UBound(P_CSV_DATA(0)) - P_VECTORS_REGULAR_BOUND
     P_VECTORS_REGULAR_BOUND = P_VECTORS_REGULAR_BOUND + FldDiff
     P_VECTORS_MAX_BOUND = P_VECTORS_MAX_BOUND + FldDiff
     Set SplitField = Me
@@ -3740,7 +3375,7 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
             ImportDepth = EndRecord - StartRecord + 1&
     End Select
     If StartRecord = 1& Then
-        If configObj.headersOmission And configObj.headers Then
+        If configObj.headersOmission And configObj.Headers Then
             If ImportDepth > 1& Or EndRecord = 0& Then
                 StartRecord = 2&
                 ImportDepth = ImportDepth - 1&
@@ -3766,7 +3401,7 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
     EscapeAscW = AscW(QuoteChar)
     FDAscW = AscW(FieldDelimiter)
     Set RecordToken = New CSVArrayList
-    Index = 0
+    index = 0
     '@----------------------------------------------------------------------------
     'Get CSV stream and populate a temp array
     With CSVstream
@@ -3808,11 +3443,11 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
     If IgnoreLines Then
         '@----------------------------------------------------------------------------
         'Skip lines if needed
-        StreamSkipUnwantedLines Index, CSVstream, tmpCSV, MaxIndex, _
+        StreamSkipUnwantedLines index, CSVstream, tmpCSV, MaxIndex, _
                                 RecordDelimiter, commToken, StreamWithQuotes, _
                                 IgnoreCommentLines, IgnoreEmptyLines
     End If
-    EndOFStreamBuffer = (Index > MaxIndex)
+    EndOFStreamBuffer = (index > MaxIndex)
     If EndOFStreamBuffer Then 'The file has no significant data
         GoTo StreamParseCSV_NoSignificantData
     End If
@@ -3820,7 +3455,7 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
     'Loop through CSV using streams
     Do
         IsHeader = (StartRecord = 1 And RecordsCount = 0)
-        LenCurrentIndex = LenB(tmpCSV(Index))
+        LenCurrentIndex = LenB(tmpCSV(index))
         '@----------------------------------------------------------------------------
         'Restart pointers
         RecordEndReached = False
@@ -3834,7 +3469,7 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
             If StreamWithQuotes Then
                 Select Case OverStringPointer
                     Case Is < LenCurrentIndex
-                        ASCIIcharw = AscW(MidB$(tmpCSV(Index), OverStringPointer, 2))
+                        ASCIIcharw = AscW(MidB$(tmpCSV(index), OverStringPointer, 2))
                         '@----------------------------------------------------------------------------
                         'Ignore spaces & tabs
                         SkipSpacesAndTabs
@@ -3851,7 +3486,7 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
                 EscapeChrCount = EscapeChrCount + 1&
                 TokenBeginningPos = OverStringPointer + 2&
                 SearchBeginningMark = TokenBeginningPos
-                hpointer = InStrB(SearchBeginningMark, tmpCSV(Index), QuoteChar) 'EOFld marker
+                hpointer = InStrB(SearchBeginningMark, tmpCSV(index), QuoteChar) 'EOFld marker
                 If hpointer Then EscapeChrCount = EscapeChrCount + 1&
                 Do While (Not TokenEndReached And Not EndOF)
                     '@----------------------------------------------------------------------------
@@ -3862,18 +3497,18 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
                             If IncludeRecord Then
                                 Select Case SearchBeginningMark
                                     Case 1 'Store the full Token from the current Index
-                                        tmpToken.Add tmpCSV(Index)
+                                        tmpToken.Add tmpCSV(index)
                                     Case Else 'Store the Right most Token portion from the current Index
-                                        tmpToken.Add RightB$(tmpCSV(Index), LenCurrentIndex - SearchBeginningMark + 1)
+                                        tmpToken.Add RightB$(tmpCSV(index), LenCurrentIndex - SearchBeginningMark + 1)
                                 End Select
                             End If
                             SplittedToken = True
-                            Index = Index + 1&
-                            EndOFStreamBuffer = (Index > MaxIndex)
+                            index = index + 1&
+                            EndOFStreamBuffer = (index > MaxIndex)
                             If Not EndOFStreamBuffer Then
-                                LenCurrentIndex = LenB(tmpCSV(Index))
+                                LenCurrentIndex = LenB(tmpCSV(index))
                                 SearchBeginningMark = 1
-                                hpointer = InStrB(SearchBeginningMark, tmpCSV(Index), QuoteChar) 'Find quote char
+                                hpointer = InStrB(SearchBeginningMark, tmpCSV(index), QuoteChar) 'Find quote char
                                 If hpointer Then EscapeChrCount = EscapeChrCount + 1&
                             Else
                                 If Not StreamEnd Then
@@ -3881,9 +3516,9 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
                                     'Load new stream
                                     LoadNewStream
                                     EndOFStreamBuffer = False
-                                    LenCurrentIndex = LenB(tmpCSV(Index))
+                                    LenCurrentIndex = LenB(tmpCSV(index))
                                     SearchBeginningMark = 1
-                                    hpointer = InStrB(SearchBeginningMark, tmpCSV(Index), QuoteChar) 'Find quote char
+                                    hpointer = InStrB(SearchBeginningMark, tmpCSV(index), QuoteChar) 'Find quote char
                                     If hpointer Then EscapeChrCount = EscapeChrCount + 1&
                                 Else
                                     hpointer = 0&
@@ -3895,7 +3530,7 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
                         OverStringPointer = hpointer + 2&
                         NotEvenEscapeChrNumber = (EscapeChrCount And 1)
                         If OverStringPointer < LenCurrentIndex Then
-                            ASCIIcharw = AscW(MidB$(tmpCSV(Index), OverStringPointer, 2))
+                            ASCIIcharw = AscW(MidB$(tmpCSV(index), OverStringPointer, 2))
                             '@----------------------------------------------------------------------------
                             'Ignore spaces & tabs
                             SkipSpacesAndTabs
@@ -3903,7 +3538,7 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
                             'Check if we are at the end of the field
                             If UseUnixEscapeSeq Then
                                 EscapedWFS = (ASCIIcharw = FDAscW) And (Not NotEvenEscapeChrNumber) And _
-                                                (Not (AscW(MidB$(tmpCSV(Index), OverStringPointer - 2, 2)) = ASCW_CHR_BACKSLASH))
+                                                (Not (AscW(MidB$(tmpCSV(index), OverStringPointer - 2, 2)) = ASCW_CHR_BACKSLASH))
                             Else
                                 EscapedWFS = (ASCIIcharw = FDAscW) And (Not NotEvenEscapeChrNumber)
                             End If
@@ -3913,7 +3548,7 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
                         End If
                         IsWellEscapedField = (EscapedWFS Or EscapedBRS)
                         If Not IsWellEscapedField Then
-                            hpointer = InStrB(hpointer + 2&, tmpCSV(Index), QuoteChar) 'EOFld marker
+                            hpointer = InStrB(hpointer + 2&, tmpCSV(index), QuoteChar) 'EOFld marker
                             If hpointer Then EscapeChrCount = EscapeChrCount + 1&
                         End If
                     Loop While Not IsWellEscapedField
@@ -3929,18 +3564,18 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
                                     If RequestedField(FieldID + 1&, MaxReqIndex) Then 'Filter fields
                                         Select Case dynamicType
                                             Case False
-                                                RecordToken.Add UnescapeField(MidB$(tmpCSV(Index), TokenBeginningPos, _
+                                                RecordToken.Add UnescapeField(MidB$(tmpCSV(index), TokenBeginningPos, _
                                                                                     TokenEndingPos - TokenBeginningPos + 1), _
                                                                             QuoteChar, EscapeSequence)
                                             Case Else
-                                                RecordToken.Add TypeData(UnescapeField(MidB$(tmpCSV(Index), TokenBeginningPos, _
+                                                RecordToken.Add TypeData(UnescapeField(MidB$(tmpCSV(index), TokenBeginningPos, _
                                                                                     TokenEndingPos - TokenBeginningPos + 1), _
                                                                             QuoteChar, EscapeSequence), _
                                                                         FieldID, IsHeader)
                                         End Select
                                     End If
                                 Case Else 'The Token is stored on tmpToken object
-                                    tmpToken.Add LeftB$(tmpCSV(Index), TokenEndingPos)
+                                    tmpToken.Add LeftB$(tmpCSV(index), TokenEndingPos)
                                     If RequestedField(FieldID + 1&, MaxReqIndex) Then 'Filter fields
                                         RecordToken.Add UnescapeField(Join$(tmpToken.items, RecordDelimiter), _
                                                                     QuoteChar, EscapeSequence) 'Save whole Token
@@ -3966,18 +3601,18 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
                                         If RequestedField(FieldID + 1&, MaxReqIndex) Then 'Filter fields
                                             Select Case dynamicType
                                                 Case False
-                                                    RecordToken.Add UnescapeField(MidB$(tmpCSV(Index), TokenBeginningPos, _
+                                                    RecordToken.Add UnescapeField(MidB$(tmpCSV(index), TokenBeginningPos, _
                                                                                     TokenEndingPos - TokenBeginningPos + 1), _
                                                                                 QuoteChar, EscapeSequence)
                                                 Case Else
-                                                    RecordToken.Add TypeData(UnescapeField(MidB$(tmpCSV(Index), TokenBeginningPos, _
+                                                    RecordToken.Add TypeData(UnescapeField(MidB$(tmpCSV(index), TokenBeginningPos, _
                                                                                             TokenEndingPos - TokenBeginningPos + 1), _
                                                                                     QuoteChar, EscapeSequence), _
                                                                             FieldID, IsHeader)
                                             End Select
                                         End If
                                     Case Else 'The Token is stored on tmpToken array
-                                        tmpToken.Add LeftB$(tmpCSV(Index), OverStringPointer - 3)
+                                        tmpToken.Add LeftB$(tmpCSV(index), OverStringPointer - 3)
                                         If RequestedField(FieldID + 1&, MaxReqIndex) Then 'Filter fields
                                             RecordToken.Add UnescapeField(Join$(tmpToken.items, RecordDelimiter), _
                                                                         QuoteChar, EscapeSequence) 'Save whole Token
@@ -3986,8 +3621,8 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
                                 End Select
                             End If
                             SplittedToken = False 'Restart Token status
-                            Index = Index + 1&
-                            EndOFStreamBuffer = (Index > MaxIndex)
+                            index = index + 1&
+                            EndOFStreamBuffer = (index > MaxIndex)
                             EndOF = (StreamEnd And EndOFStreamBuffer)
                             If EndOFStreamBuffer And Not EndOF Then
                                 '@----------------------------------------------
@@ -3999,11 +3634,11 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
                         Else
                             If IncludeRecord Then
                                 If SplittedToken Then 'Store the Left most Token portion from the current Index
-                                    tmpToken.Add LeftB$(tmpCSV(Index), OverStringPointer - 1)
+                                    tmpToken.Add LeftB$(tmpCSV(index), OverStringPointer - 1)
                                 End If
                             End If
                             SearchBeginningMark = OverStringPointer
-                            hpointer = InStrB(SearchBeginningMark, tmpCSV(Index), QuoteChar) 'Find quote char
+                            hpointer = InStrB(SearchBeginningMark, tmpCSV(index), QuoteChar) 'Find quote char
                             If hpointer Then EscapeChrCount = EscapeChrCount + 1&
                             TokenEndReached = False
                         End If
@@ -4012,12 +3647,12 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
             Else
                 '@----------------------------------------------------------------------------
                 'Try to mark the Starting and Ending position for the field
-                hpointer = InStrB(OverStringPointer, tmpCSV(Index), FieldDelimiter)
+                hpointer = InStrB(OverStringPointer, tmpCSV(index), FieldDelimiter)
                 If UseUnixEscapeSeq Then
                     Do While hpointer
-                        UnixEscpedSep = (AscW(MidB$(tmpCSV(Index), hpointer - 2, 2)) = ASCW_CHR_BACKSLASH)
+                        UnixEscpedSep = (AscW(MidB$(tmpCSV(index), hpointer - 2, 2)) = ASCW_CHR_BACKSLASH)
                         If UnixEscpedSep Then
-                            hpointer = InStrB(hpointer + 1, tmpCSV(Index), FieldDelimiter)
+                            hpointer = InStrB(hpointer + 1, tmpCSV(index), FieldDelimiter)
                         Else
                             Exit Do
                         End If
@@ -4037,23 +3672,23 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
                             Select Case dynamicType
                                 Case False
                                     If UseUnixEscapeSeq Then
-                                        RecordToken.Add UnescapeField(UnescapeField(MidB$(tmpCSV(Index), TokenBeginningPos, _
+                                        RecordToken.Add UnescapeField(UnescapeField(MidB$(tmpCSV(index), TokenBeginningPos, _
                                                                         TokenEndingPos - TokenBeginningPos + 1), _
                                                                 FieldDelimiter, EscapeSequence_Delim), _
                                                                         QuoteChar, EscapeSequence)
                                     Else
-                                        RecordToken.Add MidB$(tmpCSV(Index), TokenBeginningPos, _
+                                        RecordToken.Add MidB$(tmpCSV(index), TokenBeginningPos, _
                                                                 TokenEndingPos - TokenBeginningPos + 1)
                                     End If
                                 Case Else
                                     If UseUnixEscapeSeq Then
-                                        RecordToken.Add TypeData(UnescapeField(UnescapeField(MidB$(tmpCSV(Index), TokenBeginningPos, _
+                                        RecordToken.Add TypeData(UnescapeField(UnescapeField(MidB$(tmpCSV(index), TokenBeginningPos, _
                                                                             TokenEndingPos - TokenBeginningPos + 1), _
                                                                         FieldDelimiter, EscapeSequence_Delim), _
                                                                     QuoteChar, EscapeSequence), _
                                                             FieldID, IsHeader)
                                     Else
-                                        RecordToken.Add TypeData(MidB$(tmpCSV(Index), TokenBeginningPos, _
+                                        RecordToken.Add TypeData(MidB$(tmpCSV(index), TokenBeginningPos, _
                                                                     TokenEndingPos - TokenBeginningPos + 1), _
                                                             FieldID, IsHeader)
                                     End If
@@ -4062,30 +3697,30 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
                     End If
                 Else 'Missing fields delimiter char
                     If UseUnixEscapeSeq Then
-                        Do While Not EndOF And (AscW(RightB$(tmpCSV(Index), 2)) = ASCW_CHR_BACKSLASH) 'Unix escaped Record delimiter
+                        Do While Not EndOF And (AscW(RightB$(tmpCSV(index), 2)) = ASCW_CHR_BACKSLASH) 'Unix escaped Record delimiter
                             SplittedToken = True
                             If IncludeRecord Then
                                 Select Case SearchBeginningMark
                                     Case 1 'Store the full Token from the current Index
-                                        tmpToken.Add MidB$(tmpCSV(Index), 1, LenCurrentIndex - 1)
+                                        tmpToken.Add MidB$(tmpCSV(index), 1, LenCurrentIndex - 1)
                                     Case Else 'Store the Right most Token portion from the current Index
-                                        tmpToken.Add MidB$(tmpCSV(Index), TokenBeginningPos, LenCurrentIndex - TokenBeginningPos - 1)
+                                        tmpToken.Add MidB$(tmpCSV(index), TokenBeginningPos, LenCurrentIndex - TokenBeginningPos - 1)
                                 End Select
                             End If
-                            tmpCSV(Index) = vbNullString
-                            Index = Index + 1&
+                            tmpCSV(index) = vbNullString
+                            index = index + 1&
                             OverStringPointer = 1&
-                            EndOFStreamBuffer = (Index > MaxIndex)
+                            EndOFStreamBuffer = (index > MaxIndex)
                             If Not EndOFStreamBuffer Then
-                                LenCurrentIndex = LenB(tmpCSV(Index))
+                                LenCurrentIndex = LenB(tmpCSV(index))
                                 SearchBeginningMark = 1
                                 '@----------------------------------------------------------------------------
                                 'Try to mark the Starting and Ending position for the field
-                                hpointer = InStrB(OverStringPointer, tmpCSV(Index), FieldDelimiter)
+                                hpointer = InStrB(OverStringPointer, tmpCSV(index), FieldDelimiter)
                                 Do While hpointer
-                                    UnixEscpedSep = (AscW(MidB$(tmpCSV(Index), hpointer - 2, 2)) = ASCW_CHR_BACKSLASH)
+                                    UnixEscpedSep = (AscW(MidB$(tmpCSV(index), hpointer - 2, 2)) = ASCW_CHR_BACKSLASH)
                                     If UnixEscpedSep Then
-                                        hpointer = InStrB(hpointer + 1, tmpCSV(Index), FieldDelimiter)
+                                        hpointer = InStrB(hpointer + 1, tmpCSV(index), FieldDelimiter)
                                     Else
                                         Exit Do
                                     End If
@@ -4096,16 +3731,16 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
                                     'Load new stream
                                     LoadNewStream
                                     EndOFStreamBuffer = False
-                                    LenCurrentIndex = LenB(tmpCSV(Index))
+                                    LenCurrentIndex = LenB(tmpCSV(index))
                                     SearchBeginningMark = 1
                                     OverStringPointer = SearchBeginningMark
                                     '@----------------------------------------------------------------------------
                                     'Try to mark the Starting and Ending position for the field
-                                    hpointer = InStrB(OverStringPointer, tmpCSV(Index), FieldDelimiter)
+                                    hpointer = InStrB(OverStringPointer, tmpCSV(index), FieldDelimiter)
                                     Do While hpointer
-                                        UnixEscpedSep = (AscW(MidB$(tmpCSV(Index), hpointer - 2, 2)) = ASCW_CHR_BACKSLASH)
+                                        UnixEscpedSep = (AscW(MidB$(tmpCSV(index), hpointer - 2, 2)) = ASCW_CHR_BACKSLASH)
                                         If UnixEscpedSep Then
-                                            hpointer = InStrB(hpointer + 1, tmpCSV(Index), FieldDelimiter)
+                                            hpointer = InStrB(hpointer + 1, tmpCSV(index), FieldDelimiter)
                                         Else
                                             Exit Do
                                         End If
@@ -4121,16 +3756,16 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
                                 OverStringPointer = hpointer + 2&
                                 SearchBeginningMark = OverStringPointer
                                 RecordEndReached = False
-                                tmpToken.Add LeftB$(tmpCSV(Index), TokenEndingPos) 'Store the Left most Token portion from the current Index
+                                tmpToken.Add LeftB$(tmpCSV(index), TokenEndingPos) 'Store the Left most Token portion from the current Index
                                 Exit Do
                             Else
                                 If Not UnixEscpedSep Then 'End of record
                                     If IncludeRecord Then
                                         Select Case SearchBeginningMark
                                             Case 1 'Store the full Token from the current Index
-                                                tmpToken.Add MidB$(tmpCSV(Index), 1, LenCurrentIndex)
+                                                tmpToken.Add MidB$(tmpCSV(index), 1, LenCurrentIndex)
                                             Case Else 'Store the Right most Token portion from the current Index
-                                                tmpToken.Add MidB$(tmpCSV(Index), TokenBeginningPos, LenCurrentIndex - TokenBeginningPos)
+                                                tmpToken.Add MidB$(tmpCSV(index), TokenBeginningPos, LenCurrentIndex - TokenBeginningPos)
                                         End Select
                                     End If
                                 End If
@@ -4152,23 +3787,23 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
                                     Select Case dynamicType
                                         Case False
                                             If UseUnixEscapeSeq Then
-                                                RecordToken.Add UnescapeField(UnescapeField(RightB$(tmpCSV(Index), LenCurrentIndex _
+                                                RecordToken.Add UnescapeField(UnescapeField(RightB$(tmpCSV(index), LenCurrentIndex _
                                                                             - TokenBeginningPos + 1), _
                                                                         FieldDelimiter, EscapeSequence_Delim), _
                                                                         QuoteChar, EscapeSequence)
                                             Else
-                                                RecordToken.Add RightB$(tmpCSV(Index), LenCurrentIndex _
+                                                RecordToken.Add RightB$(tmpCSV(index), LenCurrentIndex _
                                                                         - TokenBeginningPos + 1)
                                             End If
                                         Case Else
                                             If UseUnixEscapeSeq Then
-                                                RecordToken.Add TypeData(UnescapeField(UnescapeField(RightB$(tmpCSV(Index), LenCurrentIndex _
+                                                RecordToken.Add TypeData(UnescapeField(UnescapeField(RightB$(tmpCSV(index), LenCurrentIndex _
                                                                                     - TokenBeginningPos + 1), _
                                                                                     FieldDelimiter, EscapeSequence_Delim), _
                                                                                 QuoteChar, EscapeSequence), _
                                                                         FieldID, IsHeader)
                                             Else
-                                                RecordToken.Add TypeData(RightB$(tmpCSV(Index), LenCurrentIndex _
+                                                RecordToken.Add TypeData(RightB$(tmpCSV(index), LenCurrentIndex _
                                                                                 - TokenBeginningPos + 1), _
                                                                         FieldID, IsHeader)
                                             End If
@@ -4189,8 +3824,8 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
                         End Select
                     End If
                     If RecordEndReached Then
-                        Index = Index + 1&
-                        EndOFStreamBuffer = (Index > MaxIndex)
+                        index = index + 1&
+                        EndOFStreamBuffer = (index > MaxIndex)
                         EndOF = (StreamEnd And EndOFStreamBuffer)
                         If EndOFStreamBuffer And Not EndOF Then
                             '@----------------------------------------------
@@ -4233,11 +3868,11 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
         If IgnoreLines Then
             '@----------------------------------------------------------------------------
             'Skip lines if needed
-            StreamSkipUnwantedLines Index, CSVstream, tmpCSV, MaxIndex, _
+            StreamSkipUnwantedLines index, CSVstream, tmpCSV, MaxIndex, _
                                     RecordDelimiter, commToken, StreamWithQuotes, _
                                     IgnoreCommentLines, IgnoreEmptyLines
         End If
-        EndOFStreamBuffer = (Index > MaxIndex)
+        EndOFStreamBuffer = (index > MaxIndex)
         EndOF = (StreamEnd And EndOFStreamBuffer)
         If EndOFStreamBuffer And Not EndOF Then
             '@----------------------------------------------
@@ -4284,7 +3919,7 @@ StreamParseCSV_NoSignificantData:
                                     "the file has only empty or commented lines that can be omitted."
     Resume StreamParseCSV_Error_Handler
 End Sub
-Private Sub StreamSkipUnwantedLines(ByRef Idx As Long, _
+Private Sub StreamSkipUnwantedLines(ByRef idx As Long, _
                                     ByRef Ostream As CSVTextStream, _
                                     ByRef arr() As String, _
                                     ByRef MaxIdx As Long, _
@@ -4300,16 +3935,16 @@ Private Sub StreamSkipUnwantedLines(ByRef Idx As Long, _
 start:
     '@----------------------------------------------------------------------------
     'Skip commented and blank lines if needed
-    If Idx <= MaxIdx Then
+    If idx <= MaxIdx Then
         Do
-            CurLength = LenB(arr(Idx))
+            CurLength = LenB(arr(idx))
             UnwantedLine = False
             If CurLength = 0 Then  'Empty line found
                 If skipEmptyLines Then
                     UnwantedLine = True
                 End If
             Else
-                CharCode = AscW(arr(Idx))
+                CharCode = AscW(arr(idx))
                 If CharCode = CommentToken Then 'Commented line found
                     If SkipComments Then
                         UnwantedLine = True
@@ -4318,8 +3953,8 @@ start:
             End If
 AdvanceLine:
             If UnwantedLine Then
-                Idx = Idx + 1&
-                If Idx > MaxIdx Then
+                idx = idx + 1&
+                If idx > MaxIdx Then
                     If Not Ostream.atEndOfStream Then
                         '@----------------------------------------------
                         'Advance stream
@@ -4335,7 +3970,7 @@ AdvanceLine:
                             End If
                         End With
                         arr() = Split(Ostream.bufferString, recDelimiter)
-                        Idx = 0
+                        idx = 0
                         MaxIdx = UBound(arr)
                         If arr(MaxIdx) = vbNullString Then
                             MaxIdx = MaxIdx - 1
@@ -4343,7 +3978,7 @@ AdvanceLine:
                     End If
                 End If
             End If
-        Loop While UnwantedLine And Idx <= MaxIdx
+        Loop While UnwantedLine And idx <= MaxIdx
     Else
         If Not Ostream.atEndOfStream Then
             '@----------------------------------------------
@@ -4352,7 +3987,7 @@ AdvanceLine:
             RaiseEvent AfterLoadStream
             QuotedStreamVariable = InStrB(1, Ostream.bufferString, CHR_DOUBLE_QUOTES)
             arr() = Split(Ostream.bufferString, recDelimiter)
-            Idx = 0
+            idx = 0
             MaxIdx = UBound(arr)
             If arr(MaxIdx) = vbNullString Then
                 MaxIdx = MaxIdx - 1

@@ -79,9 +79,19 @@ Class module developed to emulate some functionalities from the `ArrayList` pres
 <td style="text-align: left;">Creates an empty jagged array. The operation will turns the array <code>ArrVar</code> into an jagged array with <code>ArraySize + 1</code> rows and each row with <code>VectorSize</code> columns. To access to an individual element user must use something like <code>expression(i)(j)</code>, where <code>i</code> denotes an index in the main array and <code>j</code> denotes an index in the child array.</td>
 </tr>
 <tr>
+<td style="text-align: left; color:blue;"><em>Dedupe</em></td>
+<td style="text-align: left;">Method</td>
+<td style="text-align: left;">Remove duplicates from records. Requires rectangular table input (all records with same fields count).The <code>keys</code> parameter will indicate which fields/columns will be used in the deduplication. A string like "0,5" used as parameter will deduplicate the records over columns 0 and 5. If a string like "1-6" is used as argument, the deduplication will use the 2nd through 7th fields.</td>
+</tr>
+<tr>
 <td style="text-align: left; color:blue;"><em>Filter</em></td>
 <td style="text-align: left;">Method</td>
 <td style="text-align: left;">Returns a filtered array list using the <code>CSVexpressions</code> class module.</td>
+</tr>
+<tr>
+<td style="text-align: left; color:blue;"><em>FromString</em></td>
+<td style="text-align: left;">Method</td>
+<td style="text-align: left;">Main constructor method. Populates the current instance using values passed as a Java array string (<code>{{*};{*}}</code>).</td>
 </tr>
 <tr>
 <td style="text-align: left; color:blue;"><em>GetIndexedItem</em></td>
@@ -99,14 +109,14 @@ Class module developed to emulate some functionalities from the `ArrayList` pres
 <td style="text-align: left;">Gets all indexed Items from the current instance.</td>
 </tr>
 <tr>
-<td style="text-align: left; color:blue;"><em>Indexing</em></td>
+<td style="text-align: left; color:blue;"><em>indexing</em></td>
 <td style="text-align: left;">Property</td>
 <td style="text-align: left;">Indicates whether the current instance is used to store indexed elements.</td>
 </tr>
 <tr>
 <td style="text-align: left; color:blue;"><em>Inner, Left and Right Join</em></td>
 <td style="text-align: left;">Method</td>
-<td style="text-align: left;">Run a like SQL join on the provided data tables.<br>1) Use a string such as <code>{1-2,5,ID};{1-6}</code> as a predicate of the columns to indicate the join of columns 1 to 2, 5 and ID of leftTable with the columns 1 to 6 of rightTable.<br>2) Use a string such as <code>{*};{1-3}</code> to indicate the union of ALL columns of leftTable with columns 1 to 3 of rightTable.<br>3) The predicate must use the dot syntax <code>[t1.#][t1.fieldName]</code> to indicate the fields of the table, where t1 refers to the leftTable.<br>4) The matchKeys predicate must be given as <code>#/$;#/$</code></td>
+<td style="text-align: left;">Run a like SQL join on the provided data tables.<br>1) Use a string such as <code>{1-2,5,ID};{1-6}</code> as a predicate of the columns to indicate the join of columns 1 to 2, 5 and ID of leftTable with the columns 1 to 6 of rightTable.<br>2) Use a string such as <code>{*};{1-3}</code> to indicate the union of ALL columns of leftTable with columns 1 to 3 of rightTable.<br>3) The predicate must use the dot syntax <code>[t1.#][t1.fieldName]</code> to indicate the fields of the table, where t1 refers to the leftTable.<br>4) The matchKeys predicate must be given as <code>#/$;#/$</code>.</td>
 </tr>
 <tr>
 <td style="text-align: left; color:blue;"><em>Insert</em></td>
@@ -114,9 +124,19 @@ Class module developed to emulate some functionalities from the `ArrayList` pres
 <td style="text-align: left;">Inserts an Item, at the given Index, in the current instance of the class.</td>
 </tr>
 <tr>
+<td style="text-align: left; color:blue;"><em>InsertField</em></td>
+<td style="text-align: left;">Method</td>
+<td style="text-align: left;">Inserts a new field named <code>FieldName</code> into the records of the current instance at the given index. If a formula is provided, the field is populated in each record (row) with the result of evaluating the formula using the fields specified in the formula.</td>
+</tr>
+<tr>
 <td style="text-align: left; color:blue;"><em>IsJaggedArray</em></td>
 <td style="text-align: left;">Method</td>
 <td style="text-align: left;">Returns <code>True</code> if the paseed argument is a jagged array.</td>
+</tr>
+<tr>
+<td style="text-align: left; color:blue;"><em>isSorted</em></td>
+<td style="text-align: left;">Property</td>
+<td style="text-align: left;">Returns <code>True</code> if the current instance data is sorted.</td>
 </tr>
 <tr>
 <td style="text-align: left; color:blue;"><em>item</em></td>
@@ -164,9 +184,29 @@ Class module developed to emulate some functionalities from the `ArrayList` pres
 <td style="text-align: left;">Gets all indexed Items from the current instance.</td>
 </tr>
 <tr>
+<td style="text-align: left; color:blue;"><em>keyTree</em></td>
+<td style="text-align: left;">Property</td>
+<td style="text-align: left;">Allows to store and group elements with the same key.</td>
+</tr>
+<tr>
+<td style="text-align: left; color:blue;"><em>lastSortedIndex</em></td>
+<td style="text-align: left;">Property</td>
+<td style="text-align: left;">Retrieves the index of the field used in the last sort operation.</td>
+</tr>
+<tr>
+<td style="text-align: left; color:blue;"><em>MergeFields</em></td>
+<td style="text-align: left;">Method</td>
+<td style="text-align: left;">Merges the specified fields in the current instance data table. The <code>indexes</code> parameter will indicate which fields/columns will be merged. A string like "2,7" used as parameter will merge the records over the columns with indexes 2 and 7. If a string like "3-8,10" is used as argument, the merge operation will use the 4th to 9th fields and the 11th field.</td>
+</tr>
+<tr>
 <td style="text-align: left; color:blue;"><em>MultiDimensional</em></td>
 <td style="text-align: left;">Method</td>
 <td style="text-align: left;">Checks if an array has more than one dimension and returns <code>True</code> or <code>False</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left; color:blue;"><em>RearrangeFields</em></td>
+<td style="text-align: left;">Method</td>
+<td style="text-align: left;">Rearranges the fields of the stored data. A string such as "0-3,5-4,6-11" used as a parameter will leave the position of fields with indexes 0 to 3 unchanged, swap the fields at indexes 5 and 4, and leave all remaining fields in position.</td>
 </tr>
 <tr>
 <td style="text-align: left; color:blue;"><em>Reduce</em></td>
@@ -182,6 +222,11 @@ Class module developed to emulate some functionalities from the `ArrayList` pres
 <td style="text-align: left; color:blue;"><em>RemoveAt</em></td>
 <td style="text-align: left;">Method</td>
 <td style="text-align: left;">Removes the Item at specified Index.</td>
+</tr>
+<tr>
+<td style="text-align: left; color:blue;"><em>RemoveField</em></td>
+<td style="text-align: left;">Method</td>
+<td style="text-align: left;">Removes the field at specified <code>aIndex</code> in all records.</td>
 </tr>
 <tr>
 <td style="text-align: left; color:blue;"><em>RemoveIndexedItem</em></td>
@@ -204,6 +249,16 @@ Class module developed to emulate some functionalities from the `ArrayList` pres
 <td style="text-align: left;">Reverse the order in the target jagged array, from a given <code>StartIndex</code> to a <code>EndIndex</code>.</td>
 </tr>
 <tr>
+<td style="text-align: left; color:blue;"><em>ShiftField</em></td>
+<td style="text-align: left;">Method</td>
+<td style="text-align: left;">Moves a field leftward or rightward. Negative values for the <code>Shift</code> argument will produce leftward shifts.</td>
+</tr>
+<tr>
+<td style="text-align: left; color:blue;"><em>ShiftRecord</em></td>
+<td style="text-align: left;">Method</td>
+<td style="text-align: left;">Moves a record upward or downward. Negative values for the <code>Shift</code> argument will produce upward shifts.</td>
+</tr>
+<tr>
 <td style="text-align: left; color:blue;"><em>ShrinkBuffer</em></td>
 <td style="text-align: left;">Method</td>
 <td style="text-align: left;">Shrinks the buffer size to avoid extra space reservation.</td>
@@ -214,6 +269,21 @@ Class module developed to emulate some functionalities from the `ArrayList` pres
 <td style="text-align: left;">Sorts the internal Items. Requires all Items to be one-dimensional arrays. If the <code>FromIndex</code> is set to <code>-1</code>, the sorting will start at the Items lower bound; when the <code>ToIndex</code> is set to <code>-1</code>, the operation will end at the Items upper bound. The <code>SortingKeys</code> parameter is used to define the index of the columns on which the sorting operation will be performed, negative values indicate sorting in descending order; the user can pass an array of sorting keys as a parameter. The <code>SortAlgorithm</code> parameter indicates which sort algorithm will be used to perform the sort.</td>
 </tr>
 <tr>
+<td style="text-align: left; color:blue;"><em>SortByField</em></td>
+<td style="text-align: left;">Method</td>
+<td style="text-align: left;">Sorts the internal items by an specified field.</td>
+</tr>
+<tr>
+<td style="text-align: left; color:blue;"><em>SortKeys</em></td>
+<td style="text-align: left;">Method</td>
+<td style="text-align: left;">Sorts the internal Items by its keys using QuickSort. Requires all Items to be one-dimensional arrays. The indexes are base 0.</td>
+</tr>
+<tr>
+<td style="text-align: left; color:blue;"><em>SplitField</em></td>
+<td style="text-align: left;">Method</td>
+<td style="text-align: left;">Splits the specified field in the current instance data table.</td>
+</tr>
+<tr>
 <td style="text-align: left; color:blue;"><em>Swap</em></td>
 <td style="text-align: left;">Method</td>
 <td style="text-align: left;">Swap Items in buffer.</td>
@@ -222,6 +292,11 @@ Class module developed to emulate some functionalities from the `ArrayList` pres
 <td style="text-align: left; color:blue;"><em>Swap2</em></td>
 <td style="text-align: left;">Method</td>
 <td style="text-align: left;">Swap Items in target jagged array.</td>
+</tr>
+<tr>
+<td style="text-align: left; color:blue;"><em>ToString</em></td>
+<td style="text-align: left;">Method</td>
+<td style="text-align: left;">Serializes the buffer contents to a common string representation. Only one-dimensional arrays and jagged arrays populated with one-dimensional arrays are supported.</td>
 </tr>
 <tr>
 <td style="text-align: left; color:blue;"><em>TwoDimToJaggedArray</em></td>
