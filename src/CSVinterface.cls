@@ -3077,6 +3077,7 @@ Public Function SniffDelimiters(ByRef confObject As CSVparserConfig, _
             With StreamObj
                 .endStreamOnLineBreak = True
                 .utf8EncodedFile = confObject.utf8EncodedFile
+                .unifiedLFOutput = confObject.multiEndOfLineCSV
                 .OpenStream confObject.path
                 .ReadText
                 RaiseEvent AfterLoadStream
