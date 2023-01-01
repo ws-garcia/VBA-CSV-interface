@@ -263,9 +263,12 @@ Private Sub GoBackToLineBreak()
     Loop While Not BufferEnds
 End Sub
 Private Sub NormalizeLineBreaks()
-    If InStrB(1, P_TEXT, vbCr, vbBinaryCompare) Then
+    Do While InStrB(1, P_TEXT, vbCrLf, vbBinaryCompare)
+        P_TEXT = Join$(Split(P_TEXT, vbCrLf), vbLf)
+    Loop
+    Do While InStrB(1, P_TEXT, vbCr, vbBinaryCompare)
         P_TEXT = Join$(Split(P_TEXT, vbCr), vbLf)
-    End If
+    Loop
     Do While InStrB(1, P_TEXT, DualLFchar, vbBinaryCompare)
         P_TEXT = Join$(Split(P_TEXT, DualLFchar), vbLf)
     Loop
