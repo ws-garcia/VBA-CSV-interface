@@ -479,8 +479,8 @@ CSVsubsetSplit_MissingCSVfile:
 End Function
 Public Function Dedupe(keys As String) As CSVArrayList
     On Error GoTo ErrHandler_Dedupe
-    Set Dedupe = New CSVArrayList
-    Dedupe.Dedupe keys, parseConfig.Headers
+    
+    Set Dedupe = P_CSV_DATA.Dedupe(keys, parseConfig.Headers)
     Exit Function
 ErrHandler_Dedupe:
     Set Dedupe = Nothing
@@ -721,16 +721,15 @@ Public Function Filter(Pattern As String, Optional filePath As String = vbNullSt
                             Optional ExcludeFirstRecord As Boolean = True, _
                             Optional Exclude As Boolean = False) As CSVArrayList
     
-    Dim CSVparser As CSVinterface
-    
-    Set Filter = New CSVArrayList
     If filePath <> vbNullString Then 'Filter CSV file
+        Dim CSVparser As CSVinterface
         Dim StreamReader As CSVTextStream
         Dim streamsCounter As Long
         
         Set CSVparser = New CSVinterface
         Set StreamReader = New CSVTextStream
-    
+        Set Filter = New CSVArrayList
+        
         With CSVparser.parseConfig
             .delimitersGuessing = True
         End With
@@ -749,7 +748,7 @@ Public Function Filter(Pattern As String, Optional filePath As String = vbNullSt
         Set CSVparser = Me
         If CSVparser.importSuccess Then
             ExcludeFirstRecord = (CSVparser.parseConfig.Headers = True)
-            Filter.Concat2 CSVparser.items.Filter(Pattern, 1 + Abs(ExcludeFirstRecord), Exclude)
+            Set Filter = P_CSV_DATA.Filter(Pattern, 1 + Abs(ExcludeFirstRecord), Exclude)
         End If
     End If
 End Function
