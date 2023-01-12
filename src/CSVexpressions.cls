@@ -295,7 +295,7 @@ Private Sub Class_Initialize()
     Dim UDFnames() As Variant
     UDFnames() = Array("GCD", "Concat")
     DeclareUDF UDFnames, "UserDefFunctions"                 ' Declare the Greatest Common Divisor and the string concatenation
-                                                            ' functions defined in the CSVudFunctions class module.
+                                                            ' functions defined in the UDfunctions class module.
                                                             ' This need an instance in the CSVcallBack class module.
     '@--------------------------------------------------------------------
     ' Initialize error messages
@@ -2541,7 +2541,7 @@ Private Sub GetRootedTree(ByRef SubExpression As String, ByRef tmpReplacement As
     Dim Switch As Boolean
     Dim tmpPos As Long
     Dim OperandInBundle As Boolean
-    Dim PrevChar As String
+    Dim prevChar As String
     
     Do
         SubExpression = ApplyLawOfSigns(SubExpression)
@@ -2550,12 +2550,12 @@ Private Sub GetRootedTree(ByRef SubExpression As String, ByRef tmpReplacement As
         ' Mask worked token
         tmpPos = InStrB(1, SubExpression, vToken.DefString)
         If tmpPos > 2 Then
-            PrevChar = MidB$(SubExpression, tmpPos - 2, 2)
-            OperandInBundle = (InStrB(1, op_AllItems, PrevChar))
+            prevChar = MidB$(SubExpression, tmpPos - 2, 2)
+            OperandInBundle = (InStrB(1, op_AllItems, prevChar))
             Do While Not OperandInBundle And tmpPos > 2    'Tokens starts with a operator or with a null string
                 tmpPos = InStrB(tmpPos + 2, SubExpression, vToken.DefString)
-                PrevChar = MidB$(SubExpression, tmpPos - 2, 2)
-                OperandInBundle = (InStrB(1, op_AllItems, PrevChar))
+                prevChar = MidB$(SubExpression, tmpPos - 2, 2)
+                OperandInBundle = (InStrB(1, op_AllItems, prevChar))
             Loop
         End If
         If tmpPos > 0 Then
@@ -2773,9 +2773,9 @@ Private Sub GetTokenStart(ByRef expression As String, ByRef startIndex As Long, 
     If outLng > 1 Then
         Select Case AscW(curChar)
             Case 45, 126
-                Dim PrevChar As String
-                PrevChar = MidB$(expression, outLng - 2, 2)
-                If InStrB(1, op_AllNotUnaryItems, PrevChar) Then
+                Dim prevChar As String
+                prevChar = MidB$(expression, outLng - 2, 2)
+                If InStrB(1, op_AllNotUnaryItems, prevChar) Then
                     outLng = outLng - 2
                 Else
                     outLng = outLng + 2
@@ -4227,6 +4227,8 @@ Private Function ReplaceImpliedMult(expression As String) As String
     Dim LookupPos As Long
     Dim tmpVar As String
     Dim tmpVarInitPos As Long
+    Dim prevChar As String
+    Dim reservedChar As Boolean
     
     LookupPos = 1
     tmpStr = expression
@@ -4242,8 +4244,12 @@ Private Function ReplaceImpliedMult(expression As String) As String
                     tmpVarInitPos = tmpVarInitPos - 2
                 Loop
                 tmpVar = MidB$(tmpStr, tmpVarInitPos, tmpPos - tmpVarInitPos)
-                If GetFunctionName(LCase$(tmpVar)) = vbNullString Then 'Implied multiplication found
-                    tmpStr = MidB(tmpStr, 1, tmpPos - 1) & op_mult & MidB(tmpStr, tmpPos)
+                prevChar = MidB$(tmpStr, tmpPos - 2, 2)
+                reservedChar = (prevChar = d_lParenthesis Or InStrB(1, op_AllItems, prevChar))
+                If Not reservedChar Then
+                    If GetFunctionName(LCase$(tmpVar)) = vbNullString Then  'Implied multiplication found
+                        tmpStr = MidB(tmpStr, 1, tmpPos - 1) & op_mult & MidB(tmpStr, tmpPos)
+                    End If
                 End If
             End If
             LookupPos = tmpPos + 4
