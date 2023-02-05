@@ -181,7 +181,7 @@ Class module developed to emulate some functionalities from the `ArrayList` pres
 <tr>
 <td style="text-align: left; color:blue;"><em>Keys</em></td>
 <td style="text-align: left;">Property</td>
-<td style="text-align: left;">Gets all indexed Items from the current instance.</td>
+<td style="text-align: left;">Gets all keys for all indexed Items from the current instance.</td>
 </tr>
 <tr>
 <td style="text-align: left; color:blue;"><em>keyTree</em></td>
