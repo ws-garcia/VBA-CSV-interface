@@ -155,7 +155,7 @@ End Property
 ''' <summary>
 ''' Gets all indexed Items from the current instance.
 ''' </summary>
-Public Property Get keys() As String()
+Public Property Get Keys() As String()
     Dim tmpResult() As String
     Dim iCounter As Long
     
@@ -163,7 +163,7 @@ Public Property Get keys() As String()
     For iCounter = 0 To IndexedCurrentIndex
         tmpResult(iCounter) = IndexedBuffer(iCounter).itemKey
     Next iCounter
-    keys = tmpResult
+    Keys = tmpResult
 End Property
 
 ''' <summary>
@@ -324,7 +324,6 @@ Attribute Add2.VB_Description = "Appends a copy, in jagged array fashion, of the
                         Next j
                     Else
                         If IsJaggedArray(aValues(i)) Then
-                            CurrentIndex = CurrentIndex - 1
                             For j = LBound(aValues(i)) To UBound(aValues(i))
                                 Add2 aValues(i)(j)
                             Next j
@@ -508,10 +507,10 @@ End Sub
 ''' </summary>
 ''' <param name="Keys">Indexes of the fields used for deduplication.</param>
 ''' <param name="headers">Indicates if the data has a header record.</param>
-Public Function Dedupe(keys As String, Optional Headers As Boolean = True) As CSVArrayList
+Public Function Dedupe(Keys As String, Optional Headers As Boolean = True) As CSVArrayList
     On Error GoTo ErrHandler_Dedupe
     Dim aIndexes() As String
-    aIndexes() = SplitFieldsOrderStr(keys)
+    aIndexes() = SplitFieldsOrderStr(Keys)
     If CheckForDupIndexes(aIndexes) Then
         Dim IndexesCollection As Collection
         Dim dRecCounter As Long
@@ -533,19 +532,19 @@ Public Function Dedupe(keys As String, Optional Headers As Boolean = True) As CS
 ErrHandler_Dedupe:
     Set Dedupe = Nothing
 End Function
-Private Function DedupeKeysMerge(aIndex As Long, keys As Variant) As String
+Private Function DedupeKeysMerge(aIndex As Long, Keys As Variant) As String
     Dim tmpResult() As Variant
     Dim kLB As Long
     Dim kUb As Long
     Dim keyCounter As Long
     Dim tgRecord() As Variant
     
-    kLB = LBound(keys)
-    kUb = UBound(keys)
+    kLB = LBound(Keys)
+    kUb = UBound(Keys)
     ReDim tmpResult(kLB To kUb)
     tgRecord() = Buffer(aIndex)
     For keyCounter = kLB To kUb
-        tmpResult(keyCounter) = tgRecord(CLng(keys(keyCounter)))
+        tmpResult(keyCounter) = tgRecord(CLng(Keys(keyCounter)))
     Next keyCounter
     DedupeKeysMerge = Join$(tmpResult, "|")
 End Function
@@ -705,18 +704,18 @@ Public Function Filter(Pattern As String, startIndex As Long, _
     With Evaluator
         If Headers Then
             .Create SwitchUnderscoresAndSpaces(Pattern, Buffer(0))
-            evalWithOutVar = (.currentVariables = vbNullString)
+            evalWithOutVar = (.CurrentVariables = vbNullString)
             If Not evalWithOutVar Then
-                TargetFields() = GetIndexesFromVarList(SwitchUnderscoresAndSpaces(.currentVariables, Buffer(0), ToUnderscores:=False), Buffer(0))
+                TargetFields() = GetIndexesFromVarList(SwitchUnderscoresAndSpaces(.CurrentVariables, Buffer(0), ToUnderscores:=False), Buffer(0))
                 'Replace
-                cPattern = RebuildEvalExpression(.expression, .currentVariables, TargetFields)
+                cPattern = RebuildEvalExpression(.expression, .CurrentVariables, TargetFields)
                 .Create cPattern
             End If
         Else
             .Create Pattern
-            evalWithOutVar = (.currentVariables = vbNullString)
+            evalWithOutVar = (.CurrentVariables = vbNullString)
             If Not evalWithOutVar Then
-                TargetFields() = GetIndexesFromVarList(.currentVariables)
+                TargetFields() = GetIndexesFromVarList(.CurrentVariables)
             End If
         End If
         For rCounter = startIndex - 1 To endIndex
@@ -729,7 +728,7 @@ Public Function Filter(Pattern As String, startIndex As Long, _
             End If
             If .errorType = ExpressionErrors.errNone Then
                 If err.Number = 0 Then
-                    If CBool(.result) Then
+                    If CBool(.Result) Then
                         If Not Exclude Then
                             Filter.Add Buffer(rCounter) 'Append current record
                         End If
@@ -1421,13 +1420,13 @@ Public Function InsertField(aIndex As Long, _
                 With Evaluator
                     .formatResult = True
                     .Create SwitchUnderscoresAndSpaces(Formula, Buffer(0))
-                    evalWithOutVar = (.currentVariables = vbNullString)
+                    evalWithOutVar = (.CurrentVariables = vbNullString)
                     If Not evalWithOutVar Then
                         TargetFields() = GetIndexesFromVarList( _
-                                                                SwitchUnderscoresAndSpaces(.currentVariables, Buffer(0), ToUnderscores:=False), _
+                                                                SwitchUnderscoresAndSpaces(.CurrentVariables, Buffer(0), ToUnderscores:=False), _
                                                                 Buffer(0))
                         'Replace
-                        cFormula = RebuildEvalExpression(.expression, .currentVariables, TargetFields)
+                        cFormula = RebuildEvalExpression(.expression, .CurrentVariables, TargetFields)
                         .Create cFormula
                     End If
                 End With
@@ -1675,7 +1674,7 @@ Private Function SplitFieldsOrderStr(fieldsString As String) As String()
         End With
     End If
     tmpResult.Sort
-    SplitFieldsOrderStr = tmpResult.keys
+    SplitFieldsOrderStr = tmpResult.Keys
     Set tmpResult = Nothing
 End Function
 Private Function formatColumnPredicate(predicate As String, _
@@ -1728,7 +1727,7 @@ Private Function formatJoinPredicate(predicate As String, _
         SwitchedExpr = predicateCP <> predicate
         Set exprHelper = New CSVexpressions
         exprHelper.Create predicateCP
-        tmpVariables() = Split(exprHelper.currentVariables, "; ")
+        tmpVariables() = Split(exprHelper.CurrentVariables, "; ")
         For iterator = LBound(tmpVariables) To UBound(tmpVariables)
             varComposition() = Split(tmpVariables(iterator), d_dot)
             cLB = LBound(varComposition)
@@ -2066,11 +2065,11 @@ Public Function LeftJoin(ByRef leftTable As CSVArrayList, _
             evalRecord_BK() = evalRecord
             .Create cPredicate
             cPredicate = BindToEvalTable(.expression, _
-                                    .currentVariables, _
+                                    .CurrentVariables, _
                                     fullReqFields, UBound(leftTable(0)) - leftIdxDelta)
         
             .Create cPredicate
-            FilterFields() = GetIndexesFromVarList(.currentVariables)
+            FilterFields() = GetIndexesFromVarList(.CurrentVariables)
         End If
         For rCounter = Abs(Headers) To leftTable.count - 1
             'Initial configurations
@@ -2131,7 +2130,7 @@ Public Function LeftJoin(ByRef leftTable As CSVArrayList, _
                     .Eval GetValuesForVariables(rCounter, FilterFields, False, evalRecord)
                     If .errorType = ExpressionErrors.errNone Then
                         If err.Number = 0 Then
-                            If CBool(.result) Then
+                            If CBool(.Result) Then
                                 'Fill in the data in the table on the right only if the join and predicate are satisfied.
                                 If lJoinIndex > -1 Then
                                     For sCounter = LftTblENDidx + 1 To UBound(resultRecord)
@@ -2252,11 +2251,11 @@ Public Function RightJoin(ByRef leftTable As CSVArrayList, _
             evalRecord_BK() = evalRecord
             .Create cPredicate
             cPredicate = BindToEvalTable(.expression, _
-                                    .currentVariables, _
+                                    .CurrentVariables, _
                                     fullReqFields, UBound(leftTable(0)) - leftIdxDelta)
         
             .Create cPredicate
-            FilterFields() = GetIndexesFromVarList(.currentVariables)
+            FilterFields() = GetIndexesFromVarList(.CurrentVariables)
         End If
         For rCounter = Abs(Headers) To rightTable.count - 1
             'Initial configurations
@@ -2317,7 +2316,7 @@ Public Function RightJoin(ByRef leftTable As CSVArrayList, _
                     .Eval GetValuesForVariables(rCounter, FilterFields, False, evalRecord)
                     If .errorType = ExpressionErrors.errNone Then
                         If err.Number = 0 Then
-                            If CBool(.result) Then
+                            If CBool(.Result) Then
                                 'Fill in the data in the table on the left only if the join and predicate are satisfied.
                                 If lJoinIndex > -1 Then
                                     For sCounter = 0 To LftTblENDidx
@@ -2438,11 +2437,11 @@ Public Function InnerJoin(ByRef leftTable As CSVArrayList, _
             evalRecord_BK() = evalRecord
             .Create cPredicate
             cPredicate = BindToEvalTable(.expression, _
-                                    .currentVariables, _
+                                    .CurrentVariables, _
                                     fullReqFields, UBound(leftTable(0)) - leftIdxDelta)
         
             .Create cPredicate
-            FilterFields() = GetIndexesFromVarList(.currentVariables)
+            FilterFields() = GetIndexesFromVarList(.CurrentVariables)
         End If
         For rCounter = Abs(Headers) To leftTable.count - 1
                         'Initial configurations
@@ -2498,7 +2497,7 @@ Public Function InnerJoin(ByRef leftTable As CSVArrayList, _
                     .Eval GetValuesForVariables(rCounter, FilterFields, False, evalRecord)
                     If .errorType = ExpressionErrors.errNone Then
                         If err.Number = 0 Then
-                            If CBool(.result) Then
+                            If CBool(.Result) Then
                                 'Fill in the data in the table.
                                 If lJoinIndex > -1 Then
                                     For sCounter = 0 To LftTblENDidx
@@ -3295,18 +3294,18 @@ Public Function Reduce(ReductionExpression As String, startIndex As Long, _
     With Evaluator
         If Headers Then
             .Create SwitchUnderscoresAndSpaces(ReductionExpression, Buffer(0))
-            evalWithOutVar = (.currentVariables = vbNullString)
+            evalWithOutVar = (.CurrentVariables = vbNullString)
             If Not evalWithOutVar Then
-                TargetFields() = GetIndexesFromVarList(SwitchUnderscoresAndSpaces(.currentVariables, Buffer(0), ToUnderscores:=False), Buffer(0))
+                TargetFields() = GetIndexesFromVarList(SwitchUnderscoresAndSpaces(.CurrentVariables, Buffer(0), ToUnderscores:=False), Buffer(0))
                 'Replace
-                cPattern = RebuildEvalExpression(.expression, .currentVariables, TargetFields)
+                cPattern = RebuildEvalExpression(.expression, .CurrentVariables, TargetFields)
                 .Create cPattern
             End If
         Else
             .Create ReductionExpression
-            evalWithOutVar = (.currentVariables = vbNullString)
+            evalWithOutVar = (.CurrentVariables = vbNullString)
             If Not evalWithOutVar Then
-                TargetFields() = GetIndexesFromVarList(.currentVariables)
+                TargetFields() = GetIndexesFromVarList(.CurrentVariables)
             End If
         End If
         For rCounter = startIndex - 1 To endIndex - 1
@@ -3317,7 +3316,7 @@ Public Function Reduce(ReductionExpression As String, startIndex As Long, _
                 On Error Resume Next
                 .Eval
             End If
-            tmpElement(0) = FormatEvalOutput(.result)
+            tmpElement(0) = FormatEvalOutput(.Result)
             tmpResult(0 + rCounter - startIndex + 1) = tmpElement  'reduce
         Next rCounter
     End With
