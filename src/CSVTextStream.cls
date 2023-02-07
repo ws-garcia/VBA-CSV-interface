@@ -170,6 +170,20 @@ Attribute CloseStream.VB_Description = "Closes the current text file stream."
         P_PATH = vbNullString
     End If
 End Sub
+Private Sub CreateSubFolders(FullFilePath As String)
+    Dim cPath As String
+    Dim SubFolders() As String
+    Dim j As Long
+    
+    SubFolders() = Split(FullFilePath, "\")
+    cPath = SubFolders(LBound(SubFolders))
+    For j = LBound(SubFolders) + 1 To UBound(SubFolders) - 1
+        cPath = cPath & "\" & SubFolders(j)
+        If Not FolderExists(cPath) Then
+            MkDir cPath           'Create the subdirectory
+        End If
+    Next j
+End Sub
 Private Sub DoubleBufferSize()
     Dim LCSt As Long
     P_BUFFERSIZE = 2 * P_BUFFERSIZE
@@ -238,6 +252,9 @@ Private Sub FindEOLcharacter()
     End If
     Seek #FileHandled, CorrectedPos
 End Sub
+Private Function FolderExists(ByVal filePath As String) As Boolean
+    FolderExists = CBool(LenB(Dir(filePath, vbDirectory)))
+End Function
 Private Sub GoBackToLineBreak()
     Do
         BufferMark = BufferMark - 2
@@ -278,6 +295,7 @@ Public Sub OpenStream(filePath As String)
 Attribute OpenStream.VB_Description = "Opens a stream over a text file."
     If P_PATH <> filePath Then
         FileHandled = FreeFile
+        CreateSubFolders filePath
         Open filePath For Binary As #FileHandled
         P_ISOPENSTREAM = True
         P_STREAMLENGTH = LOF(FileHandled)
