@@ -978,7 +978,7 @@ Attribute Copy.VB_Description = "Returns a copy of the current instance."
     
     Set Copy = New CSVArrayList
     If Not P_INDEXING Then
-        If endIndex = -1 Then
+        If endIndex = -1 Or endIndex > CurrentIndex Then
             endIndex = CurrentIndex
         End If
         Copy.Reinitialize endIndex - startIndex + 1
@@ -986,7 +986,7 @@ Attribute Copy.VB_Description = "Returns a copy of the current instance."
             Copy.Add Buffer(c)
         Next c
     Else
-        If endIndex = -1 Then
+        If endIndex = -1 Or endIndex > IndexedCurrentIndex Then
             endIndex = IndexedCurrentIndex
         End If
         Copy.Reinitialize endIndex - startIndex + 1
