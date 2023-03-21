@@ -786,11 +786,13 @@ End Function
 Private Function GetHeaderIndexes(ByRef tmpFilters() As Variant, _
                                 ByRef header As CSVArrayList) As Long()
     Dim tmpResult() As Long
+    Dim headerFieldsCount As Long
     Dim tmpColl As Collection
     Dim trqidx As Long, arridx As Long
     Dim matchFound As Boolean
-
+    
     If Not header Is Nothing Then
+        headerFieldsCount = UBound(header(0))
         Set tmpColl = New Collection
         For trqidx = LBound(tmpFilters) To UBound(tmpFilters)
             If IsNumeric(tmpFilters(trqidx)) Then
@@ -805,7 +807,7 @@ Private Function GetHeaderIndexes(ByRef tmpFilters() As Variant, _
                         tmpColl.Add CStr(arridx + 1), CStr(arridx + 1)
                     End If
                     arridx = arridx + 1
-                Loop While Not matchFound And arridx <= header.count - 1
+                Loop While Not matchFound And arridx <= headerFieldsCount
             End If
         Next trqidx
         If tmpColl.count >= 1 Then
@@ -1341,14 +1343,14 @@ Public Function GetRecord() As CSVArrayList
         Loop While (Not static_RecordEndReached And Not static_EndOF)
         Select Case static_fieldsBound
             Case Is > 0
-                If static_FieldID - 1 > static_fieldsMaxBound Then
-                    static_fieldsMaxBound = static_FieldID - 1
+                If static_RecordToken.count - 1 > static_fieldsMaxBound Then
+                    static_fieldsMaxBound = static_RecordToken.count - 1
                     static_RecordToken.ShrinkBuffer
                 End If
             Case Else
                 Select Case static_FieldID
                     Case Is > 0
-                        static_fieldsBound = static_FieldID - 1
+                        static_fieldsBound = static_RecordToken.count - 1
                         static_RecordToken.ShrinkBuffer
                     Case Else
                         static_fieldsBound = static_FieldID
@@ -2744,14 +2746,14 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
         Loop While (Not RecordEndReached And Not EndOfString)
         Select Case P_VECTORS_REGULAR_BOUND
             Case Is > 0
-                If FieldID - 1 > P_VECTORS_MAX_BOUND Then
-                    P_VECTORS_MAX_BOUND = FieldID - 1
+                If RecordToken.count - 1 > P_VECTORS_MAX_BOUND Then
+                    P_VECTORS_MAX_BOUND = RecordToken.count - 1
                     RecordToken.ShrinkBuffer
                 End If
             Case Else
                 Select Case FieldID
                     Case Is > 0
-                        P_VECTORS_REGULAR_BOUND = FieldID - 1
+                        P_VECTORS_REGULAR_BOUND = RecordToken.count - 1
                         RecordToken.ShrinkBuffer
                     Case Else
                         P_VECTORS_REGULAR_BOUND = FieldID
@@ -3841,14 +3843,14 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
         Loop While (Not RecordEndReached And Not EndOF)
         Select Case P_VECTORS_REGULAR_BOUND
             Case Is > 0
-                If FieldID - 1 > P_VECTORS_MAX_BOUND Then
-                    P_VECTORS_MAX_BOUND = FieldID - 1
+                If RecordToken.count - 1 > P_VECTORS_MAX_BOUND Then
+                    P_VECTORS_MAX_BOUND = RecordToken.count - 1
                     RecordToken.ShrinkBuffer
                 End If
             Case Else
                 Select Case FieldID
                     Case Is > 0
-                        P_VECTORS_REGULAR_BOUND = FieldID - 1
+                        P_VECTORS_REGULAR_BOUND = RecordToken.count - 1
                         RecordToken.ShrinkBuffer
                     Case Else
                         P_VECTORS_REGULAR_BOUND = FieldID
