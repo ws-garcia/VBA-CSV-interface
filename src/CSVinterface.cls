@@ -1863,15 +1863,15 @@ Private Sub LoadNewStream()
     End If
 End Sub
 Private Function MaxIndexVal(ByRef values As Variant) As Long
-    Dim tmpVal As Long, idx0 As Long, idx As Long
+    Dim tmpVal As Double, idx0 As Long, idx As Long
     
     idx0 = LBound(values)
     idx = idx0
-    tmpVal = values(idx0)
+    tmpVal = CDbl(values(idx0))
     For idx0 = idx0 + 1 To UBound(values)
-        If values(idx0) > tmpVal Then
+        If CDbl(values(idx0)) > tmpVal Then
             idx = idx0
-            tmpVal = values(idx0)
+            tmpVal = CDbl(values(idx0))
         End If
     Next idx0
     MaxIndexVal = idx
@@ -3095,109 +3095,140 @@ Private Function SniffInString(ByRef confObject As CSVparserConfig, _
                             ByRef CSVstring As String, _
                             Optional Buffered As Boolean = False) As CSVdialect
 
-    Dim CtableScore() As Double
-    Dim DelIdx As Long
     Dim EmptyParam() As Variant
     Dim GuesserHelper As CSVSniffer
-    Dim GuessResults As CSVArrayList
-    Dim L1_FieldDelimiter As Long
+    Dim ImportedTable As CSVArrayList
+    Dim i As Long, j As Long, k As Long
     Dim LinesEnds() As String
-    Dim Quote As String
     Dim QuoteChar() As QuoteTokens
+    Dim ScoreArray As CSVArrayList
     Dim tmpConfig As CSVparserConfig
+    Dim tmpResult As String
     Dim TmpCSVstr As String
     Dim TmpDelimiters() As String
-    Dim UBlinesEnds() As Long
-    Dim UBquoteChar() As Long
     
     ReDim LinesEnds(0 To 2)
     Set tmpConfig = confObject.CopyConfig
+    '@--------------------------------------------------------------------------------
+    'Field delimiters array
+    TmpDelimiters() = tmpConfig.delimitersToGuess
     '@--------------------------------------------------------------------------------
     'LinesEnds array
     LinesEnds(0) = vbCrLf
     LinesEnds(1) = vbCr
     LinesEnds(2) = vbLf
-    ReDim UBlinesEnds(0 To 2)
     '@--------------------------------------------------------------------------------
     'Quotes array
     ReDim QuoteChar(0 To 2)
     QuoteChar(0) = DoubleQuotes
     QuoteChar(1) = Apostrophe
     QuoteChar(2) = Tilde
-    ReDim UBquoteChar(LBound(QuoteChar) To UBound(QuoteChar))
     '@--------------------------------------------------------------------------------
     'Parser config
     ReDim EmptyParam(-1 To -1) 'To emule empty ParamArray parameter
-    TmpDelimiters() = tmpConfig.delimitersToGuess
     Set SniffInString = New CSVdialect
     '@--------------------------------------------------------------------------------
-    'Scores array
-    ReDim CtableScore(LBound(TmpDelimiters) To UBound(TmpDelimiters))
-    '@--------------------------------------------------------------------------------
-    'String to guess
+    'String source
     If Not Buffered Then
         TmpCSVstr = MidB$(CSVstring, 1, 524288) 'Load 0.5 MB of data
     Else
         TmpCSVstr = CSVstring
     End If
-    '@--------------------------------------------------------------------------------
-    'Guess records delimiter
-    For DelIdx = LBound(LinesEnds) To UBound(LinesEnds)
-        UBlinesEnds(DelIdx) = UBound(Split(TmpCSVstr, LinesEnds(DelIdx)))
-    Next DelIdx
-    '@--------------------------------------------------------------------------------
-    'Guess Quote char
-    For DelIdx = LBound(QuoteChar) To UBound(QuoteChar)
-        Select Case QuoteChar(DelIdx)
-            Case 1
-                Quote = CHR_APOSTROPHE
-            Case 2
-                Quote = CHR_DOUBLE_QUOTES
-            Case Else
-                Quote = CHR_TILDE
-        End Select
-        UBquoteChar(DelIdx) = UBound(Split(TmpCSVstr, Quote))
-    Next DelIdx
-    TmpCSVstr = vbNullString
     With tmpConfig
         '@--------------------------------------------------------------------------------
-        'Set guessed chars
-        .dialect.recordsDelimiter = LinesEnds(MaxIndexVal(UBlinesEnds))
-        .dialect.quoteToken = QuoteChar(MaxIndexVal(UBquoteChar))
-        '@--------------------------------------------------------------------------------
-        'Guess fields delimiter using 10 samples lines with skipping
+        'Guess dialect using 10 samples records with skipping
         .startingRecord = 1
         .endingRecord = 10
         .skipCommentLines = True
         .skipEmptyLines = True
         Set GuesserHelper = New CSVSniffer
-        For DelIdx = LBound(TmpDelimiters) To UBound(TmpDelimiters)
-            If InStrB(1, CSVstring, TmpDelimiters(DelIdx)) Then
-                .dialect.fieldsDelimiter = TmpDelimiters(DelIdx)
-                Set GuessResults = New CSVArrayList
-                ParseCSVstring CSVstring, tmpConfig, GuessResults, EmptyParam
-                CtableScore(DelIdx) = GuesserHelper.TableScore(GuessResults)
+        Set ScoreArray = New CSVArrayList
+        ScoreArray.indexing = True
+        For i = LBound(TmpDelimiters) To UBound(TmpDelimiters)
+            If InStrB(1, TmpCSVstr, TmpDelimiters(i)) Then
+                For j = LBound(LinesEnds) To UBound(LinesEnds)
+                    If InStrB(1, TmpCSVstr, LinesEnds(j)) Then
+                        For k = LBound(QuoteChar) To UBound(QuoteChar)
+                            If InStrB(1, TmpCSVstr, GetQuoteChar(QuoteChar(k))) Then
+                                '@--------------------------------------------------------------------------------
+                                'Set CSV dialect
+                                .dialect.fieldsDelimiter = TmpDelimiters(i)
+                                .dialect.recordsDelimiter = LinesEnds(j)
+                                .dialect.quoteToken = QuoteChar(k)
+                                Set ImportedTable = New CSVArrayList
+                                ParseCSVstring TmpCSVstr, tmpConfig, ImportedTable, EmptyParam
+                                '@--------------------------------------------------------------------------------
+                                'Save results with keys
+                                ScoreArray.AddIndexedItem DialectToString(.dialect), GuesserHelper.TableScore(ImportedTable)
+                            End If
+                        Next k
+                    End If
+                Next j
             End If
-        Next DelIdx
+        Next i
+    End With
+    With ScoreArray
         '@--------------------------------------------------------------------------------
         'Choose the maximum score
-        L1_FieldDelimiter = MaxIndexVal(CtableScore)
+        tmpResult = .keys()(MaxIndexVal(.indexedItems))
         '@--------------------------------------------------------------------------------
         'Returns
-        SniffInString.quoteToken = .dialect.quoteToken
-        SniffInString.recordsDelimiter = .dialect.recordsDelimiter
-        SniffInString.fieldsDelimiter = TmpDelimiters(L1_FieldDelimiter)
-        If InStrB(1, CSVstring, CHR_BACKSLASH) Then
+        Set SniffInString = StringToDialect(tmpResult)
+        If InStrB(1, TmpCSVstr, CHR_BACKSLASH) Then
             SniffInString.escapeMode = unix
         End If
     End With
     Erase EmptyParam
-    Erase CtableScore
     Erase LinesEnds
     Erase QuoteChar
     Erase TmpDelimiters
-    Erase UBlinesEnds
-    Erase UBquoteChar
+    Set ScoreArray = Nothing
+End Function
+Private Function DialectToString(ByRef dialectObj As CSVdialect) As String
+    Dim tmpResult() As String
+    ReDim tmpResult(0 To 2)
+    
+    With dialectObj
+        tmpResult(0) = .fieldsDelimiter
+        tmpResult(1) = .recordsDelimiter
+        tmpResult(2) = CStr(.quoteToken)
+    End With
+    DialectToString = Join$(tmpResult, "ii")
+End Function
+Private Function StringToDialect(ByRef dialectString As String) As CSVdialect
+    Dim tmpArr() As String
+    Dim idx As Long
+    Dim tmpResult As CSVdialect
+    
+    tmpArr() = Split(dialectString, "ii")
+    idx = LBound(tmpArr)
+    Set tmpResult = New CSVdialect
+    With tmpResult
+        .fieldsDelimiter = tmpArr(idx)
+        .recordsDelimiter = tmpArr(idx + 1)
+        .quoteToken = GetQuoteToken(CLng(tmpArr(idx + 2)))
+    End With
+    Set StringToDialect = tmpResult
+End Function
+Private Function GetQuoteChar(ByRef QTokenCode As QuoteTokens) As String
+    Select Case QTokenCode
+        Case 1
+            GetQuoteChar = CHR_APOSTROPHE
+        Case 2
+            GetQuoteChar = CHR_DOUBLE_QUOTES
+        Case Else
+            GetQuoteChar = CHR_TILDE
+    End Select
+End Function
+Private Function GetQuoteToken(ByRef QTokenCode As Long) As QuoteTokens
+    Select Case QTokenCode
+        Case 1
+            GetQuoteToken = QuoteTokens.Apostrophe
+        Case 2
+            GetQuoteToken = QuoteTokens.DoubleQuotes
+        Case Else
+            GetQuoteToken = QuoteTokens.Tilde
+    End Select
 End Function
 Public Function Sort(Optional ByVal fromIndex As Long = -1, _
                         Optional ByVal toIndex As Long = -1, _
