@@ -2278,6 +2278,7 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
     Dim RecordEndReached As Boolean
     Dim RecordsCount As Long
     Dim RecordToken As CSVArrayList
+    Dim SavedRecords As Long
     Dim SearchBeginningMark As Long
     Dim SplittedToken As Boolean
     Dim StartRecord As Long
@@ -2294,6 +2295,7 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
     SearchBeginningMark = 1&
     EscapeChrCount = 0&
     RecordsCount = 0&
+    SavedRecords = 0&
     P_VECTORS_REGULAR_BOUND = 0&
     P_VECTORS_MAX_BOUND = 0&
     Set tmpToken = New CSVArrayList
@@ -2766,6 +2768,7 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
         'Start saving on given record
         If IncludeRecord Then
             outputList.Add RecordToken.items
+            SavedRecords = SavedRecords + 1&
             RaiseEvent AfterImportRecord
             RecordToken.Reinitialize P_VECTORS_REGULAR_BOUND + 1
         End If
@@ -2781,7 +2784,7 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
             Case False
                 ImportSwitch = EndOfString
             Case Else
-                ImportSwitch = (RecordsCount = ImportDepth) Or EndOfString
+                ImportSwitch = (SavedRecords = ImportDepth) Or EndOfString
         End Select
     Loop While Not ImportSwitch
     '@----------------------------------------------------------------------------
@@ -3337,6 +3340,7 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
     Dim RecordEndReached As Boolean
     Dim RecordsCount As Long
     Dim RecordToken As CSVArrayList
+    Dim SavedRecords As Long
     Dim SearchBeginningMark As Long
     Dim SplittedToken As Boolean
     Dim StartRecord As Long
@@ -3352,6 +3356,7 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
     SearchBeginningMark = 1&
     EscapeChrCount = 0&
     RecordsCount = 0&
+    SavedRecords = 0&
     P_VECTORS_REGULAR_BOUND = 0&
     P_VECTORS_MAX_BOUND = 0&
     Set tmpToken = New CSVArrayList
@@ -3894,6 +3899,7 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
         'Start saving on given record
         If IncludeRecord Then
             outputList.Add RecordToken.items
+            SavedRecords = SavedRecords + 1&
             RaiseEvent AfterImportRecord
             RecordToken.Reinitialize P_VECTORS_REGULAR_BOUND + 1
         End If
@@ -3917,7 +3923,7 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
             Case False
                 ImportSwitch = EndOF
             Case Else
-                ImportSwitch = (RecordsCount = ImportDepth) Or EndOF
+                ImportSwitch = (SavedRecords = ImportDepth) Or EndOF
         End Select
     Loop While Not ImportSwitch
     '@----------------------------------------------------------------------------
