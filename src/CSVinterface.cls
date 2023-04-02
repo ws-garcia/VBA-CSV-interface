@@ -28,6 +28,7 @@ Private Const CHR_APOSTROPHE As String = "'"
 Private Const CHR_BACKSLASH As String = "\"
 Private Const CHR_DOUBLE_QUOTES As String = """"
 Private Const CHR_TILDE As String = "~"
+Private Const CHR_CARET As String = "^"
 '////////////////////////////////////////////////////////////////////////////////////////////
 '#
 '////////////////////////////////////////////////////////////////////////////////////////////
@@ -3152,17 +3153,19 @@ Private Function SniffInString(ByRef confObject As CSVparserConfig, _
                 For j = LBound(LinesEnds) To UBound(LinesEnds)
                     If InStrB(1, TmpCSVstr, LinesEnds(j)) Then
                         For k = LBound(QuoteChar) To UBound(QuoteChar)
+                            '@--------------------------------------------------------------------------------
+                            'Set CSV dialect
+                            .dialect.fieldsDelimiter = TmpDelimiters(i)
+                            .dialect.recordsDelimiter = LinesEnds(j)
+                            .dialect.quoteToken = QuoteChar(k)
+                            Set ImportedTable = New CSVArrayList
+                            ParseCSVstring TmpCSVstr, tmpConfig, ImportedTable, EmptyParam
+                            '@--------------------------------------------------------------------------------
+                            'Save results with keys
                             If InStrB(1, TmpCSVstr, GetQuoteChar(QuoteChar(k))) Then
-                                '@--------------------------------------------------------------------------------
-                                'Set CSV dialect
-                                .dialect.fieldsDelimiter = TmpDelimiters(i)
-                                .dialect.recordsDelimiter = LinesEnds(j)
-                                .dialect.quoteToken = QuoteChar(k)
-                                Set ImportedTable = New CSVArrayList
-                                ParseCSVstring TmpCSVstr, tmpConfig, ImportedTable, EmptyParam
-                                '@--------------------------------------------------------------------------------
-                                'Save results with keys
                                 ScoreArray.AddIndexedItem DialectToString(.dialect), GuesserHelper.TableScore(ImportedTable)
+                            Else
+                                ScoreArray.AddIndexedItem DialectToString(.dialect) & CHR_CARET, GuesserHelper.TableScore(ImportedTable) / 2
                             End If
                         Next k
                     End If
@@ -3209,7 +3212,11 @@ Private Function StringToDialect(ByRef dialectString As String) As CSVdialect
     With tmpResult
         .fieldsDelimiter = tmpArr(idx)
         .recordsDelimiter = tmpArr(idx + 1)
-        .quoteToken = GetQuoteToken(CLng(tmpArr(idx + 2)))
+        If InStrB(1, dialectString, CHR_CARET) Then
+            .quoteToken = QuoteTokens.DoubleQuotes
+        Else
+            .quoteToken = GetQuoteToken(CLng(tmpArr(idx + 2)))
+        End If
     End With
     Set StringToDialect = tmpResult
 End Function
