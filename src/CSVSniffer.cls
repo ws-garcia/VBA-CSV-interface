@@ -527,7 +527,7 @@ End Function
 ''' <summary>
 ''' Calculates a score for the imported data based on the congruence
 ''' of the detected data and the uniformity of the fields contained
-''' in each record. The score is in the range 0 < x <= 100.
+''' in each record. The score is in the range 0 < x <= inf.
 ''' </summary>
 ''' <param name="ArrayList">CSV imported data.</param>
 Public Function TableScore(ByRef ArrayList As CSVArrayList) As Double
@@ -540,7 +540,7 @@ Public Function TableScore(ByRef ArrayList As CSVArrayList) As Double
             For L0 = 0 To ArrayList.count - 1
                 SumRecScores = SumRecScores + RecordScore(ArrayList(L0))
             Next L0
-            TableScore = RecordsConsistencyFactor(ArrayList) * SumRecScores / ArrayList.count
+            TableScore = RecordsConsistencyFactor(ArrayList) * SumRecScores
         End If
     End If
 End Function

@@ -3149,9 +3149,7 @@ Private Function SniffInString(ByRef confObject As CSVparserConfig, _
         Set ScoreArray = New CSVArrayList
         ScoreArray.indexing = True
         For i = LBound(TmpDelimiters) To UBound(TmpDelimiters)
-            If InStrB(1, TmpCSVstr, TmpDelimiters(i)) Then
                 For j = LBound(LinesEnds) To UBound(LinesEnds)
-                    If InStrB(1, TmpCSVstr, LinesEnds(j)) Then
                         For k = LBound(QuoteChar) To UBound(QuoteChar)
                             '@--------------------------------------------------------------------------------
                             'Set CSV dialect
@@ -3168,9 +3166,7 @@ Private Function SniffInString(ByRef confObject As CSVparserConfig, _
                                 ScoreArray.AddIndexedItem DialectToString(.dialect) & CHR_CARET, GuesserHelper.TableScore(ImportedTable) / 2
                             End If
                         Next k
-                    End If
                 Next j
-            End If
         Next i
     End With
     With ScoreArray
@@ -3182,6 +3178,26 @@ Private Function SniffInString(ByRef confObject As CSVparserConfig, _
         Set SniffInString = StringToDialect(tmpResult)
         If InStrB(1, TmpCSVstr, CHR_BACKSLASH) Then
             SniffInString.escapeMode = unix
+        End If
+        '@--------------------------------------------------------------------------------
+        '2nd pass for unique record CSV file
+        Set ImportedTable = New CSVArrayList
+        Set tmpConfig.dialect = SniffInString
+        ParseCSVstring TmpCSVstr, tmpConfig, ImportedTable, EmptyParam
+        If ImportedTable.count = 1 Then
+            If InStrB(1, TmpCSVstr, vbCrLf) Then
+                SniffInString.recordsDelimiter = vbCrLf
+            Else
+                If InStrB(1, TmpCSVstr, vbCr) Then
+                    SniffInString.recordsDelimiter = vbCr
+                Else
+                    If InStrB(1, TmpCSVstr, vbLf) Then
+                        SniffInString.recordsDelimiter = vbLf
+                    Else
+                        SniffInString.recordsDelimiter = vbCrLf
+                    End If
+                End If
+            End If
         End If
     End With
     Erase EmptyParam
