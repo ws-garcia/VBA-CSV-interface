@@ -544,7 +544,7 @@ Public Sub DumpToSheet(Optional WBookName As String, _
             Set outputSheet = WBook.Sheets(SheetName)
         Else
             Set outputSheet = WBook.Sheets.Add
-            outputSheet.name = SheetName
+            outputSheet.Name = SheetName
         End If
         '@------------------------------------------------------
         'Dump the data
@@ -1643,7 +1643,7 @@ End Function
 Private Function IsSheetInWorkbook(SheetName As String, WBook As Workbook) As Boolean
     With WBook
         On Error Resume Next
-        IsSheetInWorkbook = (.Sheets(SheetName).name = SheetName)
+        IsSheetInWorkbook = (.Sheets(SheetName).Name = SheetName)
         On Error GoTo 0
     End With
 End Function
@@ -1652,7 +1652,7 @@ Private Function IsWorkbookOpen(WBookName As String) As Boolean
     
     On Error Resume Next
     For Each WBook In Workbooks
-        BookMatching = (WBook.name = WBookName)
+        BookMatching = (WBook.Name = WBookName)
         If BookMatching Then Exit For
     Next
     IsWorkbookOpen = BookMatching
@@ -2945,6 +2945,7 @@ Private Function RequestedField2(ByVal fieldIndex As Long, _
 End Function
 Public Sub ResetToDefault()
     Set config = New CSVparserConfig
+    Set P_CSV_DATA = New CSVArrayList
     P_ERROR_DESC = vbNullString
     P_ERROR_NUMBER = 0&
     P_ERROR_SOURCE = vbNullString
