@@ -3406,7 +3406,7 @@ End Function
 ''' </summary>
 Public Sub Reinitialize(bufferSize As Long)
     Select Case bufferSize
-        Case Is >= 0
+        Case Is >= 1
             If Not P_INDEXING Then
                 CurrentIndex = -1
                 MaxIndex = bufferSize - 1
