@@ -544,7 +544,7 @@ Public Sub DumpToSheet(Optional WBookName As String, _
             Set outputSheet = WBook.Sheets(SheetName)
         Else
             Set outputSheet = WBook.Sheets.Add
-            outputSheet.Name = SheetName
+            outputSheet.name = SheetName
         End If
         '@------------------------------------------------------
         'Dump the data
@@ -1643,7 +1643,7 @@ End Function
 Private Function IsSheetInWorkbook(SheetName As String, WBook As Workbook) As Boolean
     With WBook
         On Error Resume Next
-        IsSheetInWorkbook = (.Sheets(SheetName).Name = SheetName)
+        IsSheetInWorkbook = (.Sheets(SheetName).name = SheetName)
         On Error GoTo 0
     End With
 End Function
@@ -1652,7 +1652,7 @@ Private Function IsWorkbookOpen(WBookName As String) As Boolean
     
     On Error Resume Next
     For Each WBook In Workbooks
-        BookMatching = (WBook.Name = WBookName)
+        BookMatching = (WBook.name = WBookName)
         If BookMatching Then Exit For
     Next
     IsWorkbookOpen = BookMatching
@@ -3303,17 +3303,33 @@ SortByField_Error_Handler:
     P_ERROR_DESC = "[SortByField] " & err.Description
     P_ERROR_SOURCE = err.Source
 End Function
-Public Function SplitField(aIndex As Long, CharToSplitWith As String) As CSVinterface
+Public Function SplitField(aIndex As Long, CharToSplitWith As String, _
+                            Optional RowSplit As Boolean = False) As CSVinterface
     Dim FldDiff As Long
     
     On Error GoTo ErrHandler_SplitField
-    If P_SUCCESSFUL_IMPORT And Not P_VARYING_LENGTHS Then
-        Select Case aIndex
-            Case 0 To P_VECTORS_REGULAR_BOUND
-                P_CSV_DATA.SplitField aIndex, CharToSplitWith
-            Case Else
-                GoTo OutOfBounds_SplitField
-        End Select
+    If P_SUCCESSFUL_IMPORT Then
+        If Not RowSplit Then
+            If Not P_VARYING_LENGTHS Then
+                Select Case aIndex
+                    Case 0 To P_VECTORS_REGULAR_BOUND
+                        P_CSV_DATA.SplitField aIndex, CharToSplitWith
+                    Case Else
+                        GoTo OutOfBounds_SplitField
+                End Select
+            End If
+            FldDiff = UBound(P_CSV_DATA(0)) - P_VECTORS_REGULAR_BOUND
+            P_VECTORS_REGULAR_BOUND = P_VECTORS_REGULAR_BOUND + FldDiff
+            P_VECTORS_MAX_BOUND = P_VECTORS_MAX_BOUND + FldDiff
+            Set SplitField = Me
+        Else
+            Select Case aIndex
+                Case 0 To P_VECTORS_REGULAR_BOUND
+                    P_CSV_DATA.SplitField aIndex, CharToSplitWith, RowSplit
+                Case Else
+                    GoTo OutOfBounds_SplitField
+            End Select
+        End If
     Else
         P_ERROR_DESC = "[CSV Field Split]: Cannot split the field in the current instance." _
                         & " This is because there is no imported data or the records do not " _
@@ -3321,10 +3337,6 @@ Public Function SplitField(aIndex As Long, CharToSplitWith As String) As CSVinte
         P_ERROR_NUMBER = vbObjectError + 9023
         P_ERROR_SOURCE = "CSVinterface"
     End If
-    FldDiff = UBound(P_CSV_DATA(0)) - P_VECTORS_REGULAR_BOUND
-    P_VECTORS_REGULAR_BOUND = P_VECTORS_REGULAR_BOUND + FldDiff
-    P_VECTORS_MAX_BOUND = P_VECTORS_MAX_BOUND + FldDiff
-    Set SplitField = Me
     Exit Function
 ErrHandler_SplitField:
     P_ERROR_DESC = "[CSV Field Split]: " & err.Description

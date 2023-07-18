@@ -15,7 +15,7 @@ Splits the specified field in the imported CSV data.
 
 ## Syntax
 
-*expression*.`SplitField`*(aIndex, CharToSplitWith)*
+*expression*.`SplitField`*(aIndex, CharToSplitWith, \[RowSplit\])*
 
 ### Parameters
 
@@ -34,6 +34,10 @@ Splits the specified field in the imported CSV data.
 <tr>
 <td style="text-align: left;"><em>CharToSplitWith</em></td>
 <td style="text-align: left;">Required. Identifier specifying a <code>String</code> Type variable. Represents the character to be used in the split operation.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><em>RowSplit</em></td>
+<td style="text-align: left;">Optional. Identifier specifying a <code>Boolean</code> Type variable. Determines when the field is split into new columns or rows.</td>
 </tr>
 </tbody>
 </table>
@@ -64,7 +68,7 @@ Sub SplitField()
     With CSVint
         .ImportFromCSV .parseConfig
         On Error Resume Next
-        .SplitField 1, "|"											'Split field at index 1 using a pipe character.
+        .SplitField 1, "|", True											'Split field into new rows at index 1 using a pipe character.
     End With
     Set CSVint = Nothing
 End Sub

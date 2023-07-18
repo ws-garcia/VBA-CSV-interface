@@ -155,7 +155,7 @@ End Property
 ''' <summary>
 ''' Gets all indexed Items from the current instance.
 ''' </summary>
-Public Property Get Keys() As String()
+Public Property Get keys() As String()
     Dim tmpResult() As String
     Dim iCounter As Long
     
@@ -163,7 +163,7 @@ Public Property Get Keys() As String()
     For iCounter = 0 To IndexedCurrentIndex
         tmpResult(iCounter) = IndexedBuffer(iCounter).itemKey
     Next iCounter
-    Keys = tmpResult
+    keys = tmpResult
 End Property
 
 ''' <summary>
@@ -507,10 +507,10 @@ End Sub
 ''' </summary>
 ''' <param name="Keys">Indexes of the fields used for deduplication.</param>
 ''' <param name="headers">Indicates if the data has a header record.</param>
-Public Function Dedupe(Keys As String, Optional Headers As Boolean = True) As CSVArrayList
+Public Function Dedupe(keys As String, Optional Headers As Boolean = True) As CSVArrayList
     On Error GoTo ErrHandler_Dedupe
     Dim aIndexes() As String
-    aIndexes() = SplitFieldsOrderStr(Keys)
+    aIndexes() = SplitFieldsOrderStr(keys)
     If CheckForDupIndexes(aIndexes) Then
         Dim IndexesCollection As Collection
         Dim dRecCounter As Long
@@ -532,19 +532,19 @@ Public Function Dedupe(Keys As String, Optional Headers As Boolean = True) As CS
 ErrHandler_Dedupe:
     Set Dedupe = Nothing
 End Function
-Private Function DedupeKeysMerge(aIndex As Long, Keys As Variant) As String
+Private Function DedupeKeysMerge(aIndex As Long, keys As Variant) As String
     Dim tmpResult() As Variant
     Dim kLB As Long
     Dim kUb As Long
     Dim keyCounter As Long
     Dim tgRecord() As Variant
     
-    kLB = LBound(Keys)
-    kUb = UBound(Keys)
+    kLB = LBound(keys)
+    kUb = UBound(keys)
     ReDim tmpResult(kLB To kUb)
     tgRecord() = Buffer(aIndex)
     For keyCounter = kLB To kUb
-        tmpResult(keyCounter) = tgRecord(CLng(Keys(keyCounter)))
+        tmpResult(keyCounter) = tgRecord(CLng(keys(keyCounter)))
     Next keyCounter
     DedupeKeysMerge = Join$(tmpResult, "|")
 End Function
@@ -1582,38 +1582,62 @@ Private Function FormatEvalOutput(ByRef EvalOutput As String) As String
     End If
 End Function
 
-Public Function SplitField(aIndex As Long, CharToSplitWith As String) As CSVArrayList
+Public Function SplitField(aIndex As Long, CharToSplitWith As String, _
+                            Optional RowSplit As Boolean = False) As CSVArrayList
     Dim ColUB As Long
+    Dim curRecord() As Variant
+    Dim cpRecord() As String
+    Dim tmpRecord() As Variant
+    Dim rCounter As Long
+    Dim rowDiff As Long
+    Dim sfldIndex As Long
+    Dim lRowIdx As Long
+    Dim sfldCPindex As Long
+    Dim FldDiff As Long
     
     On Error GoTo ErrHandler_SplitField
     ColUB = UBound(Buffer(0))
     Select Case aIndex
         Case 0 To ColUB
-            Dim curRecord() As Variant
-            Dim cpRecord() As String
-            Dim tmpRecord() As Variant
-            Dim rCounter As Long
-            Dim sfldIndex As Long
-            Dim sfldCPindex As Long
-            Dim FldDiff As Long
-                
-            For rCounter = 0 To CurrentIndex
-                curRecord() = Buffer(rCounter)
-                cpRecord() = Split(curRecord(aIndex), CharToSplitWith)
-                FldDiff = UBound(cpRecord) - LBound(cpRecord)
-                ReDim tmpRecord(0 To ColUB + FldDiff)
-                For sfldIndex = 0 To aIndex - 1
-                    tmpRecord(sfldIndex) = curRecord(sfldIndex)
-                Next sfldIndex
-                For sfldCPindex = LBound(cpRecord) To UBound(cpRecord)
-                    tmpRecord(sfldIndex) = cpRecord(sfldCPindex)
-                    sfldIndex = sfldIndex + 1
-                Next sfldCPindex
-                For sfldIndex = aIndex + FldDiff + 1 To UBound(curRecord) + FldDiff
-                    tmpRecord(sfldIndex) = curRecord(sfldIndex - FldDiff)
-                Next sfldIndex
-                Buffer(rCounter) = tmpRecord
-            Next rCounter
+            If Not RowSplit Then
+                For rCounter = 0 To CurrentIndex
+                    curRecord() = Buffer(rCounter)
+                    cpRecord() = Split(curRecord(aIndex), CharToSplitWith)
+                    FldDiff = UBound(cpRecord) - LBound(cpRecord)
+                    ReDim tmpRecord(0 To ColUB + FldDiff)
+                    For sfldIndex = 0 To aIndex - 1
+                        tmpRecord(sfldIndex) = curRecord(sfldIndex)
+                    Next sfldIndex
+                    For sfldCPindex = LBound(cpRecord) To UBound(cpRecord)
+                        tmpRecord(sfldIndex) = cpRecord(sfldCPindex)
+                        sfldIndex = sfldIndex + 1
+                    Next sfldCPindex
+                    For sfldIndex = aIndex + FldDiff + 1 To UBound(curRecord) + FldDiff
+                        tmpRecord(sfldIndex) = curRecord(sfldIndex - FldDiff)
+                    Next sfldIndex
+                    Buffer(rCounter) = tmpRecord
+                Next rCounter
+            Else
+                rowDiff = 1
+                For rCounter = 0 To CurrentIndex
+                    rowDiff = rowDiff - 1
+                    curRecord() = Buffer(rCounter + rowDiff)
+                    cpRecord() = Split(curRecord(aIndex), CharToSplitWith)
+                    lRowIdx = 0
+                    For sfldIndex = LBound(cpRecord) To UBound(cpRecord)
+                        lRowIdx = lRowIdx + 1
+                        rowDiff = rowDiff + 1
+                        If lRowIdx = 1 Then
+                            curRecord(aIndex) = cpRecord(sfldIndex)
+                            Buffer(rCounter + rowDiff - 1) = curRecord
+                        Else
+                            ReDim tmpRecord(0 To ColUB)
+                            tmpRecord(aIndex) = cpRecord(sfldIndex)
+                            Me.Insert rCounter + rowDiff - 1, tmpRecord
+                        End If
+                    Next sfldIndex
+                Next rCounter
+            End If
         Case Else
             GoTo OutOfBounds_SplitField
     End Select
@@ -1674,7 +1698,7 @@ Private Function SplitFieldsOrderStr(fieldsString As String) As String()
         End With
     End If
     tmpResult.Sort
-    SplitFieldsOrderStr = tmpResult.Keys
+    SplitFieldsOrderStr = tmpResult.keys
     Set tmpResult = Nothing
 End Function
 Private Function formatColumnPredicate(predicate As String, _
