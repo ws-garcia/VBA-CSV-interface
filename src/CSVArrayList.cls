@@ -1596,58 +1596,53 @@ Public Function SplitField(aIndex As Long, CharToSplitWith As String, _
     Dim FldDiff As Long
     
     On Error GoTo ErrHandler_SplitField
-    ColUB = UBound(Buffer(0))
-    Select Case aIndex
-        Case 0 To ColUB
-            If Not RowSplit Then
-                For rCounter = 0 To CurrentIndex
-                    curRecord() = Buffer(rCounter)
-                    cpRecord() = Split(curRecord(aIndex), CharToSplitWith)
-                    FldDiff = UBound(cpRecord) - LBound(cpRecord)
-                    ReDim tmpRecord(0 To ColUB + FldDiff)
-                    For sfldIndex = 0 To aIndex - 1
-                        tmpRecord(sfldIndex) = curRecord(sfldIndex)
-                    Next sfldIndex
-                    For sfldCPindex = LBound(cpRecord) To UBound(cpRecord)
-                        tmpRecord(sfldIndex) = cpRecord(sfldCPindex)
-                        sfldIndex = sfldIndex + 1
-                    Next sfldCPindex
-                    For sfldIndex = aIndex + FldDiff + 1 To UBound(curRecord) + FldDiff
-                        tmpRecord(sfldIndex) = curRecord(sfldIndex - FldDiff)
-                    Next sfldIndex
-                    Buffer(rCounter) = tmpRecord
-                Next rCounter
-            Else
-                rowDiff = 1
-                For rCounter = 0 To CurrentIndex
-                    rowDiff = rowDiff - 1
-                    curRecord() = Buffer(rCounter + rowDiff)
-                    cpRecord() = Split(curRecord(aIndex), CharToSplitWith)
-                    lRowIdx = 0
-                    For sfldIndex = LBound(cpRecord) To UBound(cpRecord)
-                        lRowIdx = lRowIdx + 1
-                        rowDiff = rowDiff + 1
-                        If lRowIdx = 1 Then
-                            curRecord(aIndex) = cpRecord(sfldIndex)
-                            Buffer(rCounter + rowDiff - 1) = curRecord
-                        Else
-                            ReDim tmpRecord(0 To ColUB)
-                            tmpRecord(aIndex) = cpRecord(sfldIndex)
-                            Me.Insert rCounter + rowDiff - 1, tmpRecord
-                        End If
-                    Next sfldIndex
-                Next rCounter
+    If Not RowSplit Then
+        For rCounter = 0 To CurrentIndex
+            curRecord() = Buffer(rCounter)
+            ColUB = UBound(curRecord)
+            If aIndex > 0 And aIndex <= ColUB Then
+                cpRecord() = Split(curRecord(aIndex), CharToSplitWith)
+                FldDiff = UBound(cpRecord) - LBound(cpRecord)
+                ReDim tmpRecord(0 To ColUB + FldDiff)
+                For sfldIndex = 0 To aIndex - 1
+                    tmpRecord(sfldIndex) = curRecord(sfldIndex)
+                Next sfldIndex
+                For sfldCPindex = LBound(cpRecord) To UBound(cpRecord)
+                    tmpRecord(sfldIndex) = cpRecord(sfldCPindex)
+                    sfldIndex = sfldIndex + 1
+                Next sfldCPindex
+                For sfldIndex = aIndex + FldDiff + 1 To UBound(curRecord) + FldDiff
+                    tmpRecord(sfldIndex) = curRecord(sfldIndex - FldDiff)
+                Next sfldIndex
+                Buffer(rCounter) = tmpRecord
             End If
-        Case Else
-            GoTo OutOfBounds_SplitField
-    End Select
+        Next rCounter
+    Else
+        rowDiff = 1
+        For rCounter = 0 To CurrentIndex
+            rowDiff = rowDiff - 1
+            curRecord() = Buffer(rCounter + rowDiff)
+            ColUB = UBound(curRecord)
+            If aIndex > 0 And aIndex <= ColUB Then
+                cpRecord() = Split(curRecord(aIndex), CharToSplitWith)
+                lRowIdx = 0
+                For sfldIndex = LBound(cpRecord) To UBound(cpRecord)
+                    lRowIdx = lRowIdx + 1
+                    rowDiff = rowDiff + 1
+                    If lRowIdx = 1 Then
+                        curRecord(aIndex) = cpRecord(sfldIndex)
+                        Buffer(rCounter + rowDiff - 1) = curRecord
+                    Else
+                        ReDim tmpRecord(0 To ColUB)
+                        tmpRecord(aIndex) = cpRecord(sfldIndex)
+                        Me.Insert rCounter + rowDiff - 1, tmpRecord
+                    End If
+                Next sfldIndex
+            End If
+        Next rCounter
+    End If
     Set SplitField = Me
 ErrHandler_SplitField:
-    Exit Function
-OutOfBounds_SplitField:
-    Set SplitField = Nothing
-    err.Raise 9
-    Resume ErrHandler_SplitField
 End Function
 
 Private Function SplitFieldsOrderStr(fieldsString As String) As String()
