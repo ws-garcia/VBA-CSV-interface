@@ -1629,13 +1629,11 @@ Public Function SplitField(aIndex As Long, CharToSplitWith As String, _
                 For sfldIndex = LBound(cpRecord) To UBound(cpRecord)
                     lRowIdx = lRowIdx + 1
                     rowDiff = rowDiff + 1
+                    curRecord(aIndex) = cpRecord(sfldIndex)
                     If lRowIdx = 1 Then
-                        curRecord(aIndex) = cpRecord(sfldIndex)
                         Buffer(rCounter + rowDiff - 1) = curRecord
                     Else
-                        ReDim tmpRecord(0 To ColUB)
-                        tmpRecord(aIndex) = cpRecord(sfldIndex)
-                        Me.Insert rCounter + rowDiff - 1, tmpRecord
+                        Me.Insert rCounter + rowDiff - 1, curRecord
                     End If
                 Next sfldIndex
             End If
