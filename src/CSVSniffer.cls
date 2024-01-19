@@ -496,10 +496,10 @@ Private Function RecordScore(ByRef strArray As Variant) As Double
             Case FieldDataType.Known
                 tmpSUM = tmpSUM + 100
             Case Else
-                tmpSUM = tmpSUM + 0.1 '20
+                tmpSUM = tmpSUM + 0.1
         End Select
     Next L0
-    RecordScore = (tmpSUM / FieldsCount)
+    RecordScore = (tmpSUM ^ 2) / (100 * FieldsCount ^ 2)
 End Function
 ''' <summary>
 ''' Calculates a factor for table scoring based in the standard
@@ -507,7 +507,7 @@ End Function
 ''' array list.
 ''' </summary>
 ''' <param name="ArrayList">CSV array list.</param>
-Private Function RecordsConsistencyFactor(ArrayList As CSVArrayList) As Double
+Private Function RecordsConsistencyFactor(ArrayList As CSVArrayList, cScore As Double) As Double
     Dim AvgFields As Double
     Dim CumulativeDiff As Double
     Dim L0 As Long
@@ -523,7 +523,7 @@ Private Function RecordsConsistencyFactor(ArrayList As CSVArrayList) As Double
     Else
         tmpResult = (CumulativeDiff / ArrayList.count)
     End If
-    RecordsConsistencyFactor = 1 / (1 + tmpResult ^ 0.5)
+    RecordsConsistencyFactor = (1 / (1 + tmpResult ^ 0.5)) * cScore / (100 * ArrayList.count)
 End Function
 ''' <summary>
 ''' Calculates a score for the imported data based on the congruence
@@ -541,7 +541,11 @@ Public Function TableScore(ByRef ArrayList As CSVArrayList) As Double
             For L0 = 0 To ArrayList.count - 1
                 SumRecScores = SumRecScores + RecordScore(ArrayList(L0))
             Next L0
-            TableScore = RecordsConsistencyFactor(ArrayList) * SumRecScores / ArrayList.count
+            If ArrayList.count > 1 Then
+                TableScore = RecordsConsistencyFactor(ArrayList, SumRecScores) * SumRecScores / ArrayList.count
+            Else
+                TableScore = RecordsConsistencyFactor(ArrayList, SumRecScores) * SumRecScores / 2
+            End If
         End If
     End If
 End Function
