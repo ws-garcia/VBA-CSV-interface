@@ -486,19 +486,20 @@ End Function
 Private Function RecordScore(ByRef strArray As Variant) As Double
     Dim L0 As Long
     Dim tmpSUM As Double
-    Dim FielCount As Long
+    Dim SumLEN As Double
+    Dim FieldsCount As Long
     
-    FielCount = 1 + UBound(strArray) - LBound(strArray)
+    FieldsCount = 1 + UBound(strArray) - LBound(strArray)
     tmpSUM = 0
     For L0 = LBound(strArray) To UBound(strArray)
         Select Case DetectDataType(strArray(L0))
             Case FieldDataType.Known
                 tmpSUM = tmpSUM + 100
             Case Else
-                tmpSUM = tmpSUM + 20
+                tmpSUM = tmpSUM + 0.1 '20
         End Select
     Next L0
-    RecordScore = tmpSUM / FielCount
+    RecordScore = (tmpSUM / FieldsCount)
 End Function
 ''' <summary>
 ''' Calculates a factor for table scoring based in the standard
@@ -540,7 +541,7 @@ Public Function TableScore(ByRef ArrayList As CSVArrayList) As Double
             For L0 = 0 To ArrayList.count - 1
                 SumRecScores = SumRecScores + RecordScore(ArrayList(L0))
             Next L0
-            TableScore = RecordsConsistencyFactor(ArrayList) * SumRecScores
+            TableScore = RecordsConsistencyFactor(ArrayList) * SumRecScores / ArrayList.count
         End If
     End If
 End Function

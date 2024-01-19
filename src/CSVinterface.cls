@@ -29,6 +29,8 @@ Private Const CHR_BACKSLASH As String = "\"
 Private Const CHR_DOUBLE_QUOTES As String = """"
 Private Const CHR_TILDE As String = "~"
 Private Const CHR_CARET As String = "^"
+Private Const CHR_LSQRB As String = "{"
+Private Const CHR_RSQRB As String = "}"
 '////////////////////////////////////////////////////////////////////////////////////////////
 '#
 '////////////////////////////////////////////////////////////////////////////////////////////
@@ -300,7 +302,8 @@ Public Function CSVsubsetSplit(filePath As String, _
                                 Optional subsetColumns As Variant = 1, _
                                 Optional Headers As Boolean = True, _
                                 Optional repeatHeaders As Boolean = True, _
-                                Optional streamSize As Long = 20) As Collection
+                                Optional streamSize As Long = 20, _
+                                Optional oConfig As CSVparserConfig = Nothing) As Collection
     Dim CreatedFiles As Collection
     Dim CSVhead As Variant
     Dim CSVreader As CSVinterface
@@ -322,6 +325,11 @@ Public Function CSVsubsetSplit(filePath As String, _
 
     Set CreatedFiles = New Collection
     Set CSVreader = New CSVinterface
+    If Not oConfig Is Nothing Then
+        Set CSVreader.parseConfig = oConfig.CopyConfig
+    Else
+        Set CSVreader.parseConfig = Me.parseConfig.CopyConfig
+    End If
     Set CSVwriter = New CSVinterface
     Set readerConf = CSVreader.parseConfig
     Set ExportSubSet = New CSVArrayList
@@ -348,6 +356,7 @@ Public Function CSVsubsetSplit(filePath As String, _
         'Sequential reading from file
         With CSVstream
             .endStreamOnLineBreak = True
+            .unifiedLFOutput = readerConf.multiEndOfLineCSV
             .OpenStream filePath
             .utf8EncodedFile = readerConf.utf8EncodedFile
             .bufferSize = streamSize
@@ -3162,9 +3171,11 @@ Private Function SniffInString(ByRef confObject As CSVparserConfig, _
                             '@--------------------------------------------------------------------------------
                             'Save results with keys
                             If InStrB(1, TmpCSVstr, GetQuoteChar(QuoteChar(k))) Then
-                                ScoreArray.AddIndexedItem DialectToString(.dialect), GuesserHelper.TableScore(ImportedTable)
+                                ScoreArray.AddIndexedItem AppendIndexesToKey(DialectToString(.dialect), i, j), _
+                                                            GuesserHelper.TableScore(ImportedTable)
                             Else
-                                ScoreArray.AddIndexedItem DialectToString(.dialect) & CHR_CARET, GuesserHelper.TableScore(ImportedTable) / 2
+                                ScoreArray.AddIndexedItem AppendIndexesToKey(DialectToString(.dialect) & CHR_CARET, i, j), _
+                                                            GuesserHelper.TableScore(ImportedTable) '/ 2
                             End If
                         Next k
                 Next j
@@ -3173,7 +3184,7 @@ Private Function SniffInString(ByRef confObject As CSVparserConfig, _
     With ScoreArray
         '@--------------------------------------------------------------------------------
         'Choose the maximum score
-        tmpResult = .keys()(MaxIndexVal(.indexedItems))
+        tmpResult = RemoveIndexesFromKey(.keys()(MaxIndexVal(.indexedItems)))
         '@--------------------------------------------------------------------------------
         'Returns
         Set SniffInString = StringToDialect(tmpResult)
@@ -3217,6 +3228,12 @@ Private Function DialectToString(ByRef dialectObj As CSVdialect) As String
         tmpResult(2) = CStr(.quoteToken)
     End With
     DialectToString = Join$(tmpResult, "ii")
+End Function
+Private Function AppendIndexesToKey(ByRef aKey As String, idx1 As Long, idx2 As Long) As String
+    AppendIndexesToKey = CHR_LSQRB & idx1 & idx2 & CHR_RSQRB & aKey
+End Function
+Private Function RemoveIndexesFromKey(ByRef aKey As Variant) As String
+    RemoveIndexesFromKey = MidB(aKey, InStrB(1, aKey, CHR_RSQRB) + 2)
 End Function
 Private Function StringToDialect(ByRef dialectString As String) As CSVdialect
     Dim tmpArr() As String

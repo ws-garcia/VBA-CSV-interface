@@ -15,7 +15,7 @@ Splits the CSV data into a set of files in which each piece has a related portio
 
 ## Syntax
 
-*expression*.`CSVsubsetSplit`*(filePath, \[subsetColumns:= 1\], \[headers:= True\], \[repeatHeaders:= True\], \[streamSize:= 20])*
+*expression*.`CSVsubsetSplit`*(filePath, \[subsetColumns:= 1\], \[headers:= True\], \[repeatHeaders:= True\], \[streamSize:= 20\], \[oConfig:=Nothing\])*
 
 ### Parameters
 
@@ -47,6 +47,10 @@ Splits the CSV data into a set of files in which each piece has a related portio
 <td style="text-align: left;"><em>streamSize</em></td>
 <td style="text-align: left;">Optional. Identifier specifying a <code>Long</code> Type variable representing the buffer size factor used to read the target CSV file.</td>
 </tr>
+<tr>
+<td style="text-align: left;"><em>oConfig</em></td>
+<td style="text-align: left;">Optional. Identifier specifying a <code>CSVparserConfig</code> Object variable holding all the configurations to parse the CSV file.</td>
+</tr>
 </tbody>
 </table>
 
@@ -59,6 +63,11 @@ Splits the CSV data into a set of files in which each piece has a related portio
 ## Behavior
 
 The `CSVsubsetSplit` method will create a file for each different value (data grouping) in the fields at the *subsetColumns* position, then all related data is appended to the respective file. Use the *headers* parameter to include a header record in each new CSV file. The *subsetColumns* parameter can be a single value or an array of `Long` values.  When the CSV file has a header record and the user sets the *header* parameter to `False`, the header row is saved in a separate file and the rest of CSV files will have no header record. The user can control when to include the headers by using the *repeatHeaders* parameter.
+
+>⚠️**Caution**
+>{: .text-grey-lt-000 .bg-green-000 }
+>The user shall verify that when subdividing a CSV file using a text field/column there are no records with special characters not supported by the file system of the operating system.
+{: .text-grey-dk-300 .bg-yellow-000 }
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }
