@@ -407,7 +407,7 @@ Public Function CSVsubsetSplit(filePath As String, _
             curItems.Sort i + 1, sortingKeys:=subsetColumns
             RaiseEvent AfterSort
             tmpVar = JoinKeys(curItems, subsetColumns, i)
-            writterConf.path = OutputPath & CStr(tmpVar) & "." & FExtension
+            writterConf.path = ReplaceIllegalCharacters(OutputPath & CStr(tmpVar) & "." & FExtension, "_")
             If Headers Then
                 '@----------------------------------------------------
                 'Check directory
@@ -2917,6 +2917,17 @@ OutOfBounds_RemoveRecords:
                     Source:="CSVinterface Class", _
                     Description:="The specified index is out of bounds. Please check and try again."
     Resume ErrHandler_RemoveRecords
+End Function
+Private Function ReplaceIllegalCharacters(strIn As String, strChar As String) As String
+    Dim strSpecialChars As String
+    Dim i As Long
+    strSpecialChars = "~""#%&*:<>?{|}/\[]" & Chr(10) & Chr(13)
+
+    For i = 1 To Len(strSpecialChars)
+        strIn = Replace(strIn, Mid$(strSpecialChars, i, 1), strChar)
+    Next
+
+    ReplaceIllegalCharacters = strIn
 End Function
 Private Function RequestedField(ByVal fieldIndex As Long, _
                                 ByVal mxReq As Long) As Boolean
