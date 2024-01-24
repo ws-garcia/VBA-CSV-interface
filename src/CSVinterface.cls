@@ -3258,7 +3258,7 @@ Private Function SniffInString(ByRef confObject As CSVparserConfig, _
                                                             GuesserHelper.TableScore(ImportedTable)
                             Else
                                 ScoreArray.AddIndexedItem AppendIndexesToKey(DialectToString(.dialect) & CHR_CARET, i, j), _
-                                                            GuesserHelper.TableScore(ImportedTable) '/ 2
+                                                            GuesserHelper.TableScore(ImportedTable)
                             End If
                         Next k
                 Next j
