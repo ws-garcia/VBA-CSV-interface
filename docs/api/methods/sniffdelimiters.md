@@ -34,6 +34,9 @@ Returns a CSV dialect after run an analysis over a String variable or in the CSV
 <tr>
 <td style="text-align: left;"><em>CSVstring</em></td>
 <td style="text-align: left;">Optional. Identifier specifying a <code>String</code> Type variable.</td>
+</tr><tr>
+<td style="text-align: left;"><em>NumberOfRecords</em></td>
+<td style="text-align: left;">Optional. Identifier specifying a <code>Long</code> Type variable.</td>
 </tr>
 </tbody>
 </table>
@@ -49,11 +52,11 @@ See also
 
 ## Behavior
 
-The parser will guess the delimiters in the CSV file only when the `CSVstring` parameter is set to `vbNullString`, otherwise the guessing occurs on the given string.
+The parser will guess the delimiters in the CSV file only when the `CSVstring` parameter is set to `vbNullString`, otherwise the guessing occurs on the given string. Use the `NumberOfRecords` parameter to define the number of records to be imported from the CSV file to detect delimiters, by default 10 records are imported.
 
 >⚠️**Caution**
 >{: .text-grey-lt-000 .bg-green-000 }
->Only some records will be used to guess the delimiters. The method is very accurate, but there is a risk of inaccuracy in some rare cases.
+>Only the specified number of records will be used to guess the delimiters. The method is very accurate, but there is a risk of inaccuracy in some rare cases.
 {: .text-grey-dk-300 .bg-yellow-000 }
 
 ### ☕Example
