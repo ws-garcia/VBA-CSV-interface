@@ -16,7 +16,7 @@ The most powerful and comprehensive CSV/[TSV](https://www.iana.org/assignments/m
 * __Robust__. The library is not just a simple parser and writer, it is also a CSV data editor/manager.
 * __[UTF-8](https://www.unicode.org/faq/utf_bom.html#UTF8) encoding support__. Do you have a CSV file, perhaps in chinese or some other foreign cyrillic language, downloaded from the Internet? This library is made to help you deal with it! You will be able to read and write UTF-8 encoded files in an easy way. 
 * __Easy to use__. A few lines of code can do the work!
-* __Automatic delimiter sniffer__. Don't worry if you forgot the file configuration. The interface has a state-of-the-art methodology for sniffing delimiters. It is based on science!
+* __Automatic delimiter sniffer__. Don't worry if you forgot the file configuration. The interface has a state-of-the-art methodology for sniffing delimiters. It is [based on science](https://doi.org/10.20944/preprints202402.0858.v1)!
 * __Highly Configurable__. User can configure the parser to work with a wide range of CSV files.
 * __CSV data subsetting__. Split CSV data into a set of files with related data.
 * __Like SQL queries on CSV files__. Use complex patterns to mimic SQL queries and filter data by criteria (=, <>, >=, <=, & (AND), |(OR)).
