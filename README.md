@@ -2,7 +2,7 @@
 [![GitHub](https://img.shields.io/github/license/ws-garcia/VBA-CSV-interface?style=plastic)](https://github.com/ws-garcia/VBA-CSV-interface/blob/master/LICENSE) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/ws-garcia/VBA-CSV-interface?style=plastic)](https://github.com/ws-garcia/VBA-CSV-interface/releases/latest)
 [![DOI](https://zenodo.org/badge/DOI/10.3233/DS-240062.svg)](https://doi.org/10.3233/DS-240062)
 [![Github All Releases](https://img.shields.io/github/downloads/ws-garcia/VBA-CSV-interface/total.svg)]()
-[![Follow](https://img.shields.io/github/followers/ws-garcia.svg?style=social&label=Follow&maxAge=2592000)](https://github.com/ws-garcia/VBA-CSV-interface/watchers)
+[![Follow](https://img.shields.io/github/followers/ws-garcia.svg?style=social&label=Follow&maxAge=2592000)](https://github.com/ws-garcia/VBA-CSV-interface/watchers) [![Mentioned in Awesome VBA](https://awesome.re/mentioned-badge.svg)](https://github.com/sancarn/awesome-vba)
 
 ## Introductory words
 
