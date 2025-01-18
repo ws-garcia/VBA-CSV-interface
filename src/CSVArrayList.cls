@@ -1530,7 +1530,8 @@ Private Function JoinVariablesAndValues(ByRef tRecord As Variant, FieldsToJoin()
     ReDim tmpData(tdLB To tdUB)
     
     For idxIter = tdLB To tdUB
-        If IsNumeric(tRecord(DeltaIdx + FieldsToJoin(idxIter) - 1)) Then
+        If IsNumeric(tRecord(DeltaIdx + FieldsToJoin(idxIter) - 1)) And _
+                tRecord(DeltaIdx + FieldsToJoin(idxIter) - 1) <> vbEmpty Then
             tmpData(idxIter) = "f" & FieldsToJoin(idxIter) & "=" _
                                 & tRecord(DeltaIdx + FieldsToJoin(idxIter) - 1)
         Else    'Literal strings
