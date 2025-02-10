@@ -17,6 +17,7 @@ In order to use the latest release of the CSV interface library within your VBA 
 * [`CSVcallBack`](https://github.com/ws-garcia/VBA-Expressions)
 * `CSVdialect`
 * [`CSVexpressions`](https://github.com/ws-garcia/VBA-Expressions)
+* [`CSVexpressionsScope`](https://github.com/ws-garcia/VBA-Expressions)
 * `CSVinterface`
 * `CSVparserConfig`
 * `CSVSniffer`
