@@ -323,7 +323,7 @@ Attribute Add2.VB_Description = "Appends a copy, in jagged array fashion, of the
                             Add2 tmpValue
                         Next j
                     Else
-                        If IsJaggedArray(aValues(i)) Then
+                        If isJaggedArray(aValues(i)) Then
                             For j = LBound(aValues(i)) To UBound(aValues(i))
                                 Add2 aValues(i)(j)
                             Next j
@@ -386,6 +386,8 @@ Public Sub AddIndexedItem(Key As String, iValue As Variant, _
         ReDim Preserve IndexedBuffer(0 To IndexedMaxIndex)
     End If
     If Not P_KEYS_TREE Then
+        tmpItem.itemKey = Key
+        tmpItem.ItemValue = iValue
         IndexedBuffer(tmpIdx) = tmpItem
     Else
         IndexedBuffer(tmpIdx).itemKey = Key
@@ -726,9 +728,9 @@ Public Function Filter(Pattern As String, startIndex As Long, _
                 On Error Resume Next
                 .Eval
             End If
-            If .errorType = ExpressionErrors.errNone Then
+            If .ErrorType = ExpressionErrors.errNone Then
                 If err.Number = 0 Then
-                    If CBool(.Result) Then
+                    If CBool(.result) Then
                         If Not Exclude Then
                             Filter.Add Buffer(rCounter) 'Append current record
                         End If
@@ -931,7 +933,7 @@ Attribute Concat.VB_Description = "Concatenates the values from the current inst
                 Add tmpRow
             Next Dim1Pointer
         Else 'Jagged or 1D array expected
-            If IsJaggedArray(tmpValues) Then
+            If isJaggedArray(tmpValues) Then
                 For Dim1Pointer = LBound(tmpValues) To UBound(tmpValues)
                     Add tmpValues(Dim1Pointer)
                 Next Dim1Pointer
@@ -1356,19 +1358,19 @@ End Sub
 ''' Returns True if the paseed argument is a jagged array.
 ''' </summary>
 ''' <param name="Arr">The array to check.</param>
-Public Function IsJaggedArray(arr As Variant) As Boolean
-Attribute IsJaggedArray.VB_Description = "Returns True if the paseed argument is a jagged array."
+Public Function isJaggedArray(arr As Variant) As Boolean
+Attribute isJaggedArray.VB_Description = "Returns True if the paseed argument is a jagged array."
     On Error GoTo IsJaggedArray_Err_Handler
     If IsArray(arr) Then
         If Not MultiDimensional(arr) Then
             Dim BoundingTest As Long
             BoundingTest = LBound(arr(LBound(arr)))
-            IsJaggedArray = True
+            isJaggedArray = True
         End If
     End If
     Exit Function
 IsJaggedArray_Err_Handler:
-    IsJaggedArray = False
+    isJaggedArray = False
 End Function
 
 Private Function Is2Darray(arr As Variant) As Boolean
@@ -1406,19 +1408,19 @@ Public Function InsertField(aIndex As Long, _
             Dim Evaluator As CSVexpressions
             Dim evalWithOutVar As Boolean
             Dim fCounter As Long
-            Dim fldCount As Long
+            Dim FldCount As Long
             Dim rCounter As Long
             Dim TargetFields() As Long
             
-            fldCount = UBound(Buffer(0))
+            FldCount = UBound(Buffer(0))
             '@--------------------------------------------------------------------------------
             'Reserve storage
-            ReDim cpRecord(0 To fldCount + 1)
+            ReDim cpRecord(0 To FldCount + 1)
             cpRecordBK() = cpRecord
             Set Evaluator = New CSVexpressions
             If Formula <> vbNullString Then
                 With Evaluator
-                    .formatResult = True
+                    .FormatResult = True
                     .Create SwitchUnderscoresAndSpaces(Formula, Buffer(0))
                     evalWithOutVar = (.CurrentVariables = vbNullString)
                     If Not evalWithOutVar Then
@@ -1442,7 +1444,7 @@ Public Function InsertField(aIndex As Long, _
                         End If
                     End If
                 End If
-                For fCounter = 0 To fldCount
+                For fCounter = 0 To FldCount
                     If fCounter < aIndex Then
                         cpRecord(fCounter) = curRecord(fCounter)
                     Else
@@ -1831,7 +1833,7 @@ Private Function SerializeRow(ByRef rArray As Variant) As String
     
     LB = LBound(rArray)
     UB = UBound(rArray)
-    Jagged = IsJaggedArray(rArray)
+    Jagged = isJaggedArray(rArray)
     If Jagged Then 'Recurse
         For i = LB To UB
             If i = LB Then
@@ -2146,9 +2148,9 @@ Public Function LeftJoin(ByRef leftTable As CSVArrayList, _
                     End If
                     On Error Resume Next
                     .Eval GetValuesForVariables(rCounter, FilterFields, False, evalRecord)
-                    If .errorType = ExpressionErrors.errNone Then
+                    If .ErrorType = ExpressionErrors.errNone Then
                         If err.Number = 0 Then
-                            If CBool(.Result) Then
+                            If CBool(.result) Then
                                 'Fill in the data in the table on the right only if the join and predicate are satisfied.
                                 If lJoinIndex > -1 Then
                                     For sCounter = LftTblENDidx + 1 To UBound(resultRecord)
@@ -2332,9 +2334,9 @@ Public Function RightJoin(ByRef leftTable As CSVArrayList, _
                     End If
                     On Error Resume Next
                     .Eval GetValuesForVariables(rCounter, FilterFields, False, evalRecord)
-                    If .errorType = ExpressionErrors.errNone Then
+                    If .ErrorType = ExpressionErrors.errNone Then
                         If err.Number = 0 Then
-                            If CBool(.Result) Then
+                            If CBool(.result) Then
                                 'Fill in the data in the table on the left only if the join and predicate are satisfied.
                                 If lJoinIndex > -1 Then
                                     For sCounter = 0 To LftTblENDidx
@@ -2513,9 +2515,9 @@ Public Function InnerJoin(ByRef leftTable As CSVArrayList, _
                     End If
                     On Error Resume Next
                     .Eval GetValuesForVariables(rCounter, FilterFields, False, evalRecord)
-                    If .errorType = ExpressionErrors.errNone Then
+                    If .ErrorType = ExpressionErrors.errNone Then
                         If err.Number = 0 Then
-                            If CBool(.Result) Then
+                            If CBool(.result) Then
                                 'Fill in the data in the table.
                                 If lJoinIndex > -1 Then
                                     For sCounter = 0 To LftTblENDidx
@@ -2570,19 +2572,19 @@ Private Sub max_heapify(i As Long, _
                         HeapSize As Long)
     Dim largest As Long
     Dim l As Long
-    Dim r As Long
+    Dim R As Long
     
     l = 2 * i                                   'LEFT
-    r = 2 * i + 1                               'RIGHT
+    R = 2 * i + 1                               'RIGHT
     largest = i
     If l <= HeapSize Then
         If Buffer(leftt + l - 1)(SortingKey) > Buffer(leftt + i - 1)(SortingKey) Then
             largest = l
         End If
     End If
-    If r <= HeapSize Then
-        If Buffer(leftt + r - 1)(SortingKey) > Buffer(leftt + largest - 1)(SortingKey) Then
-            largest = r
+    If R <= HeapSize Then
+        If Buffer(leftt + R - 1)(SortingKey) > Buffer(leftt + largest - 1)(SortingKey) Then
+            largest = R
         End If
     End If
     If largest <> i Then
@@ -2599,7 +2601,7 @@ End Sub
 ''' <param name="R">The index of the last item to be merged.</param>
 ''' <param name="SortingKey">The column/key for the logical comparisons.</param>
 ''' <param name="Descending">Sort order.</param>
-Private Sub merge(l As Long, m As Long, r As Long, SortingKey As Long, Descending As Boolean)
+Private Sub merge(l As Long, m As Long, R As Long, SortingKey As Long, Descending As Boolean)
     
     If Descending Then
         If Buffer(m)(SortingKey) >= Buffer(m + 1)(SortingKey) Then
@@ -2619,7 +2621,7 @@ Private Sub merge(l As Long, m As Long, r As Long, SortingKey As Long, Descendin
     Dim k As Long
     
     len1 = m - l + 1
-    len2 = r - m
+    len2 = R - m
     ReDim leftt(len1 - 1)
     ReDim rightt(len2 - 1)
     For i = 0 To len1 - 1
@@ -2784,7 +2786,7 @@ Private Sub MergeSort_Asc(leftt As Long, _
                             pvarMirror As Variant)
     Dim Ulen As Long
     Dim l As Long
-    Dim r As Long
+    Dim R As Long
     Dim O As Long
     Dim BoolSwitch As Boolean
     
@@ -2799,14 +2801,14 @@ Private Sub MergeSort_Asc(leftt As Long, _
             MergeSort_Asc Ulen + 1, rightt, SortingKey, pvarMirror
             ' Merge the resulting halves
             l = leftt ' start of first (left) half
-            r = Ulen + 1 ' start of second (right) half
+            R = Ulen + 1 ' start of second (right) half
             O = leftt ' start of output (mirror array)
             Do
-                BoolSwitch = Buffer(r)(SortingKey) < Buffer(l)(SortingKey)
+                BoolSwitch = Buffer(R)(SortingKey) < Buffer(l)(SortingKey)
                 If BoolSwitch Then
-                    pvarMirror(O) = Buffer(r)
-                    r = r + 1
-                    If r > rightt Then
+                    pvarMirror(O) = Buffer(R)
+                    R = R + 1
+                    If R > rightt Then
                         For l = l To Ulen
                             O = O + 1
                             pvarMirror(O) = Buffer(l)
@@ -2817,9 +2819,9 @@ Private Sub MergeSort_Asc(leftt As Long, _
                     pvarMirror(O) = Buffer(l)
                     l = l + 1
                     If l > Ulen Then
-                        For r = r To rightt
+                        For R = R To rightt
                             O = O + 1
-                            pvarMirror(O) = Buffer(r)
+                            pvarMirror(O) = Buffer(R)
                         Next
                         Exit Do
                     End If
@@ -2841,7 +2843,7 @@ Private Sub MergeSort_Desc(leftt As Long, _
                             pvarMirror As Variant)
     Dim Ulen As Long
     Dim l As Long
-    Dim r As Long
+    Dim R As Long
     Dim O As Long
     Dim BoolSwitch As Boolean
     
@@ -2856,14 +2858,14 @@ Private Sub MergeSort_Desc(leftt As Long, _
             MergeSort_Desc Ulen + 1, rightt, SortingKey, pvarMirror
             ' Merge the resulting halves
             l = leftt ' start of first (left) half
-            r = Ulen + 1 ' start of second (right) half
+            R = Ulen + 1 ' start of second (right) half
             O = leftt ' start of output (mirror array)
             Do
-                BoolSwitch = Buffer(r)(SortingKey) > Buffer(l)(SortingKey)
+                BoolSwitch = Buffer(R)(SortingKey) > Buffer(l)(SortingKey)
                 If BoolSwitch Then
-                    pvarMirror(O) = Buffer(r)
-                    r = r + 1
-                    If r > rightt Then
+                    pvarMirror(O) = Buffer(R)
+                    R = R + 1
+                    If R > rightt Then
                         For l = l To Ulen
                             O = O + 1
                             pvarMirror(O) = Buffer(l)
@@ -2874,9 +2876,9 @@ Private Sub MergeSort_Desc(leftt As Long, _
                     pvarMirror(O) = Buffer(l)
                     l = l + 1
                     If l > Ulen Then
-                        For r = r To rightt
+                        For R = R To rightt
                             O = O + 1
-                            pvarMirror(O) = Buffer(r)
+                            pvarMirror(O) = Buffer(R)
                         Next
                         Exit Do
                     End If
@@ -2894,11 +2896,11 @@ End Sub
 ''' </summary>
 ''' <param name="a">First value.</param>
 ''' <param name="b">Second value.</param>
-Private Function Min(a As Long, b As Long) As Long
-    If b < a Then
+Private Function Min(A As Long, b As Long) As Long
+    If b < A Then
         Min = b
     Else
-        Min = a
+        Min = A
     End If
 End Function
 
@@ -2914,19 +2916,19 @@ Private Sub min_heapify(i As Long, _
                         HeapSize As Long)
     Dim smallest As Long
     Dim l As Long
-    Dim r As Long
+    Dim R As Long
     
     l = 2 * i                                   'LEFT
-    r = 2 * i + 1                               'RIGHT
+    R = 2 * i + 1                               'RIGHT
     smallest = i
     If l <= HeapSize Then
         If Buffer(leftt + l - 1)(SortingKey) < Buffer(leftt + i - 1)(SortingKey) Then
             smallest = l
         End If
     End If
-    If r <= HeapSize Then
-        If Buffer(leftt + r - 1)(SortingKey) < Buffer(leftt + smallest - 1)(SortingKey) Then
-            smallest = r
+    If R <= HeapSize Then
+        If Buffer(leftt + R - 1)(SortingKey) < Buffer(leftt + smallest - 1)(SortingKey) Then
+            smallest = R
         End If
     End If
     If smallest <> i Then
@@ -3334,7 +3336,7 @@ Public Function Reduce(ReductionExpression As String, startIndex As Long, _
                 On Error Resume Next
                 .Eval
             End If
-            tmpElement(0) = FormatEvalOutput(.Result)
+            tmpElement(0) = FormatEvalOutput(.result)
             tmpResult(0 + rCounter - startIndex + 1) = tmpElement  'reduce
         Next rCounter
     End With
@@ -4133,7 +4135,7 @@ Private Sub TimSort(leftt As Long, rightt As Long, SortingKey As Long, Descendin
     Dim Size As Long
     Dim l As Long
     Dim midd As Long
-    Dim r As Long
+    Dim R As Long
     Dim i As Long
     
     For i = leftt To rightt Step RUN
@@ -4146,11 +4148,11 @@ Private Sub TimSort(leftt As Long, rightt As Long, SortingKey As Long, Descendin
     Do While Size - 1 < rightt
         For l = leftt To rightt Step 2 * Size
             midd = Min(l + Size - 1, rightt)
-            r = Min(l + 2 * Size - 1, rightt)
+            R = Min(l + 2 * Size - 1, rightt)
             ' merge sub array arr[L.....midd] &
             ' arr[midd+1....R]
-            If midd < r Then
-                merge l, midd, r, SortingKey, Descending
+            If midd < R Then
+                merge l, midd, R, SortingKey, Descending
             End If
         Next l
         Size = 2 * Size
