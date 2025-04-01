@@ -228,7 +228,7 @@ Public Function CopyConfig() As CSVparserConfig
     tmpResult.dTypingTemplate = P_TEMPLATE
     tmpResult.dynamicTyping = P_DYNAMIC_TYPING
     tmpResult.endingRecord = P_ENDINGRECORD
-
+    tmpResult.utf8EncodedFile = P_UTF8ENCODED
     tmpResult.Headers = P_HEADERS
     tmpResult.headersOmission = P_HEADEROMISSION
     tmpResult.path = P_PATH
