@@ -9,7 +9,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '#
 '////////////////////////////////////////////////////////////////////////////////////////////
-' Copyright © 2021-2023 W. García
+' Copyright © 2021-2025 W. García
 ' GPL-3.0 license | https://www.gnu.org/licenses/gpl-3.0.html/
 ' https://ingwilfredogarcia.wordpress.com
 '#
@@ -31,8 +31,11 @@ Private Const sizeFactor As Long = 524288
 '////////////////////////////////////////////////////////////////////////////////////////////
 ' PROPERTIES VARIABLES:
 Private P_ATENDOFSTREAM As Boolean '---------------Indicates if the file's end is reached.
+Private P_AUTODETECTENCODING As Boolean '----------Indicates when to perform encoding detection _
+                                                   over the file.
 Private P_BUFFERLENGTH As Long '-------------------Number of chars in buffer.
 Private P_BUFFERSIZE As Single '-------------------Buffer's size x10 MB (0.5 by default).
+Private P_DETECTEDENCODING As String '-------------String representation of the auto-detected encoding.
 Private P_ENDSTREAMONLINEBREAK As Boolean '--------If true, each stream ends on a line break.
 Private P_ISOPENSTREAM As Boolean '----------------Indicates if the object is linked to a file
 Private P_LINEBREAK As String '--------------------Holds the char used to end a Stream.
@@ -85,6 +88,12 @@ Public Property Get atEndOfStream() As Boolean
 Attribute atEndOfStream.VB_Description = "Gets the pointer’s overall status over the text stream."
     atEndOfStream = P_ATENDOFSTREAM
 End Property
+Public Property Get autoDetectEncoding() As Boolean
+    autoDetectEncoding = P_AUTODETECTENCODING
+End Property
+Public Property Let autoDetectEncoding(aValue As Boolean)
+    P_AUTODETECTENCODING = aValue
+End Property
 Public Property Get bufferLength() As Long
 Attribute bufferLength.VB_Description = "Gets the number of string characters in the buffer."
     bufferLength = P_BUFFERLENGTH
@@ -108,6 +117,9 @@ Attribute bufferString.VB_Description = "Gets the text data stored in the buffer
     Else
         bufferString = UTF8Decode(P_TEXT)
     End If
+End Property
+Public Property Get detectedEncoding() As String
+    detectedEncoding = P_DETECTEDENCODING
 End Property
 Public Property Get endStreamOnLineBreak() As Boolean
 Attribute endStreamOnLineBreak.VB_Description = "Allows to end buffer just after the first, from right to left, line break character."
@@ -184,6 +196,85 @@ Private Sub CreateSubFolders(FullFilePath As String)
         End If
     Next j
 End Sub
+''' <summary>
+''' Approach
+'''       Read a Sample of the File: We read the first 1024 bytes of the file
+'''       (or the entire file if it’s smaller) into a byte array. This sample
+'''       size balances efficiency and accuracy for encoding detection.
+'''
+'''       Check for BOM: We examine the initial bytes for known BOM sequences
+'''       that explicitly indicate the encoding:
+'''               UTF-8: EF BB BF
+'''
+'''               UTF-16 LE: FF FE
+'''
+'''               UTF-16 BE: FE FF
+'''
+'''       Heuristic Detection if No BOM: If no BOM is found, we apply heuristic
+'''       checks to infer the encoding: UTF-16 Detection: Analyze the frequency
+'''       of null bytes (0x00) in even and odd positions. A high percentage of nulls
+'''       in odd positions suggests UTF-16 LE, while in even positions suggests UTF-16 BE.
+'''
+'''       UTF-8 Detection: Validate the byte sequence against UTF-8 encoding rules to
+'''       ensure it contains no invalid sequences.
+'''
+'''       ANSI Detection: Default to ANSI (e.g., Windows-1252) if the byte sequence
+'''       doesn’t match UTF-16 or UTF-8 patterns.
+''' </summary>
+''' <param name="filePath">The path to the actual file.</param>
+Public Function DetectEncoding(filePath As String) As String
+    Dim fileNum As Integer
+    Dim byteData() As Byte
+    Dim byteCount As Long
+    Dim i As Long
+    Dim zeroCountLE As Long
+    Dim zeroCountBE As Long
+    Dim evenBytes As Long
+    Dim oddBytes As Long
+    
+    ' Open the file in binary mode
+    fileNum = FreeFile
+    Open filePath For Binary Access Read As #fileNum
+    
+    ' Read up to the first 1024 bytes
+    byteCount = IIf(LOF(fileNum) < 1024, LOF(fileNum), 1024)
+    ReDim byteData(0 To byteCount - 1)
+    Get #fileNum, , byteData
+    Close #fileNum
+    
+    ' Check for BOM
+    If byteCount >= 3 And byteData(0) = &HEF And byteData(1) = &HBB And byteData(2) = &HBF Then
+        DetectEncoding = "UTF-8"
+    ElseIf byteCount >= 2 And byteData(0) = &HFF And byteData(1) = &HFE Then
+        DetectEncoding = "UTF-16 LE"
+    ElseIf byteCount >= 2 And byteData(0) = &HFE And byteData(1) = &HFF Then
+        DetectEncoding = "UTF-16 BE"
+    Else
+        ' Heuristic checks when no BOM is present
+        ' Count null bytes in even and odd positions for UTF-16 detection
+        For i = 0 To byteCount - 1 Step 2
+            If i + 1 < byteCount Then
+                If byteData(i + 1) = 0 Then zeroCountLE = zeroCountLE + 1
+            End If
+            If byteData(i) = 0 Then zeroCountBE = zeroCountBE + 1
+        Next i
+        
+        ' Calculate the number of even and odd position bytes
+        evenBytes = (byteCount + 1) \ 2  ' Indices 0, 2, 4, ...
+        oddBytes = byteCount \ 2         ' Indices 1, 3, 5, ...
+        
+        ' Check for UTF-16 LE or BE based on null byte frequency
+        If oddBytes > 0 And zeroCountLE / oddBytes > 0.5 Then
+            DetectEncoding = "UTF-16 LE"
+        ElseIf evenBytes > 0 And zeroCountBE / evenBytes > 0.5 Then
+            DetectEncoding = "UTF-16 BE"
+        ElseIf IsValidUTF8(byteData) Then
+            DetectEncoding = "UTF-8"
+        Else
+            DetectEncoding = "ANSI"
+        End If
+    End If
+End Function
 Private Sub DoubleBufferSize()
     Dim LCSt As Long
     P_BUFFERSIZE = 2 * P_BUFFERSIZE
@@ -279,6 +370,50 @@ Private Sub GoBackToLineBreak()
         End Select
     Loop While Not BufferEnds
 End Sub
+Private Function IsValidUTF8(byteData() As Byte) As Boolean
+    Dim i As Long
+    Dim ANSIfile As Boolean
+    
+    i = 0
+    ANSIfile = True
+    While i <= UBound(byteData)
+        If byteData(i) < 128 Then
+            ' Single-byte character (ASCII)
+            i = i + 1
+        Else
+            ANSIfile = False
+            If byteData(i) >= 192 And byteData(i) <= 223 Then
+                ' Two-byte sequence
+                If i + 1 > UBound(byteData) Or byteData(i + 1) < 128 Or byteData(i + 1) > 191 Then
+                    IsValidUTF8 = False
+                    Exit Function
+                End If
+                i = i + 2
+            ElseIf byteData(i) >= 224 And byteData(i) <= 239 Then
+                ' Three-byte sequence
+                If i + 2 > UBound(byteData) Or byteData(i + 1) < 128 Or byteData(i + 1) > 191 Or _
+                   byteData(i + 2) < 128 Or byteData(i + 2) > 191 Then
+                    IsValidUTF8 = False
+                    Exit Function
+                End If
+                i = i + 3
+            ElseIf byteData(i) >= 240 And byteData(i) <= 247 Then
+                ' Four-byte sequence
+                If i + 3 > UBound(byteData) Or byteData(i + 1) < 128 Or byteData(i + 1) > 191 Or _
+                   byteData(i + 2) < 128 Or byteData(i + 2) > 191 Or byteData(i + 3) < 128 Or byteData(i + 3) > 191 Then
+                    IsValidUTF8 = False
+                    Exit Function
+                End If
+                i = i + 4
+            Else
+                ' Invalid start byte
+                IsValidUTF8 = False
+                Exit Function
+            End If
+        End If
+    Wend
+    IsValidUTF8 = Not ANSIfile
+End Function
 Private Sub NormalizeLineBreaks()
     Do While InStrB(1, P_TEXT, vbCrLf, vbBinaryCompare)
         P_TEXT = Join$(Split(P_TEXT, vbCrLf), vbLf)
@@ -294,6 +429,10 @@ End Sub
 Public Sub OpenStream(filePath As String)
 Attribute OpenStream.VB_Description = "Opens a stream over a text file."
     If P_PATH <> filePath Then
+        If P_AUTODETECTENCODING Then
+            P_DETECTEDENCODING = DetectEncoding(filePath)
+            P_UTF8ENCODED = (P_DETECTEDENCODING = "UTF-8")
+        End If
         FileHandled = FreeFile
         CreateSubFolders filePath
         Open filePath For Binary As #FileHandled
@@ -438,6 +577,7 @@ Private Sub Class_Initialize()
     P_UNIFIEDLFOUTPUT = False
     Buffer = Space$(P_BUFFERLENGTH)
     NullChar = ChrW(0)
+    P_AUTODETECTENCODING = True
 End Sub
 Private Sub Class_Terminate()
     If P_ISOPENSTREAM Then

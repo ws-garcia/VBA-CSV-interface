@@ -29,6 +29,11 @@ Easy-to-use class module developed to enable I/O operations over "big" text file
 <td style="text-align: left;">Gets the overall state of the pointer on the text stream. Returns <code>True</code> if the file pointer is at the end of a file, and <code>False</code> otherwise.</td>
 </tr>
 <tr>
+<td style="text-align: left; color:blue;"><em>autoDetectEncoding</em></td>
+<td style="text-align: left;">Property</td>
+<td style="text-align: left;">Indicates when to perform automatic encoding detection over the target file. Use <code>True</code> to encoding detection at stream open stage, and <code>False</code> otherwise.</td>
+</tr>
+<tr>
 <td style="text-align: left; color:blue;"><em>bufferLength</em></td>
 <td style="text-align: left;">Property</td>
 <td style="text-align: left;">Gets the number of string characters in the buffer.</td>
@@ -47,6 +52,16 @@ Easy-to-use class module developed to enable I/O operations over "big" text file
 <td style="text-align: left; color:blue;"><em>CloseStream</em></td>
 <td style="text-align: left;">Method</td>
 <td style="text-align: left;">Closes the current text file stream. After close the current stream, user will lose the connection to CSV file.</td>
+</tr>
+<tr>
+<td style="text-align: left; color:blue;"><em>detectedEncoding</em></td>
+<td style="text-align: left;">Property</td>
+<td style="text-align: left;">String representation of the auto-detected encoding.</td>
+</tr>
+<tr>
+<td style="text-align: left; color:blue;"><em>DetectEncoding</em></td>
+<td style="text-align: left;">Method</td>
+<td style="text-align: left;">Determines the file encoding.</td>
 </tr>
 <tr>
 <td style="text-align: left; color:blue;"><em>endStreamOnLineBreak</em></td>
