@@ -9,7 +9,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '#
 '////////////////////////////////////////////////////////////////////////////////////////////
-' Copyright © 2022-2023 W. García
+' Copyright © 2022-2025 W. García
 ' GPL-3.0 license | https://www.gnu.org/licenses/gpl-3.0.html/
 ' https://ingwilfredogarcia.wordpress.com
 '#
@@ -30,6 +30,7 @@ Private Const CHR_PIPE As String = "|"
 '#
 '////////////////////////////////////////////////////////////////////////////////////////////
 ' PROPERTIES VARIABLES:
+Private P_AUTODETECTENCODING As Boolean
 Private P_BUFFERSISE As Single
 Private P_COMMENTSTOKEN As Long
 Private P_DELIMITERSGUESSING As Boolean
@@ -65,6 +66,12 @@ End Enum
 '////////////////////////////////////////////////////////////////////////////////////////////
 ' PROPERTIES:
 '#
+Public Property Get autoDetectEncoding() As Boolean
+    autoDetectEncoding = P_AUTODETECTENCODING
+End Property
+Public Property Let autoDetectEncoding(value As Boolean)
+    P_AUTODETECTENCODING = value
+End Property
 Public Property Get bufferSize() As Single
     bufferSize = P_BUFFERSISE
 End Property
@@ -229,6 +236,7 @@ Public Function CopyConfig() As CSVparserConfig
     tmpResult.dynamicTyping = P_DYNAMIC_TYPING
     tmpResult.endingRecord = P_ENDINGRECORD
     tmpResult.utf8EncodedFile = P_UTF8ENCODED
+    tmpResult.autoDetectEncoding = P_AUTODETECTENCODING
     tmpResult.Headers = P_HEADERS
     tmpResult.headersOmission = P_HEADEROMISSION
     tmpResult.path = P_PATH
@@ -273,6 +281,7 @@ Private Sub Class_Initialize()
     P_SKIP_EMPTYLINES = True
     P_MULTIENDOFLINECSV = False
     P_UTF8ENCODED = False
+    P_AUTODETECTENCODING = True
     DefineTypingTemplate
     DefineTypingTemplateLinks
 End Sub
