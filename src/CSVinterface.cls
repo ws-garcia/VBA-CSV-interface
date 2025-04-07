@@ -9,7 +9,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '#
 '////////////////////////////////////////////////////////////////////////////////////////////
-' Copyright © 2020-2023 W. García
+' Copyright © 2020-2025 W. García
 ' GPL-3.0 license | https://www.gnu.org/licenses/gpl-3.0.html/
 ' https://ingwilfredogarcia.wordpress.com
 '#
@@ -356,7 +356,7 @@ Public Function CSVsubsetSplit(filePath As String, _
         'Parser config
         readerConf.path = filePath
         With readerConf
-            Set .Dialect = CSVreader.SniffDelimiters(readerConf)
+            Set .dialect = CSVreader.SniffDelimiters(readerConf)
         End With
         Set CSVreader.parseConfig = readerConf.CopyConfig
         '@----------------------------------------------------
@@ -646,14 +646,14 @@ Public Sub ExportToCSV(ByRef csvArray As Variant, _
         Set CSVstream = New CSVTextStream
         If FileExists(curConfig.path) Then
             If enableDelimitersSniffing Then
-                Set curConfig.Dialect = SniffDelimiters(curConfig)
+                Set curConfig.dialect = SniffDelimiters(curConfig)
             End If
             With CSVstream
                 .utf8EncodedFile = curConfig.utf8EncodedFile
                 .OpenStream curConfig.path
             End With
             If CSVstream.streamLength > 0 Then
-                Select Case curConfig.Dialect.recordsDelimiter
+                Select Case curConfig.dialect.recordsDelimiter
                     Case vbCrLf
                         CSVstream.SeekPointer CSVstream.streamLength - 1
                     Case Else
@@ -663,12 +663,12 @@ Public Sub ExportToCSV(ByRef csvArray As Variant, _
                 'Check line break at EOF
                 CSVstream.ReadText
                 RaiseEvent AfterLoadStream
-                If CSVstream.bufferString <> curConfig.Dialect.recordsDelimiter Then
+                If CSVstream.bufferString <> curConfig.dialect.recordsDelimiter Then
                     Select Case CSVstream.bufferString
                         Case vbCrLf, vbCr, vbLf
                             'Not needed to write endline char
                         Case Else
-                            Select Case curConfig.Dialect.recordsDelimiter
+                            Select Case curConfig.dialect.recordsDelimiter
                                 Case vbCrLf
                                     EOLB = EndLineChar.CRLF
                                 Case vbCr
@@ -1513,7 +1513,7 @@ Public Function ImportFromCSV(configObj As CSVparserConfig, _
                 ReDim EmptyParam(-1 To -1) 'Emule empty ParamArray
 
                 If .delimitersGuessing Then
-                    Set configObj.Dialect = SniffDelimiters(configObj)
+                    Set configObj.dialect = SniffDelimiters(configObj)
                 End If
                 tmpRequested() = FilterColumns
                 If .Headers Then
@@ -1521,7 +1521,7 @@ Public Function ImportFromCSV(configObj As CSVparserConfig, _
                     'Read the whole header
                     Set P_CSV_HEADER = New CSVArrayList
                     Set curConfig = .CopyConfig
-                    curConfig.StartingRecord = 1
+                    curConfig.startingRecord = 1
                     curConfig.endingRecord = 1
                     StreamParseCSV curConfig, P_CSV_HEADER, EmptyParam
                 End If
@@ -1581,7 +1581,7 @@ Public Function ImportFromCSVString(ByRef CSVstring As String, _
             ReDim EmptyParam(-1 To -1) 'Emule empty ParamArray
 
             If .delimitersGuessing Then
-                Set configObj.Dialect = SniffDelimiters(configObj, CSVstring)
+                Set configObj.dialect = SniffDelimiters(configObj, CSVstring)
             End If
             tmpRequested() = FilterColumns
             If .Headers Then
@@ -1589,7 +1589,7 @@ Public Function ImportFromCSVString(ByRef CSVstring As String, _
                 'Read the header
                 Set P_CSV_HEADER = New CSVArrayList
                 Set curConfig = .CopyConfig
-                curConfig.StartingRecord = 1
+                curConfig.startingRecord = 1
                 curConfig.endingRecord = 1
                 ParseCSVstring CSVstring, curConfig, P_CSV_HEADER, EmptyParam
             End If
@@ -1740,9 +1740,9 @@ Private Function JoinRecordsFields(ByRef RecordsArray As Variant, _
     Set ArrayHelper = New CSVArrayList
     '@----------------------------------------------------------------------------
     'Expand configuration object
-    QuoteT = pConfig.Dialect.quoteToken
-    FldDelimiter = pConfig.Dialect.fieldsDelimiter
-    recDelimiter = pConfig.Dialect.recordsDelimiter
+    QuoteT = pConfig.dialect.quoteToken
+    FldDelimiter = pConfig.dialect.fieldsDelimiter
+    recDelimiter = pConfig.dialect.recordsDelimiter
     '@----------------------------------------------------------------------------
     'Set coerce char
     Select Case QuoteT
@@ -1755,7 +1755,7 @@ Private Function JoinRecordsFields(ByRef RecordsArray As Variant, _
     End Select
     '@----------------------------------------------------------------------------
     'Set the escape sequences
-    UseUnixEscapeSeq = (pConfig.Dialect.escapeMode = unix)
+    UseUnixEscapeSeq = (pConfig.dialect.escapeMode = unix)
     UnixEscapeSeq = CHR_BACKSLASH & CoerceChr
     UnixEscapeSeqDel = CHR_BACKSLASH & FldDelimiter
     UnixEscapeSeqRec = CHR_BACKSLASH & recDelimiter
@@ -1832,7 +1832,7 @@ Private Function JoinRecordsFields(ByRef RecordsArray As Variant, _
         'Check for jagged arrays
         LB1 = LBound(RecordsArray, 1)
         UB1 = UBound(RecordsArray, 1)
-        If Not ArrayHelper.IsJaggedArray(RecordsArray) Then
+        If Not ArrayHelper.isJaggedArray(RecordsArray) Then
             '@----------------------------------------------------------------------------
             'Set array sizes
             ReDim ConcatenatedArray(LB1 To UB1)
@@ -2014,16 +2014,16 @@ Public Function SortOnDisk(ByVal filePath As String, _
         .OpenStream filePath
         .ReadText
         'Set the dialect
-        Set CSV.parseConfig.Dialect = CSV.SniffDelimiters(CSV.parseConfig, .bufferString)
+        Set CSV.parseConfig.dialect = CSV.SniffDelimiters(CSV.parseConfig, .bufferString)
         '@--------------------------------------------------------------------------------
         'Get header
         Set fileHeader = CSV.ImportFromCSVString(.bufferString, CSV.parseConfig).items.Clone
         '@--------------------------------------------------------------------------------
         'Consume first stream
-        CSV.parseConfig.StartingRecord = 2
+        CSV.parseConfig.startingRecord = 2
         CSV.parseConfig.endingRecord = 0
         CSV.ImportFromCSVString .bufferString, CSV.parseConfig
-        CSV.parseConfig.StartingRecord = 1
+        CSV.parseConfig.startingRecord = 1
         CSV.parseConfig.Headers = False
         '@--------------------------------------------------------------------------------
         'Sort and export
@@ -2031,7 +2031,7 @@ Public Function SortOnDisk(ByVal filePath As String, _
         Set exportConfig = New CSVparserConfig
         CSV.Sort sortingKeys:=sortingKeys, sortAlgorithm:=sortAlgorithm
         SortedCounter = SortedCounter + 1
-        Set exportConfig.Dialect = CSV.parseConfig.Dialect
+        Set exportConfig.dialect = CSV.parseConfig.dialect
         exportConfig.path = tmpOutputPath & "tmp_" & SortedCounter & ".csv"
         CSV.ExportToCSV CSV.items, exportConfig, enableDelimitersSniffing:=False
         sortedFiles.Add exportConfig.path
@@ -2159,7 +2159,7 @@ Public Sub OpenSeqReader(configObj As CSVparserConfig, _
                 ReDim EmptyParam(-1 To -1) 'Emule empty ParamArray
 
                 If .delimitersGuessing Then
-                    Set configObj.Dialect = SniffDelimiters(configObj)
+                    Set configObj.dialect = SniffDelimiters(configObj)
                 End If
                 static_tmpRequested() = FilterColumns
                 If .Headers Then
@@ -2167,7 +2167,7 @@ Public Sub OpenSeqReader(configObj As CSVparserConfig, _
                     'Read the whole header
                     Set P_CSV_HEADER = New CSVArrayList
                     Set tmpConf = configObj.CopyConfig
-                    tmpConf.StartingRecord = 1
+                    tmpConf.startingRecord = 1
                     tmpConf.endingRecord = 1
                     StreamParseCSV tmpConf, P_CSV_HEADER, EmptyParam
                     Set tmpConf = Nothing
@@ -2218,9 +2218,9 @@ Public Sub OpenSeqReader(configObj As CSVparserConfig, _
         static_IgnoreLines = (static_IgnoreCommentLines Or static_IgnoreEmptyLines)
         static_TemplateDefined = .dTTemplateDefined
         static_TargetsDefined = .dTTemplateLinksDefined
-        static_FieldDelimiter = .Dialect.fieldsDelimiter
-        static_RecordDelimiter = .Dialect.recordsDelimiter
-        static_UseUnixEscapeSeq = (.Dialect.escapeMode = unix)
+        static_FieldDelimiter = .dialect.fieldsDelimiter
+        static_RecordDelimiter = .dialect.recordsDelimiter
+        static_UseUnixEscapeSeq = (.dialect.escapeMode = unix)
     End With
     static_TokenEndReached = False
     static_RecordEndReached = False
@@ -2242,7 +2242,7 @@ Public Sub OpenSeqReader(configObj As CSVparserConfig, _
     static_MaxReqIndex = UBound(static_RequestedFieldsArray)
     '@----------------------------------------------------------------------------
     'Set Coerce Type to fields
-    Select Case configObj.Dialect.quoteToken
+    Select Case configObj.dialect.quoteToken
         Case 1
             static_QuoteChar = CHR_APOSTROPHE
         Case 2
@@ -2380,11 +2380,11 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
         IgnoreLines = (IgnoreCommentLines Or IgnoreEmptyLines)
         TemplateDefined = .dTTemplateDefined
         TargetsDefined = .dTTemplateLinksDefined
-        fieldDelimiter = .Dialect.fieldsDelimiter
-        RecordDelimiter = .Dialect.recordsDelimiter
+        fieldDelimiter = .dialect.fieldsDelimiter
+        RecordDelimiter = .dialect.recordsDelimiter
         EndRecord = .endingRecord
-        StartRecord = .StartingRecord
-        UseUnixEscapeSeq = (.Dialect.escapeMode = unix)
+        StartRecord = .startingRecord
+        UseUnixEscapeSeq = (.dialect.escapeMode = unix)
     End With
     tmpRequested() = FilterColumns
     Select Case UBound(tmpRequested)
@@ -2424,7 +2424,7 @@ Private Sub ParseCSVstring(ByRef CSVtext As String, _
     End If
     '@----------------------------------------------------------------------------
     'Set Coerce Type to fields
-    Select Case configObj.Dialect.quoteToken
+    Select Case configObj.dialect.quoteToken
         Case 1
             QuoteChar = CHR_APOSTROPHE
         Case 2
@@ -3194,7 +3194,7 @@ OutOfBounds_ShiftRecord:
 End Function
 Public Function SniffDelimiters(ByRef confObject As CSVparserConfig, _
                             Optional ByRef CSVstring As String = vbNullString, _
-                            Optional ByVal StartingRecord As Long = 1, _
+                            Optional ByVal startingRecord As Long = 1, _
                             Optional Threshold As Long = 10) As CSVdialect
 
     If Not (confObject.path = vbNullString And CSVstring = vbNullString) Then
@@ -3209,11 +3209,11 @@ Public Function SniffDelimiters(ByRef confObject As CSVparserConfig, _
                 .OpenStream confObject.path
                 .ReadText
                 RaiseEvent AfterLoadStream
-                Set SniffDelimiters = SniffInString(confObject, .bufferString, True, StartingRecord, Threshold)
+                Set SniffDelimiters = SniffInString(confObject, .bufferString, True, startingRecord, Threshold)
                 Set StreamObj = Nothing
             End With
         Else
-            Set SniffDelimiters = SniffInString(confObject, CSVstring, StartingRecord:=StartingRecord, Threshold:=Threshold)
+            Set SniffDelimiters = SniffInString(confObject, CSVstring, startingRecord:=startingRecord, Threshold:=Threshold)
         End If
         ResetAlerts
     End If
@@ -3221,7 +3221,7 @@ End Function
 Private Function SniffInString(ByRef confObject As CSVparserConfig, _
                             ByRef CSVstring As String, _
                             Optional Buffered As Boolean = False, _
-                            Optional StartingRecord As Long = 1, _
+                            Optional startingRecord As Long = 1, _
                             Optional Threshold As Long = 10) As CSVdialect
 
     Dim EmptyParam() As Variant
@@ -3266,8 +3266,8 @@ Private Function SniffInString(ByRef confObject As CSVparserConfig, _
     With tmpConfig
         '@--------------------------------------------------------------------------------
         'Guess dialect using NumberOfRecords samples records with skipping
-        .StartingRecord = StartingRecord
-        .endingRecord = StartingRecord + Threshold - 1
+        .startingRecord = startingRecord
+        .endingRecord = startingRecord + Threshold - 1
         .skipCommentLines = True
         .skipEmptyLines = True
         Set GuesserHelper = New CSVSniffer
@@ -3278,18 +3278,18 @@ Private Function SniffInString(ByRef confObject As CSVparserConfig, _
                         For k = LBound(QuoteChar) To UBound(QuoteChar)
                             '@--------------------------------------------------------------------------------
                             'Set CSV dialect
-                            .Dialect.fieldsDelimiter = TmpDelimiters(i)
-                            .Dialect.recordsDelimiter = LinesEnds(j)
-                            .Dialect.quoteToken = QuoteChar(k)
+                            .dialect.fieldsDelimiter = TmpDelimiters(i)
+                            .dialect.recordsDelimiter = LinesEnds(j)
+                            .dialect.quoteToken = QuoteChar(k)
                             Set ImportedTable = New CSVArrayList
                             ParseCSVstring TmpCSVstr, tmpConfig, ImportedTable, EmptyParam
                             '@--------------------------------------------------------------------------------
                             'Save results with keys
                             If InStrB(1, TmpCSVstr, GetQuoteChar(QuoteChar(k))) Then
-                                ScoreArray.AddIndexedItem AppendIndexesToKey(DialectToString(.Dialect), i, j, k), _
+                                ScoreArray.AddIndexedItem AppendIndexesToKey(DialectToString(.dialect), i, j, k), _
                                                             GuesserHelper.TableScore(ImportedTable, Threshold)
                             Else
-                                ScoreArray.AddIndexedItem AppendIndexesToKey(DialectToString(.Dialect) & CHR_CARET, i, j, k), _
+                                ScoreArray.AddIndexedItem AppendIndexesToKey(DialectToString(.dialect) & CHR_CARET, i, j, k), _
                                                             GuesserHelper.TableScore(ImportedTable, Threshold)
                             End If
                         Next k
@@ -3309,7 +3309,7 @@ Private Function SniffInString(ByRef confObject As CSVparserConfig, _
         '@--------------------------------------------------------------------------------
         '2nd pass for unique record CSV file
         Set ImportedTable = New CSVArrayList
-        Set tmpConfig.Dialect = SniffInString
+        Set tmpConfig.dialect = SniffInString
         ParseCSVstring TmpCSVstr, tmpConfig, ImportedTable, EmptyParam
         If ImportedTable.count = 1 Then
             If InStrB(1, TmpCSVstr, vbCrLf) Then
@@ -3549,11 +3549,11 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
         IgnoreLines = (IgnoreCommentLines Or IgnoreEmptyLines)
         TemplateDefined = .dTTemplateDefined
         TargetsDefined = .dTTemplateLinksDefined
-        fieldDelimiter = .Dialect.fieldsDelimiter
-        RecordDelimiter = .Dialect.recordsDelimiter
+        fieldDelimiter = .dialect.fieldsDelimiter
+        RecordDelimiter = .dialect.recordsDelimiter
         EndRecord = .endingRecord
-        StartRecord = .StartingRecord
-        UseUnixEscapeSeq = (.Dialect.escapeMode = unix)
+        StartRecord = .startingRecord
+        UseUnixEscapeSeq = (.dialect.escapeMode = unix)
     End With
     TokenEndReached = False
     RecordEndReached = False
@@ -3594,7 +3594,7 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
     End If
     '@----------------------------------------------------------------------------
     'Set Coerce Type to fields
-    Select Case configObj.Dialect.quoteToken
+    Select Case configObj.dialect.quoteToken
         Case 1
             QuoteChar = CHR_APOSTROPHE
         Case 2
