@@ -47,12 +47,16 @@ Dumps data from a source, or from the current instance, to an Excel WorkSheet.
 <td style="text-align: left;"><em>BlockAutoFormat</em></td>
 <td style="text-align: left;">Optional. Identifier specifying a <code>Boolean</code> Type variable.</td>
 </tr>
+<tr>
+<td style="text-align: left;"><em>DrawCellBorders</em></td>
+<td style="text-align: left;">Optional. Identifier specifying a <code>Boolean</code> Type variable.</td>
+</tr>
 </tbody>
 </table>
 
 ### Returns value
 
-_None_
+*Type*: `String`
 
 >📝**Note**
 >{: .text-grey-lt-000 .bg-green-000 }

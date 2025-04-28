@@ -509,11 +509,12 @@ Public Sub DumpToJaggedArray(OutPutArray() As Variant, _
         OutPutArray() = DataSource.items
     End If
 End Sub
-Public Sub DumpToSheet(Optional WBookName As String, _
+Public Function DumpToSheet(Optional WBookName As String, _
                         Optional SheetName As String, _
                         Optional rngName As String = "A1", _
                         Optional ByRef DataSource As CSVArrayList = Nothing, _
-                        Optional BlockAutoFormat As Boolean = True)
+                        Optional BlockAutoFormat As Boolean = True, _
+                        Optional DrawCellBorders As Boolean = False) As String
     On Error Resume Next
     Dim colNumber As Long
 
@@ -568,13 +569,46 @@ Public Sub DumpToSheet(Optional WBookName As String, _
             If BlockAutoFormat Then
                 .NumberFormat = "@"
             End If
-            .Value2 = OutPutArr
+            .value2 = OutPutArr
+            If DrawCellBorders Then
+                'Left Borders
+                .Borders(xlEdgeLeft).LineStyle = xlContinuous
+                .Borders(xlEdgeLeft).ColorIndex = 0
+                .Borders(xlEdgeLeft).TintAndShade = 0
+                .Borders(xlEdgeLeft).Weight = xlThin
+                'Top Borders
+                .Borders(xlEdgeTop).LineStyle = xlContinuous
+                .Borders(xlEdgeTop).ColorIndex = 0
+                .Borders(xlEdgeTop).TintAndShade = 0
+                .Borders(xlEdgeTop).Weight = xlThin
+                'Bottom Borders
+                .Borders(xlEdgeBottom).LineStyle = xlContinuous
+                .Borders(xlEdgeBottom).ColorIndex = 0
+                .Borders(xlEdgeBottom).TintAndShade = 0
+                .Borders(xlEdgeBottom).Weight = xlThin
+                'Right Borders
+                .Borders(xlEdgeRight).LineStyle = xlContinuous
+                .Borders(xlEdgeRight).ColorIndex = 0
+                .Borders(xlEdgeRight).TintAndShade = 0
+                .Borders(xlEdgeRight).Weight = xlThin
+                'Inside Vertical Borders
+                .Borders(xlInsideVertical).LineStyle = xlContinuous
+                .Borders(xlInsideVertical).ColorIndex = 0
+                .Borders(xlInsideVertical).TintAndShade = 0
+                .Borders(xlInsideVertical).Weight = xlThin
+                'Inside Horizontal Borders
+                .Borders(xlInsideHorizontal).LineStyle = xlContinuous
+                .Borders(xlInsideHorizontal).ColorIndex = 0
+                .Borders(xlInsideHorizontal).TintAndShade = 0
+                .Borders(xlInsideHorizontal).Weight = xlThin
+            End If
         End With
         Erase tmpOutputArray
         Erase OutPutArr
         EnableOptimization False
+        DumpToSheet = OutputRange.Address
     End If
-End Sub
+End Function
 Private Sub EnableOptimization(Optional Optimize As Boolean = True)
     If Optimize Then
         '@------------------------------------------------------
@@ -759,7 +793,7 @@ Public Function GetDataFromCSV(csvPathAndFilename As String) As String
     On Error GoTo ErrHandler_GetDataFromCSV
     FileHandled = FreeFile
     Open csvPathAndFilename For Binary As #FileHandled
-    GetDataFromCSV = Space$(LOF(FileHandled))
+    GetDataFromCSV = SPACE$(LOF(FileHandled))
     Get #FileHandled, , GetDataFromCSV
     Close #FileHandled
 ErrHandler_GetDataFromCSV:
