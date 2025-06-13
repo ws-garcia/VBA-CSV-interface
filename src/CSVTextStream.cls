@@ -236,6 +236,10 @@ Public Function DetectEncoding(filePath As String) As String
     fileNum = FreeFile
     Open filePath For Binary Access Read As #fileNum
     
+    If LOF(fileNum) = 0 Then
+        DetectEncoding = "ANSI"
+        Exit Function
+    End If
     ' Read up to the first 1024 bytes
     byteCount = IIf(LOF(fileNum) < 1024, LOF(fileNum), 1024)
     ReDim byteData(0 To byteCount - 1)
@@ -429,12 +433,12 @@ End Sub
 Public Sub OpenStream(filePath As String)
 Attribute OpenStream.VB_Description = "Opens a stream over a text file."
     If P_PATH <> filePath Then
+        CreateSubFolders filePath
         If P_AUTODETECTENCODING Then
             P_DETECTEDENCODING = DetectEncoding(filePath)
             P_UTF8ENCODED = (P_DETECTEDENCODING = "UTF-8")
         End If
         FileHandled = FreeFile
-        CreateSubFolders filePath
         Open filePath For Binary As #FileHandled
         P_ISOPENSTREAM = True
         P_STREAMLENGTH = LOF(FileHandled)
