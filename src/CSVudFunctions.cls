@@ -75,3 +75,44 @@ Public Function Concat(List As Variant) As String
     Next i
     Concat = Apostrophe & tmpResult & Apostrophe
 End Function
+
+''' <summary>
+''' sDate is expected to be an array
+''' https://www.codeguru.com/ShowCode.asp?ID=7369
+''' </summary>
+Public Function WEEKNUM(sDate As Variant) As String
+    Dim tmpDate As Date
+    
+    If sDate(0) Like "'*'" Then
+        tmpDate = CDate(Mid(sDate(0), 2, Len(sDate(0)) - 2))
+    Else
+        tmpDate = CDate(sDate(0))
+    End If
+   'Monday is set as first day of week
+   Dim lngDate As Long
+   Dim intWeek As Integer
+
+   'If january 1. is later then thursday, january 1. is not in week 1
+   If Not Weekday("01/01/" & Year(tmpDate), vbMonday) > 4 Then
+      intWeek = 1
+   Else
+      intWeek = 0
+   End If
+   'Sets long-value for january 1.
+   lngDate = CLng(CDate("01/01/" & Year(tmpDate)))
+
+   'Finds the first monday of year
+   lngDate = lngDate + (8 - Weekday("01/01/" & Year(tmpDate), vbMonday))
+   'Increases week by week until set date is passed
+   While Not lngDate > CLng(tmpDate)
+      intWeek = intWeek + 1
+      lngDate = lngDate + 7
+   Wend
+   'If the date set is not in week 1, this finds latest week previous year
+   If intWeek = 0 Then
+      intWeek = WEEKNUM("31/12/" & Year(tmpDate) - 1)
+   End If
+   WEEKNUM = intWeek
+End Function
+
+
