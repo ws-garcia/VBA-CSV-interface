@@ -319,7 +319,7 @@ Private Sub Class_Initialize()
     '@--------------------------------------------------------------------
     ' Populate building UDFs
     Dim UDFnames() As Variant
-    UDFnames() = Array("GCD", "Concat")
+    UDFnames() = Array("GCD", "Concat", "WEEKNUM")
     DeclareUDF UDFnames, "UserDefFunctions"                 ' Declare the Greatest Common Divisor and the string concatenation
                                                             ' functions defined in the UDfunctions class module.
                                                             ' This need an instance in the CSVcallBack class module.
