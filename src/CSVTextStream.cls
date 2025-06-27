@@ -378,6 +378,7 @@ Private Function IsValidUTF8(byteData() As Byte) As Boolean
     Dim i As Long
     Dim ANSIfile As Boolean
     
+    On Error GoTo err_handler
     i = 0
     ANSIfile = True
     While i <= UBound(byteData)
@@ -417,6 +418,9 @@ Private Function IsValidUTF8(byteData() As Byte) As Boolean
         End If
     Wend
     IsValidUTF8 = Not ANSIfile
+    Exit Function
+err_handler:
+    IsValidUTF8 = False
 End Function
 Private Sub NormalizeLineBreaks()
     Do While InStrB(1, P_TEXT, vbCrLf, vbBinaryCompare)

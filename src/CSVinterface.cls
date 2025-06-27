@@ -793,7 +793,7 @@ Public Function GetDataFromCSV(csvPathAndFilename As String) As String
     On Error GoTo ErrHandler_GetDataFromCSV
     FileHandled = FreeFile
     Open csvPathAndFilename For Binary As #FileHandled
-    GetDataFromCSV = SPACE$(LOF(FileHandled))
+    GetDataFromCSV = Space$(LOF(FileHandled))
     Get #FileHandled, , GetDataFromCSV
     Close #FileHandled
 ErrHandler_GetDataFromCSV:
@@ -3573,6 +3573,7 @@ Private Sub StreamParseCSV(configObj As CSVparserConfig, _
         CSVstream.linebreakMatchingBehavior = EndLineMatchingBehavior.OnlyBackwardSense
         CSVstream.unifiedLFOutput = .multiEndOfLineCSV
         CSVstream.utf8EncodedFile = .utf8EncodedFile
+        CSVstream.autoDetectEncoding = .autoDetectEncoding
         CSVstream.OpenStream .path
         commToken = AscW(.commentsToken)
         dynamicType = .dynamicTyping
