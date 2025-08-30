@@ -348,7 +348,7 @@ Private Sub FindEOLcharacter()
     Seek #FileHandled, CorrectedPos
 End Sub
 Private Function FolderExists(ByVal filePath As String) As Boolean
-    FolderExists = CBool(LenB(Dir(filePath, vbDirectory)))
+    FolderExists = CBool(LenB(Dir(filePath, vbDirectory + vbHidden)))
 End Function
 Private Sub GoBackToLineBreak()
     Do
